@@ -1,0 +1,37 @@
+{
+  "schema": "frontier-brand/1.0",
+  "customer": "Caldova Industrial AG",
+  "short": "Caldova",
+  "status": "Fictitious sample brand for the Caldova demo. For a real customer: derive it from the customer's own Office theme and brand guide, and validate it with the brand owner before production.",
+  "sourceShort": "Caldova's Office theme 'Caldova Corporate' (E10) and caldova.example (E11) - fictitious",
+  "sources": {
+    "theme": "Office theme 'Caldova Corporate' from a Caldova-authored deck (E10, fictitious sample)",
+    "website": "caldova.example colours sampled on 30 Oct 2026 (E11, fictitious sample)"
+  },
+  "theme": {
+    "name": "Caldova Corporate",
+    "colourScheme": "Caldova",
+    "dk1": "#1F2A33", "lt1": "#FFFFFF", "dk2": "#0B3954", "lt2": "#E8EEF2",
+    "accent1": "#0F6CBD", "accent2": "#00827F", "accent3": "#107C41", "accent4": "#C0541A",
+    "accent5": "#6B4FA0", "accent6": "#F2B544", "hlink": "#0F6CBD", "folHlink": "#6B4FA0",
+    "fonts": {"headings": "Aptos Display", "body": "Aptos"}
+  },
+  "website": {"primary": "#0F6CBD", "sky": "#9DCDF0", "grey": "#F4F6F8", "text": "#1F2A33"},
+  "named": [
+    {"name": "Caldova Blue", "hex": "#0F6CBD", "slot": "accent1", "source": "Caldova Corporate theme accent 1; website primary (E10, E11)"},
+    {"name": "Caldova Teal", "hex": "#00827F", "slot": "accent2", "source": "Caldova Corporate theme accent 2 (E10)"},
+    {"name": "Caldova Green", "hex": "#107C41", "slot": "accent3", "source": "Caldova Corporate theme accent 3 (E10)"},
+    {"name": "Caldova Copper", "hex": "#C0541A", "slot": "accent4", "source": "Caldova Corporate theme accent 4 (E10)"},
+    {"name": "Caldova Violet", "hex": "#6B4FA0", "slot": "accent5", "source": "Caldova Corporate theme accent 5 (E10)"},
+    {"name": "Caldova Amber", "hex": "#F2B544", "slot": "accent6", "source": "Caldova Corporate theme accent 6 (E10)"},
+    {"name": "Caldova Sky", "hex": "#9DCDF0", "slot": "website", "source": "caldova.example light blue (E11)"},
+    {"name": "Caldova Navy", "hex": "#0B3954", "slot": "dk2", "source": "Caldova Corporate theme dark 2 (E10)"},
+    {"name": "Caldova Graphite", "hex": "#1F2A33", "slot": "dk1", "source": "Caldova Corporate theme dark 1 (text) (E10)"},
+    {"name": "Caldova Mist", "hex": "#E8EEF2", "slot": "lt2", "source": "Caldova Corporate theme light 2 (E10)"}
+  ],
+  "evidence": [
+    {"id": "E10", "title": "Caldova Corporate Office theme (fictitious sample)", "date": "2026-10-30", "usedFor": "palette, fonts"},
+    {"id": "E11", "title": "caldova.example colours (fictitious sample)", "date": "2026-10-30", "usedFor": "light blue, background grey, text colour"}
+  ],
+  "logo": null
+}

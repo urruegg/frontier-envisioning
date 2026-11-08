@@ -1,0 +1,42 @@
+name: Feature or change
+description: A new capability or a change for the users of the plugin (solution engineers in Copilot Cowork)
+labels: ["type:feature"]
+body:
+  - type: markdown
+    attributes:
+      value: "Describe the outcome, not the solution. Use the fictitious Caldova Industrial AG in examples; never a real customer."
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and outcome
+      description: Who needs what, and how will we know it works?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: true
+      options: [Discovery, Blueprint HTML, Solution design documents, Agent identity, Business value, FinOps, HubWorks integration, Packaging and install, Showcase hosting, Engineering]
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Testable statements, one per line.
+      value: "- [ ] "
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Source and evidence
+      description: PRD section, analysis, workshop learning (no customer names), Microsoft documentation.
+  - type: checkboxes
+    id: neutral
+    attributes:
+      label: Customer neutrality
+      options:
+        - label: This issue names no real customer, person or engagement detail.
+          required: true

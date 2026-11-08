@@ -1,0 +1,31 @@
+{
+ "schema": "frontier-finops/1.0",
+ "customer": "Caldova Industrial AG", "short": "Caldova",
+ "title": "Reference case: HR policy assistant (worked example of the method; fictitious)",
+ "version": "1.0", "date": "2026-11-04", "status": "hypothesis", "currency": "CHF",
+ "fx": {"policy": "swiss-list-ratio", "chf_per_usd": 0.81, "source": "B6: ratio implied by Swiss list prices (capacity pack CHF 162 versus USD 200); replace with the billing rate", "date": "2026-11-04"},
+ "purchase": {"option": "payg", "note": "Hypothesis: decide after a usage baseline"},
+ "assumptions": [
+  {"id": "ASS-101", "statement": "Share of employees with Microsoft 365 Copilot", "unit": "share", "low": 0.2, "base": 0.4, "high": 0.8, "source_type": "hypothesis", "confidence": "medium", "owner": "Microsoft 365 workplace team", "question": "How many employees will hold a Microsoft 365 Copilot licence when the agent goes live?", "status": "open", "scope": "finops"},
+  {"id": "ASS-102", "statement": "Responses per session", "unit": "responses", "low": 1, "base": 1.5, "high": 2.5, "source_type": "hypothesis", "confidence": "low", "owner": "Agent maker", "question": "How many answers does a typical conversation need?", "status": "open", "scope": "finops"},
+  {"id": "ASS-103", "statement": "Responses grounded through tenant graph grounding", "unit": "share", "low": 0.3, "base": 0.7, "high": 0.9, "source_type": "hypothesis", "confidence": "low", "owner": "Agent maker", "question": "Which knowledge sources need tenant graph grounding?", "status": "open", "scope": "finops"},
+  {"id": "ASS-104", "statement": "Sessions that run an agent flow", "unit": "share", "low": 0.05, "base": 0.1, "high": 0.2, "source_type": "hypothesis", "confidence": "low", "owner": "HR operations", "question": "How many conversations end in an HR case?", "status": "open", "scope": "finops"},
+  {"id": "ASS-105", "statement": "Actions per agent flow", "unit": "actions", "low": 5, "base": 10, "high": 20, "source_type": "hypothesis", "confidence": "medium", "owner": "Agent maker", "status": "open", "scope": "finops"},
+  {"id": "ASS-106", "statement": "Run effort (agent boss and maker)", "unit": "hours/month", "low": 8, "base": 16, "high": 32, "source_type": "hypothesis", "confidence": "medium", "owner": "HR operations", "question": "Who runs the agent, and for how many hours a month?", "status": "open", "scope": "finops"},
+  {"id": "ASS-107", "statement": "Loaded rate for run effort", "unit": "CHF/h", "low": 100, "base": 120, "high": 140, "source_type": "hypothesis", "confidence": "medium", "owner": "Finance", "status": "open", "scope": "finops"},
+  {"id": "ASS-108", "statement": "Build effort (one-time)", "unit": "CHF", "low": 18000, "base": 24000, "high": 36000, "source_type": "hypothesis", "confidence": "medium", "owner": "IT project lead", "status": "open", "scope": "finops"}
+ ],
+ "agents": [
+  {"id": "HR-A01", "name": "HR policy assistant", "harness": "standard", "audience": "employee", "coverage": "licensed users included",
+   "vars": {"employees": "ASS-001", "per_employee": "ASS-002", "ticket_share": "ASS-003", "licensed_share": "ASS-101", "responses": "ASS-102", "grounded": "ASS-103", "flow_share": "ASS-104", "flow_actions": "ASS-105", "run_hours": "ASS-106", "run_rate": "ASS-107", "build": "ASS-108", "sessions": "employees * per_employee"},
+   "usage": {"sessions": "sessions", "billable_share": "1 - licensed_share", "events_per_session": {"generative_answer": "responses", "graph_grounding": "responses * grounded", "flow_action": "flow_share * flow_actions"}},
+   "people": {"run_hours_month": "run_hours", "rate_chf": "run_rate", "build_one_time_chf": "build"},
+   "outcome": {"name": "HR ticket avoided", "per_month": "sessions * ticket_share"}}
+ ],
+ "credit_scenarios": [
+  {"name": "No Microsoft 365 Copilot licences (all use billed)", "kind": "licences", "set": {"licensed_share": 0}},
+  {"name": "80% of employees licensed", "kind": "licences", "set": {"licensed_share": 0.8}},
+  {"name": "Knowledge without tenant graph grounding", "kind": "knowledge", "set": {"grounded": 0}},
+  {"name": "Twice the usage (4 sessions per employee per month)", "kind": "usage", "set": {"per_employee": 4}}
+ ]
+}

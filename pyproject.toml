@@ -1,0 +1,20 @@
+# Tool configuration only: the plugin is not a Python package (its scripts run as files in Copilot Cowork).
+[project]
+name = "frontier-envisioning-dev"
+version = "0.0.0"
+description = "Development tooling for the Frontier Envisioning Copilot Cowork plugin"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit", "tests/pipeline"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 160
+target-version = "py311"
+extend-exclude = ["node_modules", "build", "dist", ".agents"]
+
+[tool.ruff.lint]
+# Start with the error rules (syntax errors, undefined names, invalid comparisons); ratchet up with INT-08.
+select = ["E9", "F63", "F7", "F82"]

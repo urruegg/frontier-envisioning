@@ -1,0 +1,32 @@
+# Azure Developer CLI project: the Frontier Envisioning showcase on Azure Static Web Apps.
+# azd provision  -> infra/main.bicep (resource group, static web app, sign-in settings)
+# azd deploy     -> builds the site (prepackage hook) and deploys site/dist
+# CI: .github/workflows/azure-dev.yml with OpenID Connect (set up by `azd pipeline config`).
+name: frontier-envisioning
+metadata:
+  template: frontier-envisioning-showcase@1.0.0
+infra:
+  provider: bicep
+  path: infra
+  module: main
+services:
+  site:
+    project: ./site
+    dist: dist
+    host: staticwebapp
+    hooks:
+      prepackage:
+        windows:
+          shell: pwsh
+          run: python ../tools/build_site.py --out dist
+        posix:
+          shell: sh
+          run: python3 ../tools/build_site.py --out dist
+pipeline:
+  provider: github
+  variables:
+    - SITE_AUTH_MODE
+    - SITE_AUTH_TENANT_ID
+    - SITE_AUTH_CLIENT_ID
+  secrets:
+    - SITE_AUTH_CLIENT_SECRET

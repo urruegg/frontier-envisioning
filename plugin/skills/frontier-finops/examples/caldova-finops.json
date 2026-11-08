@@ -1,0 +1,364 @@
+{
+ "schema": "frontier-finops/1.0",
+ "customer": "Caldova Industrial AG",
+ "short": "Caldova",
+ "title": "Cost model for the MVP agents (fictitious demo)",
+ "version": "0.1",
+ "date": "2026-11-04",
+ "status": "hypothesis",
+ "currency": "CHF",
+ "fx": {
+  "policy": "swiss-list-ratio",
+  "chf_per_usd": 0.81,
+  "source": "Ratio implied by Swiss list prices (rates file); replace with Caldova's billing rate",
+  "date": "2026-11-04"
+ },
+ "purchase": {
+  "option": "payg",
+  "note": "Hypothesis: start on pay-as-you-go, decide on packs or P3 after three months of usage"
+ },
+ "assumptions": [
+  {
+   "id": "ASS-101",
+   "statement": "Employees with a Microsoft 365 Copilot licence",
+   "unit": "share",
+   "low": 0.2,
+   "base": 0.4,
+   "high": 0.7,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Microsoft 365 workplace team",
+   "question": "How many employees will hold Microsoft 365 Copilot when Guided Buying goes live?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-102",
+   "statement": "Generative answers per service report",
+   "unit": "answers",
+   "low": 1,
+   "base": 2,
+   "high": 4,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Agent maker",
+   "question": "How many answers does the agent compose per report (summary, parts, follow-up)?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-103",
+   "statement": "Agent actions per service report (trigger, work order update, confirmation card)",
+   "unit": "actions",
+   "low": 2,
+   "base": 3,
+   "high": 5,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Agent maker",
+   "question": "Which actions does the workflow call per report?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-104",
+   "statement": "AI tool tokens per report (standard tier, thousands)",
+   "unit": "1k tokens",
+   "low": 1,
+   "base": 2,
+   "high": 4,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Agent maker",
+   "question": "How long are the transcripts the agent structures?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-105",
+   "statement": "Audio minutes per report",
+   "unit": "minutes",
+   "low": 1,
+   "base": 3,
+   "high": 5,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Technician panel",
+   "question": "How long are the voice notes per job?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-106",
+   "statement": "Speech to text price per audio hour",
+   "unit": "USD/h",
+   "low": 0.5,
+   "base": 1.0,
+   "high": 1.5,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Azure architect",
+   "question": "Which Azure Speech tier and region will be used? Check it in the Azure pricing calculator.",
+   "status": "open",
+   "scope": "finops",
+   "note": "Verify: not in the rates file"
+  },
+  {
+   "id": "ASS-107",
+   "statement": "Sessions per purchase request",
+   "unit": "sessions",
+   "low": 1,
+   "base": 1.3,
+   "high": 2,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Agent maker",
+   "question": "How many conversations does a request need?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-108",
+   "statement": "Generative answers per Guided Buying session",
+   "unit": "answers",
+   "low": 2,
+   "base": 3,
+   "high": 5,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Agent maker",
+   "question": "How many answers does a typical request conversation need?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-109",
+   "statement": "Answers grounded through tenant graph grounding",
+   "unit": "share",
+   "low": 0.1,
+   "base": 0.3,
+   "high": 0.6,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Agent maker",
+   "question": "Which knowledge needs tenant graph grounding rather than a SharePoint source?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-110",
+   "statement": "Workflow actions per purchase request",
+   "unit": "actions",
+   "low": 4,
+   "base": 8,
+   "high": 12,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Agent maker",
+   "question": "How many workflow actions does the requisition creation need?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-111",
+   "statement": "Run effort for the Service Report agent",
+   "unit": "hours/month",
+   "low": 24,
+   "base": 40,
+   "high": 60,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Head of Service Operations",
+   "question": "Who runs the agent (agent boss, maker), and for how many hours a month?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-112",
+   "statement": "Run effort for the Guided Buying agent",
+   "unit": "hours/month",
+   "low": 16,
+   "base": 24,
+   "high": 40,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Head of Procurement Operations",
+   "question": "Who runs the agent, and for how many hours a month?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-113",
+   "statement": "Loaded rate for run effort",
+   "unit": "CHF/h",
+   "low": 100,
+   "base": 120,
+   "high": 140,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Finance",
+   "question": "Which internal rate applies to the agent boss and maker?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-114",
+   "statement": "Build effort for the Service Report agent (one-time)",
+   "unit": "CHF",
+   "low": 60000,
+   "base": 90000,
+   "high": 130000,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "IT project lead",
+   "question": "What does the build cost, including integration with Field Service?",
+   "status": "open",
+   "scope": "finops"
+  },
+  {
+   "id": "ASS-115",
+   "statement": "Build effort for the Guided Buying agent (one-time)",
+   "unit": "CHF",
+   "low": 40000,
+   "base": 60000,
+   "high": 90000,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "IT project lead",
+   "question": "What does the build cost, including the SAP Ariba action?",
+   "status": "open",
+   "scope": "finops"
+  }
+ ],
+ "agents": [
+  {
+   "id": "D3-A05",
+   "name": "Service Report",
+   "harness": "standard",
+   "audience": "employee",
+   "coverage": "none: started by a workflow, every run is billed",
+   "owner": "Head of Service Operations",
+   "vars": {
+    "technicians": "ASS-001",
+    "reports": "ASS-002",
+    "answers": "ASS-102",
+    "actions": "ASS-103",
+    "tokens": "ASS-104",
+    "audio": "ASS-105",
+    "speech": "ASS-106",
+    "run_hours": "ASS-111",
+    "run_rate": "ASS-113",
+    "build": "ASS-114",
+    "sessions": "technicians * reports"
+   },
+   "usage": {
+    "sessions": "sessions",
+    "billable_share": 1,
+    "events_per_session": {
+     "generative_answer": "answers",
+     "agent_action": "actions",
+     "ai_tools_standard_1k": "tokens"
+    }
+   },
+   "azure": [
+    {
+     "name": "Speech to text (Azure AI Speech)",
+     "unit": "audio hour",
+     "qty": "sessions * audio / 60",
+     "usd": "speech",
+     "agent_p3_eligible": true,
+     "source": "ASS-106 (verify in the Azure pricing calculator)"
+    }
+   ],
+   "people": {
+    "run_hours_month": "run_hours",
+    "rate_chf": "run_rate",
+    "build_one_time_chf": "build"
+   },
+   "outcome": {
+    "name": "confirmed service report",
+    "per_month": "sessions"
+   }
+  },
+  {
+   "id": "D2-A01",
+   "name": "Procurement Guided Buying",
+   "harness": "standard",
+   "audience": "employee",
+   "coverage": "licensed users included",
+   "owner": "Head of Procurement Operations",
+   "vars": {
+    "requests": "ASS-021",
+    "per_request": "ASS-107",
+    "answers": "ASS-108",
+    "grounded": "ASS-109",
+    "flow": "ASS-110",
+    "licensed_share": "ASS-101",
+    "run_hours": "ASS-112",
+    "run_rate": "ASS-113",
+    "build": "ASS-115",
+    "sessions": "requests * per_request"
+   },
+   "usage": {
+    "sessions": "sessions",
+    "billable_share": "1 - licensed_share",
+    "events_per_session": {
+     "generative_answer": "answers",
+     "graph_grounding": "answers * grounded",
+     "agent_action": "1 / per_request",
+     "flow_action": "flow / per_request"
+    }
+   },
+   "people": {
+    "run_hours_month": "run_hours",
+    "rate_chf": "run_rate",
+    "build_one_time_chf": "build"
+   },
+   "outcome": {
+    "name": "purchase request routed",
+    "per_month": "requests"
+   }
+  }
+ ],
+ "credit_scenarios": [
+  {
+   "name": "No Microsoft 365 Copilot licences (all Guided Buying use billed)",
+   "kind": "licences",
+   "set": {
+    "licensed_share": 0
+   }
+  },
+  {
+   "name": "70% of employees licensed",
+   "kind": "licences",
+   "set": {
+    "licensed_share": 0.7
+   }
+  },
+  {
+   "name": "Guided Buying without tenant graph grounding",
+   "kind": "knowledge",
+   "set": {
+    "grounded": 0
+   }
+  },
+  {
+   "name": "Twice the reports per technician",
+   "kind": "usage",
+   "set": {
+    "reports": 100
+   }
+  }
+ ],
+ "guardrails": {
+  "headroom": 0.25,
+  "alerts": [
+   0.5,
+   0.8,
+   1.0
+  ],
+  "platform_owner": "Caldova Power Platform team",
+  "finops_owner": "Caldova FinOps lead",
+  "m365_owner": "Caldova Microsoft 365 admin"
+ }
+}

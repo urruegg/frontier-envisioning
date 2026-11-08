@@ -1,0 +1,1251 @@
+{
+  "baselineVersion": "1.4.0",
+  "repository": "urruegg_microsoft/frontier-envisioning",
+  "files": [
+    {
+      "path": ".editorconfig",
+      "sha256": "027541f0ae0da87426a3117ed8386d9c0c8d91c86dcad4aac0c3f360e42fd141",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".gitattributes",
+      "sha256": "efb948dbd158b2981375c8cff7d3c06fe1a92e8c11444914d292323f50dc1cca",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "f5c20c7d6635a8f24e04f29bc11b59be1a92a983ffab734dbbb1399dbabd93c6",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "sha256": "25ba10facb30abc97a7d17d748ba1da0b80c2a83e29fd933f74503e5d835e22a",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "a428fad4dc2e6a43f09bbce564057713e24602bd30017c96ed7cd61bfaaf7f34",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "azure.yaml",
+      "sha256": "57a65655178cd026a394b4d2c63d9ce300d2a92e04b6195cbabd98efb9c9da65",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "2ea7f472f21b999bdd6e36b21f4b2b53045183e85a4f5b2a38b40caba8a6546d",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "sha256": "4dc540fd194736b3015ab718643764605b2f88bfc1574b1e7ec82d73406ea521",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "sha256": "04fcf4c449d370522fd43ca7904eea77a7122e229d3a1cccfc1265057c5298c4",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "29c4e3cda059b5ca94293cafac121328e5612ff6b42b150f5a8b0a288c112068",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "package.json",
+      "sha256": "05b5468dc1c843c018fa8fe2740ae743bb510550898b0246d2f4bafe90a5c86a",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "playwright.config.mjs",
+      "sha256": "16c24ceea00eb663fd6d943bbc5d91809fecd2e2b2a293b73bb9b047221202f8",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "beb6e59850ecb527addea5e0a42dde5bea17306697ecbc2b743c303f3414d153",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "README.md",
+      "sha256": "bb14b39a6ca684ea68aa25d186fc216eab648f1c368e564a5aea15c794238456",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "requirements-dev.txt",
+      "sha256": "14f56b18cd4f597a4ecc46fcc9829d9f29ae9a6e56a3fe6a4e36c3632175854f",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "c014c430c36e7a34c84f473fc6a5222f271c1ba75068879a2e3623f903b19464",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".devcontainer/devcontainer.json",
+      "sha256": "aee6debe7811acad8b93fc1e7d7a515b86d7c13770d76601b6ecff5568f44bbb",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/CODEOWNERS",
+      "sha256": "9724b70a63b05a56f3f980fda88f716abb94b4f15d9dbd8b992a2d156f90f5bf",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/copilot-instructions.md",
+      "sha256": "a02d2d2621fd2e0a5338bac3cb9abcc61e6383feb1e8c6d7c9ffd48dd870f3a8",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "sha256": "ef3811b82a3d3c7052e1387c647e1093f075aa5b2796b07350f8bccaa03e1ae4",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "sha256": "b5d9f515909f45182bd03ae3e73ff1165758c9484f0f3ba99d3c8a94b4894e98",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/agents/frontier-builder.agent.md",
+      "sha256": "e103cce57910e22749d6337be2de655095899d51a7b9a51e53856d7d439ce69d",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/agents/frontier-planner.agent.md",
+      "sha256": "b9e8ab1a25cdebe1d63d9640f052efb6d1b457c6816a1b1d2104bc114842bc5e",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/agents/frontier-release-manager.agent.md",
+      "sha256": "fadf4736d2d60c0599e2731b2952bcc6377aeee0ca9af7b2af55b95d3f86bee0",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/agents/frontier-renderer.agent.md",
+      "sha256": "bcab0a7bc496585a26a404dbd2cd0037bab0890a1548bb0373caa37771f450c4",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/agents/frontier-reviewer.agent.md",
+      "sha256": "66e85002757e82a2e22ceee8d2118b650be87fb36bf365fb34efce238c47d8da",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/hooks/guardrails.json",
+      "sha256": "06a2ab7c9cc31cc52b9eed24c44f393f3c3f02641e5462ffceceaf660f2b7583",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/hooks/scripts/guard.py",
+      "sha256": "df68221e0375b451ae906429220a8ebb1c87342e049c16dd0766d1f552065768",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/hooks/scripts/session_start.py",
+      "sha256": "cabed9f37dcf1647a960b1b4d26c2042ef41e0a94a4aebaf505ce1ccaf292e16",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/instructions/docs.instructions.md",
+      "sha256": "34e7a98d7b7cc848fbc07e521b130da0fc4674feb5022b588a3d5a94512e3e61",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/instructions/infra.instructions.md",
+      "sha256": "32e7caeb9173ef151464fed346a7e93ab0458ae2de2333047d6846c61ecb38dd",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/instructions/plugin-skills.instructions.md",
+      "sha256": "f3a06bbd0307e7f66bd93cde002882b8d2fc42e557428721e0222a5ddcce07bf",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/instructions/python-tools.instructions.md",
+      "sha256": "e8fe586cbd143a1dbc120b97ccba62cf187b843760ab06e101a69326e614ccd0",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/instructions/renderer.instructions.md",
+      "sha256": "1ee9de1ede01caf2826b2c7cc0bae1bdffcf128c42a280d0b6c468535778eb34",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/instructions/workflows.instructions.md",
+      "sha256": "32d80d161ad935abace95564746fe596eaca2018c3632904c3876a771feaf32e",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug.yml",
+      "sha256": "046d007f5cd596f97a51ef461a3dfa2a29d75ad61ba46914a56a294eb51c2895",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "sha256": "f57a2e19e2f1b7c2d920a6d7f818394c4d281b402ef434bfa91d45388ceb9c42",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/decision.yml",
+      "sha256": "87a0f4f0e5e9c8343f033ab661a136de0c9f25d11e718834a9b8f9e801ba3698",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature.yml",
+      "sha256": "83ba7bf8fa98adfdf21cd486df129998f1c9d9d2617b1058114768a62730290a",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/skills/frontier-dev-loop/SKILL.md",
+      "sha256": "baef149f301ff73dfd275f0b8f181744a888914bab1d992e90f21aa2eaadf8d0",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/skills/frontier-intake/SKILL.md",
+      "sha256": "8737a6e344d09975f24ea7500f9175fcf56b4cd6f6fa7f2ea03d40cd97535dbb",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/skills/frontier-release/SKILL.md",
+      "sha256": "11ab4b8f2531d46fe04cba96cdb5be7478d62b809c36de22e5e9627e513334bc",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/skills/frontier-renderer-change/SKILL.md",
+      "sha256": "38614cac4e5c3f08b2699ec33d67859ceb588c1d3491d5ed2892bb34e2913dd9",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/skills/frontier-skill-authoring/SKILL.md",
+      "sha256": "092b443f72d8555c7dc45b9d139f5fe124a6daa90d2d832c5acf44344fa3bbbd",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/workflows/azure-dev.yml",
+      "sha256": "8447cacba3cee8ead7b9b15321d285a8514f95bb9b1988c9cf14a68d177d72a2",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "ddeb3c909964fb09c809dae0ee7ff8e6ff787d66658bbacb630f4a6a2a09b235",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/workflows/codeql.yml",
+      "sha256": "6a6ba524947d13e65a5c53a14e1174a0e4af997aa8fae0fd7c7fcc42c00caa0c",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/workflows/copilot-setup-steps.yml",
+      "sha256": "2adc18b08f4d2cee6eca4947a95b3ab4b7d510b194cd33ddbba8a3bcec746832",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "sha256": "61193d47b3f9d4558c17c07360c73b1e40364bfd714c73f67b560d68c839cd60",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".vscode/extensions.json",
+      "sha256": "a8f9594c01d7df8aa4c4af827f945f16044ea2fba0496c8cecccf7825d0cdff7",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".vscode/mcp.json",
+      "sha256": "367b24911e081e6f64e10873d55f2ba137617551e0b0357dd643c76ac24825b9",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".vscode/settings.json",
+      "sha256": "29754e751dc1463043b7ebb147d7bf4cbc69aeb57b3731c90bacf086807c0ba4",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "sha256": "23520fa277543f741b2cd740e034b6e145db97272182829efb4e7abe5d98ce6b",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/backlog.json",
+      "sha256": "d8cdae376aaab511748d02f023937591661e1656ee9c44706eef1142e86b7024",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/README.md",
+      "sha256": "e7ea02afd1df9aae163fd7f653ea44ed196138ecd5b68062dc28b06fc633d852",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/BUILD-01.md",
+      "sha256": "2b8655133bb09c68dac2825a6177229e9326aa11d16722cf4f51bf27838e97bf",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/D-01.md",
+      "sha256": "69da0c498a83a70494926afc976791d2b7c30081fdafc58442abc1b8bad9c950",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/D-02.md",
+      "sha256": "ee12182b34de5ff21f0ccef43661d8d8567388658b830f075aab29aeb1b9de25",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/D-03.md",
+      "sha256": "c20e62c2a7ff62c37aaf0993209615717b23e871eed1951e697386bd4bf5107c",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/D-04.md",
+      "sha256": "f02177bd8e27276239713fd661cdb299b4e5857532833d4a17434bacb1019765",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/D-05.md",
+      "sha256": "5ec31ca0673891c049f1e47f5a6482f2b367005690ecf309a15127c2bd6e9b09",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/D-06.md",
+      "sha256": "96941cbeae616771e3fb3ec08101f599fbf6151bd67e5014dc99892906ed696f",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/D-07.md",
+      "sha256": "dda5bc12b9785c29b410edb0c1988f65f0bec75a4630c2bf4daa9a1873897645",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/D-08.md",
+      "sha256": "e5aab52479add0df3614eb447f83798a731b9ce83ab6ff5b6b528391ced6d351",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/E-01.md",
+      "sha256": "4548557e1967e7304905770731a0aa6652dea96e65acb1b4e1919a7e160c4cfb",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/E-02.md",
+      "sha256": "296b9c82fc4ac06013a257e24138d9b7c793857cbef02dd4c0a07cb658005155",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/E-05.md",
+      "sha256": "35b5920a59beee01d256ef847464dd384debc864e7baecbdfcf45ffda50b9873",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/ENG-D1.md",
+      "sha256": "bf05ae7b3c8a8b453818c49d7d0eac829c17d317ab8c3a92f324d83cb657342a",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/ENG-D3.md",
+      "sha256": "b24bf9810ff25893a6eacb9449f6bfdb0d1c365b32e94cc98f80a02ed6406fa8",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/ENG-D4.md",
+      "sha256": "65c9cc7c158b92a7dd3938505c69e46161467b670ea40800f51e747a399bd8fd",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/EPIC-HW.md",
+      "sha256": "67af51335ca2f487cb7d5e34a46decf5e70152b33d365e7012ab99e619d080c5",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/EPIC-OPS.md",
+      "sha256": "fa7481cf9d5c2e7cabb99ab10bc90fe49422f9646837811921cecbe9227305d0",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/F-01.md",
+      "sha256": "8fdab3ea63705f6472340f780380c123df4d222d1c243457ffbd1dcd53e11f1d",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/F-02.md",
+      "sha256": "63d222a3b591683302ebd881b319f5c1360140e7f19da4869e347d3a9384d552",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/F-03.md",
+      "sha256": "69112a79f1c4db0ff53ed521181d629542843e01983d8bfbe883f9ba4456d10f",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/F-04.md",
+      "sha256": "f8574eaf52af070506cacb145cf410208b1a4e61c3530ce18e34cdd28113625c",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/F-05.md",
+      "sha256": "f8df9e17f634efdf0de68e011b2152ce5ae0b26023a26cd97fe54e3e020c582d",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/F-06.md",
+      "sha256": "03ba68483b43495e06f0a471023f3d793bd4d5f639cf927613edf96a418ce52e",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/F-07.md",
+      "sha256": "47f55ee2fb629e7698d7eaf00f62f3e3f1b3f1cebb729ef2f638be5e33bddc1a",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/F-08.md",
+      "sha256": "59c96a8ee6541825819ec0ac23622c8ef5cc10643ecf043669faf5074c399a75",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/FOCUS-01.md",
+      "sha256": "83fa0f5796199cdb86255cf2d6426e7859cf1ea556058080b64ead248eacb9e3",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-01.md",
+      "sha256": "8fc6e4c86d925bca4547c9e8b7e23fc5db7ff3bb7e01393229646880e81e1528",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-02.md",
+      "sha256": "f918261cd66f9b4de22981db7c3f2e66fa5e79e3967f84441dc40ff1024208d4",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-03.md",
+      "sha256": "2707f9cba2bb0a25b0cfeab3eeba54a0c79d3b95ed84786c6d9c3a594b2973ff",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-04.md",
+      "sha256": "58e7899bde7b4c9a14b64f99c373a0cdfdf1b766abd63ca3c2d106916890a441",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-05.md",
+      "sha256": "74b5c4ff1b87f9e2a45ee12393dcfc3a7a5710e67fc32239a925896d1baaba3f",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-06.md",
+      "sha256": "9043c86c4d7065b7bf5e2d613061882480a871b10f5578de9c212e7e62aa898f",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-07.md",
+      "sha256": "96fa5c8ace76dcb0f0c9c895dbed94e0a2216938dbf4386030dc50e59e7f0e3d",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-08.md",
+      "sha256": "d206969010f1f87de42a7940fd6d46d86215fefbdc9bd06203d09ffe928db243",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-09.md",
+      "sha256": "52b7367d40a35b6b7b9fc5c4c87861fa294f2ec988dc153d073c04d8f0590d57",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-10.md",
+      "sha256": "bcd255bc5833777edd40cce7fe6de8874c6a543e64cae496ff6ac92526789e3f",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-11.md",
+      "sha256": "3b9102c9572ef97aaaa1dd990abde7893447adaaebb8bc5abbf2ac50af699184",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-12.md",
+      "sha256": "3629c0cbb58a2e2191e0f7b67872211eed7f77d79562018e2905b4349fdab94e",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-13.md",
+      "sha256": "f4ec8668bebce098d7d1487d6b472139eef92ff4db2e02a45ff5bdf86c417dc9",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-14.md",
+      "sha256": "f865e7f5e4161f1b3be6d4cda32d97f8af468a5f7fbdc6d87c6be7eeb9ee7db8",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/INT-15.md",
+      "sha256": "b514031fb01a5e1a6a0909dcf1ad9d6a30a735df34ca829e7b2afd8f8fabc803",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/L10N-01.md",
+      "sha256": "4bc60f73f233d428462f7a2e4dda8c54b904aeba96157544f4abf372bac16626",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/OPS-01.md",
+      "sha256": "3b384f623f0914024ec8a6e8fdf6bb4a4239a1f46a44c5ded9a04dd66f49264b",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/OPS-02.md",
+      "sha256": "09a18c5dd92ac5994985a574ff4496f68668c50672a46ad4512269574419dcd5",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/PROTO-01.md",
+      "sha256": "3678855109b05dae13c3a71becf6d5114eb195875949ee82e46cd708f48b3050",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/REG-01.md",
+      "sha256": "defa2ec8054ac190b99fb12e80f163a51dca8467816a662302d6b57fa25104fa",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/TD-01.md",
+      "sha256": "a51cf5739c3ec7e6e8207fb9b5b54d8251c9da3f3554935d0dbd11dc8b14d19d",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/TD-02.md",
+      "sha256": "43eeb1d5baf34b0c80e4624743dfe94fd68e7136f234006e5a3b51efb3fa3633",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/TD-03.md",
+      "sha256": "d3d21c62cadb9836bcb7008d2d16c5b392cf8443a6b6d890ee6d3f7640ed37e6",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "backlog/issues/TD-05.md",
+      "sha256": "4c24050da26486a37fac0b15506509cc91f851bea7d35535e15e3d856f1d44e9",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/prd-and-solution-design.md",
+      "sha256": "48a41a3e7bba837ab327ee70d966b8fbdc086afa6153ab7f8134d51df80ac391",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/README.md",
+      "sha256": "7b95f397e08544b05b7ec88048889b2ff0990fd02bc8f12364af282e49842274",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/adr/0017-repository-layout.md",
+      "sha256": "4f9e8b102dbf97c770fc8c879e39ac31c1174bc24cd083ffe47010157066dae1",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/adr/0018-quality-gates-and-release-reproduction.md",
+      "sha256": "509e7845527fa5077374671467d689c631a8b83346c47c22a833a69bfb275550",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/adr/0019-versioning-and-releases.md",
+      "sha256": "7e736c25d1f2ee934bd70f5b264424209420d5dfa335211e06747de6d6c1318f",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/adr/0020-showcase-hosting.md",
+      "sha256": "1b4126518da767a14907682e52bc51e77566805574721af8243eee7cc868ded2",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/adr/0021-ai-assisted-engineering.md",
+      "sha256": "8258c41c01ba0d7a00e4afbb097b062a78245d1f2e881353896b71abf4b6afd2",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/adr/0022-deterministic-guardrails.md",
+      "sha256": "b721589a0e74988fe007b3173f67ea7eefc23abec9f076957d31d574280281f4",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/adr/README.md",
+      "sha256": "f28974a54c92c78ac5aa025e5c2bb42b7e751e86249f2de5255a2b399592286a",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/analysis/hubworks-integration-analysis.md",
+      "sha256": "80df96b5e6c40ece543bf1f202f7f3b388cebee2615988488a1544c54d187c63",
+      "classification": "internal-review-required"
+    },
+    {
+      "path": "docs/analysis/visualisation-and-reuse-evaluation.md",
+      "sha256": "c3ec36631abae6837a6a8f4f64b9ff2825d6cd5799093a7ec5add605c5cb790b",
+      "classification": "internal-review-required"
+    },
+    {
+      "path": "docs/engineering/copilot-and-superpowers.md",
+      "sha256": "bc47fa142ded4c9dfb09c8f7b9e5d2f199afd4d828aacf08d7fe9aca7ccdfb38",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/engineering/deployment.md",
+      "sha256": "60df9f2bd479a8a8b2e4717972b9ee76a88e9b59bf53b4c0d633db52f5db6cd5",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/engineering/github-setup.md",
+      "sha256": "8f6442b2677a428ed1a0bf68ddb34b347bedab5e090a5cea20324314d1dae852",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/engineering/handbook.md",
+      "sha256": "7af48c830acc5e95b334da61aeb7f2782cb2b59cd74c9365783e78718456a74b",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/engineering/intake-plan.md",
+      "sha256": "6fea39e1e89b80c2c477e57f169ab1c550e8bed8346e85045fb9f933c40e49f8",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/engineering/testing-strategy.md",
+      "sha256": "a269d97f3d9bd79c741c5fdc570131e25f28a0aad9c03a4e3c2d49f1031c87d3",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/engineering/workstation-setup.md",
+      "sha256": "97aa9b9d6f8dd7be987ca5d08d69e48eb87f0a450856f4a2a29e2580b97cd1df",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "docs/plans/README.md",
+      "sha256": "46304da150f56c3f6044cc3cefab5cbe351f60075ec0636daa3f6054992e0aac",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "infra/main.bicep",
+      "sha256": "f52a6e367236a5ed6f88c20db2d4555da45d4fd003761a88068f82c76b4a2481",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "infra/main.parameters.json",
+      "sha256": "23c91329350cbd5aeaa9213888427f7a5d13458a07a9d450595ab96f003219ef",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "infra/README.md",
+      "sha256": "cad95e294c39a030d28ff69a6865794f0f6ca7c719b511f397fb38f0ed1a8491",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "infra/modules/static-site.bicep",
+      "sha256": "ab108c4f33d5bccd66435035b3cb441bf6e45e69b2f18d2d75b8feefc29dfb0c",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/MIT.md",
+      "sha256": "033cc0bec012c2aa19746b784a3211092fdd6b6f5ac406686a1afc618eb21b09",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/README.md",
+      "sha256": "3f1a968a29f52c6a1f55caddfee5a6fb7bba3fa2d6b0399c45c96c0206d99830",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/THIRD-PARTY-NOTICES.md",
+      "sha256": "123c231c6cc9560d178bae0716d19f04ea1762a1fb7693917e2b753fe15f9927",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/.claude-plugin/plugin.json",
+      "sha256": "1182a6c79332a5bfa3024b8286393e107add332369d5de4b6735e590da76bd0e",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/install/plugin-install.json",
+      "sha256": "9cfb31adb5aa32b96a4f6386d2a6abd576c53a95771a11a9a0d1156653f3f3ff",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/install/prepare_install.py",
+      "sha256": "9adfb9765e856c3f6a5bddf82b3eb87aa9126a9858e3431386d2050135eb1484",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/package/color.png",
+      "sha256": "9b5ce28bdb7c186fd86a0e0867919722fa7ad6b327222bdd1a3ff327773347a6",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/package/icon-512.png",
+      "sha256": "91b9e327d13c10899912c361cbdc15709ee6a87a8486c780fa64a070134d1e48",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/package/manifest.json",
+      "sha256": "9a40a97f41f70083f9b645043900ea28340ac2fc45e4772d3e44cb45e8164714",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/package/outline.png",
+      "sha256": "ddebbe92c25b942059b29d747070caf97f8413c75a593fbc69b65c94f9da6453",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/SKILL.md",
+      "sha256": "dfb70cd64693c157cb605efb9942820caed9894662236862bde565064478b89a",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/examples/caldova-agent-identity.json",
+      "sha256": "33af4a468f58c6888e6b3c3ed619ab85f187d63a310da76853744b481a113e96",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/examples/caldova-brand.json",
+      "sha256": "8700f47ec17390427752a99d8f066a32d5c042406d3ba18f0f33392ccac42a1c",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/examples/caldova-palette.json",
+      "sha256": "da88e80c31333f8abe3e0df537ca564a88f066f1202bb8afee4125c3b5e874d3",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/config/agent-identity.schema.json",
+      "sha256": "2321f3ffcf61cbaafcaeb2ca3ae2fdb4d12d29051ae4d745b9aae5f4310b96ab",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/pipelines/azure-pipelines/stamp-identity.yml",
+      "sha256": "aa03afdc1ee7358cec075f3f98fe5a2e944297d40dd41991ca9535ceb045460d",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/pipelines/github-actions/identity-validate.yml",
+      "sha256": "cb080a5afe121d390d54382b1ed5896150407f6ec7926d7d9b5841560ddf1822",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/build_identity_assets.py",
+      "sha256": "beb26444eccf5c044bc50588b32cb078b142e69c11036be431074e50a54ae59c",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/identity_docs.py",
+      "sha256": "1a654de9139d61642ab89eeb350d50d33a8b239d8040c9607ec8576e9bf81372",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/identity_lib.py",
+      "sha256": "71ab5ec7b6751802e811ac053c4b0ff58aab123665aebd3747b7a84f655a834c",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/identity_visuals.py",
+      "sha256": "f3af61977051401c51d1c839545cc590877ed5534698f9911eaa386462641337",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/import_fluent_glyphs.py",
+      "sha256": "61545789a612deda3ff682c3ce3f047de1068a6132a715c7e889088b6c4e2b7f",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/raster.py",
+      "sha256": "6bc11136fba2a6743ac66654e33fdf3f66a84c28450f74e61789bbca353a6830",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/stamp_identity.py",
+      "sha256": "6d233e42b4ebe520e8a04df1ad04d80ee8333616d1c8be099033eb66edd9d307",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/validate_identity.py",
+      "sha256": "fd27fe757277f56de47e1b88477bc993ef27eac39a647d4df0960357b4953387",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/glyphs/glyphs.json",
+      "sha256": "240bb59535f325a0e10a028b6d21983aeb18a141a51e06f24d53875e6446a35f",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/tests/test_identity.py",
+      "sha256": "5de736c500a2d23d503b6b99be6a37e409835a170e8c3486b9c6eed50f3e5054",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/references/brand-discovery.md",
+      "sha256": "b688f59b045f47f91484ce0aa85730c799b773560404b32be2575ace6137cc64",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/references/identity-method.md",
+      "sha256": "5cc06aad9c8a084569607f8a66a030b13678eb931cdddd0d98f8fc159dc97f2e",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/references/kit-reference.md",
+      "sha256": "6fedcea03e04f1f5aa042d754a0fa0797ce6c22cdd4e2f9ba02d4b593ee6cdee",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/scripts/apply_identity.py",
+      "sha256": "3964ac70c270abd1b4091e551e3391135ced923e5ac64b5766525c4e94431736",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/scripts/make_kit.py",
+      "sha256": "de6919a0acc07ae7e67ae25def48b995f4ca5ddaba16ac1150603b9cd3cb447f",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/scripts/read_office_theme.py",
+      "sha256": "b272cbbfbd3cb8b22b9b32513ef7c4d2138e5990fa48ead0181bf9e989c59154",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/scripts/seed_identity.py",
+      "sha256": "b63cea7ba198141a60305fd3ea18863fdd91a540aae23d00865466641276816a",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/SKILL.md",
+      "sha256": "60ea1be276f79766dd7ef430f6afdbb23b6b7e9c0779e50db95729ab011abec1",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/examples/caldova-blueprint.json",
+      "sha256": "f2e20054329cfa6dddbaa1e82bc2f98fa803f2acf902db2d1edd383088d6e694",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/references/authoring-guide.md",
+      "sha256": "87ffb063c8d4422649f8de7567141f4ee860999b857374f5952bc54fa2467462",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/references/blueprint-schema.md",
+      "sha256": "40cabd40480155bfa2cb55f7bb91995fd1f181c44c528c967c44c5cc6070ed5b",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/build_blueprint.py",
+      "sha256": "8dcb30bfdbd8cb35a5b2c8e8615f40d5649d77f67a80d9780f963dd9408f7353",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/build_with_identity.py",
+      "sha256": "867dbc7fd35842741de44700ed0bb70aa46726e66c9899c71fd6c6a080bc78ea",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/canon.py",
+      "sha256": "aa13398ddf09aa2054880f8ebd25871eea2007eb0b435adb0c0a097e4692ada5",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/merge_feedback.py",
+      "sha256": "c0998021c7a9d7876e6e82c79a7d3e4f7c276ef7b04357c94eba5e3b7ea2e891",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/seed_blueprint.py",
+      "sha256": "63a60fe991a1054e23bc1ffa96cf0e9a95b13044fa56f8cda734acd535be1082",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/templates/blueprint-defaults.json",
+      "sha256": "42061db1a5aa49a9d00e887f0e909b877c5f80d0a8bd822ae31f5fc218f97ecd",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/templates/frontier-blueprint-template.html",
+      "sha256": "f0c22c3685b9e8e81ebf3424d6d0e938bf74a57ca76357e803fca6d43f06361e",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/templates/product-icons.json",
+      "sha256": "2526d3563ca4214ece1e00fdeb553438e6f6938491d0da2f102e73705c88fd92",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/SKILL.md",
+      "sha256": "9c12823e8c01abd0c219f9f8381cb4e3d10dedd4254fd5bf0a3fd7c3eafb225c",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/examples/caldova-context.json",
+      "sha256": "bc087b0c059ae4644709f251dbe4596f7ecca3c9f8a7cb675d9b4cf8a6483db6",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/references/context-pack.md",
+      "sha256": "adcc88dbcb8c1826e02a265f1614c94641e48b037b2293074c223931dcc1d263",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/references/question-bank.md",
+      "sha256": "b0597cab4cddfc94617366bfc98a7acbd885cb7c9989d36e8443246914b8ee48",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/references/work-iq-playbook.md",
+      "sha256": "1c132287a166b6e5c3c764e7572df03c4b0b45ede208496794383ffb72f9db7d",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/scripts/context_pack.py",
+      "sha256": "2ddb8fed75ae04cd6a6189103f68654dc725f7263c812453ae5e40a009ad8796",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/scripts/parse_transcript.py",
+      "sha256": "86077d2f5954edd933c00cb48100eb0d3d014c81fa6634f8cc17202d0ff6df2c",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-envisioning/SKILL.md",
+      "sha256": "85e809259481632a8795a4ffebb77037485ed65aba1f73ecc8656ad65d73cd7d",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-envisioning/references/hairo-model.md",
+      "sha256": "0d06a2ab5f1c1ef1e8db4d6354aedf907ea6a7048b81c1595bced230000e8bfb",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-envisioning/references/method.md",
+      "sha256": "8dbe8d24dd2f04b974fcad7caea7af078bf477a9f7d3ac8ef4d64ba8ae1b5f75",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/SKILL.md",
+      "sha256": "8cb87beb587c192d1bd7385afe8b04635b7a26104ae31b46ddacae3f33c60de9",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/examples/caldova-finops.json",
+      "sha256": "15a2f676f1382dd058776d574ad72b9e8e2ffd38677487facb99f5007ebc2214",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/examples/reference-hr-assistant.finops.json",
+      "sha256": "730a7d08da1f77ba89776e5d3650b6967d08d0eea3305cab89d86301bfaf3e95",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/rates/rates-2026-11.json",
+      "sha256": "674bfbce4e85d5a6336460436b2a2d4093f830e70d72ef42b2c52e28a383542a",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/references/finops-for-agents.md",
+      "sha256": "6ddbfda55bb8baf7cc3d1e972782327adb90409adc26dbca30fbf0ed5878a126",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/references/guardrails.md",
+      "sha256": "73a30014385122fdad7e47376b944368f4adf4a4ce70797c639c6cbaafd5fb66",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/scripts/apply_finops.py",
+      "sha256": "fb1ea64330cc56042e4f4fe5f0c518e9dcccdb7c5e18f56d6d1b5754b01c29a0",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/scripts/finops_calc.py",
+      "sha256": "dec9ddc86605a3d3c5487198c0228a2816cb3c6cdd0f157274e618c3afef4b88",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/scripts/fv_expr.py",
+      "sha256": "fb7c40ead407d88d3680f1cdb1ab8647de7884df2ad6fc0f53379270550109fb",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/scripts/seed_finops.py",
+      "sha256": "338c10e7df77874027c880f5232e1327fdfca2ec8993182d8d5db68799eb4650",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-solution-design/SKILL.md",
+      "sha256": "804e22d76d0da1f06cf1691d81b0353f1b658f0d55fa84cc3b1cd10aa0503d2f",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-solution-design/references/design-rules.md",
+      "sha256": "d95ffb55cb40c5dfaee1d10bbcf765dda0d8e20ef102b7e54421aef5eb762132",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-solution-design/references/frontier-reference-architecture.md",
+      "sha256": "e74967bfa982f542b4716a8a2de4963536d1757a48b1a09db69645e46b11eb44",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-solution-design/scripts/scaffold_design_docs.py",
+      "sha256": "1d7cc5d445bc0f1a5d44c3d04f993a393ebb92af444942422fb8e766bb4993e2",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/SKILL.md",
+      "sha256": "97d3ccb1be01ca8a3224e37694a519282c1d655bf776e70bc8cef53d922af393",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/examples/caldova-value.json",
+      "sha256": "9319597e130d4eaf34e7f18d1b9da231dc2c8f896028f8c50fadc9e5b222a11a",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/examples/reference-hr-assistant.value.json",
+      "sha256": "47601641c0fea73af45037d95d2b2e9eb514a77ac98d3062a6947040a817eb09",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/references/value-method.md",
+      "sha256": "a8a77151977ad1246625513d02bd387b5a2b78826529b3634469c40ec4c35604",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/scripts/apply_value.py",
+      "sha256": "a256c0f897fcb2e7298fa3849ff9186f8fff5d847589eea5130ec5443a53c66e",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/scripts/fv_expr.py",
+      "sha256": "fb7c40ead407d88d3680f1cdb1ab8647de7884df2ad6fc0f53379270550109fb",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/scripts/merge_value_feedback.py",
+      "sha256": "eac6418022ce9779fbfa445439f2adfafd49728f056be225af40ae6738b820eb",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/scripts/seed_value.py",
+      "sha256": "3c9e51da8df5775e5463388a5ae9001b05afb151220e86053fdba25865cbeaf1",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/scripts/value_calc.py",
+      "sha256": "20c11202dddd19ef9142bae9390cf46a7877c643d253c482a8b0a649577984bf",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "releases/README.md",
+      "sha256": "309b3f91c45b952771e05109e0e4ee4c2922a23914b0882a9a0684d756aad125",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "releases/1.4.0/manifest.json",
+      "sha256": "cd48c100f4fd3af26c3f267ff9251e9712b0f8bcdf17920dfe0d535be9085116",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "site/index.html",
+      "sha256": "d9aa05afcd412f7eef3bccfae13225403021bfc05eeb891a03504a8405a0c906",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "site/README.md",
+      "sha256": "ba7b04fc8d482d927846298921786322de965eebe0beca35aae9ec4237a1e2f4",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "src/renderer/README.md",
+      "sha256": "f3d36e7ea6ca983c8aeeb25ac7d576b035413d15bc62e5762aa760b7c7bb2a8d",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "src/renderer/skeleton.html",
+      "sha256": "640c80f442d7100925f4540adc18410e121835c963cacdae6b5dc9c55359ac01",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "src/renderer/template.css",
+      "sha256": "b31bb50753ba57c249396b56fc35d8e7795de18e7107f50e4324fefd45bf0648",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "src/renderer/template.js",
+      "sha256": "3702cd5b62cc238e85b55aa1d4dff80ff3f77cc92706aa5c903e78b185f550b5",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "d88f9b10eb8b5a4e7c5cf2099ceae453e98eda043f50cad92eba9699d3155da7",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/dom/blueprint.test.mjs",
+      "sha256": "e85f71c6a6b3b0f75759b63d5031aeb625f156eb4186cb3b8fe2b40becb8a356",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/dom/helpers.mjs",
+      "sha256": "4857e1fa6108bdab31cf8512b7bb500b8c0dd6d58de61ac5a45b9b41dabe1a40",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/dom/identity-value.test.mjs",
+      "sha256": "cc98e021fb29927b2871269a0c7ce92d0109efb264bd26c11357f5355b074679",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/e2e/blueprint.spec.mjs",
+      "sha256": "d9b0f545c8d05bc75a00293ca9f4f78d7b292c56aef1f648337ab12c9ee74c57",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/pipeline/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/pipeline/test_release_reproduction.py",
+      "sha256": "07717a177cf3b5a70264f79fb937018deeeaa07aec8fdd576e725afbb5c67615",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/pipeline/test_selftest.py",
+      "sha256": "cdec0cf0c27c49f756e017ecd0291b2faeaf1c3d29cd3eb904dbfa85bc3f38b6",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/unit/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/unit/_util.py",
+      "sha256": "f7e39160b7b41cf834e7f81a1df2716c62f5b88ef4aa6079e2501027b8f92cbe",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/unit/test_guard_hook.py",
+      "sha256": "694225434ac932e703dd72fadff2242e896ed8cfcd6957721f202c64e0bd5577",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/unit/test_release_tools.py",
+      "sha256": "80b8c2b8e96a083db941dd283684aa224cfe1d4ccfe087bc5dc1fb66b89fe697",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/unit/test_site.py",
+      "sha256": "ef6cc13fb74206e73f33de00f643e93bfa45bcf10f33b75dd46255951465d233",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tests/unit/test_tools_core.py",
+      "sha256": "2b5ad47e391c1636b59a32bcded73788f604246d4635febc8f2c76d437e67edf",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/assemble_template.py",
+      "sha256": "50d085c05016286334ec8aa2ccc561f1b0514be2ec3b0f7a9a0c9575319e20a4",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/bootstrap_github.py",
+      "sha256": "0be85935a8a7e41cde62f1120c866040952e7b067912adc8fb1cba62bb76ff31",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/build_demo.py",
+      "sha256": "be0752c5fba8a108ba37157ef22f5092d84573d6d777b09f1779879e124db3de",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/build_package.py",
+      "sha256": "55b63e4cec5f6c410ed25b646f332e3a7d81470a0cb6895f0393e758fea8f501",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/build_release.py",
+      "sha256": "397a1500fa93fc3fb84588deb301b3c3530c7378359cf7588888091c38a2ba90",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/build_site.py",
+      "sha256": "ebf8b8e529a0d7270a05cc9eeb7f471068090044dc92d410b709dcc45629f66a",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/bump_version.py",
+      "sha256": "c7bfda7d304aa6d70cca02a4f328cee9b8f0a73657829dd0b06c06ca95dc44e6",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/check_repo.py",
+      "sha256": "275b5d422a3bed0183436c215e3a76eb119fc5374de0946a4a7b51ea66a12dd4",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/dev.py",
+      "sha256": "3d0fc48c91e19df01dd584df97a399ce8bef923437fda91ce5ef2edade3127cf",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/fe_lib.py",
+      "sha256": "59d1825e51dcbc0f7020965454e0aaef18ae24d19aa6c36a9ce939a84b0ccc56",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/Initialize-GitHubRepo.ps1",
+      "sha256": "ac9248470c67758eaaad71f34ac764933f4abbea471f13ffa80ea0e76c76f8cf",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/neutrality-denylist.txt",
+      "sha256": "d7d23074a6d4618436c4ad0758f9f5b6dbd71390178a5c358082e0306210351c",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/neutrality.py",
+      "sha256": "86df7d59cc2e71dea0a2d4acefbe85d88025dfd719c1e1ae4cc9a897e3d604d0",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/release_notes.py",
+      "sha256": "0b1613d52e9570c15aed2342f747577b35177dfa4943b10c6e80c66865254035",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/selftest.py",
+      "sha256": "ce550f7a7723d30c8a2e59f5cc1c28edc309c432b2a7d16858f61a23099e57ed",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/serve_site.py",
+      "sha256": "6783a0d280c8eea4813ef3ff4d8f7f278ef954a7b875837df0fc5f837b33bf4d",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/smoke_site.py",
+      "sha256": "2af3ae9d2af7a3e9f2a27aaffcbbe2761df3ae6bfbd9fa95a14869d042c8416d",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/superpowers.py",
+      "sha256": "2437e6351e6570ca4ce9455903d603079b2ae051802da948e749729fba90a72a",
+      "classification": "source-not-public-clearance"
+    },
+    {
+      "path": "tools/verify_release.py",
+      "sha256": "8556f62246fbe69b6279bff22bb76ff8b9d267222f02e8774d047063f99141fb",
+      "classification": "source-not-public-clearance"
+    }
+  ]
+}

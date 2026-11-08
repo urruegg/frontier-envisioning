@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: How we work (AGENTS.md and the engineering handbook)
+    url: https://github.com/urruegg_microsoft/frontier-envisioning/blob/main/docs/engineering/handbook.md
+    about: Read this before you open an issue.

@@ -1,0 +1,59 @@
+{
+  "schema": "frontier-rates/1.0",
+  "version": "2026-11-04",
+  "checked": "2026-11-04",
+  "verify_after_days": 90,
+  "note": "Microsoft list prices and published rates as checked on the date shown, excluding VAT. List prices are not customer prices: the customer's price sheet wins, then Swiss list prices, then USD list prices times the documented billing exchange rate. Re-check every rate older than 90 days before showing it to a customer.",
+  "credits": {
+    "payg_usd_per_credit": 0.01,
+    "per_event": {
+      "classic_answer": 1,
+      "generative_answer": 2,
+      "agent_action": 5,
+      "graph_grounding": 10,
+      "flow_action": 0.13,
+      "ai_tools_basic_1k": 0.1,
+      "ai_tools_standard_1k": 1.5,
+      "ai_tools_premium_1k": 10,
+      "content_page": 8,
+      "reasoning_1k": 10,
+      "voice_minute": 10
+    },
+    "event_labels": {
+      "classic_answer": "Classic answer",
+      "generative_answer": "Generative answer",
+      "agent_action": "Agent action (incl. triggers, deep reasoning, computer use)",
+      "graph_grounding": "Tenant graph grounding",
+      "flow_action": "Agent flow action (13 credits per 100 actions)",
+      "ai_tools_basic_1k": "AI tools, basic (per 1,000 tokens)",
+      "ai_tools_standard_1k": "AI tools, standard (per 1,000 tokens)",
+      "ai_tools_premium_1k": "AI tools, premium (per 1,000 tokens)",
+      "content_page": "Content processing (per page)",
+      "reasoning_1k": "Reasoning (per 1,000 tokens)",
+      "voice_minute": "Voice (per minute, lowest tier; 35 and 75 for higher tiers - verify)"
+    },
+    "pack": {"credits": 25000, "usd": 200, "chf_list": 162, "rollover": false, "note": "Capacity pack per month; no rollover; monthly enforcement up to service denial"},
+    "cc_p3_tiers": [[300000, 0.05], [1500000, 0.06], [3000000, 0.07], [15000000, 0.08], [30000000, 0.10], [75000000, 0.12], [150000000, 0.14], [225000000, 0.17], [300000000, 0.20]],
+    "cc_p3_note": "Copilot Credit P3: one-year pre-purchase, no refunds, bought in the purchasing currency and drawn down in USD",
+    "agent_p3_tiers_usd": [[20000, 0.05], [100000, 0.10], [500000, 0.15]],
+    "agent_p3_note": "Microsoft Agent P3: Agent Commit Units across Copilot Studio and Microsoft Foundry; 1 unit = USD 1 = 100 credits; Azure reservations apply first",
+    "coverage_note": "Employee-facing runtime of Standard and Copilot Chat harness agents is included for licensed Microsoft 365 Copilot users within fair use. Autonomous runs, the GitHub Copilot harness, computer use and external audiences are billed. Work IQ API use is not included."
+  },
+  "licences": {
+    "M365_COPILOT": {"label": "Microsoft 365 Copilot (per user per month)", "chf": 24.30, "usd": 30.00},
+    "COPILOT_BUSINESS": {"label": "Microsoft 365 Copilot Business (per user per month; promotion CHF 14.57 until 31 Dec 2026)", "chf": 17.00},
+    "M365_E7": {"label": "Microsoft 365 E7 (per user per month)", "chf": 85.92, "usd": 99.00},
+    "AGENT_365": {"label": "Microsoft Agent 365 (per user per month; agents need no licence of their own)", "chf": 12.10, "usd": 15.00}
+  },
+  "fx": {"swiss_list_ratio": 0.81, "note": "CHF per USD implied by Swiss list prices (Microsoft 365 Copilot CHF 24.30 / USD 30; capacity pack CHF 162 / USD 200). Replace with the customer's billing rate; a single exchange rate across products is an approximation."},
+  "sources": [
+    {"id": "B1", "title": "Copilot Studio billing rates and management (Microsoft Learn)", "url": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/requirements-messages-management", "date": "2026-10-30", "covers": "credits per event"},
+    {"id": "B2", "title": "Microsoft Copilot Studio Licensing Guide", "url": "https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/microsoft/bade/documents/products-and-services/en-us/ai/MicrosoftCopilotStudioLicensingGuide.pdf", "date": "2026-11-04", "covers": "pay-as-you-go, capacity packs, coverage by licensed users"},
+    {"id": "B3", "title": "Copilot Credits Guide", "url": "https://www.microsoft.com/licensing/guidance/CopilotCreditsGuide", "date": "2026-11-04", "covers": "credits as the common unit"},
+    {"id": "B4", "title": "Copilot Credit P3 pre-purchase plan (Microsoft Learn)", "url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/copilot-credit-p3", "date": "2026-11-04", "covers": "P3 tiers and discounts"},
+    {"id": "B5", "title": "Microsoft Agent pre-purchase plan (Microsoft Learn)", "url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/agent-pre-purchase", "date": "2026-11-04", "covers": "Agent P3 tiers"},
+    {"id": "B6", "title": "Microsoft Switzerland price pages (Copilot, E7, Agent 365, Copilot Studio)", "url": "https://www.microsoft.com/de-ch/copilot/pricing/enterprise", "date": "2026-11-04", "covers": "Swiss list prices in CHF, excluding VAT"},
+    {"id": "B8", "title": "Copilot Credit Estimator", "url": "https://microsoft.github.io/copilot-studio-estimator/", "date": "2026-11-04", "covers": "cross-check of the usage model"},
+    {"id": "B9", "title": "Azure pricing calculator", "url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/pricing-calculator", "date": "2026-11-04", "covers": "Azure meters"}
+  ]
+}

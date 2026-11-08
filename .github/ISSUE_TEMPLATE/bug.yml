@@ -1,0 +1,35 @@
+name: Bug
+description: Something does not work as documented
+labels: ["type:bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Plugin version
+      placeholder: "1.4.0"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened and what you expected
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce (with Caldova data where possible)
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Build report, error text or screenshot
+      description: Remove customer content before you paste.
+  - type: checkboxes
+    id: neutral
+    attributes:
+      label: Customer neutrality
+      options:
+        - label: This issue names no real customer, person or engagement detail.
+          required: true

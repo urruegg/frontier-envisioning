@@ -1,0 +1,11 @@
+# Gate L0 on every commit:  pip install pre-commit && pre-commit install
+repos:
+  - repo: local
+    hooks:
+      - id: frontier-l0
+        name: Frontier L0 (template drift, lint, repository rules, customer neutrality)
+        entry: python tools/dev.py precommit
+        language: python
+        additional_dependencies: ["PyYAML==6.0.3", "ruff==0.17.3"]
+        pass_filenames: false
+        always_run: true

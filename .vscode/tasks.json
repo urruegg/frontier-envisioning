@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "L0 precommit", "type": "shell", "command": "python tools/dev.py precommit", "problemMatcher": [] },
+    { "label": "L1 check", "type": "shell", "command": "python tools/dev.py check", "group": { "kind": "test", "isDefault": true }, "problemMatcher": [] },
+    { "label": "Assemble template", "type": "shell", "command": "python tools/dev.py template", "group": "build", "problemMatcher": [] },
+    { "label": "Build package and demo", "type": "shell", "command": "python tools/dev.py package demo", "group": "build", "problemMatcher": [] },
+    { "label": "DOM tests", "type": "shell", "command": "python tools/dev.py dom", "problemMatcher": [] },
+    { "label": "Serve showcase", "type": "shell", "command": "python tools/dev.py site serve", "isBackground": true, "problemMatcher": [] },
+    { "label": "Browser tests", "type": "shell", "command": "python tools/dev.py site e2e", "problemMatcher": [] }
+  ]
+}

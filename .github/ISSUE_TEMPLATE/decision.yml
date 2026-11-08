@@ -1,0 +1,30 @@
+name: Decision
+description: A decision people take (product, architecture or engineering); the outcome becomes an ADR or a PRD entry
+labels: ["type:decision", "human-only"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question and context
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options with trade-offs
+    validations:
+      required: true
+  - type: textarea
+    id: recommendation
+    attributes:
+      label: Recommendation
+  - type: input
+    id: owner
+    attributes:
+      label: Decision owner
+    validations:
+      required: true
+  - type: input
+    id: due
+    attributes:
+      label: Needed by (date or milestone)

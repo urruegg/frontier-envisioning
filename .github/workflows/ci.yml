@@ -1,0 +1,96 @@
+# Quality gates L1 (build, tests, release reproduction) and L2 (browser tests), plus IaC validation.
+# The job names "L1 quality gate" and "L2 browser tests" are required status checks on main.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  l1:
+    name: L1 quality gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: "22"
+      - name: Install development dependencies
+        run: |
+          python -m pip install -r requirements-dev.txt
+          if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
+      - name: Gate L1 (strict)
+        run: python tools/dev.py ci
+      - name: Generated files are committed
+        run: git diff --exit-code -- plugin/install/plugin-install.json plugin/skills/frontier-blueprint/templates/
+      - name: Upload the package and the demo
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: build-${{ github.sha }}
+          path: |
+            dist/
+            build/demo/*.html
+          if-no-files-found: ignore
+          retention-days: 14
+
+  l2:
+    name: L2 browser tests
+    needs: l1
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: "22"
+      - name: Install development dependencies and Chromium
+        run: |
+          python -m pip install -r requirements-dev.txt
+          if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
+          npx playwright install --with-deps chromium
+      - name: Build the package, the demo and the showcase site
+        run: python tools/dev.py package demo site
+      - name: Browser tests
+        run: npx playwright test
+      - name: Upload the report and the screenshots
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: browser-tests-${{ github.sha }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  iac:
+    name: IaC validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Bicep build
+        run: |
+          az bicep install
+          az bicep build --file infra/main.bicep --stdout > /dev/null

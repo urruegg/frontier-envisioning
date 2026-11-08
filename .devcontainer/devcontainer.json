@@ -1,0 +1,26 @@
+{
+  "name": "Frontier Envisioning",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/azure-cli:1": { "installBicep": true },
+    "ghcr.io/azure/azure-dev/azd:latest": {}
+  },
+  "postCreateCommand": "python tools/dev.py setup && pre-commit install && python tools/dev.py doctor",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot-chat",
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "dbaeumer.vscode-eslint",
+        "ms-playwright.playwright",
+        "ms-azuretools.vscode-bicep",
+        "ms-azuretools.azure-dev",
+        "github.vscode-github-actions",
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  }
+}
