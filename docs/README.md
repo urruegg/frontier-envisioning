@@ -14,3 +14,13 @@
 | [analysis/hubworks-integration-analysis.md](analysis/hubworks-integration-analysis.md) | HubWorks integration analysis (Microsoft internal, sharing copy) |
 | [analysis/visualisation-and-reuse-evaluation.md](analysis/visualisation-and-reuse-evaluation.md) | Visualisation and reuse evaluation (diagrams, CAT agent skills, GitHub harness) |
 | [plans/](plans) | Specs and plans produced by the engineering method |
+
+## Approved work packages awaiting plan approval
+
+| Work package | Records | State |
+|---|---|---|
+| [Documentation, governance and accessibility (#6)](https://github.com/urruegg/frontier-envisioning/issues/6) | [Idea](idea/README.md), [spec](spec/README.md), [plans](plan/README.md), [SPRINT-001](sprint/SPRINT-001-docs-governance-and-accessibility.md) | Design approved; implementation awaits separate plan approval |
+
+These planning records use the requested singular directories. They do not
+activate new instructions or protected hook routing. Existing
+[legacy plans](plans/README.md) and historical links remain unchanged.
