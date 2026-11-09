@@ -1715,7 +1715,7 @@ function renderAgents(){
     h("h3",{class:"sub"},"Readiness \u00b7 the seven declarations"), declBox,
     h("h3",{class:"sub"},"Role profile"), profileSections(a),
     h("h3",{class:"sub"},"Validate in the workshop"), valBox("agent", a.id));
-  return [h("h2",{class:"sec"},"Agents \u00b7 " + d.name), h("p",{class:"lead"},"Each agent is described like a role: a trigger canvas for the work it does, its workflow from trigger to outcome, seven declarations that make it governable, and a role profile that becomes its instructions."), h("div",{class:"agwrap"}, list, main, flow, rest)];
+  return [h("h2",{class:"sec"},"Agents \u00b7 " + d.name), h("p",{class:"lead"},"Each agent is described like a role: a trigger canvas for the work it does, its workflow from trigger to outcome, seven declarations that make it governable, and a role profile that becomes its instructions."), h("div",{class:"agwrap"}, h("div",{class:"agtop"}, list, main), flow, rest)];
 }
 
 /* ---------------- attendees ---------------- */

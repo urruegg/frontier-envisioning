@@ -39,7 +39,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PLUGIN = ROOT / "plugin"
 SKIP_PARTS = {"__pycache__", ".DS_Store", ".pytest_cache", "dist"}
-FIXED_DATE = (2026, 11, 8, 0, 0, 0)
+FIXED_DATE = (2026, 11, 9, 0, 0, 0)
 START_PROMPTS = [
     "Prepare the Frontier envisioning for <customer>, workshop on <date>",
     "Build the Frontier blueprint demo for Caldova",

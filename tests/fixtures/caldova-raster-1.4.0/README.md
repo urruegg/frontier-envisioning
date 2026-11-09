@@ -14,6 +14,10 @@ The supplied 1.5.0 and 1.6.0 records expect this same identity ZIP hash. Their
 reuse is explicit and checks the current release record as well as every
 generated input. A later version is not enabled automatically.
 
+The 1.6.1 layout-fix preview is explicitly enabled for unchanged identity inputs.
+While its release record is absent, the 1.6.0 identity record supplies provenance.
+If a current record exists, it must match; no other future patch is enabled.
+
 This avoids an undeclared converter/font dependency and preserves two
 platform-sensitive outline images. The report records `restored`, not a claim
 that a live converter rendered those pixels. A changed input or tampered asset

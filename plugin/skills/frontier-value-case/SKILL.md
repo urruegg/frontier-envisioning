@@ -15,7 +15,7 @@ license: MIT
 metadata:
   category: productivity
   icon: DataTrending
-  version: "1.6.0"
+  version: "1.6.1"
   plugin: frontier-envisioning
 ---
 

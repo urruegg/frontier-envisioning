@@ -81,7 +81,7 @@ def main(argv=None) -> int:
     ap.add_argument("--out", default=str(DEMO_DIR))
     ap.add_argument("--no-png", action="store_true", help="skip PNG copies (faster; the identity zip then differs from the release)")
     a = ap.parse_args(argv)
-    frozen_profile = not a.no_png and plugin_version() in demo_raster.SUPPORTED_VERSIONS
+    frozen_profile = not a.no_png and plugin_version() in demo_raster.SUPPORTED_VERSIONS | demo_raster.PREVIEW_VERSIONS
     out = Path(a.out)
     if out.exists():
         shutil.rmtree(out)
