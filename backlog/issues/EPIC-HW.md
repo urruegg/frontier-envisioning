@@ -1,7 +1,7 @@
 ---
 id: EPIC-HW
 title: "Epic: HubWorks integration (F-01 to F-06, F-08)"
-milestone: "1.5.0"
+milestone: "1.7.0"
 labels: [type:epic, area:hubworks, priority:P1, size:L]
 ---
 ## Context

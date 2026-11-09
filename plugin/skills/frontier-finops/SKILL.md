@@ -13,7 +13,7 @@ license: MIT
 metadata:
   category: productivity
   icon: Money
-  version: "1.4.0"
+  version: "1.6.0"
   plugin: frontier-envisioning
 ---
 

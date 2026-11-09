@@ -28,6 +28,16 @@ Compute dates with code, not by hand. Keep the customer's short name, legal name
 
 Where the business-data SQL tool (`ExecuteSql`) is available, calendar and mail reads may go through it instead (for example `SELECT subject, startDateTime, attendees FROM calendarView WHERE …`).
 
+### Signals for the digital feedback loop
+
+The blueprint's Overview shows the customer's digital feedback loop (signals → Microsoft IQ → action with human approval → measured outcome). While reading, record for each journey:
+
+- **Signals and where they live**, as `systems` (with `src`) and `facts`: requests and decisions in mail, meetings and Teams (Work IQ), business data and telemetry in named systems (Fabric IQ), manuals, policies and contracts (Foundry IQ), public information the team watches (Web IQ).
+- **Who approves**: the role that signs off today (a `fact` with category `decision`); it becomes the approval of the action.
+- **How the result is measured**: KPIs with baseline and target (`kpis`); they become the outcomes.
+
+Use only the official names Microsoft IQ, Work IQ, Fabric IQ, Foundry IQ and Web IQ in anything you write.
+
 ## 3. Reading transcripts
 
 1. Save the transcript text to `working/frontier/<slug>/transcripts/<date>-<meeting>.vtt`.

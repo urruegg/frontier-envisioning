@@ -16,6 +16,7 @@ from pathlib import Path
 from fe_lib import ROOT
 
 PROFILE = ROOT / "tests" / "fixtures" / "caldova-raster-1.4.0"
+SUPPORTED_VERSIONS = {"1.4.0", "1.5.0", "1.6.0"}
 
 
 class RasterProfileError(Exception):
@@ -36,14 +37,16 @@ def _verify(data: bytes, expected: str, label: str) -> None:
         raise RasterProfileError(f"raster profile {label} hash differs")
 
 
-def replay(kit: Path, profile_dir: Path = PROFILE) -> dict:
+def replay(kit: Path, profile_dir: Path = PROFILE, version: str = "1.4.0") -> dict:
+    if version not in SUPPORTED_VERSIONS:
+        raise RasterProfileError(f"historical raster replay is not approved for {version}")
     manifest_path = profile_dir / "manifest.json"
     if not manifest_path.is_file():
         raise RasterProfileError("verified 1.4.0 raster profile is missing")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest.get("schema") != "frontier-demo-raster/1.0" or manifest.get("version") != "1.4.0":
         raise RasterProfileError("unsupported historical raster profile")
-    release = json.loads((ROOT / "releases" / "1.4.0" / "manifest.json").read_text(encoding="utf-8"))
+    release = json.loads((ROOT / "releases" / version / "manifest.json").read_text(encoding="utf-8"))
     expected_source = next(a["sha256"] for a in release["artefacts"] if a["name"] == "Caldova - agent identity package v1.0.zip")
     if manifest.get("source_archive_sha256") != expected_source:
         raise RasterProfileError("raster profile provenance does not match the release record")

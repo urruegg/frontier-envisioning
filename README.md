@@ -6,7 +6,7 @@ Frontier Envisioning helps Microsoft Innovation Hub solution engineers prepare a
 
 | | |
 |---|---|
-| Current release | **1.4.0** (8 November 2026), imported from Copilot Cowork as the engineering baseline |
+| Current product baseline | **1.6.0** (8 November 2026), imported from Copilot Cowork; 1.4.0 records retained |
 | Repository home | [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning), private; use approved work material only |
 | Plugin licence | MIT (Microsoft product icons: see [THIRD-PARTY-NOTICES.md](plugin/THIRD-PARTY-NOTICES.md)) |
 | Demo data | the fictitious Caldova Industrial AG only |
@@ -59,9 +59,9 @@ How we work is in [AGENTS.md](AGENTS.md) (for people and coding agents), [CONTRI
 
 On 9 November 2026 the user confirmed Microsoft approval to use the private repository above. The intake branch is based on that repository's existing `main`; the original work-repository branch and connection are preserved. Server protections, CODEOWNERS eligibility and tenant rollout remain maintainer checks, not consequences of this migration.
 
-All four 1.4.0 artifacts reproduce their immutable release hashes, including the complete identity ZIP. The original OneDrive artifacts were recovered and verified; shipped product/renderer source bytes remain unchanged. Local strict L1 passes. See [M0 evidence](docs/intake/m0-evidence.md).
+The 1.6.0 intake adds the Overview digital feedback loop and each agent's workflow designer, including validation, workshop feedback and solution-design output. Strict L1, 34 plugin checks, 14 DOM checks, 7 Chromium tests and all four original artifact hashes pass. The 1.4.0 records remain unchanged. See [1.6.0 intake evidence](docs/intake/handover-1.6.0.md), [design](docs/plans/2026-11-09-handover-1.6-design.md) and [historical M0 evidence](docs/intake/m0-evidence.md).
 
-The 1.4.0 build uses [verified historical raster inputs](tests/fixtures/caldova-raster-1.4.0/README.md), guarded by all 205 regenerated non-raster inputs. It does not copy the golden ZIP or pretend a live converter ran. Other versions require their own rendering setup. `python tools/build_demo.py --no-png` remains an explicitly SVG-only development variant, not release reproduction. Text/ZIP metadata is canonicalised without weakening comparison rules.
+The 1.4/1.5/1.6 baselines explicitly share [verified historical raster inputs](tests/fixtures/caldova-raster-1.4.0/README.md), because their identity ZIP hashes are identical. All 205 regenerated non-raster inputs and each current release record are checked. No golden ZIP is copied and no live converter is pretended. Later versions require separate approval/rendering evidence. `python tools/build_demo.py --no-png` remains development-only; comparison rules are not weakened.
 
 The release workflow is disabled unless a maintainer sets `RELEASE_ENABLED=true` after verifying the `release-approval` environment and its version-tag/reviewer policy. Showcase deployment remains separately controlled by `SHOWCASE_ENABLED`; neither flag was enabled during intake.
 

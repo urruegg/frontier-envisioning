@@ -13,7 +13,7 @@ license: MIT
 metadata:
   category: writing
   icon: BranchFork
-  version: "1.4.0"
+  version: "1.6.0"
   plugin: frontier-envisioning
 ---
 
@@ -54,12 +54,12 @@ User: "Write the PRD and solution design for the Caldova MVP"
 
 ### Step 2: Scaffold
 `python scripts/scaffold_design_docs.py --blueprint blueprint.normalized.json --out-dir working/frontier/<slug>/design [--mvp <agent ids>] --author "<user name>, Microsoft Innovation Hub"`
-It writes `prd.md`, `solution-design.md`, `adr/ADR-000n-*.md` and, when the blueprint has an IT readiness page, `it-readiness.md`, filled from the blueprint (canvas, declarations, personas, KPIs, layers, flows, the landing zone with its CAF areas and WAF and Responsible AI principles, the Agent Factory lifecycle, Definition of Ready and evaluation pyramid, decisions including the Innovation Hub canon ADRs, open decisions, readiness items, checks, questions and decisions) with platform FRs and NFRs, and marks every gap `[To complete]`.
+It writes `prd.md`, `solution-design.md`, `adr/ADR-000n-*.md` and, when the blueprint has an IT readiness page, `it-readiness.md`, filled from the blueprint (canvas, declarations, personas, KPIs, layers, flows, the landing zone with its CAF areas and WAF and Responsible AI principles, the Agent Factory lifecycle, Definition of Ready and evaluation pyramid, decisions including the Innovation Hub canon ADRs, open decisions, readiness items, checks, questions and decisions, and each MVP agent's workflow as a Copilot Studio workflow table in the process design: trigger, nodes, branches, outcome) with platform FRs and NFRs, and marks every gap `[To complete]`.
 
 ### Step 3: Ground and complete
 1. Read [references/frontier-reference-architecture.md](references/frontier-reference-architecture.md) (layers, components, availability, orchestration patterns, build choice) and [references/design-rules.md](references/design-rules.md) (the rules every design keeps).
 2. Replace every `[To complete]` with evidence from the blueprint, the context pack or the workshop transcript (cite the source id), or with an explicit open decision (D- or TD-) and owner. Never fill a gap with invented specifics.
-3. For each MVP agent decide and record: build choice (Microsoft 365 Copilot agent, Copilot Studio, Foundry, Agent Framework) with the CAF rationale; single or multi-agent (multi only for security boundaries, separate owners or planned growth); orchestration pattern; the deterministic workflow steps and the agent node(s); the declared write actions and who holds each connection; the approval seams; identities; environments; DLP group; evaluation set; KPIs.
+3. For each MVP agent decide and record: build choice (Microsoft 365 Copilot agent, Copilot Studio, Foundry, Agent Framework) with the CAF rationale; single or multi-agent (multi only for security boundaries, separate owners or planned growth); orchestration pattern; the deterministic workflow steps and the agent node(s) (start from the workflow table; a workflow still marked derived from the plan is refined with the customer first); the declared write actions and who holds each connection; the approval seams; identities; environments; DLP group; evaluation set; KPIs.
 4. Verify product availability you state (GA or preview) on Microsoft Learn when the reference is older than one month or an announcement event has happened since; otherwise write "verify".
 5. Add ADRs for each material choice (build platform, workflow-first, write path, identity model, data residency, harness or model choice) with context, decision, alternatives and consequences. The canon ADRs (ADR-F01…) arrive as proposals: keep the customer's verdict from the workshop (agreed, adjusted, rejected) and adapt the wording to their context.
 6. Keep `it-readiness.md` in step with the blueprint: statuses come from the workshop merge (`ready:<id>`); never mark an item done without the customer's confirmation.

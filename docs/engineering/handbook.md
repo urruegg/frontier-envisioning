@@ -27,7 +27,7 @@ See AGENTS.md sections 3 and 4. A person sets `status:ready` and, for larger cha
 | Gate | Trigger | Command | Contents | Blocking |
 |---|---|---|---|---|
 | L0 | every commit (pre-commit), CI | `python tools/dev.py precommit` | template drift, Python compile, repository rules (versions, skill frontmatter and description limits, licence, JSON and YAML, Copilot files, workflow pins, secrets), ruff, ESLint, customer neutrality | yes |
-| L1 | every pull request and push to `main` | `python tools/dev.py ci` | L0, unit and pipeline tests, plugin self-test (29 checks), package with install check, Caldova demo, release reproduction, DOM tests, scan of built archives, generated files committed | yes (required check) |
+| L1 | every pull request and push to `main` | `python tools/dev.py ci` | L0, unit and pipeline tests, plugin self-test (34 checks for 1.6.0), package with install check, Caldova demo, release reproduction, DOM tests, scan of built archives, generated files committed | yes (required check) |
 | L2 | every pull request after L1; push to `main` | `python tools/dev.py package demo site` + `npx playwright test` | showcase built with the hosting headers; 14 views in Chromium, no CSP violation or script error, screenshots | yes after INT-04 |
 | L2 deploy | push to `main` (when enabled) | `azure-dev` workflow | provision and deploy the showcase to dev; smoke check | no (environment) |
 | L3 | tag `vX.Y.Z`, explicitly enabled | `release` workflow | tag equals the plugin version, strict L1 and L2 on the tag, bundle, release manifest, pinned SBOM (SPDX), provenance, draft release after `release-approval` | yes |

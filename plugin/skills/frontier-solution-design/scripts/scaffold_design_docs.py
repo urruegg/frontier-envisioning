@@ -85,6 +85,60 @@ def slug(t: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", str(t).lower()).strip("-")[:50] or "decision"
 
 
+WF_NODES = {"agent": ("Agent", "AI"), "classify": ("Classify", "AI"), "extract": ("Extract", "AI"), "copilot": ("Copilot", "AI"),
+            "human_review": ("Human review", "Human"), "connector": ("Connector", "Rule"), "function": ("Function", "Rule"),
+            "variable": ("Variable", "Rule"), "if_else": ("If/Else", "Rule"), "loop": ("Loop", "Rule"), "scope": ("Scope", "Rule"),
+            "note": ("Note", ""), "respond": ("Respond to the agent", "Rule")}
+WF_TRIGGERS = {"manual": "Manual", "recurrence": "Recurrence", "connector": "Connector event",
+               "http": "When an HTTP request is received", "agent": "When an agent calls the workflow"}
+
+
+def workflow_section(a) -> list:
+    """The agent's workflow (blueprint canvas.workflow) as the Copilot Studio workflow to build: trigger, nodes, branches, outcome."""
+    wf = (a.get("canvas") or {}).get("workflow")
+    if not isinstance(wf, dict) or not as_list(wf.get("steps")):
+        return []
+    tr = wf.get("trigger") or {}
+    rows, kinds = [], {"AI": 0, "Rule": 0, "Human": 0}
+
+    def add(steps, prefix):
+        for i, s in enumerate([x for x in as_list(steps) if isinstance(x, dict)], start=1):
+            num = f"{prefix}{i}"
+            label, kind = WF_NODES.get(s.get("type"), (str(s.get("type") or "Agent"), "AI"))
+            if kind in kinds:
+                kinds[kind] += 1
+            extra = []
+            if s.get("agent"):
+                extra.append(f"agent {s['agent']}")
+            if s.get("approver"):
+                extra.append(f"decides: {s['approver']}")
+            for b in as_list(s.get("branches")):
+                if isinstance(b, dict):
+                    tail = " \u2192 ".join(str(z.get("label")) for z in as_list(b.get("steps")) if isinstance(z, dict))
+                    end = (b.get("then") == "end") or (b.get("end") and b.get("then") != "continue")
+                    extra.append(f"branch {b.get('label')}: {tail or 'no steps'}" + (f" \u2192 ends ({b.get('end') or 'End'})" if end else " \u2192 rejoins"))
+            if as_list(s.get("defaults")):
+                extra.append("continues on: " + ", ".join(map(str, as_list(s.get("defaults")))))
+            rows.append([num, label, s.get("label"), "; ".join([str(s.get("detail") or "")] + extra).strip("; ") or "\u2014", s.get("system") or "\u2014"])
+            if s.get("type") in ("loop", "scope"):
+                add(s.get("steps"), num + ".")
+            for bi, b in enumerate([x for x in as_list(s.get("branches")) if isinstance(x, dict)]):
+                if as_list(b.get("steps")):
+                    add(b.get("steps"), f"{num}{chr(97 + bi % 26)}.")
+    add(wf.get("steps"), "")
+    derived = " \u2014 derived from the canvas plan; refine it before build" if wf.get("derived") else ""
+    trig = WF_TRIGGERS.get(tr.get("type"), "Connector event")
+    if tr.get("label") and str(tr.get("label")).strip().lower() != trig.lower():
+        trig += f" \u2014 {tr.get('label')}"
+    L = [f"### Workflow: {wf.get('name') or a.get('name')} ({a.get('name')})", "",
+         f"Copilot Studio workflow (GitHub Copilot harness){derived}.", "",
+         f"- Trigger: {trig}" + (f" ({tr.get('detail')})" if tr.get("detail") else ""),
+         f"- Desired outcome: {wf.get('outcome') or TC}",
+         f"- Steps: {kinds['AI']} AI (results can vary), {kinds['Rule']} deterministic, {kinds['Human']} human", ""]
+    L += table(["#", "Node", "Step", "What it does", "System"], rows)
+    return L
+
+
 def table(cols, rows) -> list[str]:
     out = ["| " + " | ".join(cols) + " |", "|" + "|".join("---" for _ in cols) + "|"]
     out += ["| " + " | ".join(cell(c) for c in r) + " |" for r in rows]
@@ -372,10 +426,12 @@ def build_sd(bp, agents, doms, author, today) -> str:
             ["Knowledge", c.get("data_sources")], ["Tools and connectors", c.get("connectors")],
             ["Approval seams", c.get("approval")], ["Owner (agent boss)", a.get("owner")]])
     L += ["## 5. Process design", ""]
+    for a, d in agents:
+        L += workflow_section(a)
     for f in as_list(A.get("flows")):
         L += [f"### {f.get('name', 'Flow')}", "", f.get("note") or "", ""]
         L += table(["#", "Actor", "Step"], [[str(i + 1), s.get("actor"), s.get("text")] for i, s in enumerate(as_list(f.get("steps")))])
-    if not as_list(A.get("flows")):
+    if not as_list(A.get("flows")) and not any(isinstance((a.get("canvas") or {}).get("workflow"), dict) for a, _ in agents):
         L += [f"{TC} \u2014 one flow per MVP agent: trigger, workflow steps, agent node(s), approval seam, write-back, notification.", ""]
     L += ["## 6. Integration and connector inventory", ""]
     rows = []

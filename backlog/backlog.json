@@ -156,17 +156,17 @@
   {
    "key": "M0",
    "title": "M0 · Intake baseline",
-   "description": "Repository bootstrapped and protected; gates L0 to L2 green; release 1.4.0 reproduced; Copilot, Superpowers and the Azure dev environment ready."
+   "description": "Repository bootstrapped and protected; gates L0 to L2 green; release 1.6.0 reproduced; Copilot, Superpowers and the Azure dev environment ready."
   },
   {
-   "key": "1.5.0",
-   "title": "1.5.0 · Operate loop and HubWorks",
-   "description": "Release 1.5 of the PRD release plan: operate loop (plan versus actual), HubWorks integration (F-01 to F-06, F-08), German labels, slide export, Copilot Studio prototype pack."
+   "key": "1.7.0",
+   "title": "1.7.0 · Operate loop and HubWorks",
+   "description": "Release 1.7 of the PRD release plan: operate loop (plan versus actual), HubWorks integration (F-01 to F-06, F-08), German labels, slide export, Copilot Studio prototype pack (agent instructions and topics from the canvas, the workflow from canvas.workflow)."
   },
   {
-   "key": "1.6.0",
-   "title": "1.6.0 · FOCUS and shared engagement data",
-   "description": "Release 1.6 of the PRD release plan: FOCUS 1.5 alignment, Agent 365 cost data, Hub outcome pack, shared engagement folder and multi-facilitator feedback."
+   "key": "1.8.0",
+   "title": "1.8.0 · FOCUS and shared engagement data",
+   "description": "Release 1.8 of the PRD release plan: FOCUS 1.5 alignment, Agent 365 cost data, Hub outcome pack, shared engagement folder and multi-facilitator feedback."
   },
   {
    "key": "Later",

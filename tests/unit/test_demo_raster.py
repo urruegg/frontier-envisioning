@@ -6,11 +6,39 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from tests.unit._util import ROOT, load
 
 
 class RasterReplay(unittest.TestCase):
+    def test_received_releases_reuse_only_the_verified_identity_profile(self):
+        module = self.module()
+        self.assertTrue(hasattr(module, "SUPPORTED_VERSIONS"), "explicit received-release compatibility is missing")
+        self.assertEqual(module.SUPPORTED_VERSIONS, {"1.4.0", "1.5.0", "1.6.0"})
+
+    def test_future_release_cannot_inherit_the_profile(self):
+        module = self.module()
+        with tempfile.TemporaryDirectory() as tmp:
+            kit, profile, _, _, _ = self.fixture(Path(tmp))
+            with self.assertRaisesRegex(module.RasterProfileError, "not approved"):
+                module.replay(kit, profile, version="1.7.0")
+
+    def test_current_release_record_must_expect_the_original_identity(self):
+        module = self.module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            kit, profile, _, _, _ = self.fixture(root)
+            record = root / "releases" / "1.6.0" / "manifest.json"
+            record.parent.mkdir(parents=True)
+            record.write_text(json.dumps({"artefacts": [{
+                "name": "Caldova - agent identity package v1.0.zip", "sha256": "0" * 64,
+            }]}), encoding="utf-8")
+            with mock.patch.object(module, "ROOT", root):
+                with self.assertRaisesRegex(module.RasterProfileError, "provenance"):
+                    module.replay(kit, profile, version="1.6.0")
+            self.assertFalse((kit / "agents/sample/identity/card.png").exists())
+
     def module(self):
         self.assertTrue((ROOT / "tools/demo_raster.py").is_file(), "historical raster replay is missing")
         return load("tools/demo_raster.py", "test_demo_raster")

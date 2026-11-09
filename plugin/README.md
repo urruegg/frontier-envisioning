@@ -1,6 +1,6 @@
 # Frontier Envisioning — plugin for Copilot Cowork
 
-**Version 1.4.0 · Microsoft Innovation Hub Switzerland · 8 November 2026**
+**Version 1.6.0 · Microsoft Innovation Hub Switzerland · 8 November 2026**
 
 Envision any customer as a Frontier company — **human-led, agent-operated**. The plugin gathers what you already know about a customer from your meetings, workshop transcripts, mail, Teams chats and files (Work IQ), turns it into an interactive **Frontier Company Blueprint** that follows the Innovation Hub journey (Part 1 Vision, Part 2 Design, with the Agent Factory, the landing zone, architecture decisions and IT readiness), captures the workshop's verdicts inside that blueprint, writes the PRD, solution design and architecture decisions for the first agents to build, and gives every agent a **brand identity**: names per environment, colours from the customer's own brand and icons in the Microsoft 365 sizes.
 
@@ -8,7 +8,7 @@ Envision any customer as a Frontier company — **human-led, agent-operated**. T
 
 ## Install it in Copilot Cowork (two minutes)
 
-1. **Download** `frontier-envisioning-plugin-1.4.0.zip`. Keep it zipped.
+1. **Download** `frontier-envisioning-plugin-1.6.0.zip`. Keep it zipped.
 2. **Open Copilot Cowork** and start a new chat.
 3. **Attach the zip** to the chat and type:
 
@@ -52,13 +52,15 @@ That's all. New chats pick the skills up once OneDrive has synced (usually a min
 | "Update the value case with the workshop feedback" (attach the exported feedback file) | The workshop's verdicts on the assumptions applied, recalculated, with a change log |
 | "Show the agent identity in the blueprint" | The Agent identity page: naming rule, journey colours, DEV/TEST bands, agent family, MVP identity sheet and all names per environment |
 | "Prepare the IT readiness and architecture design workshop for *customer*" | The IT readiness page and `it-readiness.md`: preparation items with owners, readiness checks, builder workstation, questions and decisions for IT; the landing zone and the ADRs to decide |
+| "Show the digital feedback loop for *customer*" | The Overview's feedback loop: per area (engage customers, optimize operations, empower employees, transform products) the signals with their Microsoft IQ layer, the actions with the agents and who approves, and the outcomes with KPIs and value hypotheses |
+| "Show the workflow of the *agent*" | The agent's workflow as in the Copilot Studio workflow designer: the trigger, each step as a designer node (Agent, Classify, Extract, Copilot, Human review, Connector, If/Else, Loop and more), the branches and the desired outcome; derived from the plan until you refine it |
 | "Show the Agent Factory for *customer*" | The Agent Factory journey: how every agent moves from hypothesis to validated, designed, ready for build, build, release and operate, with GitHub Copilot, evaluations and human approval |
 | "What is next in the *customer* envisioning?" | Where the engagement stands and the next two actions |
 
 **The blueprint** is one HTML file that works offline. Open it in Edge or Chrome (the OneDrive preview does not run it) and use the arrow keys to move through fourteen views along the Innovation Hub journey:
 
-- **Part 1 Vision:** Overview · Org model (human leaders, lead agents and specialist agents, revealed step by step) · Blueprint · Journeys, including the **Agent Factory** (DevSecOps from hypothesis to operate) · **Attendees** (who contributed what)
-- **Part 2 Design:** Agents (trigger canvas, seven declarations, role profile, identity) · Agent identity · Target architecture (**landing zone** along CAF, WAF and Responsible AI; layers; flows; **ADRs**) · Use cases (problem statement, business value, feasibility) · **IT readiness** · FinOps
+- **Part 1 Vision:** Overview, with the **digital feedback loop** (animated: how the customer's signals become actions with human approval and measured outcomes through Microsoft IQ: Work IQ, Fabric IQ, Foundry IQ, Web IQ) · Org model (human leaders, lead agents and specialist agents, revealed step by step) · Blueprint · Journeys, including the **Agent Factory** (DevSecOps from hypothesis to operate) · **Attendees** (who contributed what)
+- **Part 2 Design:** Agents (trigger canvas, the **workflow** from trigger to outcome in the Copilot Studio designer style, seven declarations, role profile, identity) · Agent identity · Target architecture (**landing zone** along CAF, WAF and Responsible AI; layers; flows; **ADRs**) · Use cases (problem statement, business value, feasibility) · **IT readiness** · FinOps
 - **Workshop:** Discovery (take notes live) · Roadmap · Evidence
 
 Agent identity icons and Microsoft product icons make each part easy to read. Notes and verdicts stay in your browser until you export them from Discovery; give the exported file back to Cowork to merge.
@@ -68,7 +70,7 @@ Agent identity icons and Microsoft product icons make each part easy to read. No
 ## What is in the package
 
 ```
-frontier-envisioning-plugin-1.4.0.zip
+frontier-envisioning-plugin-1.6.0.zip
 ├── README.md                         this guide
 ├── MIT.md                            the licence (MIT)
 ├── THIRD-PARTY-NOTICES.md            Microsoft product icons and other material not covered by MIT
@@ -131,11 +133,11 @@ The Microsoft product icons in the blueprint template are Microsoft trademarks a
 
 ## For developers
 
-The source zip (`frontier-envisioning-1.4.0-source.zip`) holds the repository: `docs/prd-and-solution-design.md` (PRD and solution design of this plugin), `tools/selftest.py` (every script end to end against the Caldova examples) and `tools/build_package.py` (builds the package and the source zip, and writes `install/plugin-install.json`).
+The repository starting point (`frontier-envisioning-github-repo-1.6.0.zip`, to import into GitHub) holds the plugin, the blueprint renderer sources (`src/renderer/`), the tools, the tests and `docs/prd-and-solution-design.md` (PRD and solution design of this plugin). One task runner covers the quality gates: `check` runs the template drift check, lint, the customer-neutrality scan, the unit tests, the self-test (every script end to end against the Caldova examples), the package build, the Caldova demo, the release reproduction and the browser DOM tests; `package` builds this zip and writes `install/plugin-install.json`.
 
 ```
-python tools/selftest.py
-python tools/build_package.py
+python tools/dev.py check
+python tools/dev.py package
 ```
 
 Scripts use the Python standard library only, read their inputs as data and never call the network.

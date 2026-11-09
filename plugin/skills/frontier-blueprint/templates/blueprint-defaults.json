@@ -7,6 +7,294 @@
   "automation_target": 3,
   "note": "Phases can coexist across functions. Microsoft recommends building on a digital process automation foundation and layering agentic reasoning on top."
  },
+ "feedback_loop": {
+  "heading": "Digital feedback loop: signals, actions and outcomes",
+  "intro": "Microsoft's digital feedback loop connects four areas: engage customers, empower employees, optimize operations and transform products. Every area sends signals to Microsoft IQ, receives a proposed action back and returns a measured outcome, which becomes the next signal. A person approves before any action leaves the company.",
+  "center": {
+   "name": "Microsoft IQ",
+   "tagline": "Enterprise intelligence layer"
+  },
+  "iq": [
+   {
+    "id": "work",
+    "name": "Work IQ",
+    "desc": "Work signals: how people work in Microsoft 365 — email, meetings, chats, files, people and collaboration patterns",
+    "products": [
+     "Microsoft 365 Copilot",
+     "Microsoft Teams",
+     "Microsoft Outlook"
+    ]
+   },
+   {
+    "id": "fabric",
+    "name": "Fabric IQ",
+    "desc": "Business data: a shared semantic foundation in Microsoft Fabric — semantic models, ontology, metrics and live operational signals",
+    "products": [
+     "Power BI"
+    ]
+   },
+   {
+    "id": "foundry",
+    "name": "Foundry IQ",
+    "desc": "Organisational knowledge: permission-aware knowledge bases that ground agents in documents and enterprise sources, with citations",
+    "products": [
+     "Microsoft Foundry",
+     "Microsoft Copilot Studio"
+    ]
+   },
+   {
+    "id": "web",
+    "name": "Web IQ",
+    "desc": "World knowledge: fresh, citation-ready grounding from the public web — news, markets and regulation"
+   }
+  ],
+  "approval": "Human approval before every action",
+  "trust": [
+   {
+    "name": "Microsoft Entra",
+    "logo": "entra"
+   },
+   {
+    "name": "Microsoft Purview",
+    "logo": "purview"
+   },
+   {
+    "name": "Microsoft Agent 365",
+    "logo": "agent365"
+   }
+  ],
+  "flow": [
+   "Signal",
+   "Microsoft IQ",
+   "Proposed action",
+   "Human approval",
+   "Measured outcome"
+  ],
+  "ring": {
+   "label": "Digital feedback loop",
+   "caption": "Every measured outcome becomes the next signal"
+  },
+  "status": "hypothesis",
+  "note": "Hypothesis: which signals exist, which actions agents may propose and how outcomes are measured is validated in the workshop. Microsoft IQ respects existing permissions (Microsoft Entra) and sensitivity labels (Microsoft Purview); Microsoft Agent 365 observes and governs every agent.",
+  "quadrants": [
+   {
+    "pillar": "engage_customers",
+    "title": "Answer every customer signal faster",
+    "signal": "Customer requests, interactions and feedback",
+    "action": "Agents prepare the answer, offer or next step",
+    "outcome": "Faster response, higher satisfaction and win rate",
+    "signals": [
+     {
+      "text": "Customer requests and conversations in email, meetings and chats",
+      "iq": [
+       "work"
+      ]
+     },
+     {
+      "text": "Customer, order and interaction history in the business systems",
+      "iq": [
+       "fabric"
+      ]
+     },
+     {
+      "text": "Market and customer news on the public web",
+      "iq": [
+       "web"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "text": "Prepare a grounded answer, brief or offer for the account owner",
+      "approval": "The account owner approves every commitment to a customer"
+     }
+    ],
+    "outcomes": [
+     {
+      "text": "Response time and customer satisfaction"
+     }
+    ],
+    "question": "Which customer signals arrive first today, and who decides what happens next?",
+    "status": "hypothesis"
+   },
+   {
+    "pillar": "optimize_operations",
+    "title": "Run operations on live, trusted data",
+    "signal": "Transactions, exceptions and process events",
+    "action": "Agents flag, route and resolve exceptions",
+    "outcome": "Cycle time, cost and compliance",
+    "signals": [
+     {
+      "text": "Transactions, exceptions and process events in the business systems",
+      "iq": [
+       "fabric"
+      ]
+     },
+     {
+      "text": "Contracts, policies and procedures",
+      "iq": [
+       "foundry"
+      ]
+     },
+     {
+      "text": "Requests and approvals in email and Teams",
+      "iq": [
+       "work"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "text": "Flag the exception, propose the resolution and route it to the right owner",
+      "approval": "The process owner approves postings, payments and commitments"
+     }
+    ],
+    "outcomes": [
+     {
+      "text": "Cycle time, cost per transaction and share of exceptions resolved"
+     }
+    ],
+    "question": "Where do exceptions pile up today, and which data would show them first?",
+    "status": "hypothesis"
+   },
+   {
+    "pillar": "empower_employees",
+    "title": "Free people for judgement and relationships",
+    "signal": "How work happens: requests, meetings, workload, skills",
+    "action": "Agents take routine steps and brief people",
+    "outcome": "Hours freed, adoption and quality of work",
+    "signals": [
+     {
+      "text": "Workload, meetings, collaboration patterns and skills",
+      "iq": [
+       "work"
+      ]
+     },
+     {
+      "text": "Manuals, policies and know-how people look for",
+      "iq": [
+       "foundry"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "text": "Brief people before the task, answer from approved knowledge and draft the routine work",
+      "approval": "The employee confirms every output that leaves their desk"
+     }
+    ],
+    "outcomes": [
+     {
+      "text": "Hours freed per person, adoption and quality of the work"
+     }
+    ],
+    "question": "Which routine work costs your people the most time, and what would they do with it instead?",
+    "status": "hypothesis"
+   },
+   {
+    "pillar": "transform_products",
+    "title": "Turn usage and telemetry into better offerings",
+    "signal": "Product and service usage, telemetry and agent telemetry",
+    "action": "Agents surface patterns and propose improvements",
+    "outcome": "New services, quality and agent performance",
+    "signals": [
+     {
+      "text": "Product, service and agent telemetry",
+      "iq": [
+       "fabric"
+      ]
+     },
+     {
+      "text": "Feedback and improvement ideas from customers and employees",
+      "iq": [
+       "work"
+      ]
+     },
+     {
+      "text": "Standards, regulation and market moves",
+      "iq": [
+       "web"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "text": "Surface patterns and propose improvements to products, services and agents",
+      "approval": "The product owner decides on every change to an offering"
+     }
+    ],
+    "outcomes": [
+     {
+      "text": "Quality, new service revenue and agent run success rate"
+     }
+    ],
+    "question": "Which product or service data do you already collect, and who acts on it today?",
+    "status": "hypothesis"
+   }
+  ],
+  "pillar_rules": [
+   [
+    "sales|commercial|customer|marketing|lead|quote|order-to|crm|account|e-?commerce|contact cent|client",
+    "engage_customers"
+   ],
+   [
+    "\\bhr\\b|human resources|people|talent|recruit|hire|onboard|employee|workforce|learning|payroll",
+    "empower_employees"
+   ],
+   [
+    "product|r&d|research|engineering|innovation|telemetry|\\biot\\b|design|portfolio",
+    "transform_products"
+   ],
+   [
+    "procure|purchas|source-to|finance|record-to|close|accounting|supply|logistic|manufactur|production|operation|maintenance|service|quality|\\bit\\b|legal|risk|compliance",
+    "optimize_operations"
+   ]
+  ],
+  "iq_rules": [
+   [
+    "public web|\\bweb\\b|news|market data|regulat|tender|social|feed",
+    "web"
+   ],
+   [
+    "manual|polic|handbook|knowledge|wiki|faq|contract|template|procedure|catalog",
+    "foundry"
+   ],
+   [
+    "outlook|teams|meeting|e-?mail|calendar|chat|onedrive|loop|viva|sharepoint",
+    "work"
+   ],
+   [
+    "sap|dynamics 365|dataverse|erp|crm|ariba|salesforce|workday|servicenow|\\biot\\b|telemetry|sensor|fabric|onelake|power bi|sql|warehouse|lakehouse|mes\\b|scada|hris|configurator|cpq",
+    "fabric"
+   ]
+  ],
+  "sources": [
+   {
+    "title": "Microsoft IQ",
+    "url": "https://www.microsoft.com/en-us/ai/microsoft-iq"
+   },
+   {
+    "title": "Work IQ APIs",
+    "url": "https://www.microsoft.com/en-us/copilot/blog/2026/06/02/announcing-the-new-work-iq-apis/"
+   },
+   {
+    "title": "What is Foundry IQ?",
+    "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/what-is-foundry-iq"
+   },
+   {
+    "title": "Fabric IQ",
+    "url": "https://blogs.microsoft.com/blog/2026/09/28/new-microsoft-data-innovations-unlock-what-only-your-business-knows/"
+   },
+   {
+    "title": "Microsoft Web IQ overview",
+    "url": "https://learn.microsoft.com/en-us/web-iq/overview"
+   },
+   {
+    "title": "The digital feedback loop (Power Platform guidance)",
+    "url": "https://learn.microsoft.com/en-us/power-platform/guidance/successhub/digitizing-digital-transformation-platform-group"
+   }
+  ]
+ },
  "human_led": {
   "Direction": "Strategy and targets the lead agents plan against",
   "Accountability": "A named agent boss for every agent",

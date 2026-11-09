@@ -42,12 +42,12 @@ The diagram layout was checked by rendering the Caldova landing zone to an image
 |---|---|---|---|---|---|---|
 | Blueprint renderer (1.4.0) | Interactive views in the workshop | Yes | Yes | Layers, flows, ADRs | Yes | **Use now** |
 | pptx skill (Cowork) | Editable shapes in a deck | From the blueprint data | Lifecycle and steps | Layers | n/a | **Use** for customer decks and steering committees |
-| HubWorks architecture-diagram-builder | Mermaid diagrams grounded in transcripts | Sketch only | Sketch only | Quick sketch | n/a | **Use** in the Hub flow; hand it the blueprint as context (HubWorks integration, Frontier 1.5) |
+| HubWorks architecture-diagram-builder | Mermaid diagrams grounded in transcripts | Sketch only | Sketch only | Quick sketch | n/a | **Use** in the Hub flow; hand it the blueprint as context (HubWorks integration, Frontier 1.7) |
 | Mermaid in markdown (flowchart, architecture-beta) | Diagrams in the solution design and repositories | Simplified | Workflow | Yes | Not used in the HTML | **Adopt** in the solution design without icons; icon packs would need a network fetch |
 | draw.io (diagrams.net) | Editable architecture diagrams with imported official SVG icons | Yes | Yes | Yes | n/a | **Adopt** as the export format for architects (frontier-diagrams) |
 | Excalidraw | Whiteboard-style sketches in workshops | Sketch | Sketch | Sketch | n/a | Optional |
 | image-operations | Pictures and illustrations | No (not exact) | No | No | n/a | Hero visuals only |
-| Power BI and App Builder | Live cockpit: factory board, value plan against actual, FinOps | n/a | Live stages | n/a | n/a | **Operate loop** (Frontier 1.5) |
+| Power BI and App Builder | Live cockpit: factory board, value plan against actual, FinOps | n/a | Live stages | n/a | n/a | **Operate loop** (Frontier 1.7) |
 
 **Proposed capability: `frontier-diagrams` (later release).** The inputs are `blueprint.normalized.json`, the agent identity kit and the official icon sets (downloaded by the user under Microsoft's terms). The outputs are:
 - `landing-zone.drawio`, `target-architecture.drawio` and `agent-factory.drawio`
@@ -132,6 +132,8 @@ flowchart LR
 
 **Harness choice.** Microsoft Learn's "Choose a harness" page describes the options for Copilot Studio agents, and the CAT Harness Picker helps decide. Record the choice as an ADR per agent. Re-check the harness names on Learn before a customer session: one name we have seen ("Copilot Chat harness") is not yet confirmed there.
 
+**Each agent's runtime workflow (added in plugin 1.6.0).** The lifecycle above moves an agent from hypothesis to build. Inside it, the Agents view now draws what the agent will run: a Copilot Studio workflow from the trigger through the designer's nodes (Agent, Classify, Extract, Copilot, Human review, Connector, Function, Variable, If/Else, Loop) to the desired outcome, derived from the canvas plan until the workshop refines it. The solution design carries the same workflow as the build table for the Copilot Studio builder. No additional plugin is needed for this view; an export into Copilot Studio stays with the prototype pack (PROTO-01).
+
 ## 6. Gaps and risks
 
 | Gap | Impact | Mitigation | Decision |
@@ -152,7 +154,7 @@ flowchart LR
 | E-02 | Download the official icon sets, replace the copies and name a maintainer | Next release (D-07) |
 | E-03 | Install the CAT skills for steps 2, 3 and 5 next to the Frontier plugin in Hub Cowork; pilot them on one engagement | Next architecture design workshop |
 | E-04 | Keep GitHub and Azure DevOps both open in the canon, or recommend one (D-08) | Hub solution engineering |
-| E-05 | Hand the blueprint to HubWorks' architecture-diagram-builder as context (part of the HubWorks integration) | Frontier 1.5 |
+| E-05 | Hand the blueprint to HubWorks' architecture-diagram-builder as context (part of the HubWorks integration) | Frontier 1.7 |
 
 ## 8. Sources
 

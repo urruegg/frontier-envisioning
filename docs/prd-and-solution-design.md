@@ -6,13 +6,13 @@
 |---|---|
 | Product | Frontier Envisioning plugin for Microsoft Copilot Cowork (`frontier-envisioning`) |
 | Document | PRD (Part A) and Solution Design (Part B) |
-| Version | 1.4.0 — draft for review (plugin version 1.4.0) |
+| Version | 1.6.0 — draft for review (plugin version 1.6.0) |
 | Date | 8 November 2026 |
 | Owner | Urs Rüegg, Sr Solution Engineer, Microsoft Innovation Hub Switzerland |
 | Proposed reviewers | Innovation Hub leadership; Innovation Hub solution engineers; one account team piloting the plugin |
 | License | MIT (`MIT.md`) · Copyright (c) 2026 Urs Rüegg · SPDX headers in every script; `license: MIT` in every skill |
-| Basis | Procurement four-journeys blueprint mockup (solution-envisioning sample, October 2026); `urruegg/caldova-hr-frontier` (architecture-design sample, v1.5); Journai showcase: HAIRO model (hub.journai.ch) and "How we built our hybrid organisation" (architecture.journai.ch); Microsoft Frontier guidance (sources in B.14); an Innovation Hub HR agent identity package (October 2026, generalised and anonymised) for the agent identity kit; Innovation Hub HR and procurement workshop materials (November 2026: Agent Factory, landing zone, architecture decisions, IT preparation and readiness) |
-| Deliverables | This document · README.md (setup guide) · generic Frontier Company Blueprint HTML template with the Caldova demo, its Agent identity page, business value and FinOps page · install package `frontier-envisioning-plugin-1.4.0.zip` · repository `frontier-envisioning-1.4.0-source.zip` · Caldova agent identity package (demo) · Frontier visualisation and reuse evaluation (separate document) |
+| Basis | Procurement four-journeys blueprint mockup (solution-envisioning sample, October 2026); `urruegg/caldova-hr-frontier` (architecture-design sample, v1.5); Journai showcase: HAIRO model (hub.journai.ch) and "How we built our hybrid organisation" (architecture.journai.ch); Microsoft Frontier guidance (sources in B.14); an Innovation Hub HR agent identity package (October 2026, generalised and anonymised) for the agent identity kit; Innovation Hub HR and procurement workshop materials (November 2026: Agent Factory, landing zone, architecture decisions, IT preparation and readiness); an Innovation Hub showcase of the digital feedback loop with Microsoft IQ (November 2026, pattern only); Copilot Studio workflow designer and its Microsoft Learn documentation (November 2026: node and trigger types, the GitHub Copilot harness) |
+| Deliverables | This document · README.md (setup guide) · generic Frontier Company Blueprint HTML template with the Caldova demo, the digital feedback loop on the Overview, the agent workflows, its Agent identity page, business value and FinOps page · install package `frontier-envisioning-plugin-1.6.0.zip` · repository starting point `frontier-envisioning-github-repo-1.6.0.zip` · Caldova agent identity package (demo) · Frontier visualisation and reuse evaluation (separate document) |
 
 ---
 
@@ -59,7 +59,7 @@ The plugin makes the Hub's method repeatable in Copilot Cowork: a solution engin
 | Workshops whose feedback is exported and merged | ≥ 90 % | Not tracked today |
 | PRD and solution design draft available after the workshop | ≤ 5 working days | To measure |
 | Internal evidence found in customer versions | 0 | — |
-| Skill quality score (plugin validator) | ≥ 80 for every skill, no unresolved routing conflict | 94–98 at release (B.9) |
+| Skill quality score (plugin validator) | ≥ 80 for every skill, no unresolved routing conflict | 96–100 at release (B.9) |
 
 ## A.4 Users
 
@@ -93,6 +93,10 @@ The plugin makes the Hub's method repeatable in Copilot Cowork: a solution engin
 **In scope (1.3.0)**: two skills, `frontier-value-case` (value tree, assumption register, NPV, ROI, payback, break-even, sensitivity, workshop merge) and `frontier-finops` (cost per agent in CHF, purchase options, credit-cost scenarios, guardrails, rates file); the blueprint's FinOps page; business value in the use cases and the matrix with the assumptions to clarify in the workshop.
 
 **In scope (1.4.0)**: the blueprint restructured along the Innovation Hub journey (Part 1 Vision, Part 2 Design, Workshop; 14 views); the Agent Factory as a canon journey with DevSecOps; the Attendees page; the landing zone (CAF, WAF, Responsible AI) and architecture decision records in the target architecture; use cases in the Hub business-envisioning template; the IT readiness page; Microsoft product icons; the matching scripts (canon, `--canon`, readiness and ADR merge, design scaffold, identity seed).
+
+**In scope (1.5.0)**: Microsoft's digital feedback loop on the Overview: an animated diagram of the customer's four areas (Engage customers, Optimize operations, Empower employees, Transform products) around Microsoft IQ (Work IQ, Fabric IQ, Foundry IQ, Web IQ), with signals, actions with human approval and measured outcomes per area; its canon (official names and Microsoft sources), derivation from the journeys, build checks, workshop verdicts and discovery questions.
+
+**In scope (1.6.0)**: each agent's workflow on the Agents view, drawn like the Copilot Studio workflow designer (powered by the GitHub Copilot harness): the trigger, the designer's nodes (Agent, Classify, Extract, Copilot, Human review, Connector, Function, Variable, If/Else, Loop, Scope, Note, Respond to the agent), branches and the desired outcome; derived from the canvas plan until authored (`canvas.workflow`); build checks; each MVP workflow in the solution design.
 
 **Out of scope (1.0)**: see non-goals in A.3; anything requiring access to other people's mailboxes; any automatic sharing outside Microsoft.
 
@@ -223,6 +227,28 @@ Priority: **M** must, **S** should, **C** could. Verified by: **T** automated te
 | FR-0105 | The design scaffold adds the landing zone, the Agent Factory lifecycle, Definition of Ready and evaluation pyramid, the ADR origin and `it-readiness.md` | M | T |
 | FR-0106 | The identity seed treats Agent Factory agents as repository agents with the process-owner token "Factory" | S | T |
 
+### Digital feedback loop (1.5.0)
+
+| ID | Requirement | Pri | Verified |
+|---|---|---|---|
+| FR-0107 | The Overview shows Microsoft's digital feedback loop as an animated diagram: the four areas (Engage customers, Optimize operations, Empower employees, Transform products) around Microsoft IQ with Work IQ, Fabric IQ, Foundry IQ and Web IQ; signals travel to Microsoft IQ, a proposed action waits at a human-approval gate, the measured outcome returns as the next signal | M | T, D |
+| FR-0108 | Selecting an area shows its signals with their Microsoft IQ layer, its actions with the agents and who approves, its outcomes with the journey KPIs (baseline → target) and the value hypotheses, the linked journeys and use cases, a workshop question and a live verdict exported as `loop:<area>` and merged | M | T |
+| FR-0109 | The canon derives the loop from the journeys (area by keyword, signals from the systems with their Microsoft IQ layer, actions from the agents and the approval seam, outcomes from the KPIs, MVP use cases); every build completes a linked area without overwriting | M | T |
+| FR-0110 | Only official Microsoft names: the build warns about any other "… IQ" name, an unknown layer, area or journey; the canon carries the Microsoft sources | M | T |
+| FR-0111 | The animation can be paused, stops when the device asks for reduced motion and is hidden in print; diagram and panel carry the same content as text | M | T, D |
+| FR-0112 | Discovery collects what the loop needs: questions per area in the question bank and a signals recipe in the Work IQ playbook | S | R |
+
+### Agent workflow (1.6.0)
+
+| ID | Requirement | Priority | Verification |
+|---|---|---|---|
+| FR-0113 | Every agent with a canvas plan shows its workflow under the trigger canvas, drawn like the Copilot Studio workflow designer: the trigger (Manual, Recurrence, Connector event, When an HTTP request is received, When an agent calls the workflow), the designer's nodes (Agent, Classify, Extract, Copilot, Human review, Connector, Function, Variable, If/Else, Loop, Scope, Note, Respond to the agent) and the desired outcome | M | T, D |
+| FR-0114 | Branches of If/Else, Classify and Human review rejoin the main path or end at a named end node; loops and scopes are containers; notes sit above their step | M | T |
+| FR-0115 | The Add panel works as legend and highlighter; selecting a node opens its properties (what the node does, AI, deterministic or human, the step, the agent with its identity icon, the system with its product icon, who decides, branches); zoom, fit, an overview folded into rows and the single designer row | M | T |
+| FR-0116 | Without an authored workflow, the build derives one from the canvas trigger, plan, approval, connectors and outcome, marks it "Derived from the plan" and re-derives it on every build; a Human review is inserted before the first write when the plan has none | M | T |
+| FR-0117 | An authored `canvas.workflow` is kept and checked: unknown node or trigger types, unknown agents, branches on a non-branching node and nested containers produce warnings | M | T |
+| FR-0118 | The solution-design scaffold writes each MVP agent's workflow into the process design: trigger, outcome, AI, deterministic and human steps and a node table with branches | S | T |
+
 ## A.8 Non-functional requirements
 
 | ID | Category | Requirement |
@@ -243,16 +269,19 @@ Priority: **M** must, **S** should, **C** could. Verified by: **T** automated te
 | NFR-0014 | Currency | Product availability carries a date and source; the canon is reviewed after each major Microsoft announcement event |
 | NFR-0015 | Determinism | The identity kit renders the same icon pixels on every machine; its unit tests fail when committed icons drift from the config |
 | NFR-0016 | Brand integrity | Every brand colour in a kit has a source; logos only where the customer's brand rules allow it; icon contrast ≥ 4.5:1 |
+| NFR-0017 | Motion | Animations can be paused, stop under `prefers-reduced-motion`, never run in print and never carry information that is not also shown as text |
+| NFR-0018 | Terminology | Microsoft capabilities appear only under their official names (Microsoft IQ, Work IQ, Fabric IQ, Foundry IQ, Web IQ; product names as on Microsoft Learn), each with a dated source in the canon |
+| NFR-0019 | Fidelity | The workflow view uses the node and trigger names of the Copilot Studio workflow designer as documented on Microsoft Learn; AI steps are marked as variable; node glyphs are the plugin's own drawings and Microsoft product icons come only from the icon assets with their notice |
 
-## A.9 Acceptance criteria (release 1.4.0)
+## A.9 Acceptance criteria (release 1.6.0)
 
 | ID | Criterion | Result |
 |---|---|---|
-| AC-001 | `tools/selftest.py` passes all 29 checks | Passed |
+| AC-001 | `tools/selftest.py` passes all 34 checks | Passed |
 | AC-002 | The Caldova example builds with no errors and renders all fourteen views without script errors | Passed (headless DOM test of every view, drawer and journey tab) |
 | AC-003 | The template and a built blueprint pass the HTML validator with no errors or warnings | Passed |
 | AC-004 | The customer build removes the two internal Caldova sources and every citation of them | Passed |
-| AC-005 | Every skill validates and scores ≥ 80; the conflict scan reports no unresolved conflict | Passed (94–100; 10 internal pairs and 1 built-in pair resolved by delegation) |
+| AC-005 | Every skill validates and scores ≥ 80; the conflict scan reports no unresolved conflict | Passed (96–100; 21 internal pairs and 1 built-in pair resolved by delegation) |
 | AC-006 | The security scan passes with no findings | Passed |
 | AC-007 | The install package passes static Microsoft 365 package validation | Passed (one expected warning: builder metadata, see TD-04) |
 | AC-008 | The install check passes on the released package and refuses an altered copy | Passed (build → extract → check → alter → check) |
@@ -260,13 +289,19 @@ Priority: **M** must, **S** should, **C** could. Verified by: **T** automated te
 | AC-010 | Icons from the built-in renderer match a reference SVG renderer | Passed (mean absolute difference below 0.02 of 255 per channel at 192 × 192) |
 | AC-011 | A blueprint with identity renders every view without script errors and shows the icons in the journey, agent and role-card views | Passed (headless DOM test) |
 | AC-012 | The Agent identity page renders for the Caldova demo, a seeded proposal, the customer version and a 1.1.0 blueprint without the page data; a blueprint without identity hides the page | Passed (headless DOM test) |
+| AC-013 | One build produces the blueprint HTML and a validated identity kit, both seeded without a brand file and from the reviewed Caldova config | Passed (self-test and demo build) |
 | AC-014 | The scripts reproduce the worked example of the value and FinOps method (credits, purchase options, scenarios, NPV, ROI, payback, break-even) | Passed (self-test) |
 | AC-015 | The Caldova blueprint shows the FinOps page and business value in the use cases and the matrix; an assumption verdict is saved and exported | Passed (headless DOM test) |
-| AC-013 | One build produces the blueprint HTML and a validated identity kit, both seeded without a brand file and from the reviewed Caldova config | Passed (self-test and demo build) |
 | AC-016 | The Caldova demo shows the Attendees page, the Agent Factory (lifecycle, board, handover, steps, roles), the landing zone, the ADRs, a use-case detail page and the IT readiness page without script errors | Passed (headless DOM test) |
 | AC-017 | The landing-zone diagram lays out the journeys without overlapping or clipped titles | Passed (diagram rendered to an image and reviewed; Caldova, four business journeys and the factory) |
 | AC-018 | Workshop verdicts on readiness items and ADRs merge into the blueprint; unknown ids are reported, never invented | Passed (self-test) |
 | AC-019 | A blueprint from release 1.3 built with `--canon` gains the factory journey, landing zone, canon ADRs and IT readiness | Passed (self-test) |
+| AC-020 | The Overview of the Caldova demo shows the digital feedback loop: four areas, the four Microsoft IQ layers, sixteen animated movements, the panel follows the selected area, the animation pauses and a verdict is saved | Passed (headless DOM test) |
+| AC-021 | A blueprint with an unofficial "… IQ" name, an unknown layer or an unknown area builds with a warning for each | Passed (unit test and self-test) |
+| AC-022 | The Caldova demo shows the two MVP workflows: the trigger first and the outcome last, nodes in flow order for the keyboard, branch pills, the end node, notes, the agent identity icon; properties open with a click or Enter and close with Escape or the close button; Add highlights a node type; zoom and the designer row work; an agent without a plan says so | Passed (headless DOM test) |
+| AC-023 | A missing workflow is derived from the plan (trigger type, node types, Classify categories, a Human review before the first write); unknown node types and agents warn; derived workflows follow a changed plan | Passed (unit tests and self-test) |
+| AC-024 | The solution design lists each MVP workflow with its trigger, outcome, step counts and node table | Passed (unit test and self-test) |
+| AC-025 | The workflow overview of the Caldova MVP agents fits the page width (at most 1,018 pixels at 100 %) without overlapping nodes, and the designer row keeps the branches on lanes below | Passed (diagrams rendered to images and reviewed) |
 
 ## A.10 Dependencies and assumptions
 
@@ -305,9 +340,11 @@ Priority: **M** must, **S** should, **C** could. Verified by: **T** automated te
 | 1.1.0 | Agent identity kit (frontier-agent-identity): naming convention, brand colours, Microsoft 365 icons, cards, catalogue, validate and stamp scripts, pipeline templates; identity shown in the blueprint |
 | 1.2.0 | Agent identity page below Agents; identity names and icons wherever agents appear; blueprint and identity kit built in one step; identity feedback kept for the review |
 | 1.3.0 | Business value (frontier-value-case) and FinOps (frontier-finops): value tree, assumption register, NPV and ROI in CHF, cost per agent, purchase options, guardrails; FinOps page; value in the use cases and the matrix with workshop verdicts |
-| 1.4.0 (this release) | Innovation Hub journey structure: Part 1 Vision with the Agent Factory journey (DevSecOps, GitHub Copilot harness, CAT skills) and the Attendees page; Part 2 Design with the landing zone (CAF, WAF, Responsible AI), ADRs, use cases in the Hub template and the IT readiness page; Microsoft product icons; design scaffold and merge for readiness and ADRs |
-| 1.5 | Operate loop: plan versus actual from the Copilot Studio licensing reports, Microsoft 365 credit reports and Cost Management FOCUS exports; value and FinOps cockpit in Power BI; monthly digest. HubWorks integration (engagement contract, closeout pack, agenda blocks); German template labels; slide export of selected views through the pptx agent; Copilot Studio prototype pack (agent instructions, topics and workflow outline from the canvas) |
-| 1.6 | FOCUS 1.5 alignment (agent as principal, consumption currency); Agent 365 cost data; shared engagement folder on a Hub SharePoint site; feedback capture into a Microsoft List for multi-facilitator workshops |
+| 1.4.0 | Innovation Hub journey structure: Part 1 Vision with the Agent Factory journey (DevSecOps, GitHub Copilot harness, CAT skills) and the Attendees page; Part 2 Design with the landing zone (CAF, WAF, Responsible AI), ADRs, use cases in the Hub template and the IT readiness page; Microsoft product icons; design scaffold and merge for readiness and ADRs |
+| 1.5.0 | Digital feedback loop on the Overview: the customer's four areas around Microsoft IQ (Work IQ, Fabric IQ, Foundry IQ, Web IQ), animated signals, actions with human approval and measured outcomes; canon with official names and sources, derivation from the journeys, build checks, `loop:` verdicts, discovery questions |
+| 1.6.0 (this release) | Agent workflow in the Copilot Studio workflow designer style: trigger, designer nodes (Agent, Classify, Extract, Copilot, Human review, Connector, Function, Variable, If/Else, Loop, Scope, Note, Respond to the agent), branches and the desired outcome per agent; derived from the canvas plan until authored; build checks; workflow tables in the solution design |
+| 1.7 | Operate loop: plan versus actual from the Copilot Studio licensing reports, Microsoft 365 credit reports and Cost Management FOCUS exports; value and FinOps cockpit in Power BI; monthly digest. HubWorks integration (engagement contract, closeout pack, agenda blocks); German template labels; slide export of selected views through the pptx agent; Copilot Studio prototype pack (agent instructions and topics from the canvas, the workflow from `canvas.workflow`) |
+| 1.8 | FOCUS 1.5 alignment (agent as principal, consumption currency); Agent 365 cost data; shared engagement folder on a Hub SharePoint site; feedback capture into a Microsoft List for multi-facilitator workshops |
 | Later | A `frontier-diagrams` capability (editable architecture, landing-zone and factory diagrams from the blueprint and the agent definitions, official icon sets); see the visualisation and reuse evaluation |
 | 2.0 | Work IQ APIs for richer context retrieval; Agent 365 registry export of validated agents; usage telemetry for the success measures |
 
@@ -378,8 +415,10 @@ Each SKILL.md carries trigger phrases, a "Do NOT use … use X" exclusion, a "Wh
 | `context_pack.py validate / render` | `customer-context.json` | Errors, warnings, coverage gaps, stats; evidence log markdown (internal or customer) |
 | `seed_blueprint.py` | Context pack + `blueprint-defaults.json` | Blueprint seed with evidence, journeys, KPIs, systems, leaders, use cases, next steps, the Hub canon and `_todo` |
 | `build_blueprint.py` | Blueprint JSON + template | Normalised JSON, HTML, build report; customer version with `--audience customer` |
+| `canon.py` | Blueprint + `blueprint-defaults.json` | The Innovation Hub canon added without overwriting (Agent Factory, landing zone, canon ADRs, IT readiness, digital feedback loop) |
+| `workflow.py` | Agents' canvases (used by the build) | Each agent's workflow: authored ones checked and given node ids, missing ones derived from the plan (`derived`) |
 | `merge_feedback.py` | Normalised blueprint + feedback export(s) | Next blueprint version with statuses, notes, answers and workshop evidence |
-| `scaffold_design_docs.py` | Normalised blueprint (+ MVP ids) | `prd.md`, `solution-design.md`, `adr/ADR-000n-*.md` |
+| `scaffold_design_docs.py` | Normalised blueprint (+ MVP ids) | `prd.md`, `solution-design.md` (with each MVP workflow), `adr/ADR-000n-*.md`, `it-readiness.md` |
 | `install/prepare_install.py` | The extracted package | Verification (checksums, names, unexpected files) and the install plan: skills, file counts, new/update/reinstall, the copy calls |
 | `read_office_theme.py` | Customer-authored Office file | `brand.json`: theme colours, fonts, named colours with evidence ids |
 | `seed_identity.py` | Blueprint (+ brand) | `agent-identity.json`, `palette.json`, `seed-report.md` |
@@ -389,7 +428,7 @@ Each SKILL.md carries trigger phrases, a "Do NOT use … use X" exclusion, a "Wh
 | Kit: `build_identity_assets.py`, `validate_identity.py`, `stamp_identity.py`, `raster.py`, `import_fluent_glyphs.py` | Kit config | Names, icons, cards, visuals, docs, catalogue; validation report; stamped `bot.xml`; PNG rendering; glyph import |
 | `seed_value.py`, `value_calc.py`, `apply_value.py`, `merge_value_feedback.py` | Blueprint, value.json, finops.json, feedback export | Value case seed; results (views, NPV, ROI, payback, break-even, sensitivity, ranges); business value in the blueprint; verdicts merged |
 | `seed_finops.py`, `finops_calc.py`, `apply_finops.py` | Blueprint, value.json, finops.json, rates file | Cost model seed; cost lines, unit economics, purchase options, scenarios, guardrails, lessons; the FinOps page data |
-| `tools/selftest.py` | Bundled examples | Pass/fail of 23 end-to-end checks, including the identity kit, the value and FinOps golden test, the one-step build and an install simulation |
+| `tools/selftest.py` | Bundled examples | Pass/fail of 34 end-to-end checks, including the identity kit, the value and FinOps golden test, the one-step build and an install simulation |
 | `tools/build_package.py` | Repository | Install package (chat install and organisation catalogue), source zip, `install/plugin-install.json`, checksums |
 
 ### B.2.3 Knowledge files
@@ -410,7 +449,7 @@ Each SKILL.md carries trigger phrases, a "Do NOT use … use X" exclusion, a "Wh
 | Object | Schema | Key identifiers |
 |---|---|---|
 | Context pack | `frontier-context/1.0` | Sources E01…, facts F001…, journeys, stakeholders, systems, KPIs, constraints, ideas, decisions, actions, open questions |
-| Blueprint | `frontier-blueprint/1.0` | Journeys D1…, leaders L1…, lead agents D1-LEAD, specialists D1-A01…, use cases UC01…, questions D1-Q01…, evidence E01… and workshop evidence W01… |
+| Blueprint | `frontier-blueprint/1.0` | Journeys D1…, leaders L1…, lead agents D1-LEAD, specialists D1-A01…, use cases UC01…, questions D1-Q01…, evidence E01… and workshop evidence W01…; workflow nodes n1… per agent |
 | Workshop feedback | `frontier-blueprint-feedback` 1.0 | `validations["agent:D3-A05" or "uc:UC09"]`, `discovery["D3-Q02"]`, blueprint id and version |
 | Design | Markdown | FR-0001…, NFR-0001…, AC-001…, D-01…, TD-01…, ADR-0001… |
 | Engagement | `engagement.json` | Customer, slug, phase, workshop date, blueprint version, identity version, files, updated |
@@ -443,7 +482,7 @@ Identifiers are allocated once and never reused. The blueprint id and version ti
 |---|---|---|
 | 1 | Script | `seed_blueprint.py` → seed with canon and `_todo` |
 | 2 | Cowork | Write the hypothesis per the authoring guide (stages, personas, lead and specialists, seam, scores, MVP canvases and declarations, mission, outcomes, flows, decisions) |
-| 3 | Script | `build_blueprint.py` → errors and warnings → fix → HTML and normalised JSON |
+| 3 | Script | `build_blueprint.py` → canon completion, agent workflows (checked or derived from the plan), errors and warnings → fix → HTML and normalised JSON |
 | 4 | Validator | HTML validator (self-contained, accessible markup) |
 | 5 | Script | Customer version with `--audience customer` when anything leaves Microsoft |
 | 6 | Cowork | Publish; reply with journeys, agents, MVP candidates, open questions |
@@ -478,9 +517,13 @@ Identifiers are allocated once and never reused. The blueprint id and version ti
 
 ## B.5 Blueprint HTML design
 
-**Rendering.** One HTML file: inline CSS (about 29 KB), a vanilla JavaScript renderer (about 87 KB, no libraries) and the blueprint as a JSON island (`<script type="application/json" id="bp-data">`). The build escapes `<`, `>`, `&` and line separators in the JSON, so data can never close the script element; the renderer creates every element with DOM APIs and text nodes, never by injecting data as HTML. The raw template, opened without data, shows how to build it.
+**Rendering.** One HTML file: inline CSS (about 63 KB), a vanilla JavaScript renderer (about 237 KB, no libraries) and the blueprint as a JSON island (`<script type="application/json" id="bp-data">`). The build escapes `<`, `>`, `&` and line separators in the JSON, so data can never close the script element; the renderer creates every element with DOM APIs and text nodes, never by injecting data as HTML. The raw template, opened without data, shows how to build it.
 
 **Views and navigation (1.4.0).** Fourteen views in three parts along the Innovation Hub journey: Vision (Overview, Org model, Blueprint, Journeys with the Agent Factory, Attendees), Design (Agents, Agent identity, Target architecture with four tabs, Use cases with a detail page, IT readiness, FinOps), Workshop (Discovery, Roadmap, Evidence). Earlier releases: ten views in three parts (Vision, Design, Workshop) on a left rail; journey tabs on journey-specific views; deep links by hash (`#/agents/D3-A05`); arrow keys move between views; a pager at the end of each view; a drawer for role cards, role profiles, evidence and use cases (Escape closes, focus returns).
+
+**Digital feedback loop (1.5.0).** The Overview draws the loop as one SVG (1200 × 700): the four areas as cards in the corners (Engage customers top left, Optimize operations top right, Empower employees bottom left, Transform products bottom right; colour of the first linked journey), Microsoft IQ as a circle in the centre with the four layers as chips, a human-approval band and the trust line (Microsoft Entra, Microsoft Purview, Microsoft Agent 365), and a dashed outer ring with direction marks for the loop. Each area has three curves to the centre: signal (card to Microsoft IQ), action (Microsoft IQ to card, with an approval gate at 30 % of its length) and outcome (dashed, card back to Microsoft IQ). The animation is SVG SMIL (`animateMotion` with key points), one 8-second cycle per area, offset by 2 seconds in clockwise order: two signal dots, an action packet that waits at the gate, an outcome dot; the centre pulses when a signal arrives. No script runs the animation, so the hosting policy needs no change; the pause button calls `pauseAnimations()`, reduced motion keeps the diagram still, print hides the particles. A click or Enter on a card selects the area: the chips of the layers it does not use dim, its curves thicken and the panel below lists its signals, actions and outcomes from the data.
+
+**Agent workflow (1.6.0).** Under the trigger canvas, full width, the agent's workflow on a dark canvas with a dotted grid, like the Copilot Studio workflow designer: a bar (name, Draft, "Derived from the plan", AI, deterministic and human step counts), the Add panel with the eleven designer node types as legend and highlighter, the canvas and a floating properties panel. The layout runs the main path left to right from the trigger to the desired outcome (nodes 196 × 60, gap 40); If/Else, Classify and Human review nodes grow a pill per path, and their branches run on lanes below that rejoin the next step or end at an end node; loops and scopes are dashed containers around their steps; notes sit above their step. The overview folds the path into rows of at most 960 pixels with orthogonal wrap edges; the designer row keeps one line. Nodes are SVG groups with a role, a label and a tab stop in flow order (Enter opens, Escape closes); icons are the agent's identity icon, Microsoft product icons for Copilot Studio, Microsoft 365 Copilot and connector systems, otherwise the plugin's own glyphs. Print uses a light canvas without the panels.
 
 **Org model layout.** The SVG (1000 × 1000) places human leaders in the centre (up to seven on a small circle), lead agents on an inner ring (radius 165) at the middle of their journey's arc, and specialists on an outer ring (radius 292). Journey arcs (radius 440) are sized by the number of specialists, with gaps between journeys and labels on text paths (flipped on the lower half so they stay readable). Labels run radially outward and wrap to two lines; lead labels sit on the inner side for top and bottom journeys and below the node otherwise, so they never cross the specialist ring. Dashed outlines mark planned positions, a halo marks MVP candidates, badges show the autonomy level, dimming shows the journey filter. The reveal control mirrors the HAIRO showcase: human-led → lead agents → agent teams.
 
@@ -492,7 +535,7 @@ Identifiers are allocated once and never reused. The blueprint id and version ti
 
 **Landing zone and factory (1.4.0).** The landing-zone diagram is computed for any number of journeys (width 1200): the tenant, identity, policy and front-door areas; the platform landing zone with four shared services; one agent landing zone per journey with its environments, data classes and agent icons, flanked by the sandbox and the Agent Factory; the systems of record, building blocks, vendor agents and retired agents. An agent's factory stage is computed in the browser from its lifecycle text and the eight handover checks, so nothing is stored twice. Product icons are looked up by key or by text rules and embedded only when used.
 
-**Size.** The Caldova example (4 journeys, 23 agents, 16 use cases, 27 questions, 7 sources) renders to about 204 KB without identity; with the identity of 27 agents (icons per environment and the Agent identity page) about 360 KB.
+**Size.** The Caldova example (4 journeys, 23 agents, 16 use cases, 27 questions, 7 sources) renders to about 204 KB without identity; with the identity of 27 agents (icons per environment and the Agent identity page) about 360 KB. Release 1.6.0: the Caldova demo with its five journeys, 29 agents, identity, product icons, value case, FinOps page, feedback loop and two workflows renders to about 764 KB; the empty template is about 302 KB.
 
 ## B.6 Grounding in Microsoft's Frontier architecture
 
@@ -557,16 +600,17 @@ Versioning follows semantic versioning; `manifest.json` and `plugin.json` must c
 
 | Check | Tool | Result at release |
 |---|---|---|
-| End-to-end scripts | `tools/selftest.py` | 23 of 23 passed |
+| End-to-end scripts | `tools/selftest.py` | 34 of 34 passed |
 | Value and FinOps method | Golden test against the worked example (81,780 credits, CHF 662.42 per month, NPV CHF 540,413, ROI 520%, payback 1.3 months, break-even 3.1%) | Reproduced exactly |
 | Agent identity page | Headless DOM test: Caldova demo, seeded proposal, customer version, 1.1.0 data, blueprint without identity | Every view and journey tab renders; no script errors |
 | Identity kit | Kit validator and unit tests on the Caldova kit (27 agents) | 0 errors, 0 warnings; all tests passed |
 | Icon renderer | Pixel comparison with a reference SVG renderer | Mean absolute difference below 0.02 of 255 per channel |
 | All views, drawers and tabs render without script errors | Headless DOM test on the Caldova example and on a sparse seed | Passed |
+| Agent workflow | Unit tests of `workflow.py` (node and trigger types, rules, derivation, checks, build, scaffold); headless DOM test of the workflow view; diagrams rendered to images and reviewed | 10 unit tests and the DOM test passed; overview and designer row reviewed |
 | Self-contained, valid HTML | HTML validator | No errors, no warnings |
-| Skill structure | `validate_skill.py` | 5 of 5 passed |
-| Skill quality | `score_skill.py` | frontier-agent-identity 100, frontier-envisioning 98, frontier-blueprint 98, frontier-solution-design 96, frontier-context-discovery 94 |
-| Routing conflicts | `conflict_scan.py` | 0 unresolved (10 internal pairs, 1 built-in pair resolved by delegation) |
+| Skill structure | `validate_skill.py` | 7 of 7 passed |
+| Skill quality | `score_skill.py` | frontier-agent-identity 100, frontier-value-case 100, frontier-finops 99, frontier-envisioning 98, frontier-blueprint 98, frontier-solution-design 96, frontier-context-discovery 96 |
+| Routing conflicts | `conflict_scan.py` | 0 unresolved (21 internal pairs, 1 built-in pair resolved by delegation) |
 | Bundled code and links | `validate_assets.py` | Passed |
 | Security | `security_scan.py` (bandit and prose scan) | Passed, 0 findings |
 | Tool descriptions | `validate_tool_descriptions.py` | Passed |
@@ -606,7 +650,7 @@ New journey types are added to the pattern library and the question bank; custom
 | ADR-0004 | Evidence register with visibility and a customer build gate | Traceability for the customer; zero internal leakage by construction | Manual redaction before sharing |
 | ADR-0005 | Hub canon of layers 0–7 plus approval seams, with dated availability | One vocabulary across engagements, grounded in Cloud Adoption Framework and Azure Architecture Center guidance | Product-by-product diagrams per engagement |
 | ADR-0006 | HAIRO as the organisation frame, adapted to enterprises (journeys, functional agent names, optional aliases, autonomy and declarations) | Intuitive "human-led, agent-operated" picture executives understand; adds governance the enterprise needs | Classic capability maps (no human-agent relationship) |
-| ADR-0007 | Workshop capture in the browser with JSON export and a merge script | Works offline and without accounts; versions stay explicit | Shared online store (needs tenant setup; planned for 1.5) |
+| ADR-0007 | Workshop capture in the browser with JSON export and a merge script | Works offline and without accounts; versions stay explicit | Shared online store (needs tenant setup; planned for 1.8) |
 | ADR-0008 | The agent identity is generated from one config, with the documents, and checked by a validator in the customer's pipeline | Names, icons and docs can't drift; the customer owns the source of truth | Hand-made icon sets and naming pages (drift, no enforcement) |
 | ADR-0009 | Icons are drawn by a standard-library renderer; cards and visuals use an SVG converter only when one exists | Same pixels everywhere; customers rebuild on any build agent without a browser or image library | Headless browser rendering (heavy dependency, not available on every agent) |
 | ADR-0010 | Glyphs from Fluent UI System Icons plus original Frontier glyphs, stored in the kit; no network at build time | Licence-clean (MIT), offline, consistent grid; more Fluent glyphs importable | Fetching icons at build time (network, availability); AI-generated icons (inconsistent, not reproducible) |
@@ -615,6 +659,8 @@ New journey types are added to the pattern library and the question bank; custom
 | ADR-0014 | The Innovation Hub canon (Agent Factory, landing zone, canon ADRs, IT readiness) lives in `blueprint-defaults.json` and is added by `canon.py` without overwriting | One canon for every engagement, customer content always wins, earlier blueprints upgrade with `--canon` | Copying a customer fork of the template per engagement |
 | ADR-0015 | Microsoft product icons are a separate, non-MIT asset embedded only when used, with a notice and an opt-out | Readability like the workshop decks while respecting Microsoft's icon terms | Embedding every icon; drawing look-alike icons |
 | ADR-0016 | The factory stage of an agent is computed from its data and the handover checks, not stored | The board can never contradict the canvas, declarations, identity, value, cost and readiness data | A manually maintained stage field |
+| ADR-0023 | The Overview's digital feedback loop is Microsoft's (four areas around Microsoft IQ), animated in SVG without script, with official Microsoft names enforced by the build (`docs/adr/0023-digital-feedback-loop.md`) | Explains the data-driven part in the customer's context; works under the showcase policy; every name can be looked up | A static diagram; a script-driven animation; the showcase's own layer names |
+| ADR-0024 | Each agent's workflow is drawn like the Copilot Studio workflow designer from `canvas.workflow`, derived from the plan until authored, with the designer's node and trigger names (`docs/adr/0024-agent-workflow-view.md`) | Builders and customers see the deterministic workflow, the AI steps and the human decisions in the terms of the build; no drift from the plan | A list of plan steps; images per agent; Microsoft's designer icons; a flowchart library; generating Copilot Studio definitions now |
 | ADR-0011 | Build the identity kit with every blueprint, as a proposal; approval stays a separate gate (E) | Agents carry their future names and icons from the first workshop, and the names are reviewed in context; one command | Kit only on request (identity arrives late; the blueprint shows working names) |
 
 ## B.13 Open technical decisions
@@ -656,7 +702,7 @@ The complete source list is in `skills/frontier-solution-design/references/front
 
 ---
 
-# Appendix — File inventory (1.4.0)
+# Appendix — File inventory (1.6.0)
 
 | Path | Purpose |
 |---|---|
@@ -664,8 +710,8 @@ The complete source list is in `skills/frontier-solution-design/references/front
 | `package/manifest.json`, `color.png`, `outline.png`, `icon-512.png` | MOS3 manifest and icons |
 | `skills/frontier-envisioning/` | SKILL.md; references: method, HAIRO model |
 | `skills/frontier-context-discovery/` | SKILL.md; scripts: parse_transcript, context_pack; references: playbook, context pack, question bank; example context |
-| `skills/frontier-blueprint/` | SKILL.md; template HTML (with the Agent identity page); defaults; scripts: seed, build, build_with_identity, merge; references: authoring guide, schema; Caldova example; 1.4.0: `scripts/canon.py`, `templates/product-icons.json` |
-| `skills/frontier-solution-design/` | SKILL.md; script: scaffold_design_docs; references: reference architecture, design rules |
+| `skills/frontier-blueprint/` | SKILL.md; template HTML (with the Agent identity page); defaults; scripts: seed, build, build_with_identity, merge; references: authoring guide, schema; Caldova example; 1.4.0: `scripts/canon.py`, `templates/product-icons.json`; 1.5.0: the digital feedback loop in the template, the defaults and `canon.py`; 1.6.0: `scripts/workflow.py` and the agent workflow in the template |
+| `skills/frontier-solution-design/` | SKILL.md; script: scaffold_design_docs (with each MVP workflow since 1.6.0); references: reference architecture, design rules |
 | `skills/frontier-agent-identity/` | SKILL.md; scripts: read_office_theme, seed_identity, make_kit, apply_identity; references: identity method, brand discovery, kit reference; `kit/` (customer package template: scripts, renderer, glyph library, tests, pipelines, schema); Caldova examples (brand, config, palette) |
 | `skills/frontier-value-case/` | SKILL.md; scripts: seed_value, value_calc, apply_value, merge_value_feedback, fv_expr; reference: value method; Caldova and worked-example value cases |
 | `skills/frontier-finops/` | SKILL.md; rates file (November 2026); scripts: seed_finops, finops_calc, apply_finops, fv_expr; references: FinOps for agents, guardrails; Caldova and worked-example cost models |

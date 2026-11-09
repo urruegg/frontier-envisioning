@@ -1,7 +1,7 @@
 ---
 id: FOCUS-01
 title: "FOCUS 1.5 alignment and Agent 365 cost data"
-milestone: "1.6.0"
+milestone: "1.8.0"
 labels: [type:feature, area:value-finops, priority:P2, size:M]
 ---
 ## Context
