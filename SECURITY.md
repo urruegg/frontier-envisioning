@@ -1,5 +1,14 @@
 # Security
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Maintained; approval not inferred |
+| Scope | Security reporting and repository protections; document revision, not product version |
+| References | [Documentation](docs/README.md), [Working agreement](AGENTS.md), [Engineering handbook](docs/engineering/handbook.md) |
+
 ## Reporting
 
 Report a vulnerability privately to the repository owner (GitHub private vulnerability reporting when enabled, otherwise e-mail the maintainer). Do not open a public issue. Include the affected version, the steps to reproduce and the impact.

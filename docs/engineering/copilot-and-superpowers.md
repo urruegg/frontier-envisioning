@@ -1,5 +1,14 @@
 # AI-assisted engineering: GitHub Copilot and Superpowers
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Maintained; approval not inferred |
+| Scope | Copilot and Superpowers engineering guide; document revision, not product version |
+| References | [Documentation](../README.md), [Working agreement](../../AGENTS.md), [Engineering handbook](handbook.md), [Work packages](../plan/README.md) |
+
 This repository is built with GitHub Copilot as the coding agent and **Superpowers** (obra/superpowers, MIT) as the engineering method: brainstorm, plan, test first, debug systematically, verify before completion, review, finish the branch. The repository adds its own instructions, agents, skills and deterministic guardrails so that agents work through pull requests and people keep the decisions.
 
 ## 1. Copilot surfaces and what they read
@@ -53,8 +62,8 @@ Superpowers v7.0.2 provides, among others: `brainstorming`, `writing-plans`, `ex
 | Step | Superpowers skill | Repository practice | Gate | Who |
 |---|---|---|---|---|
 | Ready | | Definition of Ready, `status:ready` | | person |
-| Spec | `brainstorming` | `docs/plans/...-design.md`; `approved:design` for big changes | | planner agent, person approves |
-| Plan | `writing-plans` | `docs/plans/...-plan.md` with failing tests first | | planner agent |
+| Spec | `brainstorming` | `docs/spec/...-design.md`; `approved:design` for big changes | | planner agent, person approves |
+| Plan | `writing-plans` | `docs/plan/...-plan.md` with failing tests first | | planner agent |
 | Branch | `using-git-worktrees` | `feat/<issue>-<topic>` | | builder agent |
 | Build | `test-driven-development`, `subagent-driven-development` or `executing-plans` | stdlib plugin, generated files via tools | L0 on commit | builder or renderer agent |
 | Debug | `systematic-debugging` | regression test for every bug | | agent |
@@ -62,6 +71,10 @@ Superpowers v7.0.2 provides, among others: `brainstorming`, `writing-plans`, `ex
 | Review | `requesting-code-review`, `receiving-code-review` | draft pull request, reviewer agent, Copilot code review, code owner | L1 and L2 required | agents, person |
 | Finish | `finishing-a-development-branch` | squash merge by a person | | person |
 | Release | | release pull request, tag, approval, publish | L3 | release-manager agent prepares, person releases |
+
+New work links the real issue, [idea](../idea/README.md),
+[spec](../spec/README.md), [plan](../plan/README.md) and
+[sprint](../sprint/README.md). [Legacy plans](../plans/README.md) remain historical.
 
 ## 5. Working with the Copilot cloud agent
 
@@ -73,7 +86,7 @@ Superpowers v7.0.2 provides, among others: `brainstorming`, `writing-plans`, `ex
 ## 6. Prompts that work
 
 - "Use the frontier-planner agent: plan issue INT-11. Ask me before choosing between the options."
-- "Implement docs/plans/2026-11-12-closeout-pack-plan.md test-first; stop after each task and show the test output."
+- "Implement docs/plan/2026-11-12-closeout-pack-plan.md test-first; stop after each task and show the test output."
 - "Add a DOM test that fails today: the FinOps page must show the purchase options for the Caldova MVP agents."
 - "Review this branch with the frontier-reviewer agent and list Critical and Important findings only."
 - "Prepare the 1.5.0 release pull request; do not tag."

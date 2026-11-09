@@ -1,5 +1,14 @@
 # ADR-0022: Deterministic guardrails for agents and customer neutrality
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Proposed |
+| Scope | Deterministic guardrails decision; document revision, not product version |
+| References | [ADR catalogue](README.md), [Working agreement](../../AGENTS.md), [Security](../../SECURITY.md) |
+
 **Status:** Proposed (8 November 2026)
 
 ## Context

@@ -1,5 +1,14 @@
 # HubWorks × Frontier Envisioning — Integration Analysis
 
+| Field | Value |
+|---|---|
+| Version | 0.9.6 |
+| Date | 2026-11-09 |
+| Author | Urs Rüegg, Sr Solution Engineer, Microsoft Innovation Hub Switzerland; Copilot AI-assisted maintenance |
+| Status | Draft for discussion; approval not inferred; Microsoft internal |
+| Scope | Integration analysis metadata and routing; document revision, not product version; original evidence and classification retained below |
+| References | [Documentation](../README.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
+
 ## How to connect the Frontier Envisioning plugin with HubWorks, CE Hub engagements and workshop transcripts
 
 | Field | Value |

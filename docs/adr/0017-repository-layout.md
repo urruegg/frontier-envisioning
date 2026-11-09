@@ -1,5 +1,14 @@
 # ADR-0017: Repository layout
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Proposed |
+| Scope | Repository layout decision; document revision, not product version |
+| References | [ADR catalogue](README.md), [Solution design](../solution-design.md), [Engineering handbook](../engineering/handbook.md) |
+
 **Status:** Proposed (8 November 2026)
 
 ## Context

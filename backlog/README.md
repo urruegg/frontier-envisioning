@@ -1,5 +1,14 @@
 # Seed backlog
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Maintained intake catalogue; approval not inferred |
+| Scope | Seed backlog routing; document revision, not product version |
+| References | [Documentation](../docs/README.md), [Intake record](../docs/engineering/intake-plan.md), [Product release plan](../docs/prd.md#a12-release-plan) |
+
 `backlog.json` holds the labels and milestones, `issues/*.md` the seed issues (frontmatter: id, title, milestone, labels; body: context, acceptance criteria, source). `python tools/bootstrap_github.py --owner <owner> --apply` creates them on GitHub (issue titles start with the id, so the script skips existing ones). After the bootstrap, GitHub issues are the source of truth; this folder stays as the record of the intake.
 
 | Milestone | Content |

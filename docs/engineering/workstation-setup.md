@@ -1,5 +1,14 @@
 # Workstation setup
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Maintained; approval not inferred |
+| Scope | Development environment setup guide; document revision, not product version |
+| References | [Documentation](../README.md), [Contributing](../../CONTRIBUTING.md), [Engineering handbook](handbook.md), [Testing strategy](testing-strategy.md) |
+
 ## Option A: dev container (recommended)
 
 Open the repository in VS Code with the Dev Containers extension (or in GitHub Codespaces). The container brings Python 3.12, Node.js 22, GitHub CLI, Azure CLI with Bicep and the Azure Developer CLI, runs `python tools/dev.py setup` (pytest, ruff, PyYAML, happy-dom, ESLint, Playwright Chromium), installs the pre-commit hook and prints `python tools/dev.py doctor`.

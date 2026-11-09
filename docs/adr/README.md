@@ -1,6 +1,15 @@
 # Architecture decision records
 
-Product and plugin decisions ADR-0001 to ADR-0016 are recorded in the PRD (`docs/prd-and-solution-design.md`, section B.12). Decisions about the repository and the engineering setup start at ADR-0017 and live here, one file per decision; product decisions taken after the move (from ADR-0023) live here too. Status is *Proposed* until a person accepts it in a pull request.
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Maintained catalogue; decision approval not inferred |
+| Scope | Architecture decision routing; document revision, not product version |
+| References | [Documentation](../README.md), [Product requirements](../prd.md), [Technical decision records](../solution-design.md#b12-architecture-decisions) |
+
+Product and plugin decisions ADR-0001 to ADR-0016 are recorded in the [solution design, section B.12](../solution-design.md#b12-architecture-decisions). Decisions about the repository and the engineering setup start at ADR-0017 and live here, one file per decision; product decisions taken after the move (from ADR-0023) live here too. Status is *Proposed* until a person accepts it in a pull request.
 
 | ADR | Title | Status |
 |---|---|---|

@@ -1,5 +1,14 @@
 # Engineering handbook
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Maintained; approval not inferred |
+| Scope | Engineering practice guide; document revision, not product version |
+| References | [Documentation](../README.md), [Working agreement](../../AGENTS.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
+
 How Frontier Envisioning is built, tested, versioned, released and deployed. The short version for people and agents is [AGENTS.md](../../AGENTS.md).
 
 ## 1. Principles
@@ -60,9 +69,9 @@ Copilot Cowork checks that cannot run in GitHub (skill structure and score, rout
 
 ## 8. Documentation and decisions
 
-- Product: `docs/prd-and-solution-design.md` (requirements, release plan, open decisions D-xx, product ADR-0001 to ADR-0016).
-- Engineering decisions: `docs/adr/` from ADR-0017, status *Proposed* until a person accepts.
-- Specs and plans: `docs/plans/`. User guide: `plugin/README.md`. Release notes: `CHANGELOG.md`.
+- Product: [requirements](../prd.md), [release plan](../prd.md#a12-release-plan) and [open decisions D-xx](../prd.md#a13-open-decisions); [solution design](../solution-design.md) and [product ADR-0001 to ADR-0016](../solution-design.md#b12-architecture-decisions).
+- Engineering decisions: [docs/adr/](../adr/README.md) from ADR-0017, status *Proposed* until a person accepts.
+- New work: [ideas](../idea/README.md), [specs](../spec/README.md), [plans](../plan/README.md) and [sprints](../sprint/README.md). [Legacy plans](../plans/README.md) remain historical. User guide: `plugin/README.md`. Release notes: `CHANGELOG.md`.
 
 ## 9. Toolchain
 

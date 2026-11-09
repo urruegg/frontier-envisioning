@@ -2,12 +2,16 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-09 |
-| Author | Copilot SDK in VS Code; AI-assisted design |
-| Status | Design approved by the user; implementation awaits separate plan approval |
+| Author | Copilot SDK in VS Code; AI-assisted design and maintenance |
+| Status | Design, implementation plans and readiness approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); delivery evidence separate |
 | Scope | The eight approved repository improvements, delivered in bounded workstreams |
-| References | [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Current PRD/design](../prd-and-solution-design.md) |
+| References | [Spec catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
+
+The design-stage approval statements below are retained as recorded evidence.
+Current plan/readiness approval is linked in the metadata; it does not accept
+policies, grant protected permissions or prove delivery.
 
 ## Approved source and approval boundary
 

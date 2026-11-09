@@ -1,5 +1,14 @@
 # ADR-0018: Quality gates L0 to L3 and release reproduction
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Proposed |
+| Scope | Quality gates and release reproduction decision; document revision, not product version |
+| References | [ADR catalogue](README.md), [Testing strategy](../engineering/testing-strategy.md), [Solution design](../solution-design.md#b9-quality-and-testing) |
+
 **Status:** Proposed (8 November 2026)
 
 ## Context

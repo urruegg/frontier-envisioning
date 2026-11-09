@@ -7,6 +7,8 @@ import re
 import unittest
 from pathlib import Path
 
+import yaml
+
 from tests.unit._util import ROOT, load
 
 fe_lib = load("tools/fe_lib.py")
@@ -272,3 +274,110 @@ class ProductDocumentSplit(unittest.TestCase):
             "sprint/SPRINT-001-docs-governance-and-accessibility.md",
         ):
             self.assertIn(f"]({target})", catalogue)
+
+
+class IssueWorkPackage(unittest.TestCase):
+    def test_existing_forms_collect_real_governing_links(self) -> None:
+        baseline = {
+            "feature.yml": (
+                {"problem", "area", "acceptance", "source", "neutral"},
+                {"problem", "area", "acceptance"},
+                ["type:feature"],
+            ),
+            "bug.yml": (
+                {"version", "what", "steps", "logs", "neutral"},
+                {"version", "what", "steps"},
+                ["type:bug"],
+            ),
+            "decision.yml": (
+                {"question", "options", "recommendation", "owner", "due"},
+                {"question", "options", "owner"},
+                ["type:decision", "human-only"],
+            ),
+        }
+        for name, (existing, mandatory, labels) in baseline.items():
+            with self.subTest(form=name):
+                path = ROOT / ".github" / "ISSUE_TEMPLATE" / name
+                form = yaml.safe_load(path.read_text(encoding="utf-8"))
+                entries = [field for field in form["body"] if "id" in field]
+                fields = {field["id"]: field for field in entries}
+                self.assertEqual(len(fields), len(entries), "duplicate field id")
+                self.assertTrue(existing.issubset(fields))
+                self.assertEqual(form["labels"], labels)
+                self.assertEqual(
+                    {
+                        key for key in existing
+                        if fields[key].get("validations", {}).get("required") is True
+                    },
+                    mandatory,
+                )
+                if "neutral" in fields:
+                    options = fields["neutral"]["attributes"]["options"]
+                    self.assertEqual(options, [{
+                        "label": "This issue names no real customer, person or engagement detail.",
+                        "required": True,
+                    }])
+                if name == "feature.yml":
+                    self.assertIn(
+                        "Use the fictitious Caldova Industrial AG in examples; never a real customer.",
+                        form["body"][0]["attributes"]["value"],
+                    )
+                if name == "bug.yml":
+                    self.assertIn("Caldova", fields["steps"]["attributes"]["label"])
+                    self.assertEqual(
+                        fields["logs"]["attributes"]["description"],
+                        "Remove customer content before you paste.",
+                    )
+                self.assertIn("work-package", fields)
+                package = fields["work-package"]
+                self.assertEqual(package["type"], "textarea")
+                self.assertIs(package["validations"]["required"], True)
+                description = package["attributes"]["description"]
+                for stage in ("real issue", "idea", "approved spec", "approved plan", "sprint"):
+                    self.assertIn(stage, description.lower())
+                self.assertRegex(description, r"(?i)draft.*unapproved")
+                self.assertRegex(description, r"(?i)readiness requires all real.*links")
+
+    def test_pr_template_keeps_its_sections_and_adds_work_package(self) -> None:
+        text = (ROOT / ".github" / "PULL_REQUEST_TEMPLATE.md").read_text(encoding="utf-8")
+        original = """## Summary (written by a person, in your own words)
+
+<!-- What changes for the users of the plugin or for the engineers, and why. -->
+
+Closes #
+
+## How it was built
+
+- [ ] Spec and plan: `docs/plans/...` (or: small change agreed in the issue)
+- [ ] Tests written first; new behaviour covered (unit, self-test, DOM, browser)
+- [ ] Agent involvement disclosed: <!-- none / Copilot agent mode / Copilot CLI / Copilot cloud agent; Superpowers skills used -->
+
+## Gates
+
+- [ ] `python tools/dev.py check` ends with ALL GATES PASSED (paste the summary below)
+- [ ] Renderer changes: `python tools/dev.py site e2e` and screenshots attached
+- [ ] Generated files regenerated, not hand-edited (template, `plugin-install.json`)
+
+```
+<gate summary>
+```
+
+## Rules
+
+- [ ] Customer-neutral (Caldova only); no secrets
+- [ ] Plugin changed after a release: version bumped (`python tools/dev.py bump X.Y.Z`) and CHANGELOG updated
+- [ ] SKILL.md, references, PRD or ADR updated where behaviour or design changed
+- [ ] Microsoft product icons used within their terms; notices updated
+
+## Release pull requests only
+
+- [ ] Cowork skill validators run in Copilot Cowork (structure, score, conflicts, security, package)
+- [ ] Behavioural prompts of PRD B.9 route to the expected skills
+- [ ] Install from the built package tested in a Cowork chat
+"""
+        expected = original.replace(
+            "- [ ] Spec and plan: `docs/plans/...` (or: small change agreed in the issue)\n",
+            "- [ ] Spec and plan: `docs/spec/...` and `docs/plan/...` (or: small change agreed in the issue)\n"
+            "- [ ] Linked work package: real issue, idea, approved spec, approved plan and sprint records are linked in this PR\n",
+        )
+        self.assertEqual(text, expected)

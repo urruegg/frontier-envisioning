@@ -6,7 +6,8 @@ Closes #
 
 ## How it was built
 
-- [ ] Spec and plan: `docs/plans/...` (or: small change agreed in the issue)
+- [ ] Spec and plan: `docs/spec/...` and `docs/plan/...` (or: small change agreed in the issue)
+- [ ] Linked work package: real issue, idea, approved spec, approved plan and sprint records are linked in this PR
 - [ ] Tests written first; new behaviour covered (unit, self-test, DOM, browser)
 - [ ] Agent involvement disclosed: <!-- none / Copilot agent mode / Copilot CLI / Copilot cloud agent; Superpowers skills used -->
 
