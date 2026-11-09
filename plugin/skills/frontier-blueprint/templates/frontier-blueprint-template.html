@@ -1340,9 +1340,7 @@ function pager(){
 
 /* ---------------- drawer ---------------- */
 var drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim"), lastFocus = null, drawerTimer = null;
-function backgroundInert(value){
-  document.querySelectorAll(".page,.rail,.skip").forEach(function(node){ node.inert = value; });
-}
+var drawerBackground = [];
 function canFocus(node){
   if (!node || !node.isConnected || typeof node.focus !== "function" ||
       node.matches(":disabled") || node.closest("[hidden],[inert]") || !node.getClientRects().length) return false;
@@ -1361,14 +1359,20 @@ function hideClosedDrawer(){
 function openDrawer(title, sub, body){
   clearTimeout(drawerTimer); drawerTimer = null;
   // Replacing a role card or opening its evidence keeps the original page trigger.
-  if (!drawer.classList.contains("open")) lastFocus = document.activeElement;
+  if (!drawer.classList.contains("open")){
+    lastFocus = document.activeElement;
+    drawerBackground = Array.from(document.querySelectorAll(".page,.rail,.skip")).map(function(node){
+      var saved = {node:node, inert:node.inert};
+      node.inert = true;
+      return saved;
+    });
+  }
   document.getElementById("drawer-title").textContent = title || "";
   document.getElementById("drawer-sub").textContent = sub || "";
   var b = document.getElementById("drawer-body");
   b.replaceChildren(); add(b, body);
   b.scrollTop = 0;
   drawer.hidden = false; drawer.inert = false; drawer.setAttribute("aria-hidden","false");
-  backgroundInert(true);
   drawer.classList.add("open"); scrim.classList.add("open");
   document.getElementById("drawer-close").focus();
 }
@@ -1376,7 +1380,8 @@ function closeDrawer(){
   if (!drawer.classList.contains("open")) return;
   drawer.classList.remove("open"); scrim.classList.remove("open");
   drawer.inert = true;
-  backgroundInert(false);
+  drawerBackground.forEach(function(saved){ saved.node.inert = saved.inert; });
+  drawerBackground = [];
   if (canFocus(lastFocus)) lastFocus.focus({preventScroll:true});
   if (document.activeElement !== lastFocus) document.getElementById("view").focus({preventScroll:true});
   lastFocus = null;

@@ -138,9 +138,29 @@ test("evidence drawer traps Shift+Tab and Tab, then Escape restores the exact tr
   expect(problems).toEqual([]);
 });
 
-test("drawer replacement preserves the outer trigger through role profile navigation", async ({ page }, info) => {
+test("evidence drawer Escape preserves an already inert rail through repeated opens", async ({ page }) => {
+  const problems = watchProblems(page);
+  await open(page, "/blueprint.html#/evidence");
+  await page.locator("#rail").evaluate((node) => { node.inert = true; });
+  const trigger = page.locator("#view .pill.ev").first();
+  for (const repeat of [false, true]) {
+    await trigger.click();
+    if (repeat) await trigger.evaluate((node) => node.click());
+    expect(await page.locator(".page,.rail,.skip").evaluateAll((nodes) => nodes.every((node) => node.inert))).toBe(true);
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#drawer")).toHaveAttribute("aria-hidden", "true");
+    await expect(page.locator("#rail")).toHaveJSProperty("inert", true);
+    await expect(page.locator(".page")).toHaveJSProperty("inert", false);
+    await expect(page.locator(".skip")).toHaveJSProperty("inert", false);
+    await expect(trigger).toBeFocused();
+  }
+  expect(problems).toEqual([]);
+});
+
+test("drawer replacement preserves the outer trigger and prior inert state through role profile navigation", async ({ page }, info) => {
   const problems = watchProblems(page);
   await open(page, "/blueprint.html#/finops");
+  await page.locator("#rail").evaluate((node) => { node.inert = true; });
   const trigger = page.locator("#view .agentlink").first();
   await trigger.click();
   await page.locator("#drawer").getByRole("button", { name: "Open role profile", exact: true }).click();
@@ -149,7 +169,9 @@ test("drawer replacement preserves the outer trigger through role profile naviga
   await info.attach("a2-role-profile-dialog", { body: await page.screenshot(), contentType: "image/png" });
   await page.keyboard.press("Escape");
   await expect(trigger).toBeFocused();
-  expect(await page.locator(".page,.rail,.skip").evaluateAll((nodes) => nodes.some((node) => node.inert))).toBe(false);
+  await expect(page.locator("#rail")).toHaveJSProperty("inert", true);
+  await expect(page.locator(".page")).toHaveJSProperty("inert", false);
+  await expect(page.locator(".skip")).toHaveJSProperty("inert", false);
   expect(problems).toEqual([]);
 });
 
@@ -219,6 +241,7 @@ test("drawer Escape falls back to the view when its trigger is no longer focusab
 test("drawer rapid close and reopen cancels the delayed hide and scrim close restores focus", async ({ page }) => {
   const problems = watchProblems(page);
   await open(page, "/blueprint.html#/evidence");
+  await page.locator("#rail").evaluate((node) => { node.inert = true; });
   await page.locator("#view .pill.ev").first().evaluate((trigger) => {
     trigger.focus();
     trigger.click();
@@ -234,7 +257,9 @@ test("drawer rapid close and reopen cancels the delayed hide and scrim close res
   await page.locator("#scrim").click({ position: { x: 10, y: 10 } });
   await expect(page.locator("#view .pill.ev").first()).toBeFocused();
   await expect(page.locator("#drawer")).toHaveJSProperty("hidden", true);
-  expect(await page.locator(".page,.rail,.skip").evaluateAll((nodes) => nodes.some((node) => node.inert))).toBe(false);
+  await expect(page.locator("#rail")).toHaveJSProperty("inert", true);
+  await expect(page.locator(".page")).toHaveJSProperty("inert", false);
+  await expect(page.locator(".skip")).toHaveJSProperty("inert", false);
   expect(problems).toEqual([]);
 });
 

@@ -83,6 +83,27 @@ describe("accessibility structure", () => {
   });
 });
 
+it("restores original background inert states after repeated evidence drawer opens", async () => {
+  const bp = await openBlueprint();
+  try {
+    await bp.go("#/evidence");
+    const background = [".page", ".rail", ".skip"].map((selector) => bp.doc.querySelector(selector));
+    const trigger = bp.view().querySelector(".pill.ev");
+    assert.ok(trigger);
+    for (const original of [[false, true, false], [true, false, true]]) {
+      background.forEach((node, index) => { node.inert = original[index]; });
+      await bp.click(trigger);
+      assert.deepEqual(background.map((node) => node.inert), [true, true, true]);
+      await bp.click(trigger);
+      bp.doc.dispatchEvent(new bp.window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+      assert.deepEqual(background.map((node) => node.inert), original, "Escape restores the first-open snapshot");
+    }
+    assert.deepEqual(bp.errors, []);
+  } finally {
+    await bp.close();
+  }
+});
+
 it("keeps pre-optional-field sparse blueprints rendering without inventing unavailable views", async () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "frontier-a11y-sparse-"));
   let bp;
