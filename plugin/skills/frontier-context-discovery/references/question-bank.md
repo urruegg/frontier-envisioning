@@ -28,6 +28,16 @@ Six categories, used in the context pack (`open_questions[].category`) and in th
 | Incident-to-Resolve (IT service) | Ticket volume by category? Knowledge base quality? Automation already in the ITSM tool? |
 | Customer service | Contact volume by channel? First-contact resolution? Authentication and consent for customer data? |
 
+## Digital feedback loop questions (Overview)
+
+Ask them per area of Microsoft's digital feedback loop: Engage customers, Optimize operations, Empower employees, Transform products. The answers become the blueprint's `feedback_loop` (signals with their Microsoft IQ layer, actions with the person who approves, outcomes with KPIs).
+
+| Step | Questions |
+|---|---|
+| Signals | Which signal tells you first that something needs to happen (a request, an exception, a meeting, an alarm)? Where does it appear today: email and Teams (Work IQ), a business system or telemetry (Fabric IQ), documents and manuals (Foundry IQ), the public web (Web IQ)? How fresh and complete is it? |
+| Action | What should happen next, and who decides today? What may an agent prepare or propose, and what must a person approve before it leaves the company? |
+| Outcome | How do you measure that it worked (KPI, baseline, target)? Where is the result recorded, and how would it return as the next signal? |
+
 ## Frontier operating-model questions (for the leadership session)
 
 - Which processes should be human-led but agent-operated within 18 months?

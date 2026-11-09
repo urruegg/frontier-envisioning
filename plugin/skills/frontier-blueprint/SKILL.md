@@ -2,8 +2,8 @@
 name: frontier-blueprint
 description: |
   Builds or updates the interactive Frontier Company Blueprint HTML for a customer along the
-  Innovation Hub journey: a hypothesis hybrid organisation (HAIRO org model, journeys, the
-  Agent Factory, attendees), agents with identity, the target architecture with landing zone
+  Innovation Hub journey: a hypothesis hybrid organisation (Microsoft's digital feedback loop
+  around Microsoft IQ, HAIRO org model, journeys, the Agent Factory, attendees), agents with their workflow and identity, the target architecture with landing zone
   and ADRs, use cases, IT readiness and FinOps. Use when asked to "build the Frontier
   blueprint for <customer>", "create the hybrid organisation mockup", "update the blueprint
   with the workshop feedback", "prepare the IT readiness page", "make the customer-ready
@@ -15,7 +15,7 @@ license: MIT
 metadata:
   category: productivity
   icon: Organization
-  version: "1.4.0"
+  version: "1.6.0"
   plugin: frontier-envisioning
 ---
 
@@ -27,8 +27,8 @@ The HTML follows the Innovation Hub journey in fourteen views:
 
 | Part | Views |
 |---|---|
-| **1 Vision** | Overview (Frontier phase ladder) · Org model (HAIRO) · Blueprint · Journeys, with the **Agent Factory** as its own journey (DevSecOps lifecycle from hypothesis to operate, agent board, Definition of Ready, build steps with the GitHub Copilot harness and CAT skills, evaluation pyramid, roles, phases) · **Attendees** (who contributed what, linked to journeys and use cases) |
-| **2 Design** | Agents (trigger canvas, seven declarations, role profile, identity) · Agent identity · Target architecture in four tabs: **Landing zone** (CAF design areas, WAF and Responsible AI lenses, one agent landing zone per journey with DEV, TEST and PROD), Layers and integrations, Flows, **Decisions (ADRs)** with the workshop verdict · Use cases in the Hub template (General with the problem statement and its provenance, Value with business value, Feasibility) and the portfolio matrix · **IT readiness** (preparation items, readiness checks, workstation, questions, decisions, environments, timeline, with live status) · FinOps |
+| **1 Vision** | Overview (Frontier phase ladder; the **digital feedback loop**: an animated diagram of how signals become governed actions and measured outcomes through Microsoft IQ in the customer's four areas) · Org model (HAIRO) · Blueprint · Journeys, with the **Agent Factory** as its own journey (DevSecOps lifecycle from hypothesis to operate, agent board, Definition of Ready, build steps with the GitHub Copilot harness and CAT skills, evaluation pyramid, roles, phases) · **Attendees** (who contributed what, linked to journeys and use cases) |
+| **2 Design** | Agents (trigger canvas; the **workflow** from trigger to outcome drawn like the Copilot Studio workflow designer, with Agent, Classify, Extract, Copilot, Human review, Connector and the other designer nodes; seven declarations, role profile, identity) · Agent identity · Target architecture in four tabs: **Landing zone** (CAF design areas, WAF and Responsible AI lenses, one agent landing zone per journey with DEV, TEST and PROD), Layers and integrations, Flows, **Decisions (ADRs)** with the workshop verdict · Use cases in the Hub template (General with the problem statement and its provenance, Value with business value, Feasibility) and the portfolio matrix · **IT readiness** (preparation items, readiness checks, workstation, questions, decisions, environments, timeline, with live status) · FinOps |
 | **Workshop** | Discovery questions with live notes · Roadmap and MVP candidates · Evidence register |
 
 Agent identity icons mark agents everywhere; Microsoft product icons mark products, design areas and factory tools (only the icons used are embedded).
@@ -71,7 +71,7 @@ When the user asks for the demo or the sample ("Build the Frontier blueprint dem
 
 ### Step 1: Start from evidence
 1. Look for the context pack: `input/`, the output folder, or OneDrive `Documents/Cowork/frontier-envisioning/<slug>/` (read it with the `ReadFileContent` tool, mode download). If it is missing, run **frontier-context-discovery** first (or, if the user insists on a quick draft, work from what they provide and mark everything as hypothesis).
-2. Seed the blueprint: `python scripts/seed_blueprint.py --context customer-context.json --out working/frontier/<slug>/blueprint.json`. The seed copies evidence, journeys, KPIs, systems, stakeholder roles, ideas, actions and open questions, seeds the attendees from the named stakeholders, adds the Innovation Hub canon from `templates/blueprint-defaults.json` (the Agent Factory journey and its lifecycle, the landing zone, the canon ADRs `ADR-F01`… and the IT readiness checklist; a canon decision whose title the blueprint already has is skipped), and lists every gap in `_todo`.
+2. Seed the blueprint: `python scripts/seed_blueprint.py --context customer-context.json --out working/frontier/<slug>/blueprint.json`. The seed copies evidence, journeys, KPIs, systems, stakeholder roles, ideas, actions and open questions, seeds the attendees from the named stakeholders, adds the Innovation Hub canon from `templates/blueprint-defaults.json` (the Agent Factory journey and its lifecycle, the landing zone, the canon ADRs `ADR-F01`…, the IT readiness checklist and the digital feedback loop with every journey mapped to one of its four areas; a canon decision whose title the blueprint already has is skipped), and lists every gap in `_todo`.
 
 ### Step 2: Write the hypothesis
 Follow [references/authoring-guide.md](references/authoring-guide.md) and the field reference [references/blueprint-schema.md](references/blueprint-schema.md). For each journey:
@@ -81,18 +81,19 @@ Follow [references/authoring-guide.md](references/authoring-guide.md) and the fi
 4. Specialist agents (3 to 6): capability, autonomy (Assist / Act with approval / Act within guardrails), horizon (H1 to H3), trigger, outcome, technology. Workflow-first: a step that a rule can do is a workflow, not an agent.
 5. The approval seam: what never leaves without a person.
 6. Use cases scored for value and feasibility (1 to 5) with the rubric in the guide; 2 or 3 MVP candidates with why and needs.
-7. For every MVP candidate agent: the full trigger canvas, the seven declarations and the role profile.
+7. For every MVP candidate agent: the full trigger canvas, the seven declarations and the role profile, and the workflow (`canvas.workflow`, guide §5a): trigger type, the designer nodes from trigger to outcome, a Human review before every write, branches that rejoin or end. Without it the build derives one from the plan and marks it "Derived from the plan".
 8. Discovery questions: keep the seeded ones that matter; prefill `answer` with `src` where evidence exists.
 9. For every MVP use case, the Hub use-case template: `problem` (a list of `[provenance, text]` pairs: workshop, board, transcript, customer, microsoft, hypothesis), `today`, `pain`, `idea`, `objective`, `key_results`, `figures` with their source, `tech_fit`, `risk_points`, `safeguards`, `dependencies` (see the schema).
 10. Attendees: who took part and what each contributed (from the transcripts and notes); link contributions to journeys and use cases. Customer people by role unless they agreed to be named.
 11. Landing zone and decisions: set per journey which of DEV, TEST and PROD exist now, next or later, and the data classes allowed; keep the canon ADRs, adapt their wording to the customer, add the customer's own ADRs.
 12. IT readiness: owners and status from the IT conversation. Never assume the engineering control plane: keep GitHub, Azure DevOps and the hybrid open until the customer decides (decision D-01).
+13. Digital feedback loop (Overview, guide §7b): check which journey belongs to which area (Engage customers, Optimize operations, Empower employees, Transform products); per area the customer's signals with their Microsoft IQ layer (Work IQ, Fabric IQ, Foundry IQ, Web IQ, from the systems, mails and transcripts found by discovery), the actions with their agents and the person who approves, the outcomes with the journey KPIs and the value-case assumption ids, and one workshop question. Use only official Microsoft names.
 Also write the mission (cite the strategy facts), outcomes, leaders (accountable roles), and the architecture flows for the MVP. Delete `_todo` when done.
 
 ### Step 3: Build and check
 1. `python scripts/build_with_identity.py --data working/frontier/<slug>/blueprint.json --out-dir working/frontier/<slug> --html "<Customer> Frontier Company Blueprint.html" --save-normalized working/frontier/<slug>/blueprint.normalized.json --report working/frontier/<slug>/build-report.json` plus `--theme <file>` when a customer-authored deck or template is available (find one with the `SearchM365` tool and download it with `ReadFileContent`, or ask the user to attach it) and `--prefix <publisher prefix>` when known. It writes the identity kit to `identity/` (proposal, `seed-report.md`) and the HTML with the Agent identity page. After the identity review, pass the reviewed `--identity-config` and `--palette` instead; `--no-identity` builds the blueprint without the kit. With `--value` and `--finops` (from frontier-value-case and frontier-finops) it also calculates both on copies: business value in the use cases and the matrix, and the FinOps page.
    A blueprint from release 1.3 or earlier gets the canon with `--canon`; `--no-product-icons` leaves the Microsoft product icons out.
-2. Fix every ERROR. Read the WARN lines: unknown agents in stages, uncited evidence ids, MVP agents missing declarations. Rebuild until clean or every remaining warning is deliberate.
+2. Fix every ERROR. Read the WARN lines: unknown agents in stages, uncited evidence ids, MVP agents missing declarations, an unofficial "… IQ" name or unknown area in the feedback loop, an unknown workflow node or trigger type or an unknown agent in a workflow. Rebuild until clean or every remaining warning is deliberate.
 3. Validate the HTML with the html skill's validator when available (`validate.py` must report success).
 4. Customer version (only when asked, or before anything leaves Microsoft): add `--audience customer`. It removes internal evidence, items flagged `"internal": true` and `internal_notes`, and refuses to build if any `meta.internal_terms` string remains. Name it `<Customer> Frontier Company Blueprint (customer).html`.
 
@@ -103,7 +104,7 @@ Also write the mission (cite the strategy facts), outcomes, leaders (accountable
 ### Step 5: After the workshop (feedback merge)
 1. Find the exported `<customer>-workshop-feedback.json` (attached, or in Downloads uploaded by the user) and the normalized blueprint of the version shown in the workshop.
 2. `python scripts/merge_feedback.py --blueprint blueprint.normalized.json --feedback <feedback.json> --out blueprint.v0.2.json --workshop-date <YYYY-MM-DD>`
-3. Add what the workshop transcript adds (run **frontier-context-discovery** on it), then rebuild. IT readiness statuses (`ready:<id>`) and ADR verdicts (`adr:<id>`; validated becomes agreed) are applied directly. Feedback from the Agent identity page arrives as `identity_feedback`; resolve it with **frontier-agent-identity** before the names are approved. When the customer has confirmed the journeys and MVPs, set `meta.status` to `validated`.
+3. Add what the workshop transcript adds (run **frontier-context-discovery** on it), then rebuild. IT readiness statuses (`ready:<id>`), ADR verdicts (`adr:<id>`; validated becomes agreed) and feedback-loop verdicts (`loop:<area>`) are applied directly. Feedback from the Agent identity page arrives as `identity_feedback`; resolve it with **frontier-agent-identity** before the names are approved. When the customer has confirmed the journeys and MVPs, set `meta.status` to `validated`.
 
 ## Output format (reply)
 
@@ -111,8 +112,10 @@ Also write the mission (cite the strategy facts), outcomes, leaders (accountable
 - The identity kit zip by file name: number of agents, validator and test result, and whether the names are a proposal; flag a missing brand source.
 - A compact table: journeys, lead agent, number of specialists, MVP candidates.
 - What is hypothesis versus evidenced (counts), and the top open questions for the workshop.
+- The digital feedback loop: which journeys sit in which area, and the areas still to discover.
+- The MVP workflows: trigger, number of AI, deterministic and human steps, and which are still derived from the plan.
 - IT readiness: open preparation items with their owners, and the decisions still to take.
-- Presenting tips: open the file in Edge or Chrome (OneDrive preview does not run it); arrow keys move between views; the Org model reveals layers step by step; notes and validations are saved in the browser and exported from Discovery.
+- Presenting tips: open the file in Edge or Chrome (OneDrive preview does not run it); arrow keys move between views; the Overview's feedback loop animates (pause button; it stays still when the device asks for reduced motion), select an area to see its signals, actions and outcomes; on an agent, the workflow starts as an overview (switch to the designer row, zoom, select a node for its properties, select a node type in Add to highlight it); the Org model reveals layers step by step; notes and validations are saved in the browser and exported from Discovery.
 
 ## Guardrails
 
@@ -125,6 +128,7 @@ Also write the mission (cite the strategy facts), outcomes, leaders (accountable
 - The HTML stays self-contained: no external scripts, fonts, images or links; customer logos only as PNG/JPEG data URIs the customer provided.
 - Microsoft product icons come only from `templates/product-icons.json`: Microsoft trademarks, not covered by the MIT licence, used as Microsoft's icon terms allow (architecture diagrams, training, documentation) and never altered. Leave them out (`--no-product-icons`) when a customer version must carry no third-party marks.
 - No competitor bashing; name the customer's existing systems neutrally.
+- In the digital feedback loop use only official Microsoft names: Microsoft IQ, Work IQ, Fabric IQ, Foundry IQ, Web IQ, and the four areas Engage customers, Optimize operations, Empower employees, Transform products; never invent an "… IQ".
 - Never present proposed agent names as final: the Agent identity page shows the kit's status until the customer approves the names.
 - Use only the customer's own brand material for the identity colours, and never reuse one customer's kit for another.
 
@@ -141,12 +145,13 @@ Also write the mission (cite the strategy facts), outcomes, leaders (accountable
 ## Files
 
 - `templates/frontier-blueprint-template.html` — the renderer (data placeholder `"__BLUEPRINT_DATA__"`)
-- `templates/blueprint-defaults.json` — Innovation Hub canon: governance, security, knowledge, build & run, foundation, target-architecture layers, horizons, discovery bank, Agent Factory, landing zone, canon ADRs, IT readiness
+- `templates/blueprint-defaults.json` — Innovation Hub canon: digital feedback loop (Microsoft IQ, the four areas, mapping rules, Microsoft sources), governance, security, knowledge, build & run, foundation, target-architecture layers, horizons, discovery bank, Agent Factory, landing zone, canon ADRs, IT readiness
 - `templates/product-icons.json` — Microsoft product icons with their notice and the text rules that map product names to icons
-- `scripts/canon.py` — adds the canon blocks to a blueprint without overwriting what it has
+- `scripts/canon.py` — adds the canon blocks to a blueprint without overwriting what it has, and completes the feedback loop from the journeys
 - `scripts/seed_blueprint.py` — context pack to blueprint seed
 - `scripts/build_blueprint.py` — validate, normalise, customer version, render
 - `scripts/build_with_identity.py` — blueprint and agent identity kit in one step (default build); with `--value` and `--finops` also the business value and the FinOps page
+- `scripts/workflow.py` — the agent workflows: Copilot Studio node and trigger types, derivation from the canvas plan, checks (used by the build)
 - `scripts/merge_feedback.py` — merge the workshop feedback export (identity feedback kept as `identity_feedback`)
 - `references/authoring-guide.md` — how to write the hypothesis, scoring rubric, journey pattern library
 - `references/blueprint-schema.md` — every field of the blueprint JSON

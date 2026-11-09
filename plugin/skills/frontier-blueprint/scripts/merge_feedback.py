@@ -24,6 +24,7 @@ Effects:
   * IT readiness ("ready:<id>"): status (open, in progress, done, blocked; answered; agreed) and notes of the item
   * architecture decisions ("adr:<id>"): verdict validated -> status "agreed"; adjusted / rejected kept;
     note appended to the decision's "workshop_notes" and the workshop evidence added to its "src"
+  * digital feedback loop ("loop:<area>", Overview): status and notes of the area (engage_customers, ...)
   * assumption verdicts ("ass:<id>", with an agreed value) and the FinOps model ("finops:model"): kept in
     "assumption_feedback"; frontier-value-case's merge_value_feedback.py applies them to value.json and finops.json
 Prints a JSON summary; unknown ids are reported, never invented.
@@ -150,6 +151,21 @@ def main(argv=None) -> int:
                     dec.setdefault("workshop_notes", []).append({"date": day, "note": val["note"], "src": [wid]})
                 dec["src"] = sorted(set(as_list(dec.get("src")) + [wid]))
                 summary["decisions_updated"] = summary.get("decisions_updated", 0) + 1
+                continue
+            if kind == "loop":
+                # digital feedback loop (Overview): verdict and note of one area
+                fl = bp.get("feedback_loop") if isinstance(bp.get("feedback_loop"), dict) else {}
+                q = next((x for x in as_list(fl.get("quadrants")) if isinstance(x, dict) and x.get("pillar") == ident), None)
+                if q is None:
+                    summary["unknown"].append(key)
+                    continue
+                st = str(val.get("status", "")).lower()
+                if st in VALID:
+                    q["status"] = "adjusted" if st == "adjust" else st
+                if val.get("note"):
+                    q.setdefault("workshop_notes", []).append({"date": day, "note": val["note"], "src": [wid]})
+                q["src"] = sorted(set(as_list(q.get("src")) + [wid]))
+                summary["loop_updated"] = summary.get("loop_updated", 0) + 1
                 continue
             if kind in ("ass", "finops"):
                 # value and cost assumptions (and the FinOps model): kept for frontier-value-case's merge_value_feedback.py

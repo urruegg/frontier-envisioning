@@ -49,6 +49,52 @@ test("blueprint renders the 14 views in Chromium under the security policy", asy
   expect(problems).toEqual([]);
 });
 
+test("digital feedback loop animates, pauses and follows the selected area", async ({ page }) => {
+  const problems = watchProblems(page);
+  await page.goto("/blueprint.html");
+  await go(page, "#/overview");
+  const loop = page.locator("svg.flsvg");
+  await expect(loop.locator(".flq")).toHaveCount(4);
+  await expect(loop.locator(".flchip")).toHaveCount(4);
+  await expect.poll(() => loop.evaluate((s) => s.animationsPaused())).toBe(false);
+  await page.locator(".flbtn").click();
+  await expect.poll(() => loop.evaluate((s) => s.animationsPaused())).toBe(true);
+  await loop.locator('.flq[data-q="3"]').click();
+  await expect(page.locator("#flpanel h3")).toHaveText("Turn machine telemetry into new service offers");
+  expect(problems).toEqual([]);
+});
+
+test("digital feedback loop stays still when the device asks for reduced motion", async ({ browser }) => {
+  const context = await browser.newContext({ reducedMotion: "reduce" });
+  const page = await context.newPage();
+  await page.goto("/blueprint.html");
+  await expect(page.locator("#flwrap")).toHaveClass(/still/);
+  await expect.poll(() => page.locator("svg.flsvg").evaluate((s) => s.animationsPaused())).toBe(true);
+  await context.close();
+});
+
+test("agent workflow: keyboard through the nodes, properties, designer row", async ({ page }, testInfo) => {
+  const problems = watchProblems(page);
+  await page.goto("/blueprint.html");
+  await go(page, "#/agents/D3-A05");
+  const flow = page.locator("svg.wfsvg");
+  await expect(flow.locator(".wfn")).toHaveCount(16);
+  await flow.locator('.wfn[data-t="trigger"]').focus();
+  await page.keyboard.press("Tab");
+  await expect(page.locator(":focus")).toHaveAttribute("aria-label", "Variable: Initialize report variables");
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".wfprops")).toBeVisible();
+  await expect(page.locator(".wfprops .wfptag")).toContainText("Variable");
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".wfprops")).toBeHidden();
+  const box = await page.locator(".wfcanvas").boundingBox();
+  expect(box.width).toBeGreaterThan(900);
+  await page.locator(".wflay").click();
+  await expect(page.locator(".wflay")).toHaveText("Overview");
+  await page.locator(".wf").screenshot({ path: testInfo.outputPath("workflow-designer-row.png") });
+  expect(problems).toEqual([]);
+});
+
 test("landing zone, use case deep link and workshop notes", async ({ page }) => {
   const problems = watchProblems(page);
   await page.goto("/blueprint.html");

@@ -1,12 +1,12 @@
 ---
 id: INT-02
-title: "L1 quality gate green on the import commit; release 1.4.0 reproduced"
+title: "L1 quality gate green on the import commit; release 1.6.0 reproduced"
 milestone: "M0"
 labels: [type:chore, area:engineering, priority:P1, size:S]
 ---
 ## Context
 
-The import must prove that nothing was lost: the repository rebuilds the published 1.4.0 artefacts.
+The import must prove that nothing was lost: the repository rebuilds the published 1.6.0 artefacts.
 
 ## Acceptance criteria
 
@@ -17,4 +17,4 @@ The import must prove that nothing was lost: the repository rebuilds the publish
 
 ## Source
 
-releases/1.4.0/manifest.json; docs/engineering/intake-plan.md
+releases/1.6.0/manifest.json; docs/engineering/intake-plan.md

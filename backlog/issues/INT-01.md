@@ -6,7 +6,7 @@ labels: [type:chore, area:engineering, human-only, priority:P1, size:S]
 ---
 ## Context
 
-The repository starting point was prepared in Copilot Cowork from release 1.4.0. It must become a protected GitHub repository before anyone, person or agent, changes it.
+The repository starting point was prepared in Copilot Cowork from release 1.6.0. It must become a protected GitHub repository before anyone, person or agent, changes it.
 
 ## Acceptance criteria
 

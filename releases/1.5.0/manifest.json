@@ -1,0 +1,40 @@
+{
+ "schema": "frontier-release-manifest/1.0",
+ "version": "1.5.0",
+ "date": "2026-11-08",
+ "provenance": "Built and validated in Copilot Cowork and published on 8 November 2026 (self-test 32 of 32, unit tests 46 of 46, DOM tests 13 of 13, skill validation and scores 96 to 98, security scan and package validation passed, HTML validator 0 findings, customer-neutrality scan 0 findings). Adds the Overview's digital feedback loop to 1.4.0. Imported into the repository as the engineering baseline; the repository reproduces the artefacts below.",
+ "artefacts": [
+  {
+   "name": "frontier-envisioning-plugin-1.5.0.zip",
+   "build_path": "dist/frontier-envisioning-plugin-1.5.0.zip",
+   "bytes": 549527,
+   "sha256": "526dd2f916aa68f73479caa516b276ef24c89ce0c4b229b8a55598162e6ac7bd"
+  },
+  {
+   "name": "Frontier Company Blueprint - Template (Caldova sample).html",
+   "build_path": "build/demo/Frontier Company Blueprint - Template (Caldova sample).html",
+   "bytes": 721693,
+   "sha256": "02dfe6b3c39647d264e256e52276485b33dbb538e3a6a005a95e9b0b5c1ec5a2",
+   "normalise": "generated-date",
+   "sha256_normalised": "8a996211a91914e008e95b556c8f6656141db0407359e1656b75a1389e678204"
+  },
+  {
+   "name": "Caldova - agent identity package v1.0.zip",
+   "build_path": "build/demo/identity/Caldova - agent identity package v1.0.zip",
+   "bytes": 3308707,
+   "sha256": "2026c84c5806e0b8c2003e837f15e635fb78f2fa79f247164c47c1a5b51a5400"
+  },
+  {
+   "name": "Caldova - agent identity catalogue.html",
+   "build_path": "build/demo/identity/caldova-agent-identity/catalog.html",
+   "bytes": 299998,
+   "sha256": "08e2da864f13575d0a630d90954e81a06283a1082a32cf10adfd30d038fa20f1"
+  }
+ ],
+ "not_reproduced": [
+  {
+   "name": "frontier-envisioning-github-repo-1.5.0.zip",
+   "reason": "the repository starting point itself; it contains this manifest, so its hash cannot be recorded here"
+  }
+ ]
+}

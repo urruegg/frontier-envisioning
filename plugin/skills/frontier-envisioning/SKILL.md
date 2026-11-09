@@ -16,7 +16,7 @@ license: MIT
 metadata:
   category: productivity
   icon: Rocket
-  version: "1.4.0"
+  version: "1.6.0"
   plugin: frontier-envisioning
 ---
 
@@ -25,7 +25,7 @@ metadata:
 The Innovation Hub method for helping a customer see itself as a Frontier company: **human-led, agent-operated**. It chains three skills over the life of an engagement and keeps every artefact tied to evidence:
 
 1. **Discover** with **frontier-context-discovery**: Work IQ (meetings, transcripts, mail, chats, files) and public sources become a cited context pack.
-2. **Hypothesise** with **frontier-blueprint**: the context becomes an interactive Frontier Company Blueprint along the Innovation Hub journey. Part 1 Vision: org model, journeys, the Agent Factory with DevSecOps, attendees' contributions. Part 2 Design: lead and specialist agents with identity, target architecture with landing zone and ADRs, use cases with problem and value, IT readiness, FinOps.
+2. **Hypothesise** with **frontier-blueprint**: the context becomes an interactive Frontier Company Blueprint along the Innovation Hub journey. Part 1 Vision: the Overview with Microsoft's digital feedback loop (how the customer's signals become governed actions and measured outcomes through Microsoft IQ), org model, journeys, the Agent Factory with DevSecOps, attendees' contributions. Part 2 Design: lead and specialist agents with identity, target architecture with landing zone and ADRs, use cases with problem and value, IT readiness, FinOps.
 3. **Validate** in the workshop: the blueprint is presented and corrected live; notes and verdicts are exported and merged.
 4. **Design** with **frontier-solution-design**: PRD, solution design and ADRs for the MVP agents, grounded in Microsoft's Frontier architecture guidance.
 

@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Document | Integration analysis and extension proposal |
-| Version | 0.9.4 — draft for discussion (sharing copy, 8 Nov 2026: Frontier release numbers updated; 1.1.0 shipped the agent identity kit, 1.2.0 the identity page, 1.3.0 business value and FinOps, 1.4.0 the Innovation Hub journey structure with the Agent Factory, landing zone, ADRs and IT readiness; the HubWorks changes move to 1.5 and 1.6) |
+| Version | 0.9.5 — draft for discussion (sharing copy, 8 Nov 2026: Frontier release numbers updated; 1.1.0 shipped the agent identity kit, 1.2.0 the identity page, 1.3.0 business value and FinOps, 1.4.0 the Innovation Hub journey structure with the Agent Factory, landing zone, ADRs and IT readiness, 1.5.0 the digital feedback loop on the Overview, 1.6.0 the agent workflow in the Copilot Studio designer style; the HubWorks changes move to 1.7 and 1.8) |
 | Date | 22 October 2026 |
 | Author | Urs Rüegg, Sr Solution Engineer, Microsoft Innovation Hub Switzerland |
 | Proposed reviewers | HubWorks core team (Brendon Colburn, Rich Ross, Bryan Roberts) · CE Hub closeout contributors (Jay Leask, Yuri Lausberg) · Hub engagement standards (Powlo, Innovation Hub) · Engagement IQ (Andreas Krüger) · Innovation Hub Switzerland |
@@ -576,21 +576,21 @@ Before it writes the closeout pack, a new orchestrator gate compares the planned
 | H-08 | hub-feedback | Cover the Frontier skills; label issues `frontier` | S | 2 |
 | H-09 | journey-update | Accept next steps and MVP options from the closeout pack | S | 3 |
 
-### 8.2 Frontier Envisioning changes (1.5 and 1.6)
+### 8.2 Frontier Envisioning changes (1.7 and 1.8)
 
 | ID | Change | Detail | Effort | Release |
 |---|---|---|---|---|
-| F-01 | Engagement link | Orchestrator Step 1 reads `engagement.json` from the engagement folder. If it is absent, asks once for the CE Hub number and URL. Never queries CE Hub itself. | S | 1.5 |
-| F-02 | Folder alignment | Save into `<engagement folder>/frontier/` by uploading into that folder; the Cowork folder is only the fallback | M | 1.5 |
-| F-03 | Transcript harvest | Rules R1–R5, multi-part merge, language tag, internal/customer classification, archive and W-ids | M | 1.5 |
-| F-04 | Schema 1.1 | Adds `meta.cehub`, `use_cases[].frontier_pillar`, `next_steps[].handover`, `mvp_options[].opportunity` (MSX id, #NEW or #UNVERIFIED), `outcomes_evidenced[]` and `evidence[].meeting` | S | 1.5 |
-| F-05 | Closeout pack | New script: blueprint + register → `closeout-pack.json` and a review markdown. Labels only, retired fields excluded, with self-test cases. | M | 1.5 |
-| F-06 | Agenda blocks | New script: method agenda + journeys + discovery questions → `agenda-blocks.json`. Frontier stops rendering its own agenda when HubWorks is present. | S | 1.5 |
-| F-07 | Hub outcome pack | Standard slides from the blueprint: up to 5 use cases (2 slides each), prioritisation matrix, solution mapping, next steps | M | 1.6 |
-| F-08 | Routing hygiene | "Do NOT use for…" lines naming agenda-builder, engagement-closeout, schedule-meetings and architecture-diagram-builder; conflict scan with both plugins enabled | S | 1.5 |
+| F-01 | Engagement link | Orchestrator Step 1 reads `engagement.json` from the engagement folder. If it is absent, asks once for the CE Hub number and URL. Never queries CE Hub itself. | S | 1.7 |
+| F-02 | Folder alignment | Save into `<engagement folder>/frontier/` by uploading into that folder; the Cowork folder is only the fallback | M | 1.7 |
+| F-03 | Transcript harvest | Rules R1–R5, multi-part merge, language tag, internal/customer classification, archive and W-ids | M | 1.7 |
+| F-04 | Schema 1.1 | Adds `meta.cehub`, `use_cases[].frontier_pillar`, `next_steps[].handover`, `mvp_options[].opportunity` (MSX id, #NEW or #UNVERIFIED), `outcomes_evidenced[]` and `evidence[].meeting` | S | 1.7 |
+| F-05 | Closeout pack | New script: blueprint + register → `closeout-pack.json` and a review markdown. Labels only, retired fields excluded, with self-test cases. | M | 1.7 |
+| F-06 | Agenda blocks | New script: method agenda + journeys + discovery questions → `agenda-blocks.json`. Frontier stops rendering its own agenda when HubWorks is present. | S | 1.7 |
+| F-07 | Hub outcome pack | Standard slides from the blueprint: up to 5 use cases (2 slides each), prioritisation matrix, solution mapping, next steps | M | 1.8 |
+| F-08 | Routing hygiene | "Do NOT use for…" lines naming agenda-builder, engagement-closeout, schedule-meetings and architecture-diagram-builder; conflict scan with both plugins enabled | S | 1.7 |
 | F-09 | Engagement IQ adapter | Convert live-captured decisions and answers into the `frontier-blueprint-feedback` format | M–L | Later |
 | F-10 | Adoption signals | Lynx (M365 and Copilot usage) and MSX as internal evidence for the blueprint's current Frontier phase | M | Later |
-| F-11 | Repository fit | HubWorks layout, CHANGELOG and licence alignment; SKILL.md under 20,000 characters (today 7.5k–10.7k) | S | 1.6 |
+| F-11 | Repository fit | HubWorks layout, CHANGELOG and licence alignment; SKILL.md under 20,000 characters (today 7.5k–10.7k) | S | 1.8 |
 
 ### 8.3 Shared standards
 
@@ -640,7 +640,7 @@ S-01 fits an initiative already under way. On the 12 Oct call, Powlo proposed ma
 | Phase | When | Deliverables | Done when |
 |---|---|---|---|
 | 0 Align and verify | 22 Oct – 6 Nov 2026 | Run HubWorks with the Dynamics 365 Sales plugin on a recent Swiss engagement to verify the CE Hub fields and the folder; share this analysis with the HubWorks core team; agree the contract (S-03) and the A → B path | Contract agreed; assumptions verified |
-| 1 Connect | By 20 Nov 2026 | Frontier 1.5 (F-01 to F-06, F-08); PRs H-01 to H-03; meeting naming convention in the Swiss Hub; pilot on one engagement | Pilot closed out from the closeout pack, with no re-keying |
+| 1 Connect | By 20 Nov 2026 | Frontier 1.7 (F-01 to F-06, F-08); PRs H-01 to H-03; meeting naming convention in the Swiss Hub; pilot on one engagement | Pilot closed out from the closeout pack, with no re-keying |
 | 2 Contribute | Dec 2026 – Jan 2027 | HubWorks Frontier package on the dev channel; H-04 to H-08; F-07; standards S-01, S-02 and S-04 | Two Hubs using it; closeout field accuracy confirmed by the CE Hub owners |
 | 3 Scale | From Feb 2027 | Official catalogue release; Engagement IQ adapter (F-09) once it is cleared for customer use; Lynx and MSX signals (F-10); Director reporting on Frontier outcomes | Monthly releases include Frontier; adoption tracked |
 
@@ -701,7 +701,7 @@ S-01 fits an initiative already under way. On the 12 Oct call, Powlo proposed ma
 1. **Verify:** turn on HubWorks and the Dynamics 365 Sales plugin in a Cowork chat, and run engagement-initiator on a recent Swiss engagement. Note the fields and the folder it creates; this verifies sections 2.1 and 7.1.
 2. **Pick the pilot:** choose the pilot engagement and confirm the NDA scope.
 3. **Share:** post this analysis in the Tools-AI-HubWorks channel and ask for a slot in the November monthly call.
-4. **Build:** build Frontier 1.5 (F-01 to F-06, F-08) so the pilot can start.
+4. **Build:** build Frontier 1.7 (F-01 to F-06, F-08) so the pilot can start.
 5. **Align:** on standards with Powlo, on the closeout mapping with Jay Leask, and on live capture with Andreas Krüger.
 
 ---

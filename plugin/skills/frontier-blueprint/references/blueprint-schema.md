@@ -1,4 +1,4 @@
-# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.4)
+# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.6)
 
 Every field is optional unless marked required. Missing fields render as "To be confirmed". Unknown fields are kept but not shown. `src` is always a list of evidence ids.
 
@@ -28,6 +28,32 @@ Every field is optional unless marked required. Missing fields render as "To be 
 - `frontier`: `{current_phase 1-3, target_phase 1-3, automation_current 1-3, automation_target 1-3, note, src}`; phases follow the Work Trend Index (human with assistant, human-agent teams, human-led agent-operated); automation levels follow Microsoft's traditional, digital, agentic process automation.
 - `outcomes`: `[{name, desc, src}]`, `measured_by`: text
 - `human_led`: `{Direction, Accountability, Judgement, Relationships}`; `approval_seam`: text
+
+## feedback_loop (Part 1 > Overview: digital feedback loop)
+
+Microsoft's digital feedback loop for the customer, drawn as an animated diagram on the Overview: four areas around Microsoft IQ. Each area sends **signals** to Microsoft IQ, receives a proposed **action** that a person approves, and returns a measured **outcome**, which becomes the next signal. `canon.py` adds it (seed, `build_blueprint.py --canon`) with every business journey mapped to one area; each build completes empty lists of a linked area from its journeys (systems, agents, KPIs, MVP use cases) and never overwrites.
+
+| Field | Meaning |
+|---|---|
+| heading, intro, note | Section heading, lead text and a note under the panel |
+| center | `{name: "Microsoft IQ", tagline}` |
+| iq | `[{id: work/fabric/foundry/web, name, desc, products[]}]`: the four Microsoft IQ layers (Work IQ, Fabric IQ, Foundry IQ, Web IQ); `products` adds the Microsoft product icons |
+| approval | Text of the approval band in the centre ("Human approval before every action") |
+| trust | `[{name, logo}]`: Microsoft Entra, Microsoft Purview, Microsoft Agent 365 |
+| flow | Five legend labels (signal, Microsoft IQ, proposed action, human approval, measured outcome) |
+| ring | `{label, caption}` of the outer loop |
+| animation_note | Replaces the default sentence that explains the animation |
+| quadrants | `[{pillar, journeys[], title, signal, action, outcome, summary, signal_type, signals[], actions[], outcomes[], use_cases[], question, status, src[], workshop_notes[]}]` |
+| sources | `[{title, url}]` Microsoft sources (https only) |
+| status, src, derived | Hypothesis status, evidence, `true` when the canon derived it |
+
+- `pillar` (one area each; the official names of the four areas): `engage_customers` (Engage customers, customer signal), `optimize_operations` (Optimize operations, operational data), `empower_employees` (Empower employees, employee signal), `transform_products` (Transform products, product telemetry). A missing area is drawn as "To be discovered".
+- `signal`, `action`, `outcome`: the short lines on the diagram card (default: the first item of the list).
+- `signals[]`: `{text, iq[] (work, fabric, foundry, web), type, src[]}`: what is observed and through which Microsoft IQ layer.
+- `actions[]`: `{text, agents[] (agent ids or names), approval, src[]}`: what agents propose and who approves.
+- `outcomes[]`: `{text, kpi (a KPI name of a linked journey: baseline and target are shown), journey, assumptions[] (value-case assumption ids, shown with their workshop status), src[]}`.
+- Only official Microsoft names: Microsoft IQ, Work IQ, Fabric IQ, Foundry IQ, Web IQ. The build warns about any other "… IQ" name, an unknown layer or area, or an unknown journey.
+- Workshop verdicts arrive as `loop:<pillar>` (status and notes of the area).
 
 ## leaders (centre of the org model)
 
@@ -67,11 +93,30 @@ Every field is optional unless marked required. Missing fields render as "To be 
 | mvp | true or a label ("MVP candidate A") |
 | owner | Agent boss (role) |
 | trigger, outcome, channels, technology, pattern | Role card fields |
-| canvas | `{trigger[], instructions, plan[], outcome, data_sources[], connectors[], approval[], autonomy, skills[], pattern, build}` |
+| canvas | `{trigger[], instructions, plan[], outcome, data_sources[], connectors[], approval[], autonomy, skills[], pattern, build, workflow}`; `workflow` see below |
 | declarations | `{write_envelope, refusal_set, escalation_path, grounding_sources, data_classification, people_decisions, measurement}` |
 | profile | Nine sections: `starting_point, contribution, impact, mission, trigger, input, output, tasks[], reports_to, works_with[], hands_off_to, autonomous, approval, escalation, knowledge[], rules[], not_allowed[], systems[], channels[], tone, language, kpis[]` |
 | workshop_notes | Added by merge_feedback.py |
 | internal | true removes the item from customer versions |
+
+### canvas.workflow (Agents > Workflow, plugin 1.6)
+
+The agent's plan as a **Copilot Studio workflow** (the workflow designer, powered by the GitHub Copilot harness): one trigger, typed steps (the designer's nodes), branches that rejoin or end, and the desired outcome. Drawn full width under the trigger canvas, dark like the maker canvas. Without an authored workflow, `workflow.py` derives one from `canvas.trigger`, `canvas.plan`, `canvas.approval`, `canvas.connectors` and `canvas.outcome` on every build (`"derived": true`, shown as "Derived from the plan"); author it to take control.
+
+| Field | Meaning |
+|---|---|
+| name, status | Workflow name; `draft` (default) or `published` |
+| trigger | `{type, label, detail, system}`; `type`: `manual` (Manual), `recurrence` (Recurrence), `connector` (Connector event), `http` (When an HTTP request is received), `agent` (When an agent calls the workflow). Unknown types warn; a missing type is read from the label |
+| steps | `[{type, label, detail, agent, system, approver, defaults[], branches[], steps[], note}]` in order |
+| outcome | The desired outcome (default: `canvas.outcome`) |
+| src, derived | Evidence; `true` when derived from the plan (re-derived on each build) |
+
+- Step `type`: `agent` (calls an agent; `agent` names it by id), `classify` (routes to categories), `extract` (returns defined fields and tables from documents), `copilot` (Microsoft 365 Copilot, Researcher, Analyst or Cowork), `human_review` (approval or request for information; `approver` names who decides), `connector` (an action in a connected system; `system` names it, its icon is shown), `function` (code), `variable`, `if_else` (condition), `loop` and `scope` (containers with `steps[]`), `respond` (Respond to the agent, for workflows an agent calls) and `note` (an annotation). Aliases such as `If/Else`, `Human review`, `approval`, `for each` are accepted.
+- AI steps (Agent, Classify, Extract, Copilot) are marked "results can vary"; Connector, Function, Variable, If/Else, Loop, Scope and Respond are deterministic; Human review is a person.
+- `defaults[]`: the paths that continue on the main path (If/Else: `["Yes","No"]`-style; Classify: the categories; Human review: `["Approved"]`-style).
+- `branches[]`: `{label, steps[], then: continue|end, end}`; a branch with `then: "end"` (or an `end` label) stops at an end node named by `end`; otherwise it rejoins the next step. Only If/Else, Classify and Human review branch.
+- `note`: a sticky note above the step. Ids `n1, n2, …` are added by the build.
+- The build warns about unknown node or trigger types, unknown agents, branches on a non-branching node, nested containers (drawn flat) and an empty workflow.
 
 ## Shared blocks
 

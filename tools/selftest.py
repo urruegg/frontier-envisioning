@@ -9,9 +9,10 @@ Runs, in a temporary folder:
   1. context_pack.py validate + render on the example context pack
   2. parse_transcript.py on a small synthetic WebVTT transcript
   3. seed_blueprint.py from the context pack, then build_blueprint.py on the seed
-  4. build_blueprint.py on the Caldova example (internal and customer audiences)
+  4. build_blueprint.py on the Caldova example (internal and customer audiences); the agent workflows
+     (authored, derived from the canvas plan, checked for unknown node types and agents)
   5. merge_feedback.py with a synthetic workshop feedback export
-  6. scaffold_design_docs.py for the MVP agents
+  6. scaffold_design_docs.py for the MVP agents (with each MVP agent's workflow)
   7. agent identity: read_office_theme.py on a synthetic deck, seed_identity.py from the Caldova blueprint,
      make_kit.py on the Caldova example (validator 0 errors, kit unit tests pass), apply_identity.py and a
      blueprint build with the Agent identity page; build_with_identity.py (blueprint and identity kit in one
@@ -140,7 +141,7 @@ def main() -> int:
               and len(srd.get("checks", [])) == 15 and len(seedbp.get("factory", {}).get("lifecycle", [])) == 7)
         lean = json.loads(sample.read_text(encoding="utf-8"))
         lean["domains"] = [d for d in lean["domains"] if d.get("kind") != "factory"]
-        for k in ("factory", "it_readiness"):
+        for k in ("factory", "it_readiness", "feedback_loop"):
             lean.pop(k, None)
         lean["architecture"].pop("landing_zone", None)
         lean["architecture"]["decisions"] = [x for x in lean["architecture"].get("decisions", []) if not x.get("canon")]
@@ -148,7 +149,8 @@ def main() -> int:
         code, out = run(bb, ["--data", str(t / "lean.json"), "--out", str(t / "lean.html"), "--canon"])
         st = stats_of(out)
         check("--canon completes an earlier blueprint (factory, landing zone, ADRs, readiness)", code == 0 and st.get("factory_journey") == "D5"
-              and st.get("landing_zone_areas", 0) >= 14 and st.get("readiness_items") == 30 and st.get("decisions") == 9, out[-300:])
+              and st.get("landing_zone_areas", 0) >= 14 and st.get("readiness_items") == 30 and st.get("decisions") == 9
+              and st.get("feedback_loop_areas") == 4, out[-300:])
         code, out = run(bb, ["--data", str(sample), "--out", str(t / "icons.html")])
         st1, ihtml = stats_of(out), (t / "icons.html").read_text(encoding="utf-8") if code == 0 else ""
         code2, out2 = run(bb, ["--data", str(sample), "--out", str(t / "noicons.html"), "--no-product-icons"])
@@ -158,6 +160,44 @@ def main() -> int:
         check("template has the Hub journey views (attendees, factory, landing zone, ADRs, IT readiness)",
               all(f in tplv for f in ("function renderAttendees", "function renderFactorySections", "function renderLandingZone", "function lzSvg",
                                       "function renderDecisions", "function renderReadiness", 'id:"readiness", label:"IT readiness"', 'id:"attendees", label:"Attendees"')))
+
+        # 1.5: Microsoft's digital feedback loop on the Overview (Microsoft IQ; official names only)
+        sfl = {q.get("pillar"): q for q in (seedbp.get("feedback_loop") or {}).get("quadrants", [])}
+        jid = {d.get("name"): d.get("id") for d in seedbp.get("domains", [])}
+        sig_iq = [i for q in sfl.values() for x in q.get("signals", []) for i in x.get("iq", [])]
+        check("seed adds the digital feedback loop with each journey in one area", len(sfl) == 4
+              and jid.get("Commercial") in sfl.get("engage_customers", {}).get("journeys", [])
+              and jid.get("Service") in sfl.get("optimize_operations", {}).get("journeys", [])
+              and bool(sig_iq) and set(sig_iq) <= {"work", "fabric", "foundry", "web"})
+        bpn = json.loads((t / "bp.json").read_text(encoding="utf-8")) if (t / "bp.json").exists() else {}
+        odd = json.loads(sample.read_text(encoding="utf-8"))
+        odd["feedback_loop"]["quadrants"][0]["signals"].append({"text": "Governance IQ checks every case", "iq": ["governance"]})
+        (t / "odd.json").write_text(json.dumps(odd), encoding="utf-8")
+        code, out = run(bb, ["--data", str(t / "odd.json")])
+        check("digital feedback loop builds with official Microsoft IQ names only", len((bpn.get("feedback_loop") or {}).get("quadrants", [])) == 4
+              and all(f in tplv for f in ("function flSvg", "animateMotion", "pauseAnimations", "prefers-reduced-motion"))
+              and code == 0 and "'Governance IQ', which is not an official Microsoft IQ name" in out and "unknown Microsoft IQ layer governance" in out, out[-300:])
+
+        # 1.6: agent workflows as Copilot Studio workflows (trigger, designer nodes, branches, desired outcome)
+        wfs = {a.get("id"): a["canvas"]["workflow"] for d in bpn.get("domains", []) for a in d.get("agents", [])
+               if isinstance(a.get("canvas"), dict) and isinstance(a["canvas"].get("workflow"), dict)}
+        odd2 = json.loads(sample.read_text(encoding="utf-8"))
+        for d in odd2["domains"]:
+            for a_ in d.get("agents", []):
+                if a_.get("id") == "D2-A01":
+                    a_["canvas"].pop("workflow", None)
+                if a_.get("id") == "D3-A05":
+                    a_["canvas"]["workflow"]["steps"].append({"type": "magic", "label": "Do magic", "agent": "D9-A99"})
+        (t / "wf.json").write_text(json.dumps(odd2), encoding="utf-8")
+        code, out = run(bb, ["--data", str(t / "wf.json"), "--out", str(t / "wf.html"), "--save-normalized", str(t / "wf-n.json")])
+        wn = json.loads((t / "wf-n.json").read_text(encoding="utf-8")) if code == 0 else {}
+        dwf = next(((a_.get("canvas") or {}).get("workflow") or {} for d in wn.get("domains", []) for a_ in d.get("agents", []) if a_.get("id") == "D2-A01"), {})
+        check("agent workflows build; a missing one is derived from the plan; unknown nodes and agents warn",
+              set(wfs) == {"D2-A01", "D3-A05"} and st1.get("workflows") == 2 and wfs["D3-A05"]["trigger"]["type"] == "connector"
+              and all(x.get("id") for x in wfs["D3-A05"]["steps"]) and code == 0 and dwf.get("derived") is True
+              and dwf.get("trigger", {}).get("type") == "agent" and any(x.get("type") == "classify" for x in dwf.get("steps", []))
+              and "node type 'magic' unknown" in out and "unknown agent 'D9-A99'" in out
+              and all(f in tplv for f in ("function wfLayout", "function wfSvg", "function wfSection", "function wfPanel")), out[-300:])
 
         fb = {"type": "frontier-blueprint-feedback", "blueprint": "caldova-industrial-frontier", "version": "0.1",
               "exported": "2026-11-12T16:00:00Z",
@@ -180,6 +220,14 @@ def main() -> int:
         check("workshop verdicts update IT readiness and architecture decisions", code == 0 and p01.get("status") == "done" and f01.get("status") == "agreed"
               and bool(f01.get("workshop_notes")) and '"adr:ADR-X99"' in out, out[-300:])
 
+        fb3 = {"type": "frontier-blueprint-feedback", "blueprint": "caldova-industrial-frontier", "exported": "2026-11-12T16:00:00Z",
+               "validations": {"loop:transform_products": {"status": "adjusted", "note": "Telemetry only for the new machine series"}}}
+        (t / "fb3.json").write_text(json.dumps(fb3), encoding="utf-8")
+        code, out = run(mf, ["--blueprint", str(t / "bp.json"), "--feedback", str(t / "fb3.json"), "--out", str(t / "bp4.json")])
+        m4 = json.loads((t / "bp4.json").read_text(encoding="utf-8")) if code == 0 else {}
+        tq = next((q for q in (m4.get("feedback_loop") or {}).get("quadrants", []) if q.get("pillar") == "transform_products"), {})
+        check("workshop verdicts update the digital feedback loop", code == 0 and tq.get("status") == "adjusted" and bool(tq.get("workshop_notes")), out[-300:])
+
         code, out = run(sd, ["--blueprint", str(t / "bp2.json"), "--out-dir", str(t / "design")])
         prd = (t / "design/prd.md").read_text(encoding="utf-8") if code == 0 else ""
         sdoc = (t / "design/solution-design.md").read_text(encoding="utf-8") if code == 0 else ""
@@ -187,6 +235,8 @@ def main() -> int:
         check("PRD and solution design scaffold", code == 0 and "FR-0001" in prd and sdoc and any((t / "design/adr").iterdir()))
         check("solution design carries the landing zone, the Agent Factory and the IT readiness checklist", "### 3.1 Landing zone" in sdoc
               and "### 8.2 Definition of Ready" in sdoc and "Innovation Hub canon" in sdoc and "P-30" in rdoc and "R-15" in rdoc and "D-08" in rdoc)
+        check("solution design lists each MVP workflow (trigger, nodes, branches)", "### Workflow: Service report from voice notes (Service Report Agent)" in sdoc
+              and "| 3.1 | Connector | Transcribe the voice note |" in sdoc and "- Trigger: When an agent calls the workflow" in sdoc)
 
         # agent identity kit
         ai = S / "frontier-agent-identity"

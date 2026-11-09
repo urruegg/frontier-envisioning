@@ -649,6 +649,204 @@ table.rt .assbox{margin-top:0}
 .tli{display:flex;flex-direction:column;font-size:12.5px}
 @media print{.assbox,.lzlens,.atabs{display:none}}
 .ucags{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}.ucag{all:unset;cursor:pointer;display:inline-flex;border-radius:6px}.ucag:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.ucags .aicon{width:22px;height:22px}
+/* digital feedback loop (Overview, 1.5.0) */
+:root{ --fl-sig:#0E7490; --fl-act:#15803D; --fl-out:#B45309; --fl-core:#1B2A41; --fl-chip:#243A5E; --fl-appr:#FDF0D9; --fl-appr-t:#7A4300; }
+@media (prefers-color-scheme: dark){ :root{ --fl-sig:#22D3EE; --fl-act:#4ADE80; --fl-out:#FBBF24; --fl-core:#CBD5E1; --fl-chip:#2E4A75; --fl-appr:#3A2A12; --fl-appr-t:#F6C26B; } }
+.flwrap{margin:6px 0 0}
+.flfig{overflow-x:auto;border-radius:14px}
+svg.flsvg{width:100%;min-width:860px;height:auto;display:block;background:var(--bg);border:1px solid var(--line);border-radius:14px}
+.flring{fill:none;stroke:var(--line);stroke-width:2;stroke-dasharray:3 9;animation:flflow 24s linear infinite}
+@keyframes flflow{to{stroke-dashoffset:-480}}
+.flchev{fill:none;stroke:var(--grey);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.flringt{font-size:10.5px;font-weight:800;letter-spacing:.14em;fill:var(--muted)}
+.flpath{fill:none;stroke-width:2.2;stroke-linecap:round;transition:stroke-width .2s}
+.flpath.sig{stroke:var(--fl-sig)}
+.flpath.act{stroke:var(--fl-act)}
+.flpath.out{stroke:var(--fl-out);stroke-dasharray:5 6}
+.flpath.idle{stroke:var(--line);stroke-dasharray:4 6}
+.flpath.on{stroke-width:3.6}
+.flpl rect{fill:var(--panel);stroke-width:1.2}
+.flpl text{font-size:9.5px;font-weight:800;letter-spacing:.08em}
+.flpl.sig rect{stroke:var(--fl-sig)}.flpl.sig text{fill:var(--fl-sig)}
+.flpl.act rect{stroke:var(--fl-act)}.flpl.act text{fill:var(--fl-act)}
+.flpl.out rect{stroke:var(--fl-out)}.flpl.out text{fill:var(--fl-out)}
+.flgate-d{fill:var(--fl-out);stroke:var(--panel);stroke-width:1.5}
+.flgate-halo{fill:none;stroke:var(--fl-out);stroke-width:2.2}
+.fl-p.fl-sig{fill:var(--fl-sig)}
+.fl-p.fl-act{fill:var(--fl-act);stroke:var(--panel);stroke-width:1.5}
+.fl-p.fl-out{fill:var(--fl-out)}
+.flq{cursor:pointer}
+.flq .flcard{fill:var(--panel);stroke:var(--line);stroke-width:1.5;transition:stroke .15s}
+.flq:hover .flcard{stroke:var(--ink)}
+.flq.sel .flcard{stroke:var(--accent);stroke-width:3}
+.flq:focus{outline:none}
+.flq:focus-visible .flcard{stroke:var(--focus);stroke-width:3.5}
+.flq.empty .flcard{stroke-dasharray:6 4}
+.flgl{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.fleyb{font-size:10.5px;font-weight:800;letter-spacing:.1em;fill:var(--muted)}
+.fljr{font-size:11px;font-weight:700}
+.fltt{font-size:15px;font-weight:800;fill:var(--ink)}
+.fldiv{stroke:var(--line-soft);stroke-width:1}
+.flrl{font-size:9.5px;font-weight:800;letter-spacing:.08em}
+.flrl.sig{fill:var(--fl-sig)}.flrl.act{fill:var(--fl-act)}.flrl.out{fill:var(--fl-out)}
+.flrt{font-size:11.5px;fill:var(--ink-2)}
+.flcore{fill:var(--panel);stroke:var(--fl-core);stroke-width:2.5}
+.flpulse{fill:none;stroke:var(--accent);stroke-width:2;opacity:0;transform-box:fill-box;transform-origin:center;animation:flpulse 2s ease-out infinite}
+@keyframes flpulse{0%{opacity:.5;transform:scale(1)}70%{opacity:0;transform:scale(1.09)}100%{opacity:0;transform:scale(1.09)}}
+.fliqt{font-size:25px;font-weight:800;fill:var(--ink)}
+.fliqs{font-size:11.5px;fill:var(--muted)}
+.flchip rect{fill:var(--fl-chip)}
+.flchip text{font-size:11.5px;font-weight:800;fill:#FFFFFF;letter-spacing:.02em}
+.flchip{transition:opacity .2s}
+.flchip.off{opacity:.28}
+.flappr{fill:var(--fl-appr)}
+.flapprt{font-size:12px;font-weight:800;fill:var(--fl-appr-t)}
+.fltrust{font-size:10px;fill:var(--muted)}
+.flwrap.paused .flring,.flwrap.paused .flpulse{animation-play-state:paused}
+.flwrap.still .fl-p,.flwrap.still .flgate-halo,.flwrap.still .flpulse{visibility:hidden}
+.flwrap.still .flring{animation:none}
+@media (prefers-reduced-motion: reduce){ .flring,.flpulse{animation:none} .flpath{transition:none} }
+.flctl{display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap;margin:10px 0 2px}
+.flbtn{font-size:12px;padding:5px 12px}
+.flflow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:var(--ink-2)}
+.flflow .st{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-soft);border-radius:999px;padding:2px 10px;background:var(--panel)}
+.flflow .ar{color:var(--muted)}
+.flflow i{display:inline-block;width:10px;height:10px;border-radius:50%}
+.flflow i.sig{background:var(--fl-sig)}
+.flflow i.iq{background:var(--fl-chip)}
+.flflow i.act{background:var(--fl-act);border-radius:3px}
+.flflow i.ok{background:var(--fl-out);width:9px;height:9px;border-radius:1px;transform:rotate(45deg)}
+.flflow i.out{background:var(--fl-out)}
+.flanote{margin:6px 0 0}
+.fliqrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0 10px}
+.fliq{background:var(--panel);border:1px solid var(--line-soft);border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start}
+.fliq > .flg{width:30px;height:30px;border-radius:8px;background:var(--fl-chip);color:#FFFFFF;display:grid;place-items:center;flex:none}
+.flg svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block}
+.fliq b{display:block;font-size:13px}
+.fliq span{font-size:11.5px;color:var(--muted)}
+.flprod{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px;font-size:11px;color:var(--ink-2)}
+.flpanel{background:var(--panel);border:1px solid var(--line);border-inline-start:5px solid var(--q, var(--accent));border-radius:12px;padding:14px 16px;margin:10px 0}
+.flph{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.flph h3{margin:2px 0 0;font-size:17px}
+.flpic{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;flex:none}
+.flpic svg{width:24px;height:24px}
+.flps{margin-inline-start:auto;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.flsum{margin:8px 0 0;color:var(--ink-2);font-size:12.5px}
+.flcols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.flcol{border:1px solid var(--line-soft);border-block-start:4px solid var(--c);border-radius:10px;padding:10px 12px}
+.flcol.sig{--c:var(--fl-sig)}.flcol.act{--c:var(--fl-act)}.flcol.out{--c:var(--fl-out)}
+.flcol h4{margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.flcol > .note{display:block;margin:2px 0 6px}
+.flcol ul{list-style:none;margin:0;padding:0}
+.flcol li{padding:7px 0;border-block-end:1px solid var(--line-soft);font-size:12.5px}
+.flcol li:last-child{border-block-end:0}
+.flmeta{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.pill.iqp{background:var(--fl-chip);color:#FFFFFF;display:inline-flex;align-items:center;gap:4px}
+.pill.iqp .flg svg{width:11px;height:11px;stroke-width:2.2}
+.flags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.flok{margin-top:6px;font-size:11.5px;color:var(--fl-appr-t);background:var(--fl-appr);border-radius:6px;padding:4px 8px;display:flex;gap:6px;align-items:flex-start}
+.flok .flg svg{width:15px;height:15px}
+.flkpi{margin-top:5px;font-size:11.5px;color:var(--ink-2)}
+.flass{margin-top:6px;display:flex;flex-direction:column;gap:4px}
+.flassi{font-size:11.5px;color:var(--ink-2)}
+.flfoot{display:flex;gap:6px 18px;flex-wrap:wrap;align-items:center;margin-top:12px;font-size:12px}
+.fllink{all:unset;cursor:pointer;display:inline-block;border:1px solid var(--line-soft);border-inline-start:3px solid var(--d, var(--accent));border-radius:999px;padding:2px 10px;font-size:11.5px;margin:2px 4px 2px 0;background:var(--panel)}
+.fllink:hover{border-color:var(--accent)}
+.fllink:focus-visible{outline:2px solid var(--focus)}
+.flqq{margin:10px 0 0;font-size:12.5px}
+.flsrc{font-size:11px;color:var(--muted);margin:6px 0 0}
+.flsrc a{color:var(--accent-text)}
+@media (max-width:1100px){.flcols{grid-template-columns:1fr}.fliqrow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){.fliqrow{grid-template-columns:1fr}}
+@media print{.fl-p,.flgate-halo,.flpulse,.flbtn{display:none}.flring{animation:none}.flpanel,.fliq,.flfig{break-inside:avoid}svg.flsvg{min-width:0}}
+
+/* agent workflow in the Copilot Studio workflow designer style (Agents, 1.6.0) */
+.wf{background:#1B1B1B;border:1px solid #333;border-radius:14px;overflow:hidden;color:#E6E6E6;margin:8px 0 4px;color-scheme:dark}
+.wfintro{margin:2px 0 6px}
+.wfbar{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-block-end:1px solid #2E2E2E;background:#1F1F1F}
+.wfname{display:inline-flex;gap:8px;align-items:center;font-weight:700;font-size:14.5px;color:#F2F2F2}
+.wfstat{border:1px solid #5A5A5A;border-radius:999px;padding:1px 10px;font-size:11.5px;color:#D0D0D0}
+.wfder{font-size:11.5px;color:#F6C26B}
+.wfsum{display:flex;gap:6px;margin-inline-start:auto;flex-wrap:wrap}
+.wfk2{font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 9px;background:#2A2A2A}
+.wfk2.ai{color:#C4B5FD}.wfk2.rule{color:#C9CDD3}.wfk2.human{color:#F6C26B}
+.wfh{font-size:11px;color:#9AA0A6}
+.wfbody{display:grid;grid-template-columns:156px minmax(0,1fr);min-height:420px}
+.wfstage{position:relative;min-width:0;min-height:420px}
+.wfadd{border-inline-end:1px solid #2E2E2E;padding:10px 8px;display:flex;flex-direction:column;gap:2px;background:#1F1F1F}
+.wfaddh{font-weight:700;font-size:14px;padding:2px 10px 8px;color:#F2F2F2}
+.wfadd button{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:8px;font-size:13px;color:#E6E6E6}
+.wfadd button:hover{background:#2A2A2A}
+.wfadd button:focus-visible{outline:2px solid #8E92F0}
+.wfadd button[aria-pressed="true"]{background:#2C2D48;box-shadow:inset 3px 0 0 #6E73E6}
+.wfadd button.unused{opacity:.45}
+.wfadd em{margin-inline-start:auto;font-style:normal;font-size:11px;background:#333;border-radius:999px;padding:0 7px;color:#DADADA}
+.wfg svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block}
+.wfcanvas{position:relative;overflow:auto;height:100%;max-height:620px;background-color:#141414;background-image:radial-gradient(#303030 1px, transparent 1.3px);background-size:18px 18px}
+svg.wfsvg{display:block}
+.wfn{cursor:pointer}
+.wfbox{fill:#232323;stroke:#3C3C3C;stroke-width:1.4}
+.wfn:hover .wfbox{stroke:#707070}
+.wfboxg:hover .wfhit{fill:rgba(255,255,255,.05)}
+.wfn.sel .wfbox,.wfcont.sel{stroke:#6E73E6;stroke-width:2.6}
+.wfn:focus{outline:none}
+.wfn:focus-visible .wfbox,.wfboxg:focus-visible .wfhit{stroke:#A8ABFF;stroke-width:3}
+.wfn.dim,.wfcont.dim{opacity:.22}
+.wfhit{fill:transparent;stroke:none;cursor:pointer}
+.wft{font-size:13px;font-weight:700;fill:#F2F2F2}
+.wfpill{fill:#3A3A3A}
+.wfpill.def{fill:#303030}
+.wfpt{font-size:12px;font-weight:600;fill:#E8E8E8}
+.wfport{fill:#BDBDBD}
+.wfe{fill:none;stroke:#7A7A7A;stroke-width:1.6}
+.wfe.in{stroke:#575757}
+.wfe.fin{stroke:#3E9E66}
+.wfk.ai{fill:#A78BFA}.wfk.rule{fill:#8A8F98}.wfk.human{fill:#F6C26B}
+.wfcont{fill:rgba(255,255,255,.03);stroke:#4C4C4C;stroke-width:1.4;stroke-dasharray:6 5}
+.wfct{font-size:12.5px;font-weight:700;fill:#D8D8D8}
+.wfn.outcome .wfbox{fill:#14271C;stroke:#2F7A4C}
+.wfot{font-size:10.5px;font-weight:800;letter-spacing:.1em;fill:#4ADE80}
+.wfod{font-size:12px;fill:#DDEFE3}
+.wfn.end .wfbox{fill:#262626;stroke:#5A5A5A;stroke-dasharray:4 4}
+.wfnb{fill:#183022;stroke:#2F6B45;stroke-width:1.2}
+.wfnt{font-size:11px;fill:#CDEFD9}
+.wftools{position:sticky;left:10px;bottom:10px;display:inline-flex;gap:2px;align-items:center;background:#1F1F1F;border:1px solid #363636;border-radius:10px;padding:3px 5px;margin:0 0 10px 10px}
+.wftools button{all:unset;cursor:pointer;min-width:24px;text-align:center;padding:3px 7px;border-radius:6px;color:#E6E6E6;font-size:12.5px;font-weight:700}
+.wftools button:hover{background:#2E2E2E}
+.wftools button:focus-visible{outline:2px solid #8E92F0}
+.wfzl{font-size:11.5px;color:#BDBDBD;min-width:40px;text-align:center}
+.wfprops{position:absolute;inset-block-start:12px;inset-inline-end:14px;width:296px;max-height:calc(100% - 24px);overflow:auto;background:#1F1F1F;border:1px solid #363636;border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.5);padding:14px 16px;font-size:12.5px;z-index:2}
+.wfprops[hidden]{display:none}
+.wfpt2{flex:1;min-width:0}
+.wfx{all:unset;cursor:pointer;width:26px;height:26px;border-radius:6px;display:grid;place-items:center;font-size:18px;color:#CFCFCF;flex:none}
+.wfx:hover{background:#2E2E2E}
+.wfx:focus-visible{outline:2px solid #8E92F0}
+.wfph{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.wfph b{display:block;font-size:15px;color:#F2F2F2;line-height:1.3}
+.wfpi{width:36px;height:36px;border-radius:9px;background:#2A2A2A;display:grid;place-items:center;flex:none}
+.wfptag{display:block;font-size:11.5px;color:#9AA0A6;margin-top:2px}
+.wfps{margin:10px 0 0}
+.wfps h5{margin:0 0 4px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#9AA0A6}
+.wfps p{margin:0;color:#E0E0E0}
+.wfbox2{background:#262626;border:1px solid #3A3A3A;border-radius:8px;padding:8px 10px}
+.wfbox2 b{display:block;color:#F2F2F2}
+.wfbox2 span{font-size:11.5px;color:#BDBDBD}
+.wfkind{margin-top:6px !important;font-size:11.5px;font-weight:700}
+.wfkind.ai{color:#C4B5FD}.wfkind.rule{color:#C9CDD3}.wfkind.human{color:#F6C26B}
+.wfbl{list-style:none;margin:0;padding:0}
+.wfbl li{padding:4px 0;border-block-end:1px solid #2E2E2E;color:#E0E0E0}
+.wfbl li:last-child{border-block-end:0}
+.wfsys{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.wfio{display:flex;gap:4px;flex-wrap:wrap}
+.wfnp{background:#183022;border:1px solid #2F6B45;border-radius:6px;padding:6px 8px;color:#CDEFD9 !important}
+.wf .pill{background:#2E2E2E;color:#E6E6E6}
+.wf .pill.ev{border-color:#444}
+.wf .agchip{background:#262626;color:#EEEEEE;border-color:#3C3C3C}
+@media (max-width:1100px){.wfbody{grid-template-columns:1fr}.wfadd{flex-direction:row;flex-wrap:wrap;border-inline-end:0;border-block-end:1px solid #2E2E2E}.wfaddh{width:100%}.wfprops{position:static;width:auto;max-height:none;box-shadow:none;border-radius:0;border-inline:0}}
+@media print{.wf{background:#FFFFFF;color:#111111;border-color:#999999}.wfbar{background:#FFFFFF}.wfadd,.wftools,.wfprops{display:none}.wfbody{grid-template-columns:1fr}.wfcanvas{background:#FFFFFF;max-height:none;overflow:visible}svg.wfsvg{width:100%;height:auto}.wfbox{fill:#FFFFFF;stroke:#888888}.wft,.wfpt,.wfct,.wfod,.wfnt,.wfname{fill:#111111;color:#111111}.wfpill{fill:#EEEEEE}.wfe{stroke:#888888}.wfnb{fill:#E8F5EC}.wf{break-inside:avoid}}
+.agwrap > .agfull{grid-column:1 / -1;min-width:0}
+.agwrap > .agrest{grid-column:2;min-width:0}
+@media (max-width:1100px){.agwrap > .agrest{grid-column:auto}}
 
 </style>
 </head>
@@ -1043,7 +1241,7 @@ var VIEWS = [
 var PARTS = {Vision:"Part 1 \u00b7 Vision", Design:"Part 2 \u00b7 Design", Workshop:"Part 3 \u00b7 Workshop"};
 var ORDER = VIEWS.filter(function(v){ return !v.need || v.need(); }).map(function(v){ return v.id; });
 function viewMeta(id){ for (var i = 0; i < VIEWS.length; i++) if (VIEWS[i].id === id) return VIEWS[i]; return VIEWS[0]; }
-var state = { view:"overview", d:0, agent:null, uc:null, archTab:null, lz:"P", lzLens:null, fstep:0, adrFilter:"all", adr:null, orgStage:3, orgDomain:null, labels:true, badges:true, discFilter:"all" };
+var state = { view:"overview", flq:null, flPause:false, flPlay:false, d:0, agent:null, uc:null, archTab:null, lz:"P", lzLens:null, fstep:0, adrFilter:"all", adr:null, orgStage:3, orgDomain:null, labels:true, badges:true, discFilter:"all" };
 var DOMAIN_VIEWS = ["blueprint","journeys","agents","discovery"];
 
 function readHash(){
@@ -1323,6 +1521,10 @@ function renderOverview(){
       BP.outcomes.map(function(o){ return h("div",{class:"o"}, h("b",null,o.name), h("span",null,o.desc), evPills(o.src)); }),
       BP.measured_by ? h("div",{class:"measure"}, h("b",null,"Measured by \u00b7 "), BP.measured_by) : null));
   }
+  if (FL){
+    out.push(h("h3",{class:"sub", id:"feedback-loop"}, FL.heading || "Digital feedback loop: signals, actions and outcomes", evPills(FL.src)));
+    out = out.concat(flSection());
+  }
   out.push(h("h3",{class:"sub"}, (M.domain_label_plural ? M.domain_label_plural.charAt(0).toUpperCase() + M.domain_label_plural.slice(1) : "Journeys") + " in scope"));
   out.push(h("div",{class:"dcards"}, D.map(function(d, i){
     var team = d.agents.length + (d.orchestrator ? 1 : 0);
@@ -1342,6 +1544,702 @@ function renderOverview(){
     h("div",{class:"legend",style:"margin-top:8px"}, AUTONOMY.map(function(a){ return h("span",{class:"it"}, h("span",{class:"pill"}, "Autonomy " + a.n), a.label + ": " + a.meaning); }))));
   return out;
 }
+
+/* ---------------- digital feedback loop (Overview, 1.5.0) ----------------
+   Microsoft's digital feedback loop (engage customers, empower employees, optimize operations,
+   transform products) around Microsoft IQ: Work IQ, Fabric IQ, Foundry IQ and Web IQ.
+   Data: BP.feedback_loop (canon.py derives it from the journeys; the frontier-blueprint skill tailors it
+   from Work IQ context and workshop transcripts). Each area sends signals to Microsoft IQ, receives a
+   proposed action that a person approves, and returns a measured outcome as the next signal.
+   Animation: SVG SMIL; paused by the user or under prefers-reduced-motion; readable without it. */
+var FL = BP.feedback_loop && typeof BP.feedback_loop === "object" && !Array.isArray(BP.feedback_loop) ? BP.feedback_loop : null;
+var RM = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+var PILLARS = {
+  engage_customers:{label:"Engage customers", signal:"Customer signal", color:"#0F6CBD",
+    glyph:'<path d="M3.5 5.5h10v7.5H8.6l-3.1 2.8V13h-2z"/><path d="M15.6 9h4.9v7.5h-2v2.8l-3-2.8h-4.6v-2"/>'},
+  optimize_operations:{label:"Optimize operations", signal:"Operational data", color:"#038387",
+    glyph:'<circle cx="12" cy="12" r="3.2"/><path d="M12 3.5v2.6M12 17.9v2.6M3.5 12h2.6M17.9 12h2.6M6 6l1.8 1.8M16.2 16.2L18 18M6 18l1.8-1.8M16.2 7.8L18 6"/>'},
+  empower_employees:{label:"Empower employees", signal:"Employee signal", color:"#5C2E91",
+    glyph:'<circle cx="10" cy="8" r="3.2"/><path d="M3.5 20c.8-3.6 3.3-5.5 6.5-5.5 1.5 0 2.9.4 4 1.3"/><path d="M18 11.5l1 2.3 2.3 1-2.3 1-1 2.3-1-2.3-2.3-1 2.3-1z"/>'},
+  transform_products:{label:"Transform products", signal:"Product telemetry", color:"#C239B3",
+    glyph:'<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/>'}
+};
+var PILLAR_ORDER = ["engage_customers","optimize_operations","empower_employees","transform_products"];
+var IQ_DEF = {
+  work:{name:"Work IQ", desc:"Work signals: how people work in Microsoft 365 \u2014 email, meetings, chats, files, people and collaboration patterns",
+    glyph:'<circle cx="9" cy="8.5" r="3"/><path d="M3.5 19c.7-3 2.8-4.6 5.5-4.6s4.8 1.6 5.5 4.6"/><path d="M14.5 4.5h6v5h-2.6l-2 1.8V9.5h-1.4z"/>'},
+  fabric:{name:"Fabric IQ", desc:"Business data: a shared semantic foundation in Microsoft Fabric \u2014 semantic models, ontology, metrics and live operational signals",
+    glyph:'<circle cx="6" cy="6.5" r="2.2"/><circle cx="18" cy="6.5" r="2.2"/><circle cx="12" cy="18" r="2.2"/><circle cx="12" cy="11.5" r="1.7"/><path d="M7.8 7.8l2.8 2.6M16.2 7.8l-2.8 2.6M12 13.2v2.6"/>'},
+  foundry:{name:"Foundry IQ", desc:"Organisational knowledge: permission-aware knowledge bases that ground agents in documents and enterprise sources, with citations",
+    glyph:'<path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5C4.7 19 4 18.3 4 17.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5-.7 1.5-1.5z"/><path d="M6.5 8h2.5M15 8h2.5M6.5 11h2.5M15 11h2.5"/>'},
+  web:{name:"Web IQ", desc:"World knowledge: fresh, citation-ready grounding from the public web \u2014 news, markets and regulation",
+    glyph:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5s1.2-6.1 3.8-8.5z"/>'}
+};
+var IQ_ORDER = ["work","fabric","foundry","web"];
+var GATE_GLYPH = '<path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z"/><path d="M8.8 12.2l2.2 2.2 4.2-4.4"/>';
+var FW = 1200, FH = 700, FCX = 600, FCY = 350, FCR = 160, FQW = 340, FQH = 230, FQM = 16, FT = 8;
+var FOFF = [0, 2, 6, 4];   /* clockwise: engage customers, optimize operations, transform products, empower employees */
+
+function iqKey(v){ var t = String(v || "").toLowerCase().replace(/[^a-z]/g, "").replace(/iq$/, ""); return IQ_DEF[t] ? t : String(v || ""); }
+function flIqList(){
+  var given = arr(FL && FL.iq).filter(function(x){ return x && (x.id || x.name); });
+  return (given.length ? given : IQ_ORDER.map(function(k){ return {id:k}; })).map(function(x){
+    var k = iqKey(x.id || x.name), d = IQ_DEF[k] || {};
+    return {id:k, name:x.name || d.name || k, desc:x.desc || d.desc || "", glyph:d.glyph || IQ_DEF.work.glyph, products:x.products || null};
+  });
+}
+function flIqMap(){ var m = {}; flIqList().forEach(function(x){ m[x.id] = x; }); return m; }
+function flQuads(){
+  var by = {};
+  arr(FL && FL.quadrants).forEach(function(q){ if (q && typeof q === "object" && PILLARS[q.pillar] && !by[q.pillar]) by[q.pillar] = q; });
+  return PILLAR_ORDER.map(function(p){ return by[p] || null; });
+}
+function flJourneys(q){ return arr(q && q.journeys).map(domById).filter(Boolean); }
+function flColor(q, i){ var j = flJourneys(q)[0]; return j && j.color ? j.color : PILLARS[PILLAR_ORDER[i]].color; }
+function flLine(q, kind){
+  if (!q) return "";
+  if (typeof q[kind] === "string" && q[kind]) return q[kind];
+  var x = arr(q[kind + "s"])[0];
+  return x ? (typeof x === "string" ? x : (x.short || x.text || x.kpi || "")) : "";
+}
+function flUsedIq(q){
+  var out = [];
+  function push(k){ k = iqKey(k); if (k && out.indexOf(k) < 0) out.push(k); }
+  arr(q && q.iq).forEach(push);
+  arr(q && q.signals).forEach(function(x){ if (x && typeof x === "object") arr(x.iq).forEach(push); });
+  return out;
+}
+function glyphSpan(g, cls){ var sp = document.createElement("span"); sp.className = cls || "flg"; sp.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (g || "") + '</svg>'; return sp; }
+function svgGlyph(g, x, y, size, color){ var n = s("svg",{x:x, y:y, width:size, height:size, viewBox:"0 0 24 24", class:"flgl", style:color ? "color:" + color : null, "aria-hidden":"true"}); n.innerHTML = g || ""; return n; }
+function bz(P, t){ var u = 1 - t; return [0, 1].map(function(k){ return u * u * u * P[0][k] + 3 * u * u * t * P[1][k] + 3 * u * t * t * P[2][k] + t * t * t * P[3][k]; }); }
+function bzAt(P, f){
+  var n = 64, pts = [], L = [0], i;
+  for (i = 0; i <= n; i++) pts.push(bz(P, i / n));
+  for (i = 1; i <= n; i++) L.push(L[i - 1] + Math.sqrt(Math.pow(pts[i][0] - pts[i - 1][0], 2) + Math.pow(pts[i][1] - pts[i - 1][1], 2)));
+  var want = f * L[n];
+  for (i = 1; i <= n; i++) if (L[i] >= want){ var r = (want - L[i - 1]) / ((L[i] - L[i - 1]) || 1); return [pts[i - 1][0] + r * (pts[i][0] - pts[i - 1][0]), pts[i - 1][1] + r * (pts[i][1] - pts[i - 1][1])]; }
+  return pts[n];
+}
+function pt(p){ return p[0].toFixed(1) + " " + p[1].toFixed(1); }
+function bzD(P){ return "M" + pt(P[0]) + " C" + pt(P[1]) + " " + pt(P[2]) + " " + pt(P[3]); }
+function flGeo(i){
+  var right = i % 2 === 1, bottom = i > 1;
+  function P(x, y){ return [right ? FW - x : x, bottom ? FH - y : y]; }
+  function C(deg){ var a = deg * Math.PI / 180; return P(FCX + FCR * Math.cos(a), FCY + FCR * Math.sin(a)); }
+  return {x: right ? FW - FQM - FQW : FQM, y: bottom ? FH - FQM - FQH : FQM,
+    sig:[P(356, 118), P(410, 118), P(425, 238), C(213)],
+    act:[C(196), P(405, 292), P(400, 186), P(356, 186)],
+    out:[P(230, 246), P(230, 318), P(330, 334), C(186)]};
+}
+function anim(tag, el, a){ el.appendChild(s(tag, Object.assign({dur:FT + "s", repeatCount:"indefinite"}, a))); return el; }
+function flParts(G, off){
+  var g = s("g",{class:"flparts"}), sig = bzD(G.sig), act = bzD(G.act), out = bzD(G.out);
+  [0, 0.45].forEach(function(dl, k){
+    var c = s("circle",{r:k ? 4 : 5.5, class:"fl-p fl-sig", opacity:"0"});
+    anim("animateMotion", c, {path:sig, begin:(off + dl) + "s", calcMode:"linear", keyPoints:"0;1;1", keyTimes:"0;0.25;1"});
+    anim("animate", c, {attributeName:"opacity", begin:(off + dl) + "s", values:"0;1;1;0;0", keyTimes:"0;0.02;0.24;0.25;1"});
+    g.appendChild(c);
+  });
+  var pk = s("rect",{x:-6, y:-6, width:12, height:12, rx:3, class:"fl-p fl-act", opacity:"0"});
+  anim("animateMotion", pk, {path:act, begin:off + "s", calcMode:"linear", keyPoints:"0;0;0.3;0.3;1;1", keyTimes:"0;0.3;0.4;0.52;0.68;1"});
+  anim("animate", pk, {attributeName:"opacity", begin:off + "s", values:"0;0;1;1;0;0", keyTimes:"0;0.3;0.31;0.67;0.68;1"});
+  g.appendChild(pk);
+  var oc = s("circle",{r:5, class:"fl-p fl-out", opacity:"0"});
+  anim("animateMotion", oc, {path:out, begin:off + "s", calcMode:"linear", keyPoints:"0;0;1;1", keyTimes:"0;0.72;0.96;1"});
+  anim("animate", oc, {attributeName:"opacity", begin:off + "s", values:"0;0;1;1;0;0", keyTimes:"0;0.72;0.73;0.95;0.96;1"});
+  g.appendChild(oc);
+  return g;
+}
+function flRing(){
+  var g = s("g",{class:"flringg"}), C = (FL && FL.ring) || {};
+  g.appendChild(s("ellipse",{cx:FCX, cy:FCY, rx:470, ry:300, class:"flring"}));
+  [[FCX, FCY - 300, 0], [FCX + 470, FCY, 90], [FCX, FCY + 300, 180], [FCX - 470, FCY, 270]].forEach(function(c){
+    g.appendChild(s("path",{d:"M-5 -6 L3 0 L-5 6", class:"flchev", transform:"translate(" + c[0] + " " + c[1] + ") rotate(" + c[2] + ")"}));
+  });
+  g.appendChild(s("text",{x:FCX, y:FCY - 312, "text-anchor":"middle", class:"flringt"}, String(C.label || "Digital feedback loop").toUpperCase()));
+  g.appendChild(s("text",{x:FCX, y:FCY + 323, "text-anchor":"middle", class:"flringt"}, String(C.caption || "Every measured outcome becomes the next signal").toUpperCase()));
+  return g;
+}
+function flLinks(i, q, sel){
+  var G = flGeo(i), g = s("g",{class:"fllinks"}), on = i === sel ? " on" : "";
+  if (!q){ g.appendChild(s("path",{d:bzD(G.sig), class:"flpath idle", "data-q":String(i)})); return g; }
+  g.appendChild(s("path",{d:bzD(G.sig), class:"flpath sig" + on, "data-q":String(i)}));
+  g.appendChild(s("path",{d:bzD(G.act), class:"flpath act" + on, "data-q":String(i)}));
+  g.appendChild(s("path",{d:bzD(G.out), class:"flpath out" + on, "data-q":String(i)}));
+  function lbl(p, t, cls){
+    var w = t.length * 6.6 + 14, l = s("g",{class:"flpl " + cls, transform:"translate(" + pt(p) + ")"});
+    l.appendChild(s("rect",{x:-w / 2, y:-8.5, width:w, height:17, rx:8.5}));
+    l.appendChild(s("text",{x:0, y:3.5, "text-anchor":"middle"}, t));
+    return l;
+  }
+  g.appendChild(lbl(bz(G.sig, 0.5), "SIGNAL", "sig"));
+  g.appendChild(lbl(bzAt(G.act, 0.66), "ACTION", "act"));
+  g.appendChild(lbl(bz(G.out, 0.5), "OUTCOME", "out"));
+  var gate = s("g",{class:"flgate", transform:"translate(" + pt(bzAt(G.act, 0.3)) + ")"});
+  var halo = s("circle",{r:11, class:"flgate-halo", opacity:"0"});
+  anim("animate", halo, {attributeName:"opacity", begin:FOFF[i] + "s", values:"0;0;0.9;0.9;0;0", keyTimes:"0;0.4;0.41;0.52;0.53;1"});
+  gate.appendChild(halo);
+  gate.appendChild(s("rect",{x:-5.5, y:-5.5, width:11, height:11, rx:2, transform:"rotate(45)", class:"flgate-d"}));
+  g.appendChild(gate);
+  return g;
+}
+function flCard(i, q, sel){
+  var G = flGeo(i), x = G.x, y = G.y, pk = PILLAR_ORDER[i], pl = PILLARS[pk], col = flColor(q, i), js = flJourneys(q);
+  var g = s("g",{class:"flq" + (q ? "" : " empty") + (i === sel ? " sel" : ""), "data-q":String(i), role:"button", tabindex:"0", "aria-pressed":i === sel ? "true" : "false",
+    "aria-label":pl.label + (q && q.title ? ": " + q.title : "") + ". Show signals, actions and outcomes"});
+  g.appendChild(s("rect",{x:x, y:y, width:FQW, height:FQH, rx:12, class:"flcard"}));
+  g.appendChild(s("rect",{x:x + 8, y:y + 14, width:4, height:FQH - 28, rx:2, fill:col}));
+  g.appendChild(s("rect",{x:x + 22, y:y + 14, width:30, height:30, rx:8, fill:soft(col, DARK ? .3 : .13)}));
+  g.appendChild(svgGlyph(pl.glyph, x + 27, y + 19, 20, col));
+  g.appendChild(s("text",{x:x + 62, y:y + 27, class:"fleyb"}, pl.label.toUpperCase()));
+  var jl = js.length ? js.map(function(d){ return d.short_name || d.name; }).join(" \u00b7 ") : String((q && q.scope) || "");
+  if (jl) g.appendChild(s("text",{x:x + 62, y:y + 42, class:"fljr", fill:col}, wrapWords(jl, 40, 1)[0]));
+  if (!q){
+    g.appendChild(s("text",{x:x + 22, y:y + 82, class:"fltt"}, "To be discovered"));
+    wrapWords("No hypothesis yet: ask in the workshop which " + pl.signal.toLowerCase() + " matters most.", 44, 3).forEach(function(t, k){ g.appendChild(s("text",{x:x + 22, y:y + 108 + k * 16, class:"flrt"}, t)); });
+    return g;
+  }
+  wrapWords(q.title || pl.label, 34, 2).forEach(function(t, k){ g.appendChild(s("text",{x:x + 22, y:y + 70 + k * 18, class:"fltt"}, t)); });
+  g.appendChild(s("line",{x1:x + 22, y1:y + 100, x2:x + FQW - 14, y2:y + 100, class:"fldiv"}));
+  [["sig","SIGNAL","signal"],["act","ACTION","action"],["out","OUTCOME","outcome"]].forEach(function(r, k){
+    var yy = y + 120 + k * 38;
+    g.appendChild(s("text",{x:x + 22, y:yy, class:"flrl " + r[0]}, r[1]));
+    wrapWords(flLine(q, r[2]) || TBC, 38, 2).forEach(function(t, m){ g.appendChild(s("text",{x:x + 96, y:yy + m * 14, class:"flrt"}, t)); });
+  });
+  return g;
+}
+function flCore(sel){
+  var g = s("g",{class:"flcorewrap"}), C = (FL && FL.center) || {}, used = flUsedIq(flQuads()[sel]);
+  g.appendChild(s("defs",null, s("clipPath",{id:"fl-clip"}, s("circle",{cx:FCX, cy:FCY, r:FCR - 1.5}))));
+  g.appendChild(s("circle",{cx:FCX, cy:FCY, r:FCR + 3, class:"flpulse"}));
+  g.appendChild(s("circle",{cx:FCX, cy:FCY, r:FCR, class:"flcore"}));
+  g.appendChild(s("text",{x:FCX, y:FCY - 90, "text-anchor":"middle", class:"fliqt"}, C.name || "Microsoft IQ"));
+  g.appendChild(s("text",{x:FCX, y:FCY - 69, "text-anchor":"middle", class:"fliqs"}, C.tagline || "Enterprise intelligence layer"));
+  flIqList().slice(0, 4).forEach(function(x, k){
+    var cx = FCX - 128 + (k % 2) * 132, cy = FCY - 54 + Math.floor(k / 2) * 38;
+    var c = s("g",{class:"flchip" + (used.length && used.indexOf(x.id) < 0 ? " off" : ""), "data-iq":x.id});
+    c.appendChild(s("title",null, x.name + (x.desc ? ": " + x.desc : "")));
+    c.appendChild(s("rect",{x:cx, y:cy, width:124, height:30, rx:15}));
+    c.appendChild(svgGlyph(x.glyph, cx + 11, cy + 7, 16, "#FFFFFF"));
+    c.appendChild(s("text",{x:cx + 33, y:cy + 19.5}, x.name));
+    g.appendChild(c);
+  });
+  g.appendChild(s("rect",{x:FCX - FCR, y:FCY + 28, width:FCR * 2, height:52, "clip-path":"url(#fl-clip)", class:"flappr"}));
+  var ap = wrapWords((FL && FL.approval) || "Human approval before every action", 20, 2);
+  ap.forEach(function(t, k){ g.appendChild(s("text",{x:FCX, y:FCY + (ap.length > 1 ? 50 : 58) + k * 16, "text-anchor":"middle", class:"flapprt"}, t)); });
+  var tr = arr(FL && FL.trust).map(function(t){ return typeof t === "string" ? {name:t} : t; }).filter(function(t){ return t && t.name; });
+  var lg = tr.map(function(t){ var L = LOGO[t.logo]; return L && IMG_OK.test(L.uri || "") ? L : null; }).filter(Boolean);
+  lg.forEach(function(L, k){ g.appendChild(s("image",{href:L.uri, x:FCX - lg.length * 13 + 4 + k * 26, y:FCY + 88, width:18, height:18})); });
+  if (tr.length) g.appendChild(s("text",{x:FCX, y:FCY + 123, "text-anchor":"middle", class:"fltrust"}, tr.map(function(t){ return String(t.short || t.name).replace(/^Microsoft /, ""); }).join(" \u00b7 ")));
+  return g;
+}
+function flSvg(sel){
+  var Q = flQuads();
+  var svg = s("svg",{viewBox:"0 0 " + FW + " " + FH, class:"flsvg", role:"group", "aria-label":"Digital feedback loop: " + PILLAR_ORDER.map(function(p){ return PILLARS[p].label; }).join(", ") + ", around Microsoft IQ"});
+  svg.appendChild(s("title",null, "Digital feedback loop with Microsoft IQ"));
+  var deco = s("g",{"aria-hidden":"true"});
+  deco.appendChild(flRing());
+  Q.forEach(function(q, i){ deco.appendChild(flLinks(i, q, sel)); });
+  var parts = s("g",{class:"flanim"});
+  Q.forEach(function(q, i){ if (q) parts.appendChild(flParts(flGeo(i), FOFF[i])); });
+  deco.appendChild(parts);
+  svg.appendChild(deco);
+  Q.forEach(function(q, i){
+    var c = flCard(i, q, sel);
+    c.addEventListener("click", function(){ flSelect(i); });
+    c.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); flSelect(i); } });
+    svg.appendChild(c);
+  });
+  var core = flCore(sel); core.setAttribute("aria-hidden", "true");
+  svg.appendChild(core);
+  return svg;
+}
+function flSelect(i){
+  state.flq = i;
+  var w = document.getElementById("flwrap"); if (!w) return;
+  var used = flUsedIq(flQuads()[i]);
+  Array.prototype.forEach.call(w.querySelectorAll(".flq"), function(g){ var on = +g.getAttribute("data-q") === i; g.classList.toggle("sel", on); g.setAttribute("aria-pressed", on ? "true" : "false"); });
+  Array.prototype.forEach.call(w.querySelectorAll(".flpath"), function(p){ p.classList.toggle("on", +p.getAttribute("data-q") === i); });
+  Array.prototype.forEach.call(w.querySelectorAll(".flchip"), function(c){ c.classList.toggle("off", used.length > 0 && used.indexOf(c.getAttribute("data-iq")) < 0); });
+  var p = document.getElementById("flpanel"); if (p) p.replaceWith(flPanel(i));
+}
+function flApply(wrap, paused){
+  wrap.classList.toggle("paused", paused);
+  var svg = wrap.querySelector("svg.flsvg");
+  if (svg && typeof svg.pauseAnimations === "function"){ try { if (paused) svg.pauseAnimations(); else svg.unpauseAnimations(); } catch (e) {} }
+}
+function flIqPill(k){ var x = flIqMap()[iqKey(k)] || IQ_DEF[iqKey(k)] || {name:String(k)}; return h("span",{class:"pill iqp", title:x.desc || null}, glyphSpan(x.glyph, "flg"), x.name); }
+function flSig(x){
+  if (typeof x === "string") x = {text:x};
+  if (!x || typeof x !== "object") return null;
+  return h("li",null, h("span",null, x.text || ""), h("span",{class:"flmeta"}, arr(x.iq).map(flIqPill), x.type ? h("span",{class:"pill"}, x.type) : null, evPills(x.src)));
+}
+function flAct(x){
+  if (typeof x === "string") x = {text:x};
+  if (!x || typeof x !== "object") return null;
+  var ags = arr(x.agents).map(function(id){ return AG[id] || agentByName(id); }).filter(Boolean);
+  return h("li",null, h("span",null, x.text || ""),
+    ags.length ? h("span",{class:"flags"}, ags.map(function(a){ return agentChip(a, true); })) : null,
+    x.approval ? h("div",{class:"flok"}, glyphSpan(GATE_GLYPH, "flg"), h("span",null, h("b",null,"Human approval \u00b7 "), x.approval)) : null,
+    evPills(x.src));
+}
+function flKpi(x, q){
+  if (!x.kpi) return null;
+  var ids = (x.journey ? [x.journey] : []).concat(arr(q.journeys)), want = String(x.kpi).toLowerCase();
+  for (var i = 0; i < ids.length; i++){
+    var d = domById(ids[i]); if (!d) continue;
+    var m = arr(d.kpis).filter(function(k){ return k && String(k.kpi || "").toLowerCase() === want; })[0];
+    if (m) return m;
+  }
+  return {kpi:x.kpi, baseline:x.baseline, target:x.target};
+}
+function flOut(x, q){
+  if (typeof x === "string") x = {text:x};
+  if (!x || typeof x !== "object") return null;
+  var k = flKpi(x, q);
+  return h("li",null, h("span",null, x.text || (k && k.kpi) || ""),
+    k ? h("div",{class:"flkpi"}, h("b",null, k.kpi), (k.baseline || k.target) ? [" \u00b7 ", k.baseline || TBC, " \u2192 ", h("b",null, k.target || TBC)] : null, evPills(k.src)) : null,
+    arr(x.assumptions).length ? h("div",{class:"flass"}, h("span",{class:"note"},"Value hypotheses to confirm in the workshop"), arr(x.assumptions).map(function(id){
+      var a = ASSM[id];
+      return a ? h("span",{class:"flassi", title:a.question || null}, h("b",null, id), " ", a.statement || "", " \u00b7 ", fmtA(a.base, a.unit), " ", assPill(a)) : h("span",{class:"pill"}, id);
+    })) : null,
+    evPills(x.src));
+}
+function flCol(cls, title, sub, items){
+  items = items.filter(Boolean);
+  return h("div",{class:"flcol " + cls}, h("h4",null, title), h("span",{class:"note"}, sub), items.length ? h("ul",null, items) : h("p",{class:"tbc"}, TBC));
+}
+function flPanel(i){
+  var Q = flQuads(), q = Q[i], pk = PILLAR_ORDER[i], pl = PILLARS[pk], col = flColor(q, i);
+  var head = h("div",{class:"flph"},
+    h("span",{class:"flpic", style:"background:" + soft(col, DARK ? .3 : .13) + ";color:" + col}, glyphSpan(pl.glyph, "flg")),
+    h("div",null, h("div",{class:"small-lbl",style:"margin:0"}, pl.label + " \u00b7 " + ((q && q.signal_type) || pl.signal)), h("h3",null, (q && q.title) || pl.label)),
+    q ? h("span",{class:"flps"}, statusPill(note("val|loop|" + pk).status || q.status || "hypothesis"), evPills(q.src)) : null);
+  if (!q) return h("div",{class:"flpanel", id:"flpanel", style:"--q:" + col}, head,
+    h("p",{class:"note"}, "No hypothesis for this area yet. Ask in the workshop which " + pl.signal.toLowerCase() + " matters most, what should happen with it and how the result would be measured."), valBox("loop", pk));
+  var js = flJourneys(q), ucs = arr(q.use_cases).map(ucById).filter(Boolean);
+  var lbl = M.domain_label_plural ? M.domain_label_plural.charAt(0).toUpperCase() + M.domain_label_plural.slice(1) : "Journeys";
+  return h("div",{class:"flpanel", id:"flpanel", style:"--q:" + col},
+    head,
+    q.summary ? h("p",{class:"flsum"}, q.summary) : null,
+    h("div",{class:"flcols"},
+      flCol("sig", "Signals", "What is observed, and through which Microsoft IQ layer", arr(q.signals).map(flSig)),
+      flCol("act", "Actions", "What agents propose; a person approves", arr(q.actions).map(flAct)),
+      flCol("out", "Outcomes", "What is measured and fed back as the next signal", arr(q.outcomes).map(function(x){ return flOut(x, q); }))),
+    (js.length || ucs.length) ? h("div",{class:"flfoot"},
+      js.length ? h("span",null, h("b",null, lbl + " \u00b7 "), js.map(function(d){ return h("button",{type:"button", class:"fllink", style:"--d:" + d.color, onclick:function(){ go("blueprint",{d:D.indexOf(d)}); }}, d.name); })) : null,
+      ucs.length ? h("span",null, h("b",null,"Use cases \u00b7 "), ucs.map(function(u){ return h("button",{type:"button", class:"fllink", onclick:function(){ state.uc = u.id; go("usecases"); }}, u.id + " \u00b7 " + (u.name || "")); })) : null) : null,
+    q.question ? h("p",{class:"flqq"}, h("b",null,"Workshop question \u00b7 "), q.question) : null,
+    valBox("loop", pk));
+}
+function flSection(){
+  if (!FL) return [];
+  var Q = flQuads(), sel = state.flq;
+  if (typeof sel !== "number" || !Q[sel]){ sel = Q.findIndex(function(q){ return !!q; }); if (sel < 0) sel = 0; }
+  state.flq = sel;
+  var still = RM && !state.flPlay, paused = still || !!state.flPause;
+  var btn = h("button",{type:"button", class:"btn flbtn"}, paused ? "\u25b6 Play animation" : "\u275a\u275a Pause animation");
+  var steps = arr(FL.flow).length === 5 ? FL.flow : ["Signal","Microsoft IQ","Proposed action","Human approval","Measured outcome"];
+  var kinds = ["sig","iq","act","ok","out"];
+  var wrap = h("div",{class:"flwrap" + (paused ? " paused" : "") + (still ? " still" : ""), id:"flwrap"},
+    h("div",{class:"flfig"}, flSvg(sel)),
+    h("div",{class:"flctl"}, btn,
+      h("div",{class:"flflow", role:"list", "aria-label":"Reading the loop"}, steps.map(function(t, k){
+        return [k ? h("span",{class:"ar", "aria-hidden":"true"}, "\u2192") : null, h("span",{class:"st", role:"listitem"}, h("i",{class:kinds[k]}), String(t))];
+      }))),
+    h("p",{class:"note flanote"}, h("b",null,"Animation \u00b7 "), FL.animation_note || "Cyan dots are incoming signals; the green packet is a proposed action that waits at the amber gate for human approval; the amber dot returns the measured outcome to Microsoft IQ as the next signal. Motion stops when you pause it or when your device asks for reduced motion."));
+  btn.addEventListener("click", function(){
+    var nowPaused = !wrap.classList.contains("paused");
+    if (!nowPaused){ state.flPlay = true; wrap.classList.remove("still"); }
+    state.flPause = nowPaused;
+    flApply(wrap, nowPaused);
+    btn.textContent = nowPaused ? "\u25b6 Play animation" : "\u275a\u275a Pause animation";
+  });
+  setTimeout(function(){ if (wrap.isConnected !== false) flApply(wrap, paused); }, 0);
+  var srcs = arr(FL.sources).filter(function(x){ return x && /^https:\/\//.test(String(x.url || "")); });
+  return [
+    h("p",{class:"lead"}, FL.intro || ("Every area sends signals to Microsoft IQ, receives a proposed action back and returns a measured outcome, which becomes the next signal. A person approves before any action leaves " + (M.short || "the company") + ".")),
+    wrap,
+    h("div",{class:"fliqrow"}, flIqList().map(function(x){
+      var pr = arr(x.products);
+      return h("div",{class:"fliq"}, glyphSpan(x.glyph, "flg"), h("div",null, h("b",null, x.name), h("span",null, x.desc),
+        pr.length ? h("div",{class:"flprod"}, logosFor(pr.join(" "), 16, 3), pr.join(" \u00b7 ")) : null));
+    })),
+    flPanel(sel),
+    FL.note ? h("p",{class:"note"}, FL.note) : null,
+    srcs.length ? h("p",{class:"flsrc"}, "Microsoft sources: ", srcs.map(function(x, k){ return [k ? " \u00b7 " : null, h("a",{href:x.url, target:"_blank", rel:"noopener noreferrer"}, x.title || x.url)]; })) : null
+  ];
+}
+
+/* ---------------- agent workflow (Agents > trigger canvas, 1.6.0) ----------------
+   The canvas plan drawn the way the Copilot Studio workflow designer (GitHub Copilot harness) shows a workflow:
+   one trigger, typed steps (Agent, Classify, Extract, Copilot, Human review, Connector, Function, Variable,
+   If/Else, Loop, Scope, Note, Respond to the agent) and the desired outcome. Data: agent.canvas.workflow,
+   authored or derived from the plan by workflow.py. Dark designer canvas, the Add panel as legend, a
+   properties panel for the selected node, zoom controls. */
+var WFT = {
+  agent:{label:"Agent", kind:"ai", color:"#8B8CF6", desc:"Hands an open-ended task to an agent (a published agent or one defined inline in the node) and reads its answer back.",
+    glyph:'<rect x="5" y="7" width="14" height="11" rx="3"/><path d="M12 7V4"/><circle cx="9.5" cy="12.5" r="1.1"/><circle cx="14.5" cy="12.5" r="1.1"/><path d="M2.5 11.5v3M21.5 11.5v3"/>'},
+  classify:{label:"Classify", kind:"ai", color:"#5B9BFF", desc:"Routes free-form text to a branch by its meaning: one branch per category, plus Other.",
+    glyph:'<path d="M3.5 12.6V5A1.5 1.5 0 0 1 5 3.5h7.6l8 8-9.1 9.1z"/><circle cx="8" cy="8" r="1.6"/>'},
+  extract:{label:"Extract", kind:"ai", color:"#6CB6FF", desc:"Reads documents and returns the values and tables you define, for the next steps to use.",
+    glyph:'<path d="M13 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21H11"/><path d="M13 3l5 5h-5z"/><circle cx="15.5" cy="15.5" r="3"/><path d="M17.7 17.7L21 21"/>'},
+  copilot:{label:"Copilot", kind:"ai", color:"#4FA3FF", desc:"Calls Microsoft Copilot, Cowork or agents such as Researcher and Analyst for a step.",
+    glyph:'<rect x="3.5" y="8" width="9" height="9" rx="3"/><rect x="11.5" y="7" width="9" height="9" rx="3"/><path d="M9 4.5h5M10 19.5h5"/>'},
+  human_review:{label:"Human review", kind:"human", color:"#C4A5FF", desc:"Pauses the workflow until a person approves, decides or fills in what is missing.",
+    glyph:'<circle cx="10" cy="7.5" r="3.5"/><path d="M3.5 20c.8-3.8 3.4-5.8 6.5-5.8 1.4 0 2.7.4 3.8 1.2"/><path d="M14.5 18l2.2 2.2 4.3-4.7"/>'},
+  connector:{label:"Connector", kind:"rule", color:"#E07BEA", desc:"Runs an action in a connected service: Microsoft 365, business systems, third-party or custom connectors.",
+    glyph:'<path d="M9 3v4M15 3v4"/><path d="M6.5 7h11v3.5a5.5 5.5 0 0 1-11 0z"/><path d="M12 16v5"/>'},
+  "function":{label:"Function", kind:"rule", color:"#4FD1C5", desc:"Small deterministic transforms of text, numbers and lists.",
+    glyph:'<path d="M14 4.5c-2 0-3 1-3.4 3L8.8 17c-.4 2-1.4 2.8-3.3 2.8"/><path d="M7.5 10h6"/><path d="M15 12.5l5 6.5M20 12.5l-5 6.5"/>'},
+  variable:{label:"Variable", kind:"rule", color:"#6CB6FF", desc:"Keeps a value to use further down the workflow.",
+    glyph:'<path d="M8 4C6 4 5.5 5 5.5 7v2.2c0 1.3-.8 2.3-2 2.8 1.2.5 2 1.5 2 2.8V17c0 2 .5 3 2.5 3"/><path d="M16 4c2 0 2.5 1 2.5 3v2.2c0 1.3.8 2.3 2 2.8-1.2.5-2 1.5-2 2.8V17c0 2-.5 3-2.5 3"/><path d="M10 9.5l4 5M14 9.5l-4 5"/>'},
+  if_else:{label:"If/Else", kind:"rule", color:"#F6A05B", desc:"Splits the workflow on a condition.",
+    glyph:'<path d="M12 21v-7.5"/><path d="M12 13.5L6.5 8M12 13.5L17.5 8"/><path d="M5 3.5v5h5M19 3.5v5h-5"/>'},
+  loop:{label:"Loop", kind:"rule", color:"#F6A05B", desc:"Repeats its steps for every item of a list, or until a condition is met.",
+    glyph:'<path d="M20 12a8 8 0 0 1-13.6 5.7"/><path d="M4 12a8 8 0 0 1 13.6-5.7"/><path d="M18 2.8v3.6h-3.6M6 21.2v-3.6h3.6"/>'},
+  scope:{label:"Scope", kind:"rule", color:"#A0A7B4", desc:"Groups steps so they succeed or fail together.",
+    glyph:'<path d="M8 4H5.5A1.5 1.5 0 0 0 4 5.5v13A1.5 1.5 0 0 0 5.5 20H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H16"/>'},
+  note:{label:"Note", kind:"note", color:"#4ADE80", desc:"A note on the canvas for the people who build and review the workflow.",
+    glyph:'<path d="M5 4h14v10l-5.5 6H5z"/><path d="M13.5 20v-6H19"/>'},
+  respond:{label:"Respond to the agent", kind:"rule", color:"#8B8CF6", desc:"Returns the workflow's answer to the agent that called it.",
+    glyph:'<path d="M9.5 6.5L4 12l5.5 5.5"/><path d="M4 12h10a6 6 0 0 1 6 6v1.5"/>'}
+};
+var WF_ADD = ["agent","classify","extract","copilot","human_review","connector","function","variable","if_else","loop","note"];
+var WF_TRIG = {
+  manual:{label:"Manual", desc:"Run this workflow on demand with a button click."},
+  recurrence:{label:"Recurrence", desc:"Runs on a schedule, for example every night or at month-end."},
+  connector:{label:"Connector event", desc:"Starts when a connected system raises an event, for example a new email or a changed record."},
+  http:{label:"When an HTTP request is received", desc:"Starts when another system calls the workflow's address."},
+  agent:{label:"When an agent calls the workflow", desc:"An agent calls the workflow as a tool; the workflow responds to the agent with its result."}
+};
+var WF_KIND = {ai:["AI step","results can vary"], rule:["Deterministic step","same input, same result"], human:["Human step","a person decides"], note:["Note",""]};
+var WF_GLYPH = {
+  trigger:'<path d="M13.5 2.5L5 13.5h6.2l-1.2 8 8.5-11h-6.3z"/>',
+  outcome:'<path d="M5.5 21V3.5"/><path d="M5.5 4h11.5l-2.2 4.2 2.2 4.3H5.5"/>',
+  end:'<rect x="6" y="6" width="12" height="12" rx="2.5"/>'
+};
+var WFL = {W:196, H:60, G:40, P:28, TOP:118, LANE:118, PH:28, PG:7, OW:250, EW:152, WRAP:960};
+
+function wfT(s){ return s && WFT[s.type] ? s.type : "agent"; }
+function wfOf(a){ var w = a && a.canvas && a.canvas.workflow; return w && typeof w === "object" && !Array.isArray(w) && arr(w.steps).length ? w : null; }
+function wfAgent(ref){ return ref ? (AG[ref] || agentByName(ref)) : null; }
+function wfLogoKey(text){
+  var t = String(text || "");
+  for (var i = 0; i < LOGO_RULES.length; i++){ var k = LOGO_RULES[i][1]; if (LOGO_RULES[i][0].test(t) && LOGO[k] && IMG_OK.test(LOGO[k].uri || "")) return k; }
+  return null;
+}
+function wfPills(s){
+  var t = wfT(s), b = arr(s.branches).filter(function(x){ return x && x.label; }), d = arr(s.defaults).map(String);
+  if (["if_else","classify","human_review"].indexOf(t) < 0 || (!b.length && !d.length)) return null;
+  if (!d.length) d = [t === "classify" ? "Other" : (t === "human_review" ? "Approved" : "Else")];
+  return {branches:b, defaults:d};
+}
+function wfHead(s){ return wrapWords(String(s.label || ""), 21, 2); }
+function wfHeight(s){ var p = wfPills(s); return p ? 22 + wfHead(s).length * 16 + (p.branches.length + p.defaults.length) * (WFL.PH + WFL.PG) + 4 : WFL.H; }
+function wfPath(a, b){ var dx = Math.max(26, Math.abs(b[0] - a[0]) / 2); return "M" + a[0].toFixed(1) + " " + a[1].toFixed(1) + " C" + (a[0] + dx).toFixed(1) + " " + a[1].toFixed(1) + " " + (b[0] - dx).toFixed(1) + " " + b[1].toFixed(1) + " " + b[0].toFixed(1) + " " + b[1].toFixed(1); }
+
+/* layout: the main path left to right; loops and scopes as containers; branches on lanes below that rejoin or end.
+   wrap > 0 folds the path into rows of at most that width (an overview); 0 keeps one row as in the designer. */
+function wfLayout(wf, wrap){
+  var L = WFL, nodes = [], edges = [], boxes = [], notes = [], byId = {}, seq = 0, lanes = [], items = [];
+  var main = arr(wf.steps).filter(function(s){ return s && typeof s === "object"; });
+  var y0 = L.TOP, mainH = L.H;
+  main.forEach(function(s){ var t = wfT(s); mainH = Math.max(mainH, t === "loop" || t === "scope" ? L.H + 44 : wfHeight(s)); });
+  var laneTop = y0 + mainH + 54, cur = null;
+  function put(kind, s, x, y, w, h){
+    var o = {kind:kind, s:s, type: kind === "node" ? wfT(s) : kind, x:x, y:y, w:w, h:h};
+    o.id = kind === "trigger" || kind === "outcome" ? kind : String(s.id || ("w" + (++seq)));
+    if (byId[o.id]) o.id += "-" + (++seq);
+    o.inP = [x, y + h / 2]; o.outP = [x + w, y + h / 2];
+    nodes.push(o); byId[o.id] = o; if (cur) cur.ids.push(o.id);
+    return o;
+  }
+  function P(p, n){ return {p:p, n:n.id}; }
+  function link(froms, to, cls){ froms.forEach(function(f){ edges.push({a:f.p, na:f.n, b:to.inP, nb:to.id, cls:cls || ""}); }); }
+  function lane(x1, x2){
+    for (var i = 0; i < lanes.length; i++) if (lanes[i] < x1 - 24){ lanes[i] = x2; return i; }
+    lanes.push(x2); return lanes.length - 1;
+  }
+  function item(x){ cur = {x0:x, ids:[]}; items.push(cur); return cur; }
+  item(L.P);
+  var trig = put("trigger", wf.trigger || {}, L.P, y0, L.W, L.H), pend = [P(trig.outP, trig)], x = L.P + L.W + L.G, last = trig;
+  cur.x1 = L.P + L.W;
+  main.forEach(function(s){
+    var t = wfT(s);
+    if (t === "note"){ notes.push({x:last.x + 12, y:y0 - 104, text:String(s.label || s.detail || ""), at:last.id}); return; }
+    var it = item(x);
+    if (t === "loop" || t === "scope"){
+      var box = {kind:"box", s:s, type:t, x:x, y:y0 - 40, w:0, h:L.H + 56, id:String(s.id || ("w" + (++seq)))};
+      if (byId[box.id]) box.id += "-" + (++seq);
+      boxes.push(box); byId[box.id] = box; nodes.push(box); it.ids.push(box.id);
+      var body = arr(s.steps).filter(function(b){ return b && typeof b === "object" && wfT(b) !== "note"; });
+      var bx = x + 16, inner = [];
+      body.forEach(function(b){ var bn = put("node", b, bx, y0 + 4, L.W, L.H); inner.push(bn); bx += L.W + 32; });
+      var w = Math.max(L.W + 32, bx - 32 + 16 - x);
+      box.w = w; box.inP = [x, y0 + 4 + L.H / 2]; box.outP = [x + w, y0 + 4 + L.H / 2];
+      link(pend, box);
+      for (var i = 1; i < inner.length; i++) edges.push({a:inner[i - 1].outP, na:inner[i - 1].id, b:inner[i].inP, nb:inner[i].id, cls:""});
+      if (inner.length){ edges.push({a:box.inP, na:box.id, b:inner[0].inP, nb:inner[0].id, cls:"in"}); edges.push({a:inner[inner.length - 1].outP, na:inner[inner.length - 1].id, b:box.outP, nb:box.id, cls:"in"}); }
+      pend = [P(box.outP, box)]; last = box; it.x1 = x + w; x += w + L.G; return;
+    }
+    var nd = put("node", s, x, y0, L.W, wfHeight(s)), p = wfPills(s), next = x + L.W + L.G;
+    link(pend, nd);
+    if (s.note) notes.push({x:nd.x + 12, y:y0 - 104, text:String(s.note), at:nd.id});
+    if (!p){ pend = [P(nd.outP, nd)]; last = nd; it.x1 = x + L.W; x = next; return; }
+    var hy = nd.y + 22 + wfHead(s).length * 16, k = 0, outs = [], span = next;
+    nd.pills = [];
+    p.branches.concat(p.defaults.map(function(lb){ return {label:lb, _default:true}; })).forEach(function(b){
+      var py = hy + k * (L.PH + L.PG) + L.PH / 2; k++;
+      var pill = {label:String(b.label), y:py, port:[nd.x + nd.w, py], def: !!b._default};
+      nd.pills.push(pill);
+      var steps = b._default ? [] : arr(b.steps).filter(function(z){ return z && typeof z === "object"; });
+      var ends = !b._default && (b.then === "end" || (!!b.end && b.then !== "continue"));
+      if (!steps.length && !ends){ outs.push(P(pill.port, nd)); return; }
+      var w = steps.length * (L.W + L.G) + (ends ? L.EW + L.G : 0), bx = nd.x + nd.w + L.G;
+      var ln = lane(bx, bx + w), ly = laneTop + ln * L.LANE, prev = [P(pill.port, nd)];
+      steps.forEach(function(z){ var bn = put("node", z, bx, ly, L.W, L.H); link(prev, bn, "br"); prev = [P(bn.outP, bn)]; bx += L.W + L.G; });
+      if (ends){ var en = put("end", {label: b.end || "End", id:(s.id || "x") + "-end-" + k}, bx, ly + (L.H - 44) / 2, L.EW, 44); link(prev, en, "br"); bx += L.EW + L.G; }
+      else { outs.push(prev[0]); next = Math.max(next, bx); }
+      span = Math.max(span, bx);
+    });
+    pend = outs; last = nd; it.x1 = Math.max(next, span) - L.G; x = next;
+  });
+  item(x);
+  var oc = put("outcome", {label:"Desired outcome", detail: wf.outcome || ""}, x, y0 - 16, L.OW, L.H + 32);
+  cur.x1 = x + L.OW;
+  link(pend, oc, "fin");
+  var res = {nodes:nodes, edges:edges, boxes:boxes, notes:notes, byId:byId, items:items, w:x + L.OW + L.P, rows:1};
+  wfFold(res, wrap);
+  var top = Infinity, bottom = 0;
+  nodes.forEach(function(n){ top = Math.min(top, n.y); bottom = Math.max(bottom, n.y + n.h); });
+  notes.forEach(function(nt){ top = Math.min(top, nt.y); });
+  var lift = Math.max(0, top - 18);
+  if (lift){
+    nodes.forEach(function(n){ n.y -= lift; n.inP = [n.inP[0], n.inP[1] - lift]; n.outP = [n.outP[0], n.outP[1] - lift]; arr(n.pills).forEach(function(p){ p.y -= lift; p.port = [p.port[0], p.port[1] - lift]; }); });
+    edges.forEach(function(e){ e.a = [e.a[0], e.a[1] - lift]; e.b = [e.b[0], e.b[1] - lift]; if (e.wrapY) e.wrapY -= lift; });
+    notes.forEach(function(nt){ nt.y -= lift; });
+    bottom -= lift;
+  }
+  res.h = bottom + L.P + 6;
+  return res;
+}
+/* fold one long row into rows; edges between rows run below the row and enter the next row from the left */
+function wfFold(L, wrap){
+  var segs = [], cur = null;
+  L.items.forEach(function(it){
+    if (!cur || (wrap > 0 && it.x1 - cur.x0 > wrap && cur.items.length)){ cur = {x0:it.x0, items:[]}; segs.push(cur); }
+    cur.items.push(it);
+  });
+  var seg = {}, off = {}, maxW = 0, prevBottom = 0, noteAt = {};
+  L.notes.forEach(function(nt){ noteAt[nt.at] = true; });
+  segs.forEach(function(sg, si){
+    var ids = [], hasNote = false, hasBox = false;
+    sg.items.forEach(function(it){ ids = ids.concat(it.ids); });
+    ids.forEach(function(id){ if (noteAt[id]) hasNote = true; if (L.byId[id].kind === "box") hasBox = true; });
+    var room = hasNote ? 112 : (hasBox ? 52 : 26);
+    var dx = WFL.P - sg.x0, dy = si === 0 ? 0 : prevBottom + 34 + room - WFL.TOP, bot = 0, right = 0;
+    ids.forEach(function(id){ seg[id] = si; off[id] = [dx, dy]; var n = L.byId[id]; bot = Math.max(bot, n.y + n.h + dy); right = Math.max(right, n.x + n.w + dx); });
+    sg.bottom = bot; maxW = Math.max(maxW, right + WFL.P); prevBottom = bot;
+  });
+  L.rows = segs.length;
+  if (segs.length < 2) return;
+  function mv(p, id){ var o = off[id] || [0, 0]; return [p[0] + o[0], p[1] + o[1]]; }
+  L.nodes.forEach(function(n){
+    var o = off[n.id] || [0, 0]; n.x += o[0]; n.y += o[1]; n.inP = mv(n.inP, n.id); n.outP = mv(n.outP, n.id);
+    arr(n.pills).forEach(function(p){ p.y += o[1]; p.port = [p.port[0] + o[0], p.port[1] + o[1]]; });
+  });
+  L.edges.forEach(function(e){
+    e.a = mv(e.a, e.na); e.b = mv(e.b, e.nb);
+    if (seg[e.na] !== seg[e.nb]) e.wrapY = segs[seg[e.na]].bottom + 22;
+  });
+  L.notes.forEach(function(nt){ var o = off[nt.at] || [0, 0]; nt.x += o[0]; nt.y += o[1]; });
+  L.w = maxW;
+  var top = Infinity; L.nodes.forEach(function(n){ top = Math.min(top, n.y); }); L.notes.forEach(function(nt){ top = Math.min(top, nt.y); });
+  L.top = top;
+}
+function wfWrapPath(a, b, yg){
+  var r = 10, x1 = a[0] + 18, x2 = b[0] - 20;
+  return "M" + a[0] + " " + a[1] + " H" + (x1 - r) + " Q" + x1 + " " + a[1] + " " + x1 + " " + (a[1] + r) + " V" + (yg - r) + " Q" + x1 + " " + yg + " " + (x1 - r) + " " + yg +
+    " H" + (x2 + r) + " Q" + x2 + " " + yg + " " + x2 + " " + (yg + r) + " V" + (b[1] - r) + " Q" + x2 + " " + b[1] + " " + (x2 + r) + " " + b[1] + " H" + b[0];
+}
+function wfIcon(n, x, y, size){
+  var st = n.s || {}, t = n.type, k = null, a = null;
+  if (t === "agent"){ a = wfAgent(st.agent); if (a && a.identity && ICON_OK.test(a.identity.icon || "")) return s("image",{href:a.identity.icon, x:x, y:y, width:size, height:size}); k = LOGO.copilotstudio ? "copilotstudio" : null; }
+  else if (t === "copilot") k = LOGO.m365copilot ? "m365copilot" : null;
+  else if (t === "connector" || t === "human_review" || t === "extract" || (t === "trigger" && st.type === "connector")) k = wfLogoKey(st.system);
+  if (k && IMG_OK.test(LOGO[k].uri || "")) return s("image",{href:LOGO[k].uri, x:x, y:y, width:size, height:size});
+  var g = t === "trigger" ? (st.type === "agent" ? WFT.agent.glyph : WF_GLYPH.trigger) : (WFT[t] ? WFT[t].glyph : WF_GLYPH[t]);
+  var col = t === "trigger" || t === "outcome" ? "#4ADE80" : (t === "end" ? "#A0A7B4" : (WFT[t] || {}).color);
+  return svgGlyph(g, x, y, size, col);
+}
+function wfAria(n){
+  var s = n.s || {}, t = n.type;
+  if (t === "trigger"){ var tl = (WF_TRIG[s.type] || WF_TRIG.manual).label; return "Trigger: " + (s.label && String(s.label).toLowerCase() !== tl.toLowerCase() ? s.label + " (" + tl + ")" : tl); }
+  if (t === "outcome") return "Desired outcome: " + (s.detail || "");
+  if (t === "end") return "End: " + (s.label || "");
+  return (WFT[t] || {label:t}).label + ": " + (s.label || "");
+}
+function wfSvg(L, sel, wfName){
+  var svg = s("svg",{viewBox:"0 0 " + L.w + " " + L.h, width:L.w, height:L.h, class:"wfsvg", role:"group", "aria-label":"Workflow " + wfName});
+  var bg = s("g",{class:"wfframes","aria-hidden":"true"});
+  L.boxes.forEach(function(b){ bg.appendChild(s("rect",{x:b.x, y:b.y, width:b.w, height:b.h, rx:16, class:"wfcont" + (b.id === sel ? " sel" : ""), "data-t":b.type, "data-box":b.id})); });
+  svg.appendChild(bg);
+  var eg = s("g",{class:"wfedges","aria-hidden":"true"});
+  L.edges.forEach(function(e){ eg.appendChild(s("path",{d:e.wrapY ? wfWrapPath(e.a, e.b, e.wrapY) : wfPath(e.a, e.b), class:"wfe" + (e.cls ? " " + e.cls : "") + (e.wrapY ? " wrap" : "")})); });
+  svg.appendChild(eg);
+  L.nodes.forEach(function(n){
+    if (n.kind === "box"){
+      var bgx = s("g",{class:"wfn wfboxg " + n.type + (n.id === sel ? " sel" : ""), "data-n":n.id, "data-t":n.type, role:"button", tabindex:"0", "aria-label":wfAria(n)});
+      bgx.appendChild(s("rect",{x:n.x + 1, y:n.y + 1, width:n.w - 2, height:34, rx:15, class:"wfhit"}));
+      bgx.appendChild(svgGlyph(WFT[n.type].glyph, n.x + 12, n.y + 9, 18, WFT[n.type].color));
+      bgx.appendChild(s("text",{x:n.x + 38, y:n.y + 23, class:"wfct"}, wrapWords((WFT[n.type].label + " \u00b7 " + (n.s.label || "")), Math.floor((n.w - 50) / 6.6), 1)[0]));
+      bgx.appendChild(s("circle",{cx:n.inP[0], cy:n.inP[1], r:4.5, class:"wfport"}));
+      bgx.appendChild(s("circle",{cx:n.outP[0], cy:n.outP[1], r:4.5, class:"wfport"}));
+      svg.appendChild(bgx); return;
+    }
+    var st = n.s || {}, t = n.type, cls = "wfn " + t + (n.id === sel ? " sel" : "");
+    var g = s("g",{class:cls, "data-n":n.id, "data-t":t, role:"button", tabindex:"0", "aria-label":wfAria(n)});
+    g.appendChild(s("rect",{x:n.x, y:n.y, width:n.w, height:n.h, rx:t === "end" ? 22 : 16, class:"wfbox"}));
+    if (t === "outcome"){
+      g.appendChild(wfIcon(n, n.x + 14, n.y + 13, 20));
+      g.appendChild(s("text",{x:n.x + 42, y:n.y + 28, class:"wfot"}, "DESIRED OUTCOME"));
+      wrapWords(String(st.detail || TBC), 36, 3).forEach(function(tx, i){ g.appendChild(s("text",{x:n.x + 16, y:n.y + 50 + i * 15, class:"wfod"}, tx)); });
+      g.appendChild(s("circle",{cx:n.inP[0], cy:n.inP[1], r:4.5, class:"wfport"}));
+      svg.appendChild(g); return;
+    }
+    if (n.pills){
+      g.appendChild(wfIcon(n, n.x + 14, n.y + 11, 20));
+      wfHead(st).forEach(function(tx, i){ g.appendChild(s("text",{x:n.x + 42, y:n.y + 26 + i * 16, class:"wft"}, tx)); });
+      n.pills.forEach(function(p){
+        g.appendChild(s("rect",{x:n.x + 14, y:p.y - WFL.PH / 2, width:n.w - 28, height:WFL.PH, rx:WFL.PH / 2, class:"wfpill" + (p.def ? " def" : "")}));
+        g.appendChild(s("text",{x:n.x + n.w / 2, y:p.y + 4.5, "text-anchor":"middle", class:"wfpt"}, wrapWords(p.label, 24, 1)[0]));
+        g.appendChild(s("circle",{cx:p.port[0], cy:p.port[1], r:4.5, class:"wfport"}));
+      });
+    } else {
+      g.appendChild(wfIcon(n, n.x + 14, n.y + (n.h - 22) / 2, 22));
+      var lines = wrapWords(String(st.label || ""), t === "end" ? 15 : 20, 2), ty = n.y + n.h / 2 + (lines.length > 1 ? -3 : 4.5);
+      lines.forEach(function(tx, i){ g.appendChild(s("text",{x:n.x + 46, y:ty + i * 15, class:"wft"}, tx)); });
+      if (t !== "trigger" && t !== "end") g.appendChild(s("circle",{cx:n.outP[0], cy:n.outP[1], r:4.5, class:"wfport"}));
+      if (t === "trigger") g.appendChild(s("circle",{cx:n.outP[0], cy:n.outP[1], r:4.5, class:"wfport"}));
+    }
+    if (t !== "trigger") g.appendChild(s("circle",{cx:n.inP[0], cy:n.inP[1], r:4.5, class:"wfport"}));
+    if (WFT[t] && WFT[t].kind !== "note") g.appendChild(s("circle",{cx:n.x + n.w - 13, cy:n.y + 12, r:4, class:"wfk " + WFT[t].kind}));
+    svg.appendChild(g);
+  });
+  L.notes.forEach(function(nt){
+    var g = s("g",{class:"wfnote","aria-hidden":"true"}), lines = wrapWords(nt.text, 30, 3), h = 18 + lines.length * 14;
+    g.appendChild(s("path",{d:"M" + nt.x + " " + nt.y + " h184 v" + (h - 12) + " l-12 12 h-172 z", class:"wfnb"}));
+    g.appendChild(svgGlyph(WFT.note.glyph, nt.x + 8, nt.y + 7, 14, WFT.note.color));
+    lines.forEach(function(tx, i){ g.appendChild(s("text",{x:nt.x + 28, y:nt.y + 18 + i * 14, class:"wfnt"}, tx)); });
+    svg.appendChild(g);
+  });
+  return svg;
+}
+function wfCount(L){
+  var c = {ai:0, rule:0, human:0}, by = {};
+  L.nodes.forEach(function(n){ var t = n.type; if (WFT[t]){ by[t] = (by[t] || 0) + 1; if (c[WFT[t].kind] !== undefined) c[WFT[t].kind]++; } });
+  by.note = L.notes.length;
+  return {kinds:c, by:by};
+}
+function wfPanel(a, wf, L, id, onClose){
+  var n = L.byId[id] || L.byId.trigger, st = n.s || {}, t = n.type, out = [];
+  var tri = t === "trigger" ? (WF_TRIG[st.type] || WF_TRIG.manual) : null, info = WFT[t];
+  var title = t === "outcome" ? "Desired outcome" : (st.label || (info ? info.label : ""));
+  var icon = h("span",{class:"wfpi"}); var isv = s("svg",{viewBox:"0 0 24 24", width:"22", height:"22"}); isv.appendChild(wfIcon({type:t, s:st}, 0, 0, 24)); icon.appendChild(isv);
+  out.push(h("div",{class:"wfph"}, icon, h("div",{class:"wfpt2"}, h("b",null, title),
+    h("span",{class:"wfptag"}, tri ? "Trigger \u00b7 " + tri.label : (info ? info.label : (t === "end" ? "End of a branch" : "Outcome")), info && WF_KIND[info.kind][0] ? " \u00b7 " + WF_KIND[info.kind][0] : "")),
+    onClose ? h("button",{type:"button", class:"wfx", "aria-label":"Close the properties", title:"Close", onclick:onClose}, "\u00d7") : null));
+  if (tri) out.push(h("div",{class:"wfps"}, h("h5",null,"Trigger type"), h("div",{class:"wfbox2"}, h("b",null, tri.label), h("span",null, tri.desc))));
+  else if (info) out.push(h("div",{class:"wfps"}, h("h5",null,"What this node does"), h("p",null, info.desc), info.kind !== "note" ? h("p",{class:"wfkind " + info.kind}, WF_KIND[info.kind][0] + ": " + WF_KIND[info.kind][1]) : null));
+  if (t === "outcome") out.push(h("div",{class:"wfps"}, h("h5",null,"What the workflow delivers"), h("p",null, st.detail || TBC)));
+  if (st.detail && t !== "outcome") out.push(h("div",{class:"wfps"}, h("h5",null,"In this workflow"), h("p",null, st.detail)));
+  var ag = wfAgent(st.agent);
+  if (ag) out.push(h("div",{class:"wfps"}, h("h5",null,"Agent"), agentChip(ag, true)));
+  if (st.system) out.push(h("div",{class:"wfps"}, h("h5",null, t === "trigger" ? "Source" : "System"), h("p",{class:"wfsys"}, logosFor(String(st.system), 16, 2), String(st.system))));
+  if (st.approver) out.push(h("div",{class:"wfps"}, h("h5",null,"Who decides"), h("p",null, String(st.approver))));
+  if (n.pills) out.push(h("div",{class:"wfps"}, h("h5",null,"Branches"), h("ul",{class:"wfbl"}, n.pills.map(function(p){
+    var b = arr(st.branches).filter(function(x){ return x && String(x.label) === p.label; })[0];
+    var steps = b ? arr(b.steps).map(function(z){ return z && z.label; }).filter(Boolean) : [];
+    return h("li",null, h("b",null, p.label), " \u2192 ", p.def ? "continues with the next step" : (steps.length ? steps.join(" \u2192 ") + (b.then === "end" || (b.end && b.then !== "continue") ? " \u2192 ends: " + (b.end || "End") : " \u2192 rejoins") : (b && (b.then === "end" || b.end) ? "ends: " + (b.end || "End") : "continues")));
+  }))));
+  if (n.kind === "box") out.push(h("div",{class:"wfps"}, h("h5",null, t === "loop" ? "Repeats" : "Groups"), h("ul",{class:"wfbl"}, arr(st.steps).map(function(z){ return z && z.label ? h("li",null, (WFT[wfT(z)] || {}).label + " \u00b7 " + z.label) : null; }))));
+  if (arr(st.inputs).length || arr(st.outputs).length) out.push(h("div",{class:"wfps"}, h("h5",null,"Data"), h("p",{class:"wfio"},
+    arr(st.inputs).map(function(x){ return h("span",{class:"pill"}, "in \u00b7 " + x); }), arr(st.outputs).map(function(x){ return h("span",{class:"pill"}, "out \u00b7 " + x); }))));
+  if (st.note) out.push(h("div",{class:"wfps"}, h("h5",null,"Note"), h("p",{class:"wfnp"}, String(st.note))));
+  return h("aside",{class:"wfprops", "aria-live":"polite"}, out);
+}
+function wfZoom(frame, L, z){
+  var svg = frame.querySelector("svg.wfsvg"), cv = frame.querySelector(".wfcanvas");
+  if (!svg || !L) return;
+  if (z === "fit"){ var cw = cv && cv.clientWidth ? cv.clientWidth - 24 : 900; z = Math.max(0.3, Math.min(1, cw / L.w)); }
+  z = Math.max(0.3, Math.min(1.6, z));
+  frame._z = z;
+  svg.setAttribute("width", String(Math.round(L.w * z))); svg.setAttribute("height", String(Math.round(L.h * z)));
+  var lb = frame.querySelector(".wfzl"); if (lb) lb.textContent = Math.round(z * 100) + "%";
+}
+function wfSection(a){
+  var wf = wfOf(a);
+  if (!wf) return h("p",{class:"note"}, "No workflow yet: it is drawn from the canvas plan, so add the plan steps (MVP candidates first).");
+  var key = a.id, name = String(wf.name || (shortOf(a) + " workflow"));
+  var frame = h("div",{class:"wf", id:"wf-" + String(key).replace(/\W/g, "_")});
+  var L = wfLayout(wf, state.wfRow ? 0 : WFL.WRAP), sel = (state.wfSel || {})[key] || null;
+  if (sel && !L.byId[sel]) sel = null;
+  var cnt = wfCount(L);
+  function panel(id){ return id ? wfPanel(a, wf, L, id, function(){ select(null); }) : h("aside",{class:"wfprops", hidden:true}); }
+  function select(id){
+    state.wfSel = state.wfSel || {}; state.wfSel[key] = id; sel = id;
+    Array.prototype.forEach.call(frame.querySelectorAll(".wfn"), function(g){ g.classList.toggle("sel", g.getAttribute("data-n") === id); });
+    var p = frame.querySelector(".wfprops"); if (p) p.replaceWith(panel(id));
+    frame.classList.toggle("open", !!id);
+  }
+  function hi(t, keep){
+    if (!keep) frame._hi = frame._hi === t ? null : t;
+    Array.prototype.forEach.call(frame.querySelectorAll(".wfn,.wfcont"), function(g){ g.classList.toggle("dim", !!frame._hi && g.getAttribute("data-t") !== frame._hi); });
+    Array.prototype.forEach.call(frame.querySelectorAll(".wfadd button"), function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-t") === frame._hi ? "true" : "false"); });
+  }
+  function draw(){
+    L = wfLayout(wf, state.wfRow ? 0 : WFL.WRAP); frame._L = L; frame._z = 1;
+    var svg = wfSvg(L, sel, name);
+    Array.prototype.forEach.call(svg.querySelectorAll(".wfn"), function(g){
+      var id = g.getAttribute("data-n");
+      g.addEventListener("click", function(){ select(id); });
+      g.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); select(id); } });
+    });
+    var old = frame.querySelector("svg.wfsvg"); if (old) old.replaceWith(svg);
+    var lb = frame.querySelector(".wfzl"); if (lb) lb.textContent = "100%";
+    var lt = frame.querySelector(".wflay"); if (lt){ lt.textContent = state.wfRow ? "Overview" : "Designer row"; lt.title = state.wfRow ? "Fold the workflow into rows to see it on one screen" : "One row from left to right, as in the designer"; }
+    frame.classList.toggle("row", !!state.wfRow);
+    hi(null, true);
+  }
+  var add = h("nav",{class:"wfadd", "aria-label":"Workflow node types"}, h("div",{class:"wfaddh"}, "Add"), WF_ADD.map(function(t){
+    var c = cnt.by[t] || 0;
+    return h("button",{type:"button", class:c ? "" : "unused", "data-t":t, "aria-pressed":"false", title:WFT[t].desc,
+      "aria-label":"Highlight " + WFT[t].label + " nodes (" + c + " in this workflow)", onclick:function(){ hi(t); }},
+      glyphSpan(WFT[t].glyph, "wfg"), h("span",null, WFT[t].label), c ? h("em",null, String(c)) : null);
+  }));
+  Array.prototype.forEach.call(add.querySelectorAll(".wfg"), function(sp, i){ sp.style.color = WFT[WF_ADD[i]].color; });
+  var canvas = h("div",{class:"wfcanvas"}, s("svg",{class:"wfsvg"}),
+    h("div",{class:"wftools", role:"toolbar", "aria-label":"Canvas"},
+      h("button",{type:"button", title:"Zoom out", "aria-label":"Zoom out", onclick:function(){ wfZoom(frame, frame._L, (frame._z || 1) - 0.15); }}, "\u2212"),
+      h("span",{class:"wfzl"}, "100%"),
+      h("button",{type:"button", title:"Zoom in", "aria-label":"Zoom in", onclick:function(){ wfZoom(frame, frame._L, (frame._z || 1) + 0.15); }}, "+"),
+      h("button",{type:"button", title:"Fit to the window", onclick:function(){ wfZoom(frame, frame._L, "fit"); }}, "Fit"),
+      h("button",{type:"button", class:"wflay", onclick:function(){ state.wfRow = !state.wfRow; draw(); }}, "")));
+  frame.appendChild(h("div",{class:"wfbar"},
+    h("span",{class:"wfname"}, svgIconInline(), name),
+    h("span",{class:"wfstat"}, wf.status && String(wf.status).toLowerCase() !== "draft" ? String(wf.status) : "Draft"),
+    wf.derived ? h("span",{class:"wfder"}, "Derived from the plan \u00b7 refine in the workshop") : null,
+    h("span",{class:"wfsum"},
+      h("span",{class:"wfk2 ai"}, cnt.kinds.ai + " AI"), h("span",{class:"wfk2 rule"}, cnt.kinds.rule + " deterministic"), h("span",{class:"wfk2 human"}, cnt.kinds.human + " human")),
+    h("span",{class:"wfh"}, "Copilot Studio workflow \u00b7 GitHub Copilot harness")));
+  frame.appendChild(h("div",{class:"wfbody"}, add, h("div",{class:"wfstage"}, canvas, panel(sel))));
+  frame.addEventListener("keydown", function(e){ if (e.key === "Escape" && sel){ e.stopPropagation(); select(null); } });
+  frame.classList.toggle("open", !!sel);
+  draw();
+  return [h("p",{class:"note wfintro"}, "The plan as a Copilot Studio workflow: it starts with the trigger, runs each step as a designer node and ends in the desired outcome. AI steps (Agent, Classify, Extract, Copilot) can vary; deterministic steps follow rules; a person approves before anything leaves the company. Select a node for its properties, a node type in Add to highlight it; switch between the overview and the designer row."), frame, evPills(wf.src)];
+}
+function svgIconInline(){ return glyphSpan('<path d="M4 7h5v4H4zM15 13h5v4h-5z"/><path d="M9 9h3a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2"/>', "wfg"); }
 
 /* ---------------- org model (HAIRO) ---------------- */
 function orgSvg(){
@@ -1681,11 +2579,13 @@ function renderAgents(){
     h("div",{class:"jhead"}, h("div",null, h("h2",{class:"anm"}, idIcon(a, "aicon lg"), nameOf(a)), h("p",null, a.capability || a.mission || "")), agentPills(a)),
     h("div",{class:"btnrow"}, h("button",{type:"button",class:"btn",onclick:function(){ openAgent(a.id); }},"Role card"), h("button",{type:"button",class:"btn",onclick:function(){ openProfile(a); }},"Role profile"), evPills(a.src)),
     a.identity ? [h("h3",{class:"sub"},"Agent identity"), idPanel(a)] : null,
-    h("h3",{class:"sub"},"Agentic trigger canvas"), canvas,
+    h("h3",{class:"sub"},"Agentic trigger canvas"), canvas);
+  var flow = h("div",{class:"agfull"}, h("h3",{class:"sub", id:"workflow"},"Workflow \u00b7 from trigger to outcome"), wfSection(a));
+  var rest = h("div",{class:"agrest"},
     h("h3",{class:"sub"},"Readiness \u00b7 the seven declarations"), declBox,
     h("h3",{class:"sub"},"Role profile"), profileSections(a),
     h("h3",{class:"sub"},"Validate in the workshop"), valBox("agent", a.id));
-  return [h("h2",{class:"sec"},"Agents \u00b7 " + d.name), h("p",{class:"lead"},"Each agent is described like a role: a trigger canvas for the work it does, seven declarations that make it governable, and a role profile that becomes its instructions."), h("div",{class:"agwrap"}, list, main)];
+  return [h("h2",{class:"sec"},"Agents \u00b7 " + d.name), h("p",{class:"lead"},"Each agent is described like a role: a trigger canvas for the work it does, its workflow from trigger to outcome, seven declarations that make it governable, and a role profile that becomes its instructions."), h("div",{class:"agwrap"}, list, main, flow, rest)];
 }
 
 /* ---------------- attendees ---------------- */
@@ -2723,6 +3623,7 @@ function notesText(){
   Object.keys(NOTES).filter(function(k){ return k.indexOf("val|ass|") === 0; }).sort().forEach(function(k){ var n = NOTES[k], id = k.slice(8), a = ASSM[id] || {}; if (n.status || n.note || num(n.value)) L.push("- Assumption " + id + (a.statement ? " (" + a.statement + ")" : "") + ": " + (n.status || "") + (num(n.value) ? " \u2192 " + n.value + (a.unit ? " " + a.unit : "") : "") + (n.note ? " \u2014 " + n.note : "")); });
   Object.keys(NOTES).filter(function(k){ return k.indexOf("val|ready|") === 0; }).sort().forEach(function(k){ var n = NOTES[k]; if (n.status || n.note) L.push("- IT readiness " + k.slice(10) + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });
   Object.keys(NOTES).filter(function(k){ return k.indexOf("val|adr|") === 0; }).sort().forEach(function(k){ var n = NOTES[k]; if (n.status || n.note) L.push("- Decision " + k.slice(8) + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });
+  PILLAR_ORDER.forEach(function(pk){ var n = note("val|loop|" + pk); if (n.status || n.note) L.push("- Feedback loop \u00b7 " + PILLARS[pk].label + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });
   var nf = note("val|finops|model"); if (nf.status || nf.note) L.push("- FinOps model: " + (nf.status || "") + (nf.note ? " \u2014 " + nf.note : ""));
   var ni = note("val|identity|names"); if (ni.status || ni.note) L.push("- Agent identity (names, colours, icons): " + (ni.status || "") + (ni.note ? " \u2014 " + ni.note : ""));
   UCS.forEach(function(u){ var n = note("val|uc|" + u.id); if (n.status || n.note) L.push("- Use case " + u.id + " " + u.name + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });

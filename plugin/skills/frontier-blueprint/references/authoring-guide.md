@@ -61,6 +61,19 @@ An agent that cannot answer all seven is not ready to build, whatever its priori
 
 `trigger` (events or schedules), `instructions` (identity, scope, limits, in plain language), `plan` (5 to 8 steps), `outcome`, `data_sources`, `connectors` (who holds them: the workflow, not the agent, for writes), `approval` (each seam), `autonomy`, `skills` (reusable instruction sets or scripts), `pattern` (sequential, concurrent, group chat, handoff, magentic), `build` (Copilot Studio, Foundry, Agent Framework, Microsoft 365 Copilot).
 
+### 5a. Workflow: from trigger to outcome (MVP candidates)
+
+Under the trigger canvas the plan is drawn as a **Copilot Studio workflow**, the way a maker builds it in the workflow designer (powered by the GitHub Copilot harness): a trigger, typed nodes, branches, and the desired outcome. A plan without an authored workflow is turned into one by rule on every build and marked "Derived from the plan"; for each MVP candidate, author `canvas.workflow` in the workshop or right after it:
+
+1. **Trigger**: what starts it, with the official trigger type: Manual, Recurrence, Connector event (name the system and the event), When an HTTP request is received, or When an agent calls the workflow (the agent hands over after the conversation; end with Respond to the agent).
+2. **Deterministic first**: Variable, Connector (read and write in the connected system, `system` names it), Function (code), If/Else, Loop and Scope wherever a rule can do the work. Writes are connector steps held by the workflow, never by the agent.
+3. **AI steps only where reasoning is needed**: Agent (the agent itself, `agent` = its id), Classify (route by category: list the categories as `defaults`, the special path as a branch), Extract (fields and tables from documents and photos), Copilot (Microsoft 365 Copilot, Researcher, Analyst or Cowork for open research or drafting). Their results can vary: say what checks them.
+4. **People decide**: a Human review before every write that leaves the company or affects a person (approval or request for information; `approver` names the role). Branches show what happens on "Changes needed" or "Missing" (rejoin, or end at a named end node).
+5. **Outcome**: the measurable result, in the customer's words (use the KPI of the journey).
+6. **Notes** for the decisions behind a step (who holds a connection, which expert approves new knowledge).
+
+Keep labels short (about 20 characters, two lines at most); the detail goes into `detail`. The build lists AI, deterministic and human steps in the workflow bar and warns about unknown node types or agents. The solution-design scaffold turns each MVP workflow into the build table of the process design.
+
 ## 6. Role profile (nine sections)
 
 1. Starting point & contribution (starting_point, contribution, impact)
@@ -101,6 +114,18 @@ Quadrants: Quick wins (value 3 or more, feasibility 3 or more), Invest (high val
 - **Landing zone**: per journey, mark DEV, TEST and PROD as now, next or later, and the data classes allowed. Keep the CAF areas generic; add customer systems through the journeys.
 - **ADRs**: the canon ADRs (ADR-F01…) are a starting position the workshop confirms or adapts; customer decisions get their own ids. Write context, decision, consequences and alternatives.
 - **IT readiness**: send the preparation items before the architecture design workshop; record owners and status; the readiness checks (R-) prove the setup before the prototype.
+
+## 7b. Digital feedback loop (Overview)
+
+The Overview explains the data-driven part of the hypothesis with Microsoft's digital feedback loop: **signals → Microsoft IQ → proposed action → human approval → measured outcome**, and the outcome becomes the next signal. Write it in the customer's context, from the discovered evidence:
+
+1. **Map every business journey to one of the four areas**, with the official names: Engage customers, Optimize operations, Empower employees, Transform products. The canon proposes a mapping by keyword; correct it (a service journey can engage customers, empower technicians or transform products). An area without a journey stays "To be discovered" and becomes a workshop question.
+2. **Signals: what already exists, where, through which Microsoft IQ layer.** Work IQ for work signals in Microsoft 365 (requests, meetings, chats, files, people, skills); Fabric IQ for business data and live operational signals (ERP, CRM, HR systems, telemetry, modelled as business entities); Foundry IQ for organisational knowledge (manuals, policies, contracts, templates as knowledge bases); Web IQ for public, fresh information (company news, markets, regulation, suppliers). Name the customer's systems; cite the transcript or mail that mentions them.
+3. **Actions: what agents propose, and the person who approves.** Link the agents by id; take the approval from the journey's approval seam. Nothing leaves the company without a person signing it off.
+4. **Outcomes: what is measured, and how it feeds back.** Use the journeys' KPI names (baseline and target are shown) and the value-case assumption ids, so the hypotheses to confirm appear next to the outcome. One outcome per area should say how the result returns as a new signal.
+5. **Workshop question per area**: the one question that confirms or rejects the area. Verdicts are captured live and merged as `loop:<area>`.
+
+Use only official Microsoft names: Microsoft IQ, Work IQ, Fabric IQ, Foundry IQ, Web IQ, and the product names (Microsoft 365 Copilot, Microsoft Fabric, Microsoft Foundry, Microsoft Copilot Studio, Microsoft Entra, Microsoft Purview, Microsoft Agent 365). Never invent an "… IQ" (the build warns). Keep the card lines short (about 40 characters); details go into the lists.
 
 ## 8. Writing style
 

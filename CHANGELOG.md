@@ -2,6 +2,21 @@
 
 Releases of the Frontier Envisioning plugin. Engineering changes to the repository are recorded in the pull requests.
 
+## 1.6.0 — 2026-11-08
+
+- **Agent workflow in the Copilot Studio designer style.** On every agent with a canvas plan, a full-width workflow under the trigger canvas, drawn like the Copilot Studio workflow designer (powered by the GitHub Copilot harness): it starts with the trigger (Manual, Recurrence, Connector event, When an HTTP request is received, When an agent calls the workflow), runs the designer's nodes (Agent, Classify, Extract, Copilot, Human review, Connector, Function, Variable, If/Else, Loop, Scope, Note, Respond to the agent) and ends in the desired outcome. Branches of If/Else, Classify and Human review rejoin or end at a named end node; loops and scopes are containers; notes sit above their step.
+- **Designer interactions.** The Add panel as legend (select a node type to highlight it), a properties panel per node (what the node does, AI or deterministic or human, the step in this workflow, the agent with its identity icon, the system with its product icon, who decides, branches), zoom and fit, an overview that folds the flow into rows and the single designer row. Keyboard: Tab through the nodes in flow order, Enter opens, Escape closes. Light in print.
+- **Derived until authored.** `workflow.py` turns `canvas.trigger`, `canvas.plan`, `canvas.approval`, `canvas.connectors` and `canvas.outcome` into a first workflow by rule (marked "Derived from the plan", re-derived on each build, a Human review inserted before the first write when the plan has none); an authored `canvas.workflow` is checked instead (unknown node or trigger types, unknown agents, branches on a non-branching node, nested containers).
+- **Solution design.** `scaffold_design_docs.py` writes each MVP workflow into the process design: trigger, outcome, AI, deterministic and human steps, and a node table with branches.
+- Caldova demo: two authored workflows (the Service Report Agent, started by a Field Service event, and the Guided Buying Agent, called by the agent) that use every designer node type. Self-test: 34 checks.
+
+## 1.5.0 — 2026-11-08
+
+- **Digital feedback loop on the Overview.** Microsoft's digital feedback loop in the customer's context, as an animated diagram: the four areas (Engage customers, Optimize operations, Empower employees, Transform products) around Microsoft IQ with its four layers (Work IQ, Fabric IQ, Foundry IQ, Web IQ). Each area sends signals to Microsoft IQ, receives a proposed action that waits for human approval, and returns a measured outcome as the next signal; Microsoft Entra, Microsoft Purview and Microsoft Agent 365 frame the trust. Select an area to see its signals (with the Microsoft IQ layer), actions (with the agents and who approves), outcomes (with the journey KPIs and the value hypotheses to confirm), linked journeys and use cases, a workshop question and a live verdict. The animation can be paused, stops under reduced motion and is hidden in print.
+- **Official Microsoft names only.** The canon carries the Microsoft IQ layers with sources (Microsoft IQ, Work IQ APIs, Foundry IQ, Fabric IQ, Web IQ, the digital feedback loop); the build warns about any other "… IQ" name, an unknown layer or area, or an unknown journey.
+- Scripts: `canon.py` derives the loop from the journeys (each business journey mapped to one area; signals from its systems with their Microsoft IQ layer, actions from its agents and approval seam, outcomes from its KPIs) and completes it on every build without overwriting; `seed_blueprint.py` and `build_blueprint.py --canon` add it; `merge_feedback.py` applies `loop:<area>` verdicts. Discovery: feedback-loop questions in the question bank and a signals recipe in the Work IQ playbook.
+- Caldova demo: a complete loop (Commercial engages customers; Procurement and Finance optimize operations; Service empowers technicians and transforms the installed base into service offers). Self-test: 32 checks.
+
 ## 1.4.0 — 2026-11-08
 
 - **Blueprint follows the Innovation Hub journey.** Part 1 Vision: Overview, Org model, Blueprint, Journeys, Attendees. Part 2 Design: Agents, Agent identity, Target architecture, Use cases, IT readiness, FinOps. Workshop: Discovery, Roadmap, Evidence (14 views).

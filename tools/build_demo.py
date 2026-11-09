@@ -81,7 +81,7 @@ def main(argv=None) -> int:
     ap.add_argument("--out", default=str(DEMO_DIR))
     ap.add_argument("--no-png", action="store_true", help="skip PNG copies (faster; the identity zip then differs from the release)")
     a = ap.parse_args(argv)
-    frozen_profile = not a.no_png and plugin_version() == "1.4.0"
+    frozen_profile = not a.no_png and plugin_version() in demo_raster.SUPPORTED_VERSIONS
     out = Path(a.out)
     if out.exists():
         shutil.rmtree(out)
@@ -132,7 +132,7 @@ def main(argv=None) -> int:
         return 1
     if frozen_profile:
         try:
-            rasters = demo_raster.replay(paths["kit"])
+            rasters = demo_raster.replay(paths["kit"], version=plugin_version())
             maker = load_module(SKILLS / "frontier-agent-identity" / "scripts" / "make_kit.py", "fe_demo_kit")
             builder = maker.load_kit_module(paths["kit"] / "scripts", "build_identity_assets")
             docs = maker.load_kit_module(paths["kit"] / "scripts", "identity_docs")

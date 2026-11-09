@@ -10,6 +10,10 @@ regenerates those files, validates their inventory and bytes, replays the PNGs,
 regenerates the PNG-mode README from the original code, then builds the archive.
 Its complete ZIP hash must still match the immutable release record.
 
+The supplied 1.5.0 and 1.6.0 records expect this same identity ZIP hash. Their
+reuse is explicit and checks the current release record as well as every
+generated input. A later version is not enabled automatically.
+
 This avoids an undeclared converter/font dependency and preserves two
 platform-sensitive outline images. The report records `restored`, not a claim
 that a live converter rendered those pixels. A changed input or tampered asset

@@ -34,7 +34,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from canon import add_canon, load_defaults  # noqa: E402
+from canon import PILLARS, add_canon, fill_feedback_loop, load_defaults  # noqa: E402
+from workflow import fill_workflows  # noqa: E402
 
 PLACEHOLDER = '"__BLUEPRINT_DATA__"'
 HEX = re.compile(r"^#[0-9A-Fa-f]{6}$")
@@ -49,7 +50,7 @@ DECLARATIONS = ("write_envelope", "refusal_set", "escalation_path", "grounding_s
 DEFAULT_TEMPLATE = Path(__file__).resolve().parent.parent / "templates" / "frontier-blueprint-template.html"
 DEFAULTS = Path(__file__).resolve().parent.parent / "templates" / "blueprint-defaults.json"
 ICONS = Path(__file__).resolve().parent.parent / "templates" / "product-icons.json"
-PLUGIN_VERSION = "1.4.0"
+PLUGIN_VERSION = "1.6.0"
 
 
 class Report:
@@ -224,6 +225,60 @@ def clean_canon_blocks(bp: dict, rep: "Report") -> None:
     for x in as_list((bp.get("architecture") or {}).get("decisions")):
         if isinstance(x, dict) and not x.get("id"):
             rep.warn(f"architecture decision without id: {str(x.get('title'))[:60]}")
+
+
+OFFICIAL_IQ = ("microsoft iq", "work iq", "fabric iq", "foundry iq", "web iq")
+IQ_IDS = {"work", "fabric", "foundry", "web"}
+IQ_NAME = re.compile(r"\b([A-Z][A-Za-z]+) IQ\b")
+
+
+def clean_feedback_loop(bp: dict, rep: "Report") -> None:
+    """Checks the digital feedback loop (Overview): four areas, known journeys, and only official Microsoft IQ names."""
+    fl = bp.get("feedback_loop")
+    if fl is None:
+        return
+    if not isinstance(fl, dict):
+        rep.warn("feedback_loop must be an object; ignored")
+        bp.pop("feedback_loop")
+        return
+    fl.pop("pillar_rules", None)
+    fl.pop("iq_rules", None)
+    quads = fl.get("quadrants")
+    if quads is not None and not isinstance(quads, list):
+        rep.warn("feedback_loop.quadrants must be a list; ignored")
+        quads = []
+    dom_ids = {d.get("id") for d in as_list(bp.get("domains")) if isinstance(d, dict)}
+    seen, keep = set(), []
+    for q in quads or []:
+        pillar = q.get("pillar") if isinstance(q, dict) else None
+        if pillar not in PILLARS:
+            rep.warn(f"feedback_loop: area {pillar!r} ignored; use {', '.join(PILLARS)}")
+            continue
+        if pillar in seen:
+            rep.warn(f"feedback_loop: a second {pillar} area is ignored")
+            continue
+        seen.add(pillar)
+        for lk in ("journeys", "signals", "actions", "outcomes", "use_cases", "iq"):
+            if lk in q and not isinstance(q[lk], list):
+                q[lk] = as_list(q[lk])
+        for j in as_list(q.get("journeys")):
+            if j not in dom_ids:
+                rep.warn(f"feedback_loop {pillar}: unknown journey {j}")
+        layers = list(as_list(q.get("iq"))) + [i for x in as_list(q.get("signals")) if isinstance(x, dict) for i in as_list(x.get("iq"))]
+        bad = sorted({str(i) for i in layers if re.sub(r"[^a-z]", "", str(i).lower()).removesuffix("iq") not in IQ_IDS})
+        if bad:
+            rep.warn(f"feedback_loop {pillar}: unknown Microsoft IQ layer {', '.join(bad)} (use work, fabric, foundry or web)")
+        keep.append(q)
+    if quads is not None:
+        fl["quadrants"] = keep
+    if isinstance(fl.get("sources"), list):
+        fl["sources"] = [x for x in fl["sources"] if isinstance(x, dict) and str(x.get("url", "")).startswith("https://")]
+    texts = []
+    walk(fl, lambda c, k, v, p: texts.append(v) if isinstance(v, str) and k != "url" else None)
+    odd = sorted({m.group(0) for s in texts for m in IQ_NAME.finditer(s) if m.group(0).lower() not in OFFICIAL_IQ})
+    if odd:
+        rep.warn("feedback_loop uses " + ", ".join(repr(x) for x in odd) + ", which is not an official Microsoft IQ name; "
+                 "use Microsoft IQ, Work IQ, Fabric IQ, Foundry IQ or Web IQ")
 
 
 def normalise(bp: dict, rep: Report) -> dict:
@@ -413,11 +468,12 @@ def normalise(bp: dict, rep: Report) -> dict:
             for sid in src_ids(value):
                 if sid not in eids:
                     rep.warn(f"{path} cites {sid}, which is not in the evidence register")
-        if isinstance(value, str) and URL.search(value) and key not in ("source",) and not (key == "url" and path.startswith(("$.identity.rules", "$.value_case.sources", "$.finops.sources", "$.factory.resources", "$.factory.sources", "$.architecture.landing_zone.sources", "$.logos_note"))):
+        if isinstance(value, str) and URL.search(value) and key not in ("source",) and not (key == "url" and path.startswith(("$.identity.rules", "$.value_case.sources", "$.finops.sources", "$.factory.resources", "$.factory.sources", "$.architecture.landing_zone.sources", "$.feedback_loop.sources", "$.logos_note"))):
             rep.warn(f"{path} contains a URL; links are not rendered (keep sources in the evidence register)")
     clean_identity_block(bp, rep)
     clean_value_finops(bp, rep)
     clean_canon_blocks(bp, rep)
+    clean_feedback_loop(bp, rep)
     walk(bp, check_src)
     return bp
 
@@ -480,6 +536,9 @@ def stats(bp: dict) -> dict:
             "landing_zone_areas": len((lz or {}).get("areas") or {}) if isinstance(lz, dict) else 0,
             "decisions": len(as_list((bp.get("architecture") or {}).get("decisions"))) if isinstance(bp.get("architecture"), dict) else 0,
             "readiness_items": sum(len(as_list(g.get("items"))) for g in as_list(rd.get("groups")) if isinstance(g, dict)),
+            "feedback_loop_areas": len(as_list((bp.get("feedback_loop") or {}).get("quadrants"))) if isinstance(bp.get("feedback_loop"), dict) else 0,
+            "workflows": sum(1 for d in doms for a in as_list(d.get("agents")) + ([d["orchestrator"]] if isinstance(d.get("orchestrator"), dict) else [])
+                             if isinstance(a, dict) and isinstance(a.get("canvas"), dict) and isinstance(a["canvas"].get("workflow"), dict)),
             "product_icons": len(bp.get("logos") or {}) if isinstance(bp.get("logos"), dict) else 0}
 
 
@@ -506,7 +565,7 @@ def main(argv=None) -> int:
     ap.add_argument("--save-normalized", help="write the normalised JSON (stable ids) here")
     ap.add_argument("--strict", action="store_true", help="treat warnings as errors")
     ap.add_argument("--report", help="write the build report JSON here")
-    ap.add_argument("--canon", action="store_true", help="add missing Innovation Hub canon: Agent Factory journey, landing zone, canon ADRs, IT readiness")
+    ap.add_argument("--canon", action="store_true", help="add missing Innovation Hub canon: Agent Factory journey, landing zone, canon ADRs, IT readiness, digital feedback loop")
     ap.add_argument("--defaults", default=str(DEFAULTS), help="canon defaults (templates/blueprint-defaults.json)")
     ap.add_argument("--no-product-icons", action="store_true", help="do not embed Microsoft and GitHub product icons")
     a = ap.parse_args(argv)
@@ -525,6 +584,12 @@ def main(argv=None) -> int:
         if added:
             rep.removed.append("canon added: " + ", ".join(added))
     bp = normalise(bp, rep)
+    if isinstance(bp.get("feedback_loop"), dict):
+        try:
+            fill_feedback_loop(bp, load_defaults(a.defaults))
+        except (OSError, ValueError) as e:
+            rep.warn(f"feedback loop not completed from the journeys: {e}")
+    fill_workflows(bp, rep)
     if not a.no_product_icons:
         embed_product_icons(bp, rep, ICONS)
     audience = a.audience or str(bp.get("meta", {}).get("audience", "internal")).lower()

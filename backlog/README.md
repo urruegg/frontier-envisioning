@@ -5,7 +5,7 @@
 | Milestone | Content |
 |---|---|
 | M0 · Intake baseline | INT-01 to INT-08, INT-11, INT-12, INT-14, INT-15, ENG-D1, ENG-D3, ENG-D4 |
-| 1.5.0 · Operate loop and HubWorks | HubWorks epic with F-01 to F-06 and F-08, operate loop (OPS-01, OPS-02), E-02, E-05, L10N-01, TD-03, PROTO-01, INT-09, INT-10, D-05, D-07, D-08 |
-| 1.6.0 · FOCUS and shared engagement data | F-07, FOCUS-01, TD-01, D-03 |
+| 1.7.0 · Operate loop and HubWorks | HubWorks epic with F-01 to F-06 and F-08, operate loop (OPS-01, OPS-02), E-02, E-05, L10N-01, TD-03, PROTO-01, INT-09, INT-10, D-05, D-07, D-08 |
+| 1.8.0 · FOCUS and shared engagement data | F-07, FOCUS-01, TD-01, D-03 |
 | Later | E-01, BUILD-01 (ready-for-build handover with IaC), INT-13, TD-02, REG-01, TD-05 |
 | No milestone | D-01, D-02, D-04, D-06 |

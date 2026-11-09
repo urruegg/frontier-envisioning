@@ -58,6 +58,7 @@ def bump(root: Path, new: str, date: str | None = None) -> list[str]:
     def readme(t: str) -> str:
         t = t.replace(f"Version {old}", f"Version {new}")
         t = t.replace(f"frontier-envisioning-plugin-{old}.zip", f"frontier-envisioning-plugin-{new}.zip")
+        t = t.replace(f"frontier-envisioning-github-repo-{old}.zip", f"frontier-envisioning-github-repo-{new}.zip")
         return t.replace(f"frontier-envisioning-{old}-source.zip", f"frontier-envisioning-{new}-source.zip")
     edit(plugin / "README.md", readme)
     if date:

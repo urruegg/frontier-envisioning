@@ -11,7 +11,7 @@ Release 1.4.0 was built in Copilot Cowork: one folder with the plugin, tools and
 - `tools/` holds repository tools in standard-library Python with one entry point, `tools/dev.py`; `tests/`, `infra/`, `site/`, `docs/`, `backlog/` and `releases/` complete the layout.
 
 ## Consequences
-The package builds byte-identical to 1.4.0 from the new layout. Contributors edit sources, never generated files (the guard hook enforces it for agents). The packaged README keeps a 1.4.0 developer section until 1.5.0 (INT-10).
+The package builds byte-identical to 1.4.0 from the new layout. Contributors edit sources, never generated files (the guard hook enforces it for agents). The packaged README keeps a short developer section until 1.6.0 (INT-10).
 
 ## Alternatives considered
 Plugin at the repository root (mixes engineering files with the packaged unit); generated template not committed (Cowork users and reviewers would lose the artefact; drift checks cover the risk).

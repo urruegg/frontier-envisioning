@@ -71,6 +71,453 @@
   }
  ],
  "measured_by": "service revenue per FTE · quote cycle time · first-time fix rate · spend under management · days to close · hours freed per FTE · agent run success rate",
+ "feedback_loop": {
+  "heading": "Digital feedback loop: signals, actions and outcomes",
+  "intro": "How Caldova turns signals into governed action. Each of the four areas of Microsoft's digital feedback loop sends signals to Microsoft IQ, receives a proposed action back and returns a measured outcome, which becomes the next signal. Nothing leaves Caldova without a person signing it off.",
+  "center": {
+   "name": "Microsoft IQ",
+   "tagline": "Enterprise intelligence layer"
+  },
+  "iq": [
+   {
+    "id": "work",
+    "name": "Work IQ",
+    "desc": "Work signals: how people work in Microsoft 365 — email, meetings, chats, files, people and collaboration patterns",
+    "products": [
+     "Microsoft 365 Copilot",
+     "Microsoft Teams",
+     "Microsoft Outlook"
+    ]
+   },
+   {
+    "id": "fabric",
+    "name": "Fabric IQ",
+    "desc": "Business data: a shared semantic foundation in Microsoft Fabric — semantic models, ontology, metrics and live operational signals",
+    "products": [
+     "Power BI"
+    ]
+   },
+   {
+    "id": "foundry",
+    "name": "Foundry IQ",
+    "desc": "Organisational knowledge: permission-aware knowledge bases that ground agents in documents and enterprise sources, with citations",
+    "products": [
+     "Microsoft Foundry",
+     "Microsoft Copilot Studio"
+    ]
+   },
+   {
+    "id": "web",
+    "name": "Web IQ",
+    "desc": "World knowledge: fresh, citation-ready grounding from the public web — news, markets and regulation"
+   }
+  ],
+  "approval": "Human approval before every action",
+  "trust": [
+   {
+    "name": "Microsoft Entra",
+    "logo": "entra"
+   },
+   {
+    "name": "Microsoft Purview",
+    "logo": "purview"
+   },
+   {
+    "name": "Microsoft Agent 365",
+    "logo": "agent365"
+   }
+  ],
+  "flow": [
+   "Signal",
+   "Microsoft IQ",
+   "Proposed action",
+   "Human approval",
+   "Measured outcome"
+  ],
+  "ring": {
+   "label": "Digital feedback loop",
+   "caption": "Every measured outcome becomes the next signal"
+  },
+  "status": "hypothesis",
+  "note": "Hypothesis: which signals exist, which actions agents may propose and how outcomes are measured is validated in the workshop. Microsoft IQ respects existing permissions (Microsoft Entra) and sensitivity labels (Microsoft Purview); Microsoft Agent 365 observes and governs every agent.",
+  "sources": [
+   {
+    "title": "Microsoft IQ",
+    "url": "https://www.microsoft.com/en-us/ai/microsoft-iq"
+   },
+   {
+    "title": "Work IQ APIs",
+    "url": "https://www.microsoft.com/en-us/copilot/blog/2026/06/02/announcing-the-new-work-iq-apis/"
+   },
+   {
+    "title": "What is Foundry IQ?",
+    "url": "https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/what-is-foundry-iq"
+   },
+   {
+    "title": "Fabric IQ",
+    "url": "https://blogs.microsoft.com/blog/2026/09/28/new-microsoft-data-innovations-unlock-what-only-your-business-knows/"
+   },
+   {
+    "title": "Microsoft Web IQ overview",
+    "url": "https://learn.microsoft.com/en-us/web-iq/overview"
+   },
+   {
+    "title": "The digital feedback loop (Power Platform guidance)",
+    "url": "https://learn.microsoft.com/en-us/power-platform/guidance/successhub/digitizing-digital-transformation-platform-group"
+   }
+  ],
+  "src": [
+   "E07"
+  ],
+  "quadrants": [
+   {
+    "pillar": "engage_customers",
+    "journeys": [
+     "D1"
+    ],
+    "title": "Answer every lead within a day",
+    "signal": "RFQs, customer meetings and company news",
+    "action": "Qualify the lead and draft a right-first-time quote",
+    "outcome": "Lead answered in a day, quote in two",
+    "summary": "Commercial signals arrive in Outlook, Teams and Dynamics 365 Sales; agents qualify and prepare, the account manager decides.",
+    "signals": [
+     {
+      "text": "Customer requests and RFQs in Outlook, plus meeting notes and Teams chats of the account team",
+      "iq": [
+       "work"
+      ],
+      "src": [
+       "E01"
+      ]
+     },
+     {
+      "text": "Opportunity, quote and order history from Dynamics 365 Sales and SAP S/4HANA (SD), modelled as Customer, Opportunity, Quote and Order",
+      "iq": [
+       "fabric"
+      ],
+      "src": [
+       "E04"
+      ]
+     },
+     {
+      "text": "Offer templates, price lists and product documentation as one knowledge base",
+      "iq": [
+       "foundry"
+      ]
+     },
+     {
+      "text": "Company news, expansions and tenders of customers and prospects",
+      "iq": [
+       "web"
+      ],
+      "src": [
+       "E03"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "text": "Qualify and route every inbound lead within hours, with an account brief for the first meeting",
+      "agents": [
+       "D1-A01",
+       "D1-A02"
+      ],
+      "approval": "The account manager accepts or rejects every routing"
+     },
+     {
+      "text": "Draft a configured quote and the deal desk approval pack",
+      "agents": [
+       "D1-A03",
+       "D1-A04"
+      ],
+      "approval": "The sales manager signs every price, discount and commitment before it reaches the customer"
+     }
+    ],
+    "outcomes": [
+     {
+      "text": "Leads answered within one business day",
+      "kpi": "Lead response time",
+      "journey": "D1"
+     },
+     {
+      "text": "Quotes sent in two days instead of five to eight",
+      "kpi": "Quote cycle time",
+      "journey": "D1"
+     },
+     {
+      "text": "Win and loss reasons return as new customer signals for the next quote",
+      "kpi": "Quote accuracy",
+      "journey": "D1"
+     }
+    ],
+    "use_cases": [
+     "UC02",
+     "UC03",
+     "UC01"
+    ],
+    "question": "Which customer signal should start the loop: an RFQ email, a meeting or a configurator session? Who approves a quote today?",
+    "status": "hypothesis",
+    "src": [
+     "E01",
+     "E04"
+    ]
+   },
+   {
+    "pillar": "optimize_operations",
+    "journeys": [
+     "D2",
+     "D4"
+    ],
+    "title": "Every franc of spend under control",
+    "signal": "Purchase requests, contracts, invoices and postings",
+    "action": "Route each need to the best channel, flag exceptions",
+    "outcome": "Spend under management above 90%, faster close",
+    "summary": "Procurement and finance share one model of suppliers, contracts, orders and postings; agents route and flag, buyers and controllers decide.",
+    "signals": [
+     {
+      "text": "Purchase requests and approvals in Teams and Outlook",
+      "iq": [
+       "work"
+      ],
+      "src": [
+       "E06"
+      ]
+     },
+     {
+      "text": "Spend, orders, invoices and postings from SAP S/4HANA (MM, FI/CO) and SAP Ariba, modelled as Supplier, Contract, Order, Invoice and Ledger account",
+      "iq": [
+       "fabric"
+      ],
+      "src": [
+       "E06"
+      ]
+     },
+     {
+      "text": "Contract clauses and renewal dates from the contract repository",
+      "iq": [
+       "foundry"
+      ]
+     },
+     {
+      "text": "Supplier news and risk events on the public web",
+      "iq": [
+       "web"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "text": "Guide every purchase need to a catalogue or a negotiated contract",
+      "agents": [
+       "D2-A01"
+      ],
+      "approval": "Buyers approve every order above the delegation of authority"
+     },
+     {
+      "text": "Flag contract, invoice and reconciliation exceptions with a proposed resolution",
+      "agents": [
+       "D2-A03",
+       "D2-A05",
+       "D4-A02"
+      ],
+      "approval": "Controllers approve every posting and payment"
+     }
+    ],
+    "outcomes": [
+     {
+      "text": "Spend through negotiated channels above 90%",
+      "kpi": "Spend under management",
+      "journey": "D2",
+      "assumptions": [
+       "ASS-028",
+       "ASS-029",
+       "ASS-030"
+      ]
+     },
+     {
+      "text": "Maverick buying below 10%",
+      "kpi": "Maverick buying rate",
+      "journey": "D2"
+     },
+     {
+      "text": "A close in fewer days, with every variance explained before anyone asks",
+      "kpi": "Days to close",
+      "journey": "D4"
+     }
+    ],
+    "use_cases": [
+     "UC05",
+     "UC07",
+     "UC16"
+    ],
+    "question": "Which exceptions cost the most time today: maverick buying, invoice mismatches or reconciling items?",
+    "status": "hypothesis",
+    "src": [
+     "E06"
+    ]
+   },
+   {
+    "pillar": "empower_employees",
+    "journeys": [
+     "D3"
+    ],
+    "title": "Every technician fully informed",
+    "signal": "Job schedules, skills and voice notes from site",
+    "action": "Brief the visit, answer on site, draft the report",
+    "outcome": "Report confirmed within 15 minutes",
+    "summary": "Technicians get the right knowledge before and during the visit, and the paperwork writes itself; the technician stays in charge.",
+    "signals": [
+     {
+      "text": "Schedules, skills, certifications and questions from technicians in Teams mobile",
+      "iq": [
+       "work"
+      ],
+      "src": [
+       "E05"
+      ]
+     },
+     {
+      "text": "Machine manuals, service bulletins and fixes of similar repairs",
+      "iq": [
+       "foundry"
+      ],
+      "src": [
+       "E05"
+      ]
+     },
+     {
+      "text": "Work orders and the installed base from Dynamics 365 Field Service",
+      "iq": [
+       "fabric"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "text": "Brief the technician before the visit and answer questions on site from approved manuals",
+      "agents": [
+       "D3-A04"
+      ],
+      "approval": "The technician decides on site; the agent only advises"
+     },
+     {
+      "text": "Turn the technician's voice notes into a complete service report",
+      "agents": [
+       "D3-A05"
+      ],
+      "approval": "The technician confirms every report before it reaches the customer and billing"
+     }
+    ],
+    "outcomes": [
+     {
+      "text": "Service report confirmed within 15 minutes of the job",
+      "kpi": "Time to confirmed report",
+      "journey": "D3",
+      "assumptions": [
+       "ASS-003",
+       "ASS-004"
+      ]
+     },
+     {
+      "text": "Technician time moves from paperwork to the next job",
+      "assumptions": [
+       "ASS-001",
+       "ASS-002",
+       "ASS-005",
+       "ASS-006"
+      ]
+     }
+    ],
+    "use_cases": [
+     "UC09",
+     "UC10"
+    ],
+    "question": "How much of a technician's day goes into reports and searching manuals, and what would dispatch do with a report confirmed 15 minutes after the job?",
+    "status": "hypothesis",
+    "src": [
+     "E05"
+    ]
+   },
+   {
+    "pillar": "transform_products",
+    "journeys": [
+     "D3"
+    ],
+    "title": "Turn machine telemetry into new service offers",
+    "signal": "Alarms, telemetry and failure patterns of the installed base",
+    "action": "Propose remote fixes and planned visits",
+    "outcome": "Fewer second visits, service revenue +20%",
+    "summary": "The installed base becomes a source of service revenue: telemetry and service history show where Caldova can fix remotely or before a failure.",
+    "signals": [
+     {
+      "text": "Machine alarms and telemetry from the installed base as live events (IoT platform to confirm)",
+      "iq": [
+       "fabric"
+      ],
+      "src": [
+       "E05"
+      ]
+     },
+     {
+      "text": "Failure patterns and fixes from confirmed service reports",
+      "iq": [
+       "foundry"
+      ]
+     },
+     {
+      "text": "Standards and component notices published on the web",
+      "iq": [
+       "web"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "text": "Propose a remote diagnosis or a planned visit before the machine fails",
+      "agents": [
+       "D3-A02",
+       "D3-A01"
+      ],
+      "approval": "The service lead approves every proposal sent to a customer"
+     },
+     {
+      "text": "Package recurring failure patterns for product management and new service contracts",
+      "agents": [
+       "D3-LEAD"
+      ],
+      "approval": "Product management decides on every change to an offering"
+     }
+    ],
+    "outcomes": [
+     {
+      "text": "Fewer cases that need a second visit",
+      "kpi": "Second-visit rate",
+      "journey": "D3",
+      "assumptions": [
+       "ASS-009",
+       "ASS-010"
+      ]
+     },
+     {
+      "text": "Service revenue +20% without proportional headcount (Group outcome)",
+      "src": [
+       "E03"
+      ]
+     }
+    ],
+    "use_cases": [
+     "UC11",
+     "UC13"
+    ],
+    "question": "Which machines already send telemetry, who owns that data, and would customers buy a predictive service contract?",
+    "status": "hypothesis",
+    "src": [
+     "E03",
+     "E05"
+    ]
+   }
+  ]
+ },
  "human_led": {
   "Direction": "Strategy and targets the lead agents plan against",
   "Accountability": "A named agent boss for every agent",
@@ -699,7 +1146,133 @@
        "Policy Q&A"
       ],
       "pattern": "Handoff: Guided Buying Agent to buyer or Tail Spend Negotiation Agent when the need leaves the catalogue",
-      "build": "Copilot Studio agent; requisition written by a workflow through a declared Ariba action"
+      "build": "Copilot Studio agent; requisition written by a workflow through a declared Ariba action",
+      "workflow": {
+       "name": "Guided buying requisition",
+       "status": "draft",
+       "src": [
+        "E06"
+       ],
+       "trigger": {
+        "type": "agent",
+        "label": "When an agent calls the workflow",
+        "detail": "The Guided Buying Agent hands over the need after the conversation in Teams or Microsoft 365 Copilot: what, how many, by when, cost centre"
+       },
+       "steps": [
+        {
+         "type": "variable",
+         "label": "Initialize the request",
+         "detail": "Need, quantity, date, cost centre and requester",
+         "inputs": [
+          "need",
+          "quantity",
+          "neededBy",
+          "costCentre"
+         ]
+        },
+        {
+         "type": "connector",
+         "label": "Search catalogues and frame contracts",
+         "detail": "Catalogue and punch-out items in SAP Ariba; frame contracts in the contract repository",
+         "system": "SAP Ariba"
+        },
+        {
+         "type": "classify",
+         "label": "Choose the channel",
+         "detail": "Routes the need with the channel matrix and the buying policy",
+         "defaults": [
+          "Catalogue",
+          "Frame contract"
+         ],
+         "branches": [
+          {
+           "label": "Quote or sourcing",
+           "then": "end",
+           "end": "Buyer takes over",
+           "steps": [
+            {
+             "type": "connector",
+             "label": "Hand over to a buyer",
+             "detail": "Sourcing request with everything collected so far",
+             "system": "Microsoft Teams"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "human_review",
+         "label": "Collect missing details",
+         "detail": "Request for information: the requester adds missing fields and attachments",
+         "approver": "Requester",
+         "system": "Microsoft Teams"
+        },
+        {
+         "type": "extract",
+         "label": "Read the supplier quote",
+         "detail": "Price, delivery date and terms from an attached quote",
+         "outputs": [
+          "price",
+          "deliveryDate",
+          "terms"
+         ]
+        },
+        {
+         "type": "function",
+         "label": "Build the requisition",
+         "detail": "Account assignment, cost centre and channel fields for SAP Ariba"
+        },
+        {
+         "type": "if_else",
+         "label": "Above the approval limit?",
+         "detail": "Order value above the requester's delegation of authority",
+         "defaults": [
+          "Within limit"
+         ],
+         "branches": [
+          {
+           "label": "Above limit",
+           "then": "continue",
+           "steps": [
+            {
+             "type": "human_review",
+             "label": "Manager approves",
+             "detail": "Approval per delegation of authority",
+             "approver": "Manager",
+             "system": "Microsoft Teams"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "human_review",
+         "label": "Requester confirms",
+         "detail": "The requester confirms the requisition before it is submitted",
+         "approver": "Requester",
+         "system": "Microsoft Teams",
+         "defaults": [
+          "Confirmed"
+         ]
+        },
+        {
+         "type": "connector",
+         "label": "Create the requisition",
+         "detail": "Declared action in SAP Ariba",
+         "system": "SAP Ariba",
+         "outputs": [
+          "requisitionId"
+         ]
+        },
+        {
+         "type": "respond",
+         "label": "Respond to the agent",
+         "detail": "Requisition number and status back to the Guided Buying Agent, which tells the requester",
+         "note": "Workflows that an agent calls end with a response to the agent"
+        }
+       ],
+       "outcome": "A complete requisition in the right channel within minutes; less maverick buying"
+      }
      },
      "declarations": {
       "write_envelope": "Creates requisitions in SAP Ariba through one declared action after the requester confirms. No purchase orders, no supplier master changes.",
@@ -1249,7 +1822,132 @@
        "Multilingual drafting (DE, FR, IT, EN)"
       ],
       "pattern": "Sequential: draft, rule check, human confirmation, workflow write-back",
-      "build": "Copilot Studio agent called by a Copilot Studio workflow; the Field Service connection is held by the workflow, not the agent"
+      "build": "Copilot Studio agent called by a Copilot Studio workflow; the Field Service connection is held by the workflow, not the agent",
+      "workflow": {
+       "name": "Service report from voice notes",
+       "status": "draft",
+       "src": [
+        "E05"
+       ],
+       "trigger": {
+        "type": "connector",
+        "label": "When a work order is completed on site",
+        "system": "Dynamics 365 Field Service",
+        "detail": "Microsoft Dataverse trigger \"When a row is added, modified or deleted\" on the work order, status Completed on site"
+       },
+       "steps": [
+        {
+         "type": "variable",
+         "label": "Initialize report variables",
+         "detail": "Work order, customer language and the list of missing fields"
+        },
+        {
+         "type": "connector",
+         "label": "Get work order and asset history",
+         "detail": "Read the work order, the asset and its service history",
+         "system": "Dynamics 365 Field Service"
+        },
+        {
+         "type": "loop",
+         "label": "For each voice note",
+         "detail": "Voice notes the technician uploaded in Teams mobile",
+         "steps": [
+          {
+           "type": "connector",
+           "label": "Transcribe the voice note",
+           "detail": "Speech to text inside the Microsoft cloud boundary (service to confirm)",
+           "system": "Speech to text inside the Microsoft cloud boundary"
+          }
+         ]
+        },
+        {
+         "type": "extract",
+         "label": "Extract readings from photos",
+         "detail": "Meter readings, serial numbers and the signed safety checklist from the technician's photos",
+         "outputs": [
+          "readings",
+          "serialNumber",
+          "safetyChecklist"
+         ]
+        },
+        {
+         "type": "agent",
+         "label": "Draft the service report",
+         "agent": "D3-A05",
+         "detail": "Work done, parts used, readings, safety checks and follow-ups in the customer's language, on the approved template",
+         "outputs": [
+          "reportDraft",
+          "missingFields"
+         ],
+         "note": "The Field Service connection is held by the workflow, not by the agent"
+        },
+        {
+         "type": "function",
+         "label": "Reconcile parts with van stock",
+         "detail": "Compare the parts in the draft with the parts consumed from van stock (script)"
+        },
+        {
+         "type": "if_else",
+         "label": "Mandatory fields complete?",
+         "detail": "Every mandatory field and safety check has a value",
+         "defaults": [
+          "Complete"
+         ],
+         "branches": [
+          {
+           "label": "Missing",
+           "then": "continue",
+           "steps": [
+            {
+             "type": "human_review",
+             "label": "Ask the technician once",
+             "detail": "Request for information in Teams; a value still missing is marked as missing",
+             "approver": "Technician",
+             "system": "Microsoft Teams"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "human_review",
+         "label": "Technician confirms the report",
+         "detail": "Adaptive card in Teams with the draft report",
+         "approver": "Technician",
+         "system": "Microsoft Teams",
+         "defaults": [
+          "Confirmed"
+         ],
+         "branches": [
+          {
+           "label": "Changes needed",
+           "then": "end",
+           "end": "Draft back to the technician",
+           "steps": [
+            {
+             "type": "connector",
+             "label": "Return the draft with comments",
+             "system": "Microsoft Teams"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "connector",
+         "label": "Write back the report",
+         "detail": "Update the work order with the confirmed report (declared action)",
+         "system": "Dynamics 365 Field Service"
+        },
+        {
+         "type": "copilot",
+         "label": "Propose a knowledge article",
+         "detail": "When the fix is new, Copilot drafts a knowledge article for review",
+         "note": "A knowledge expert approves new articles"
+        }
+       ],
+       "outcome": "A confirmed, complete service report in Field Service within minutes of the job, ready for invoicing"
+      }
      },
      "declarations": {
       "write_envelope": "After the technician confirms, the workflow updates report fields and work-order status in Field Service. Never edits prices, contracts or customer master data.",
