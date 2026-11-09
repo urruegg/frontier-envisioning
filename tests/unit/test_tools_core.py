@@ -6,6 +6,8 @@ import contextlib
 import json
 import os
 import subprocess
+import shutil
+import sys
 import tempfile
 import unittest
 import zipfile
@@ -179,6 +181,30 @@ class DemoPortability(unittest.TestCase):
         self.assertEqual(report["identity"]["png"], {"converted": 1, "method": "fixture"})
         self.assertEqual(report.get("status"), "built")
         self.assertIn('"variant": "full"', output.getvalue())
+
+
+class DemoReleaseDate(unittest.TestCase):
+    def test_baseline_rate_age_uses_the_explicit_build_date(self):
+        self.assertTrue(hasattr(build_demo, "build_at_release_date"), "release-date model generation is missing")
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            folder = out / "value-finops"
+            folder.mkdir()
+            data = folder / "blueprint-value-finops.json"
+            finops, value = folder / "finops.json", folder / "value.json"
+            shutil.copyfile(build_demo.EXAMPLES["data"], data)
+            shutil.copyfile(build_demo.EXAMPLES["finops"], finops)
+            shutil.copyfile(build_demo.EXAMPLES["value"], value)
+            with mock.patch.object(sys, "path", [str(fe_lib.SKILLS / "frontier-finops" / "scripts"), *sys.path]):
+                calculator = load("plugin/skills/frontier-finops/scripts/finops_calc.py", "test_date_finops")
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(calculator.main(["--finops", str(finops), "--value", str(value)]), 0)
+                summary = {"value_finops": {"folder": str(folder), "finops": str(finops), "value": str(value)}}
+                self.assertEqual(build_demo.build_at_release_date(out, summary, "2026-11-08"), 0)
+                self.assertEqual(json.loads(data.read_text(encoding="utf-8"))["finops"]["rates_age_days"], 4)
+                self.assertEqual(build_demo.build_at_release_date(out, summary, "2026-11-09"), 0)
+                self.assertEqual(json.loads(data.read_text(encoding="utf-8"))["finops"]["rates_age_days"], 5)
+                self.assertTrue((out / fe_lib.DEMO_HTML_NAME).is_file())
 
 
 class DevGateWiring(unittest.TestCase):

@@ -8,6 +8,49 @@ separate human-controlled actions.**
 
 ## Final resolution
 
+### Approved repository home, 9 November 2026
+
+The user confirmed Microsoft approval to use the private
+[urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning)
+repository. Its privacy was verified in the authenticated browser, and an
+existing personal credential accessed it through Windows Git Credential
+Manager without changing global GitHub CLI authentication.
+
+The original `e39cea8` intake remains on `chore/cowork-intake-1.4.0`.
+The new `chore/cowork-intake-personal-1.4.0` branch starts from the personal
+repository's existing initial commit `269585fc49f5d8e3f5ac789a7d38794f05b9e501`.
+Applying the intake there produced an identical tree, preserving product
+bytes and normal ancestry for a pull request. No force push or history
+replacement is needed.
+
+The original work connection is retained separately. CODEOWNERS changes,
+independent reviewer access, server rules, release approval and Azure
+deployment remain human-maintained. Imported source-inventory metadata
+continues to identify the original intake provenance rather than being
+rewritten to describe the new destination.
+
+The validation history below precedes this migration; its references to
+"no commit or push" describe the original local-only phase.
+
+Fresh verification on 9 November exposed one additional clock dependency:
+`finops.rates_age_days` advanced from 4 to 5. The engineering demo now invokes
+the released FinOps script's existing `--today` input using the release
+manifest date and rebuilds the HTML. Customer/plugin behavior and verifier
+normalization are unchanged. A real regression test verifies both explicit
+dates (4 and 5 days); full artifact reproduction also passes in the targeted
+test selection.
+
+Final local migration validation on 9 November: strict L1 ends
+`ALL GATES PASSED` with 63 unit/pipeline tests, 29 plugin checks, 12 DOM
+checks and all four release hashes; Chromium passes 4/4. The 85 local
+product/renderer/release files match the captured 1.4.0 inventory.
+
+The external handover folder was independently updated to 1.6.0 after the
+original intake. It is no longer a current byte-for-byte copy of the captured
+source inventory. This migration deliberately preserves the committed 1.4.0
+baseline; intake of that newer handover requires separate scope and validation.
+No files in the external folder were modified by this migration.
+
 The original artifacts were found in the authorized local OneDrive task output
 after correcting the library-root path mapping. Their hashes match the release
 record: the standalone plugin, the 3308707-byte identity ZIP, and the complete

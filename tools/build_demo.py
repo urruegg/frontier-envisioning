@@ -12,6 +12,8 @@ Text is written as LF, and identity ZIP entries use stable ordering and Unix cre
 The 1.4.0 baseline uses verified frozen raster inputs guarded by every generated non-raster file.
 Other versions require successful card/visual conversion; --no-png is an explicitly SVG-only
 development variant, not release reproduction. Full wrapper evidence is saved as build-report.json.
+For released versions, the FinOps rate-age calculation uses the recorded release date rather
+than the wall clock. The plugin's explicit --today input is used; verification hashes are unchanged.
 Caldova Industrial AG is fictitious.
 """
 from __future__ import annotations
@@ -26,7 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import demo_raster  # noqa: E402
-from fe_lib import DEMO_DIR, DEMO_HTML_NAME, ROOT, SKILLS, TEXT_SUFFIXES, load_module, plugin_version, sha256_bytes  # noqa: E402
+from fe_lib import DEMO_DIR, DEMO_HTML_NAME, ROOT, SKILLS, TEXT_SUFFIXES, call_main, load_module, plugin_version, sha256_bytes  # noqa: E402
 
 EXAMPLES = {
     "data": SKILLS / "frontier-blueprint/examples/caldova-blueprint.json",
@@ -56,6 +58,24 @@ def canonicalise_outputs(out: Path, archive_path: Path) -> None:
             archive.writestr(info, data)
 
 
+def build_at_release_date(out: Path, summary: dict, day: str) -> int:
+    model = summary["value_finops"]
+    data = Path(model["folder"]) / "blueprint-value-finops.json"
+    args = ["--blueprint", str(data), "--finops", model["finops"], "--today", day, "--out", str(data)]
+    if model.get("value"):
+        args += ["--value", model["value"]]
+    finops = load_module(SKILLS / "frontier-finops" / "scripts" / "apply_finops.py", "fe_demo_finops_date")
+    code, output = call_main(finops, args)
+    if code:
+        print(output)
+        return code
+    blueprint = load_module(SKILLS / "frontier-blueprint" / "scripts" / "build_blueprint.py", "fe_demo_blueprint_date")
+    code, output = call_main(blueprint, ["--data", str(data), "--out", str(out / DEMO_HTML_NAME)])
+    if code:
+        print(output)
+    return code
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default=str(DEMO_DIR))
@@ -81,6 +101,16 @@ def main(argv=None) -> int:
         print("ERROR: demo wrapper did not return a JSON summary")
         return 1
     summary = json.loads(proc.stdout[i:])
+    manifest = ROOT / "releases" / plugin_version() / "manifest.json"
+    if not a.no_png and manifest.is_file():
+        day = json.loads(manifest.read_text(encoding="utf-8"))["date"]
+        if not (summary.get("value_finops") or {}).get("finops"):
+            print("ERROR: released demo did not produce its FinOps model")
+            return 1
+        if build_at_release_date(out, summary, day):
+            print("ERROR: released demo model generation failed")
+            return 1
+        summary["baseline_date"] = day
     html = out / DEMO_HTML_NAME
     identity = summary.get("identity")
     if not html.is_file() or not isinstance(identity, dict):

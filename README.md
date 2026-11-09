@@ -7,6 +7,7 @@ Frontier Envisioning helps Microsoft Innovation Hub solution engineers prepare a
 | | |
 |---|---|
 | Current release | **1.4.0** (8 November 2026), imported from Copilot Cowork as the engineering baseline |
+| Repository home | [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning), private; use approved work material only |
 | Plugin licence | MIT (Microsoft product icons: see [THIRD-PARTY-NOTICES.md](plugin/THIRD-PARTY-NOTICES.md)) |
 | Demo data | the fictitious Caldova Industrial AG only |
 | Status | Intake: see [docs/engineering/intake-plan.md](docs/engineering/intake-plan.md) and milestone *M0 · Intake baseline* |
@@ -55,6 +56,8 @@ How we work is in [AGENTS.md](AGENTS.md) (for people and coding agents), [CONTRI
 | L3 | tag `vX.Y.Z` (people, enabled explicitly) | strict L1 and L2 on the tag, bundle, pinned SBOM, provenance and `release-approval` before the draft release |
 
 ## Local intake status
+
+On 9 November 2026 the user confirmed Microsoft approval to use the private repository above. The intake branch is based on that repository's existing `main`; the original work-repository branch and connection are preserved. Server protections, CODEOWNERS eligibility and tenant rollout remain maintainer checks, not consequences of this migration.
 
 All four 1.4.0 artifacts reproduce their immutable release hashes, including the complete identity ZIP. The original OneDrive artifacts were recovered and verified; shipped product/renderer source bytes remain unchanged. Local strict L1 passes. See [M0 evidence](docs/intake/m0-evidence.md).
 

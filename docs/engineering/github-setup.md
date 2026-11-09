@@ -2,6 +2,7 @@
 
 ## 1. Prerequisites
 
+- Approved home: [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning), private. The user confirmed Microsoft approval on 9 November 2026. This does not authorize public visibility or automatic server administration.
 - Git, Python 3.11+ and the GitHub CLI signed in: `gh auth login` (scopes `repo` and `workflow`).
 - Decision ENG-D1: the owner (your account or an organisation) and the visibility (private recommended).
 
@@ -26,7 +27,7 @@ For a new repository, the script creates the import commit and repository (`--pr
 2. **Actions**: default workflow permissions *read*; allow the actions used by the workflows (GitHub-owned, Azure, the SBOM download).
 3. **Rulesets**: verify all three required checks and eligible code-owner approval on an actual PR. Do not infer server enforcement from local files or branch metadata.
 4. **Code security**: on a private repository, CodeQL needs GitHub Code Security; when available set the repository variable `CODEQL_ENABLED` to `true`.
-5. **CODEOWNERS**: the initial owner is `@urruegg_microsoft`; use an authorized team/reviewer when appropriate.
+5. **CODEOWNERS**: an authorized person must adapt the imported `@urruegg_microsoft` entries to an eligible owner/reviewer for the approved personal repository. The migration preserves this human-maintained file; its existing entries do not establish access or independent review eligibility.
 6. **Release approval**: create and verify `release-approval` separately from showcase `prod`, with the approved reviewer and a selected version-tag policy. Confirm private-repository feature availability. Only then set `RELEASE_ENABLED=true`; leave it unset/false while reproduction or approvals are blocked.
 
 ## 4. Verify

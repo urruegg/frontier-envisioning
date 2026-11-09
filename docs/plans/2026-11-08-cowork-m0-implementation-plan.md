@@ -12,6 +12,13 @@
 
 ## Execution authorization
 
+Update, 9 November 2026: the user confirmed Microsoft approval to use the
+private `urruegg/frontier-envisioning` repository and requested proceeding.
+The earlier commit/push request now applies to this approved destination.
+Preserve the original work connection and intake branch, base the new intake
+on the personal repository's `main`, and keep server administration, protected
+ownership files, merges, releases and deployments with people.
+
 The user initially approved this plan's creation, **documentation only**.
 Subsequent approval allowed local intake on a new branch, planned local
 engineering changes and isolated Python 3.11/Node 24 validation, without
