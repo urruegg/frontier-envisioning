@@ -13,6 +13,8 @@
 
 Frontier Envisioning helps Microsoft Innovation Hub solution engineers prepare and run Frontier envisioning and architecture design workshops. It gathers the customer context from Work IQ and workshop transcripts, builds the interactive **Frontier Company Blueprint** along the Hub journey (vision, design, workshop), writes the PRD, solution design, ADRs and IT readiness checklist, creates the agent identity kit and models the business value and what the agents cost.
 
+The identity kit supplies branding, not Entra identity provisioning. HubWorks is controlled source integration, not an assumed runtime loader; documents or harness selection do not prove deployed capability.
+
 | | |
 |---|---|
 | Current product baseline | **1.6.0** (8 November 2026), imported from Copilot Cowork; 1.4.0 records retained |
@@ -37,10 +39,15 @@ Open the repository in the dev container (VS Code or Codespaces), or install Pyt
 ```bash
 python tools/dev.py setup      # pytest, ruff, PyYAML, happy-dom, ESLint, Playwright Chromium
 python tools/dev.py doctor     # what is installed
+python tools/dev.py docs --strict  # local metadata, links and work-package contracts
 python tools/dev.py check      # gate L1: everything CI runs (a few minutes)
 ```
 
 How we work is in [AGENTS.md](AGENTS.md) (for people and coding agents), [CONTRIBUTING.md](CONTRIBUTING.md) and the [engineering handbook](docs/engineering/handbook.md). GitHub Copilot is configured for this repository (instructions, custom agents, skills, hooks); the engineering method is Superpowers: see [Copilot and Superpowers](docs/engineering/copilot-and-superpowers.md).
+
+The private repository above is the approved source/issue/PR host. [PRD](docs/prd.md) owns requirements and release decisions; [solution design](docs/solution-design.md) owns architecture and verification; [ADRs](docs/adr/README.md) record engineering rationale. New implementation uses linked [idea](docs/idea/README.md), [spec](docs/spec/README.md), [plan](docs/plan/README.md) and [sprint](docs/sprint/README.md) records with real human design/readiness evidence and explicit plan approval. Draft a sprint early; link a real issue, owner and testable acceptance before readiness. Labels remain human-only and are not inferred from approval. Local checks do not verify live issues/approvals.
+
+Where supported, eligible prose goes to `docs-agent`, checker/code to `frontier-builder`, HTML to `frontier-renderer`. Handoffs are harness-dependent; available Superpowers skills or the AGENTS method provide the workflow. The [policy catalogue](.github/agent-policy/README.md) remains Proposed, not an access control. Protected session-start routing still names legacy paths pending human [#8](https://github.com/urruegg/frontier-envisioning/issues/8); preserve historical links and report the limitation.
 
 ## Repository map
 

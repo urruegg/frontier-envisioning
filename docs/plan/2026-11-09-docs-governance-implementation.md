@@ -2,17 +2,18 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-09 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | Design, implementation plans and readiness approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); delivery evidence separate |
+| Status | Human design, plans and readiness approved; D1-D5 implemented/reviewed in draft PR #12, G1 Proposed, G2 running; A not started; human #8 pending |
 | Scope | Coordinated delegated implementation of the eight approved requirements |
 | References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md) |
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > `subagent-driven-development` after separate human plan approval. Execute the
 > checkbox steps in the linked task plans, using a fresh bounded worker per
-> implementation task and review checkpoints. Do not execute this plan now.
+> implementation task and review checkpoints. Execute only the currently
+> delegated bounded task; protected/manual actions remain human-only.
 
 **Goal:** Deliver maintainable documents, a linked engineering work package,
 clear agent governance and measured accessibility improvements without weakening
@@ -40,8 +41,14 @@ to follow the user-approved six-field documentation header convention.
 | Renderer accessibility | [#7](https://github.com/urruegg/frontier-envisioning/issues/7) | [Accessibility](2026-11-09-accessibility-plan.md) | Fresh renderer workers |
 | Protected/manual controls | [#8](https://github.com/urruegg/frontier-envisioning/issues/8) | [Human handoff](2026-11-09-human-governance-plan.md) | Person only; never an agent |
 
-Planning baseline is main `d249fcab0fae2fc8b161ccce848cc911ffcd76f4`.
-Planning records and imported audit evidence are not implementation.
+Planning baseline was main `d249fcab0fae2fc8b161ccce848cc911ffcd76f4`.
+Human-merged PR #11 established the execution base at main `b0b4776` on
+2026-11-09. [Plan approval](https://github.com/urruegg/frontier-envisioning/issues/6#issuecomment-6740481819)
+and subsequent [readiness approval](https://github.com/urruegg/frontier-envisioning/issues/6#issuecomment-6742446199)
+are recorded on #6; exact quotes are preserved in the
+[idea](../idea/2026-11-09-docs-governance-and-accessibility.md#approval-provenance).
+No agent applied protected labels; label-field changes are not inferred.
+Planning records and imported audit evidence alone are not implementation.
 The first renderer change uses the current unreleased version, or a new patch
 when a release exists by execution time. A single coordinator owns versioning.
 
@@ -49,7 +56,7 @@ when a release exists by execution time. A single coordinator owns versioning.
 
 ```text
 User design approval (recorded)
-    -> user plan approval (not recorded)
+    -> user plan approval and readiness (recorded on #6, 2026-11-09)
     -> documentation D1-D5 (#10)
          -> governance G1-G3 (#9) -> human H1-H3 (#8)
          -> renderer A1-A5 (#7)
@@ -68,19 +75,17 @@ serial execution over a complicated coordination mechanism.
 
 ## 3. Pre-execution gate
 
-- [ ] A person explicitly approves the plan and records that decision against
-      #6; the approved design alone is insufficient.
-- [ ] The planning-only PR is merged by a person before workers branch from
-      main. If a person instead approves an explicit stacked base, record that
-      SHA and dependency; never pretend the plan is already on main.
-- [ ] A person sets required ready/design labels when applicable. The parent
-      verifies actual issue links/readiness through the authenticated GitHub
-      integration; it does not infer readiness from local metadata.
-- [ ] Parent confirms a clean checkout, current main and unchanged protected
-      files. Unexpected overlapping user changes stop the affected task.
-- [ ] Parent invokes `subagent-driven-development` and, when isolation is
-      needed, `using-git-worktrees`; uses existing dependencies before installs.
-- [ ] Person keeps #8 and manual accessibility checks outside agent delegation.
+- [x] Human plan approval recorded on #6; design approval alone was insufficient.
+- [x] Planning PR #11 merged by a person; execution base main `b0b4776`.
+- [x] Explicit human readiness/design decision recorded after the preflight
+      blocker. This authorises bounded execution, not agent label edits.
+      Label-field synchronisation remains human-only under #8.
+- [x] Parent established isolated implementation worktrees. G2 started clean
+      on `docs/9-agent-governance` at `d07bd7e`, stacked on unmerged draft
+      PR #12 (`feat/10-documentation-foundation`, targeting main).
+- [x] Bounded workers and review checkpoints used for D1-D5/G1; current
+      G2 uses existing dependencies. Each later task must recheck its base.
+- [x] #8 and manual accessibility checks remain outside agent delegation.
 
 Per-command Windows environment:
 
@@ -164,6 +169,11 @@ Manual assistive-technology approval is not inferred from automated tests.
 - [ ] Sprint links real PR/evidence and retains open human/manual actions.
 - [ ] People review/merge; people separately tag, release and deploy.
 
-Current state: the design is approved; this plan is ready for separate approval.
-No production, agent-definition, instruction, checker, renderer, dependency,
-ownership or permission implementation has started.
+Current state on 2026-11-09: human design, plan and readiness approval recorded;
+D1-D5 implemented and spec/code-reviewed in
+[draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12), not merged.
+G1 implemented at `d07bd7e` with policies still Proposed; G2 running; G3 and
+A1-A5 not started. Human #8 and manual acceptance remain pending.
+See [SPRINT-001](../sprint/SPRINT-001-docs-governance-and-accessibility.md) for
+delivery evidence. No policy activation, label-field change, protected edit,
+release or deployment is claimed.

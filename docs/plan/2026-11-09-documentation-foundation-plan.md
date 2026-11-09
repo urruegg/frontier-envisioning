@@ -2,12 +2,18 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-09 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | Plan and readiness approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); delivery evidence separate |
+| Status | Plan/readiness human-approved; D1-D5 implemented and spec/code-reviewed in draft PR #12, not merged |
 | Scope | DG-01, DG-02, DG-04 and DG-07; no protected or packaged-output edits |
 | References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/10), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md) |
+
+Delivery: [draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12)
+targets main from `feat/10-documentation-foundation`; D1-D5 are implemented
+and reviewed, not merged. Actual evidence is in the PR and linked sprint.
+The task instructions below remain the approved execution contract, not a
+claim that every planned checkbox or human acceptance is complete.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > `subagent-driven-development` after plan approval. A fresh worker owns one

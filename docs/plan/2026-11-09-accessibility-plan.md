@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-09 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | Plan and readiness approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); delivery and manual acceptance evidence separate |
+| Status | Plan/readiness human-approved on #6; A1-A5 not started; manual acceptance pending |
 | Scope | DG-08: measured renderer barriers and repeatable WCAG 2.2 AA-oriented checks |
 | References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/7), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md), [Baseline](../intake/2026-11-09-accessibility-audit.json) |
 
