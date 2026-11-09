@@ -29,6 +29,11 @@ Project skills are read from `.github/skills`, `.claude/skills` or `.agents/skil
 | `.github/copilot-instructions.md` | Always-on rules: map, customer neutrality, standard-library plugin, generated files, test first, verification, versions, icons, human-only actions |
 | `AGENTS.md` | The full working agreement for every agent and person |
 | `.github/instructions/*.instructions.md` | Rules per area: plugin skills, renderer, Python tools, infrastructure, workflows, documentation |
+| [`.github/agent-policy/README.md`](../../.github/agent-policy/README.md) | Proposed policy catalogue; human acceptance pending; no permissions granted |
+| [`.github/agent-policy/AGENT_WORKFLOW.md`](../../.github/agent-policy/AGENT_WORKFLOW.md) | Proposed linked intake, approval, execution and evidence policy |
+| [`.github/agent-policy/NON_DELEGABLE_WORK.md`](../../.github/agent-policy/NON_DELEGABLE_WORK.md) | Proposed catalogue of existing human-only boundaries and stop/handoff response |
+| [`.github/agent-policy/KPI_BASELINE.md`](../../.github/agent-policy/KPI_BASELINE.md) | Proposed aggregate workflow evidence measures; no employee ranking |
+| [`.github/agent-policy/BREAK_GLASS.md`](../../.github/agent-policy/BREAK_GLASS.md) | Proposed human-only incident procedure; no agent bypass rights |
 | `.github/agents/frontier-planner.agent.md` | Issue to spec and test-first plan; checks the Definition of Ready |
 | `.github/agents/frontier-builder.agent.md` | Implements a plan test-first, runs the gates, opens a draft pull request |
 | `.github/agents/frontier-renderer.agent.md` | Blueprint HTML specialist (views, DOM and browser tests, accessibility, CSP) |
