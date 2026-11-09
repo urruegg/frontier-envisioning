@@ -5,6 +5,8 @@
 The archived PNG bytes avoid undeclared SVG converters and platform-dependent floating-point
 rasterisation. This does not replay the golden ZIP: code still generates its remaining files,
 and any changed input or tampered raster blocks the build.
+The explicitly enabled 1.6.1 preview uses 1.6.0 provenance only when no current
+record exists; a present record is never ignored.
 """
 from __future__ import annotations
 
@@ -17,6 +19,7 @@ from fe_lib import ROOT
 
 PROFILE = ROOT / "tests" / "fixtures" / "caldova-raster-1.4.0"
 SUPPORTED_VERSIONS = {"1.4.0", "1.5.0", "1.6.0"}
+PREVIEW_VERSIONS = {"1.6.1"}
 
 
 class RasterProfileError(Exception):
@@ -38,7 +41,7 @@ def _verify(data: bytes, expected: str, label: str) -> None:
 
 
 def replay(kit: Path, profile_dir: Path = PROFILE, version: str = "1.4.0") -> dict:
-    if version not in SUPPORTED_VERSIONS:
+    if version not in SUPPORTED_VERSIONS | PREVIEW_VERSIONS:
         raise RasterProfileError(f"historical raster replay is not approved for {version}")
     manifest_path = profile_dir / "manifest.json"
     if not manifest_path.is_file():
@@ -46,7 +49,14 @@ def replay(kit: Path, profile_dir: Path = PROFILE, version: str = "1.4.0") -> di
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest.get("schema") != "frontier-demo-raster/1.0" or manifest.get("version") != "1.4.0":
         raise RasterProfileError("unsupported historical raster profile")
-    release = json.loads((ROOT / "releases" / version / "manifest.json").read_text(encoding="utf-8"))
+    reference_version = version
+    release_path = ROOT / "releases" / reference_version / "manifest.json"
+    if not release_path.is_file() and version in PREVIEW_VERSIONS:
+        reference_version = "1.6.0"
+        release_path = ROOT / "releases" / reference_version / "manifest.json"
+    if not release_path.is_file():
+        raise RasterProfileError(f"raster reference release record is missing: {reference_version}")
+    release = json.loads(release_path.read_text(encoding="utf-8"))
     expected_source = next(a["sha256"] for a in release["artefacts"] if a["name"] == "Caldova - agent identity package v1.0.zip")
     if manifest.get("source_archive_sha256") != expected_source:
         raise RasterProfileError("raster profile provenance does not match the release record")
@@ -79,4 +89,5 @@ def replay(kit: Path, profile_dir: Path = PROFILE, version: str = "1.4.0") -> di
         target.write_bytes(data)
     visuals = sum(Path(name).name == "card.png" or Path(name).parent.as_posix() == "visuals" for name in assets)
     return {"method": "frozen-release-raster", "converted": 0, "restored": len(pending), "restored_visuals": visuals,
-            "profile_version": "1.4.0", "source_archive_sha256": expected_source, "readme_sha256": readme_hash}
+            "profile_version": "1.4.0", "source_archive_sha256": expected_source, "readme_sha256": readme_hash,
+            "reference_version": reference_version, "preview": reference_version != version}

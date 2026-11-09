@@ -2,6 +2,11 @@
 
 Releases of the Frontier Envisioning plugin. Engineering changes to the repository are recorded in the pull requests.
 
+## 1.6.1 — 2026-11-09
+
+- **Workflow legend stays usable while scrolling.** The agent-selection list is sticky only within the upper agent summary and trigger canvas. It no longer covers the full-width workflow header or node-type legend; pointer clicks, keyboard activation and agent switching remain available at desktop and responsive widths.
+- Added bounded-layout DOM coverage and real-browser pointer/occlusion regressions at 1440px and 1024px. This patch is in development; historical release records are unchanged.
+
 ## 1.6.0 — 2026-11-08
 
 - **Agent workflow in the Copilot Studio designer style.** On every agent with a canvas plan, a full-width workflow under the trigger canvas, drawn like the Copilot Studio workflow designer (powered by the GitHub Copilot harness): it starts with the trigger (Manual, Recurrence, Connector event, When an HTTP request is received, When an agent calls the workflow), runs the designer's nodes (Agent, Classify, Extract, Copilot, Human review, Connector, Function, Variable, If/Else, Loop, Scope, Note, Respond to the agent) and ends in the desired outcome. Branches of If/Else, Classify and Human review rejoin or end at a named end node; loops and scopes are containers; notes sit above their step.

@@ -13,7 +13,7 @@ license: MIT
 metadata:
   category: research
   icon: DocumentSearch
-  version: "1.6.0"
+  version: "1.6.1"
   plugin: frontier-envisioning
 ---
 

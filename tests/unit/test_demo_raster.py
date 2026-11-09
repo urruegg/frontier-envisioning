@@ -24,6 +24,42 @@ class RasterReplay(unittest.TestCase):
             with self.assertRaisesRegex(module.RasterProfileError, "not approved"):
                 module.replay(kit, profile, version="1.7.0")
 
+    def test_explicit_patch_preview_uses_its_unchanged_base_identity(self):
+        module = self.module()
+        self.assertTrue(hasattr(module, "PREVIEW_VERSIONS"), "explicit patch-preview support is missing")
+        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1"})
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            kit, profile, _, _, manifest = self.fixture(root)
+            record = root / "releases" / "1.6.0" / "manifest.json"
+            record.parent.mkdir(parents=True)
+            record.write_text(json.dumps({"artefacts": [{
+                "name": "Caldova - agent identity package v1.0.zip",
+                "sha256": manifest["source_archive_sha256"],
+            }]}), encoding="utf-8")
+            with mock.patch.object(module, "ROOT", root):
+                report = module.replay(kit, profile, version="1.6.1")
+            self.assertEqual(report["reference_version"], "1.6.0")
+            self.assertTrue(report["preview"])
+            self.assertEqual(report["restored"], 1)
+
+    def test_patch_preview_does_not_ignore_an_existing_release_record(self):
+        module = self.module()
+        self.assertTrue(hasattr(module, "PREVIEW_VERSIONS"), "explicit patch-preview support is missing")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            kit, profile, _, _, manifest = self.fixture(root)
+            for version, digest in [("1.6.0", manifest["source_archive_sha256"]), ("1.6.1", "0" * 64)]:
+                record = root / "releases" / version / "manifest.json"
+                record.parent.mkdir(parents=True)
+                record.write_text(json.dumps({"artefacts": [{
+                    "name": "Caldova - agent identity package v1.0.zip", "sha256": digest,
+                }]}), encoding="utf-8")
+            with mock.patch.object(module, "ROOT", root):
+                with self.assertRaisesRegex(module.RasterProfileError, "provenance"):
+                    module.replay(kit, profile, version="1.6.1")
+            self.assertFalse((kit / "agents/sample/identity/card.png").exists())
+
     def test_current_release_record_must_expect_the_original_identity(self):
         module = self.module()
         with tempfile.TemporaryDirectory() as tmp:

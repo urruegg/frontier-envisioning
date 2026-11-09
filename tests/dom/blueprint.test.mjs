@@ -83,6 +83,19 @@ describe("Frontier Company Blueprint (Caldova demo)", () => {
     assert.equal(v.querySelectorAll("ul.ctrl li").length, 7);
   });
 
+  it("keeps sticky navigation in a bounded summary before the full-width workflow", async () => {
+    await bp.go("#/agents/D3-A05");
+    const v = bp.view();
+    const top = v.querySelector(".agtop");
+    const list = v.querySelector(".alist");
+    const flow = v.querySelector(".agfull");
+    assert.ok(top, "upper summary containing block");
+    assert.equal(list.parentElement, top);
+    assert.ok(top.querySelector(".canvas"), "summary and trigger canvas share the navigation boundary");
+    assert.equal(top.contains(flow), false);
+    assert.equal(top.nextElementSibling, flow, "workflow occupies the next full-width row");
+  });
+
   it("draws the agent workflow like the Copilot Studio designer: trigger, nodes, branches, outcome", async () => {
     await bp.go("#/agents/D3-A05");
     let v = bp.view();

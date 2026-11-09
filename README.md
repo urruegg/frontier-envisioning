@@ -7,6 +7,7 @@ Frontier Envisioning helps Microsoft Innovation Hub solution engineers prepare a
 | | |
 |---|---|
 | Current product baseline | **1.6.0** (8 November 2026), imported from Copilot Cowork; 1.4.0 records retained |
+| Development patch | **1.6.1**: bounded sticky navigation fixes the workflow legend overlap; not yet released |
 | Repository home | [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning), private; use approved work material only |
 | Plugin licence | MIT (Microsoft product icons: see [THIRD-PARTY-NOTICES.md](plugin/THIRD-PARTY-NOTICES.md)) |
 | Demo data | the fictitious Caldova Industrial AG only |
@@ -56,6 +57,8 @@ How we work is in [AGENTS.md](AGENTS.md) (for people and coding agents), [CONTRI
 | L3 | tag `vX.Y.Z` (people, enabled explicitly) | strict L1 and L2 on the tag, bundle, pinned SBOM, provenance and `release-approval` before the draft release |
 
 ## Local intake status
+
+The 1.6.1 development patch addresses [issue #4](https://github.com/urruegg/frontier-envisioning/issues/4). The sticky agent list is bounded by the upper summary; the workflow remains full width below it. Historical product records remain unchanged.
 
 On 9 November 2026 the user confirmed Microsoft approval to use the private repository above. The intake branch is based on that repository's existing `main`; the original work-repository branch and connection are preserved. Server protections, CODEOWNERS eligibility and tenant rollout remain maintainer checks, not consequences of this migration.
 

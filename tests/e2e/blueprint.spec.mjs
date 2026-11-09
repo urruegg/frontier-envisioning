@@ -95,6 +95,44 @@ test("agent workflow: keyboard through the nodes, properties, designer row", asy
   expect(problems).toEqual([]);
 });
 
+for (const width of [1440, 1024]) {
+  test(`workflow legend remains reachable after scrolling (${width}px)`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: 900 });
+    const problems = watchProblems(page);
+    await page.goto("/blueprint.html");
+    await go(page, "#/agents/D3-A05");
+    const nav = page.locator(".alist");
+    await expect(nav).toHaveCSS("position", width > 1100 ? "sticky" : "static");
+    const title = page.locator(".jhead h2");
+    const selected = await title.innerText();
+    await page.locator(".wflay").click();
+    await page.locator(".wf").scrollIntoViewIfNeeded();
+    const legend = page.locator('.wfadd button[data-t="agent"]');
+    await expect.poll(() => page.evaluate(() => {
+      const n = document.querySelector(".alist").getBoundingClientRect();
+      const l = document.querySelector(".wfadd").getBoundingClientRect();
+      return n.left < l.right && n.right > l.left && n.top < l.bottom && n.bottom > l.top;
+    })).toBe(false);
+    expect(await legend.evaluate((element) => {
+      const r = element.getBoundingClientRect();
+      return element.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+    })).toBe(true);
+    await legend.click();
+    await expect(legend).toHaveAttribute("aria-pressed", "true");
+    await expect(title).toHaveText(selected);
+    await legend.focus();
+    await page.keyboard.press("Enter");
+    await expect(legend).toHaveAttribute("aria-pressed", "false");
+    await page.locator(".wf").screenshot({ path: testInfo.outputPath(`workflow-legend-${width}.png`) });
+    const firstAgent = nav.locator(".aitem").first();
+    const firstName = await firstAgent.locator("b").innerText();
+    await firstAgent.click();
+    await expect(page.locator(".jhead h2")).toHaveText(firstName);
+    await expect(page.locator(".alist .aitem").first()).toHaveAttribute("aria-current", "true");
+    expect(problems).toEqual([]);
+  });
+}
+
 test("landing zone, use case deep link and workshop notes", async ({ page }) => {
   const problems = watchProblems(page);
   await page.goto("/blueprint.html");

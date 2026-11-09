@@ -74,6 +74,8 @@ Under the trigger canvas the plan is drawn as a **Copilot Studio workflow**, the
 
 Keep labels short (about 20 characters, two lines at most); the detail goes into `detail`. The build lists AI, deterministic and human steps in the workflow bar and warns about unknown node types or agents. The solution-design scaffold turns each MVP workflow into the build table of the process design.
 
+The agent selector remains sticky only within the upper summary and trigger canvas. The full-width workflow follows below that boundary, so its node-type legend remains visible and receives pointer and keyboard input when scrolling.
+
 ## 6. Role profile (nine sections)
 
 1. Starting point & contribution (starting_point, contribution, impact)

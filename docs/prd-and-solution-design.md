@@ -6,8 +6,8 @@
 |---|---|
 | Product | Frontier Envisioning plugin for Microsoft Copilot Cowork (`frontier-envisioning`) |
 | Document | PRD (Part A) and Solution Design (Part B) |
-| Version | 1.6.0 — draft for review (plugin version 1.6.0) |
-| Date | 8 November 2026 |
+| Version | 1.6.1 development patch — released baseline 1.6.0 |
+| Date | 9 November 2026 |
 | Owner | Urs Rüegg, Sr Solution Engineer, Microsoft Innovation Hub Switzerland |
 | Proposed reviewers | Innovation Hub leadership; Innovation Hub solution engineers; one account team piloting the plugin |
 | License | MIT (`MIT.md`) · Copyright (c) 2026 Urs Rüegg · SPDX headers in every script; `license: MIT` in every skill |
@@ -15,6 +15,19 @@
 | Deliverables | This document · README.md (setup guide) · generic Frontier Company Blueprint HTML template with the Caldova demo, the digital feedback loop on the Overview, the agent workflows, its Agent identity page, business value and FinOps page · install package `frontier-envisioning-plugin-1.6.0.zip` · repository starting point `frontier-envisioning-github-repo-1.6.0.zip` · Caldova agent identity package (demo) · Frontier visualisation and reuse evaluation (separate document) |
 
 ---
+
+## 1.6.1 patch: workflow legend accessibility
+
+The agent list must remain sticky while its upper summary is visible, but must
+not cover the full-width workflow below. At desktop and responsive widths,
+scrolled legend controls must receive pointer and keyboard input without
+changing the selected agent. Agent switching, workflow properties and the
+fourteen existing views remain functional. Acceptance includes DOM containment
+and real-browser overlap/hit-testing at 1440px and 1024px.
+
+This is an unreleased correction to the 1.6.0 source baseline. Historical release
+records remain immutable; publishing and tenant acceptance are separate human
+steps.
 
 # Part A — Product Requirements
 
