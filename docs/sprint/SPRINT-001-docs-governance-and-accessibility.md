@@ -76,16 +76,22 @@ approval; manual screen-reader/zoom/high-contrast acceptance is not complete.
 - Planning-only self-review: twelve new Markdown records, 81 local references,
   eleven Python examples, fourteen JavaScript examples and fifteen PowerShell
   examples checked. The architecture return-tail example was parsed in its
-  declared function context. This is syntax/reference validation, not execution
-  of future implementation.
+  declared function context. Syntax/reference validation does not establish
+  future feature integration or acceptance.
+- Eight pure checker-example tests also passed in memory; no checker source
+  file was created or integrated. This validates the plan examples, not the
+  future repository wiring or delivery acceptance.
 - `python tools/dev.py check --strict`: **ALL GATES PASSED**; 84 existing
   unit/pipeline tests passed, one unreleased-version reproduction test skipped,
   all 34 plugin checks and 15 DOM tests passed. Six existing ESLint warnings
   remain; no renderer/source change was made to address unrelated warnings.
-- Imported evidence is byte-identical: CSV SHA-256
-  `b9af7038a64178597b4586205896c74f66af24698e3dcaa49a4bf8467941542a`;
-  JSON SHA-256
+- Imported JSON is byte-identical, SHA-256
   `c9a397267557753a7fcf97d992a702d8437d916a26d85a1c4f82108eaf44c6d2`.
+  CSV cells/content are unchanged; repository text rules normalise CRLF to LF.
+  Original CSV SHA-256:
+  `b9af7038a64178597b4586205896c74f66af24698e3dcaa49a4bf8467941542a`;
+  committed LF CSV SHA-256:
+  `72adb6bcbf958acb6defa7f502e24268e18495e5e556f3b041bd413a77d79e51`.
 - The package hash remains
   `e5ca20493787df84311c68ffd2ed8f94ec76cdc9610d42861fe694c557bb365b`.
   Product, source, dependency, test, instruction and protected paths have no

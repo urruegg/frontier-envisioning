@@ -336,6 +336,9 @@ class DocumentationValidation(unittest.TestCase):
         self.assertTrue(self.docs.metadata_errors(self.header().replace("| Scope | Test |\n", "")))
         self.assertTrue(self.docs.metadata_errors("# Missing metadata\n"))
         self.assertTrue(self.docs.metadata_errors(self.header() + "| Extra | Invalid |\n"))
+        self.assertTrue(self.docs.metadata_errors(
+            self.header().replace("| Author | Maintainers |", "| Author |  |")
+        ))
 
     def test_fences_duplicates_and_explicit_anchors(self):
         text = "# Title\n## Repeated\n## Repeated\n<a id=\"legacy\"></a>\n```md\n# Not a heading\n```\n"
@@ -499,7 +502,11 @@ def metadata_errors(text: str) -> list[str]:
         if not match or match.group(1).strip("* ") != name:
             errors.append(f"missing or misplaced metadata field: {name}")
         else:
-            values[name] = match.group(2).strip()
+            value = match.group(2).strip()
+            if not value:
+                errors.append(f"metadata field is empty: {name}")
+            else:
+                values[name] = value
     if "Version" in values and not re.fullmatch(r"\d+\.\d+(?:\.\d+)?", values["Version"]):
         errors.append("document Version must be numeric, separate from release state")
     if "Date" in values:
@@ -573,7 +580,7 @@ def link_errors(root: Path, source: Path, text: str) -> list[str]:
     targets, errors = destinations(text)
     for target in targets:
         url = urlsplit(target)
-        if url.scheme in ("http", "https", "mailto", "tel"):
+        if url.scheme in ("http", "https", "mailto", "tel") or (url.netloc and not url.scheme):
             continue
         if url.scheme:
             errors.append(f"unsupported non-portable link scheme: {target}")
@@ -583,6 +590,8 @@ def link_errors(root: Path, source: Path, text: str) -> list[str]:
             errors.append(f"local link escapes repository: {target}")
         elif not path.exists():
             errors.append(f"local link missing: {target}")
+        elif url.fragment and path.is_dir():
+            errors.append(f"directory fragment requires an explicit document: {target}")
         elif url.fragment and path.is_file():
             if path.suffix == ".md":
                 available = anchors(path.read_text(encoding="utf-8"))
