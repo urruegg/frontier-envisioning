@@ -360,11 +360,12 @@ dl.kv dd{margin:0;font-size:12.5px}
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .15s;z-index:40}
 .scrim.open{opacity:1;pointer-events:auto}
 .drawer{position:fixed;inset-block:0;inset-inline-end:0;width:min(620px,96vw);background:var(--panel);z-index:50;box-shadow:-8px 0 24px rgba(0,0,0,.18);transform:translateX(105%);transition:transform .18s;display:flex;flex-direction:column}
+.drawer[hidden]{display:none}
 [dir="rtl"] .drawer{transform:translateX(-105%)}
 .drawer.open{transform:none}
-.drawer header{display:flex;justify-content:space-between;gap:10px;padding:14px 18px;border-block-end:1px solid var(--line-soft)}
-.drawer header h2{margin:0;font-size:18px}
-.drawer header p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
+.drawer .drawer-head{display:flex;justify-content:space-between;gap:10px;padding:14px 18px;border-block-end:1px solid var(--line-soft)}
+.drawer .drawer-head h2{margin:0;font-size:18px}
+.drawer .drawer-head p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
 .drawer .x{all:unset;cursor:pointer;font-size:24px;line-height:1;padding:2px 8px;border-radius:4px}
 .drawer .x:hover{background:var(--chip)}
 .drawer .x:focus-visible{outline:2px solid var(--focus)}
@@ -705,7 +706,7 @@ svg.flsvg{width:100%;min-width:860px;height:auto;display:block;background:var(--
 .flwrap.paused .flring,.flwrap.paused .flpulse{animation-play-state:paused}
 .flwrap.still .fl-p,.flwrap.still .flgate-halo,.flwrap.still .flpulse{visibility:hidden}
 .flwrap.still .flring{animation:none}
-@media (prefers-reduced-motion: reduce){ .flring,.flpulse{animation:none} .flpath{transition:none} }
+@media (prefers-reduced-motion: reduce){ .flring,.flpulse{animation:none} .flpath,.drawer,.scrim{transition:none} }
 .flctl{display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap;margin:10px 0 2px}
 .flbtn{font-size:12px;padding:5px 12px}
 .flflow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:var(--ink-2)}
@@ -855,17 +856,19 @@ svg.wfsvg{display:block}
 <nav class="rail" id="rail" aria-label="Views"></nav>
 <div class="page">
   <header class="top" id="top"></header>
-  <div class="banner" id="banner" role="note"></div>
+  <section aria-label="Blueprint status">
+    <div class="banner" id="banner" role="note"></div>
+  </section>
   <nav class="crumb" id="crumb" aria-label="Breadcrumb"></nav>
   <div class="subnav" id="subnav" role="tablist" aria-label="Journeys"></div>
   <main id="view" tabindex="-1"></main>
   <footer class="note" id="footnote"></footer>
 </div>
-<div class="scrim" id="scrim"></div>
-<aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
-  <header><div><h2 id="drawer-title"></h2><p id="drawer-sub"></p></div><button type="button" class="x" id="drawer-close" aria-label="Close">&times;</button></header>
+<div class="scrim" id="scrim" aria-hidden="true"></div>
+<div class="drawer" id="drawer" hidden inert aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+  <div class="drawer-head"><div><h2 id="drawer-title"></h2><p id="drawer-sub"></p></div><button type="button" class="x" id="drawer-close" aria-label="Close">&times;</button></div>
   <div class="body" id="drawer-body"></div>
-</aside>
+</div>
 <script type="application/json" id="bp-data">"__BLUEPRINT_DATA__"</script>
 <script>
 (function(){
@@ -1336,25 +1339,69 @@ function pager(){
 }
 
 /* ---------------- drawer ---------------- */
-var drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim"), lastFocus = null;
+var drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim"), lastFocus = null, drawerTimer = null;
+function backgroundInert(value){
+  document.querySelectorAll(".page,.rail,.skip").forEach(function(node){ node.inert = value; });
+}
+function canFocus(node){
+  if (!node || !node.isConnected || typeof node.focus !== "function" ||
+      node.matches(":disabled") || node.closest("[hidden],[inert]") || !node.getClientRects().length) return false;
+  var visibility = window.getComputedStyle(node).visibility;
+  return visibility !== "hidden" && visibility !== "collapse";
+}
+function drawerStops(){
+  return Array.from(drawer.querySelectorAll("a[href],button,input,select,textarea,summary,[tabindex]")).filter(function(node){
+    return node.tabIndex >= 0 && canFocus(node);
+  });
+}
+function hideClosedDrawer(){
+  drawerTimer = null;
+  if (!drawer.classList.contains("open")) drawer.hidden = true;
+}
 function openDrawer(title, sub, body){
-  lastFocus = document.activeElement;
+  clearTimeout(drawerTimer); drawerTimer = null;
+  // Replacing a role card or opening its evidence keeps the original page trigger.
+  if (!drawer.classList.contains("open")) lastFocus = document.activeElement;
   document.getElementById("drawer-title").textContent = title || "";
   document.getElementById("drawer-sub").textContent = sub || "";
   var b = document.getElementById("drawer-body");
   b.replaceChildren(); add(b, body);
   b.scrollTop = 0;
-  drawer.classList.add("open"); scrim.classList.add("open"); drawer.setAttribute("aria-hidden","false");
-  setTimeout(function(){ try { document.getElementById("drawer-close").focus(); } catch (e) {} }, 30);
+  drawer.hidden = false; drawer.inert = false; drawer.setAttribute("aria-hidden","false");
+  backgroundInert(true);
+  drawer.classList.add("open"); scrim.classList.add("open");
+  document.getElementById("drawer-close").focus();
 }
 function closeDrawer(){
-  drawer.classList.remove("open"); scrim.classList.remove("open"); drawer.setAttribute("aria-hidden","true");
-  if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (e) {}
+  if (!drawer.classList.contains("open")) return;
+  drawer.classList.remove("open"); scrim.classList.remove("open");
+  drawer.inert = true;
+  backgroundInert(false);
+  if (canFocus(lastFocus)) lastFocus.focus({preventScroll:true});
+  if (document.activeElement !== lastFocus) document.getElementById("view").focus({preventScroll:true});
+  lastFocus = null;
+  drawer.setAttribute("aria-hidden","true");
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) hideClosedDrawer();
+  else drawerTimer = setTimeout(hideClosedDrawer, 200);
+}
+function containDrawerTab(event){
+  if (event.key !== "Tab" || !drawer.classList.contains("open")) return false;
+  var stops = drawerStops(), first = stops[0], last = stops[stops.length - 1];
+  var index = stops.indexOf(document.activeElement);
+  if (!first){
+    event.preventDefault(); document.getElementById("drawer-close").focus();
+  } else if (event.shiftKey && index <= 0){
+    event.preventDefault(); last.focus();
+  } else if (!event.shiftKey && (index < 0 || document.activeElement === last)){
+    event.preventDefault(); first.focus();
+  }
+  return true;
 }
 document.getElementById("drawer-close").addEventListener("click", closeDrawer);
 scrim.addEventListener("click", closeDrawer);
 document.addEventListener("keydown", function(e){
-  if (e.key === "Escape" && drawer.classList.contains("open")) { closeDrawer(); return; }
+  if (containDrawerTab(e)) return;
+  if (e.key === "Escape" && drawer.classList.contains("open")) { e.preventDefault(); closeDrawer(); return; }
   var tg = e.target && e.target.tagName;
   if (tg === "INPUT" || tg === "TEXTAREA" || tg === "SELECT" || drawer.classList.contains("open")) return;
   if (e.altKey || e.ctrlKey || e.metaKey) return;

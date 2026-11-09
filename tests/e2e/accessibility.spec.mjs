@@ -138,6 +138,128 @@ test("evidence drawer traps Shift+Tab and Tab, then Escape restores the exact tr
   expect(problems).toEqual([]);
 });
 
+test("drawer replacement preserves the outer trigger through role profile navigation", async ({ page }, info) => {
+  const problems = watchProblems(page);
+  await open(page, "/blueprint.html#/finops");
+  const trigger = page.locator("#view .agentlink").first();
+  await trigger.click();
+  await page.locator("#drawer").getByRole("button", { name: "Open role profile", exact: true }).click();
+  await expect(page.locator("#drawer-title")).toContainText("role profile");
+  await expect(page.locator("#drawer-close")).toBeFocused();
+  await info.attach("a2-role-profile-dialog", { body: await page.screenshot(), contentType: "image/png" });
+  await page.keyboard.press("Escape");
+  await expect(trigger).toBeFocused();
+  expect(await page.locator(".page,.rail,.skip").evaluateAll((nodes) => nodes.some((node) => node.inert))).toBe(false);
+  expect(problems).toEqual([]);
+});
+
+test("drawer Tab stops exclude hidden, invisible, disabled and inert controls", async ({ page }) => {
+  const problems = watchProblems(page);
+  await open(page, "/blueprint.html#/evidence");
+  await page.locator("#view .pill.ev").first().click();
+  await page.locator("#drawer-body").evaluate((body) => {
+    function button(id, parent = body) {
+      const node = document.createElement("button");
+      node.id = id;
+      node.textContent = id;
+      parent.append(node);
+      return node;
+    }
+    button("first-stop");
+    button("last-stop");
+    button("negative-stop").tabIndex = -1;
+    button("invisible-stop").style.visibility = "hidden";
+    button("disabled-stop").disabled = true;
+    const hidden = document.createElement("div");
+    hidden.hidden = true;
+    body.append(hidden);
+    button("hidden-stop", hidden);
+    const inert = document.createElement("div");
+    inert.inert = true;
+    body.append(inert);
+    button("inert-stop", inert);
+    const disabled = document.createElement("fieldset");
+    disabled.disabled = true;
+    body.append(disabled);
+    button("fieldset-stop", disabled);
+  });
+  await page.keyboard.press("Shift+Tab");
+  await expect(page.locator("#last-stop")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#drawer-close")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#first-stop")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#last-stop")).toBeFocused();
+  await page.keyboard.press("Escape");
+  expect(problems).toEqual([]);
+});
+
+test("drawer Escape falls back to the view when its trigger is no longer focusable", async ({ page }) => {
+  const problems = watchProblems(page);
+  for (const reason of ["removed", "disabled", "hidden", "inert", "invisible"]) {
+    await open(page, "/blueprint.html#/evidence");
+    const trigger = page.locator("#view .pill.ev").first();
+    await trigger.click();
+    await trigger.evaluate((node, why) => {
+      if (why === "removed") node.remove();
+      if (why === "disabled") node.disabled = true;
+      if (why === "hidden") node.hidden = true;
+      if (why === "inert") node.inert = true;
+      if (why === "invisible") node.style.visibility = "hidden";
+    }, reason);
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#view"), reason).toBeFocused();
+    expect(await page.locator(".page,.rail,.skip").evaluateAll((nodes) => nodes.some((node) => node.inert)),
+      `${reason}: no frozen background`).toBe(false);
+  }
+  expect(problems).toEqual([]);
+});
+
+test("drawer rapid close and reopen cancels the delayed hide and scrim close restores focus", async ({ page }) => {
+  const problems = watchProblems(page);
+  await open(page, "/blueprint.html#/evidence");
+  await page.locator("#view .pill.ev").first().evaluate((trigger) => {
+    trigger.focus();
+    trigger.click();
+    document.getElementById("drawer-close").click();
+    document.getElementById("drawer-close").click();
+    trigger.click();
+  });
+  // Observe beyond the normal close timer: the reopened dialog must not be hidden.
+  await page.waitForTimeout(250);
+  await expect(page.locator("#drawer")).toBeVisible();
+  expect(await page.locator("#drawer").evaluate((node) => node.inert)).toBe(false);
+  await expect(page.locator("#drawer-close")).toBeFocused();
+  await page.locator("#scrim").click({ position: { x: 10, y: 10 } });
+  await expect(page.locator("#view .pill.ev").first()).toBeFocused();
+  await expect(page.locator("#drawer")).toHaveJSProperty("hidden", true);
+  expect(await page.locator(".page,.rail,.skip").evaluateAll((nodes) => nodes.some((node) => node.inert))).toBe(false);
+  expect(problems).toEqual([]);
+});
+
+for (const reducedMotion of ["no-preference", "reduce"]) {
+  test(`drawer close preserves normal motion and hides instantly for reduced motion (${reducedMotion})`, async ({ page }) => {
+    const problems = watchProblems(page);
+    await page.emulateMedia({ reducedMotion });
+    await open(page, "/blueprint.html#/evidence");
+    const trigger = page.locator("#view .pill.ev").first();
+    await trigger.click();
+    const durations = await page.locator("#drawer,#scrim").evaluateAll((nodes) =>
+      nodes.map((node) => parseFloat(getComputedStyle(node).transitionDuration)));
+    expect(durations.every((duration) => reducedMotion === "reduce" ? duration === 0 : duration > 0)).toBe(true);
+    const closing = await page.locator("#drawer-close").evaluate((button) => {
+      button.click();
+      const drawer = document.getElementById("drawer");
+      return { hidden: drawer.hidden, inert: drawer.inert, ariaHidden: drawer.getAttribute("aria-hidden") };
+    });
+    expect(closing).toEqual({ hidden: reducedMotion === "reduce", inert: true, ariaHidden: "true" });
+    await expect(trigger).toBeFocused();
+    await expect(page.locator("#drawer")).toHaveJSProperty("hidden", true);
+    expect(problems).toEqual([]);
+  });
+}
+
 test("journey tabs keep the blueprint route and activate/focus ArrowRight, Home and End destinations", async ({ page }) => {
   const problems = watchProblems(page);
   for (const key of ["ArrowRight", "Home", "End"]) {

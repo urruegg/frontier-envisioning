@@ -466,25 +466,69 @@ function pager(){
 }
 
 /* ---------------- drawer ---------------- */
-var drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim"), lastFocus = null;
+var drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim"), lastFocus = null, drawerTimer = null;
+function backgroundInert(value){
+  document.querySelectorAll(".page,.rail,.skip").forEach(function(node){ node.inert = value; });
+}
+function canFocus(node){
+  if (!node || !node.isConnected || typeof node.focus !== "function" ||
+      node.matches(":disabled") || node.closest("[hidden],[inert]") || !node.getClientRects().length) return false;
+  var visibility = window.getComputedStyle(node).visibility;
+  return visibility !== "hidden" && visibility !== "collapse";
+}
+function drawerStops(){
+  return Array.from(drawer.querySelectorAll("a[href],button,input,select,textarea,summary,[tabindex]")).filter(function(node){
+    return node.tabIndex >= 0 && canFocus(node);
+  });
+}
+function hideClosedDrawer(){
+  drawerTimer = null;
+  if (!drawer.classList.contains("open")) drawer.hidden = true;
+}
 function openDrawer(title, sub, body){
-  lastFocus = document.activeElement;
+  clearTimeout(drawerTimer); drawerTimer = null;
+  // Replacing a role card or opening its evidence keeps the original page trigger.
+  if (!drawer.classList.contains("open")) lastFocus = document.activeElement;
   document.getElementById("drawer-title").textContent = title || "";
   document.getElementById("drawer-sub").textContent = sub || "";
   var b = document.getElementById("drawer-body");
   b.replaceChildren(); add(b, body);
   b.scrollTop = 0;
-  drawer.classList.add("open"); scrim.classList.add("open"); drawer.setAttribute("aria-hidden","false");
-  setTimeout(function(){ try { document.getElementById("drawer-close").focus(); } catch (e) {} }, 30);
+  drawer.hidden = false; drawer.inert = false; drawer.setAttribute("aria-hidden","false");
+  backgroundInert(true);
+  drawer.classList.add("open"); scrim.classList.add("open");
+  document.getElementById("drawer-close").focus();
 }
 function closeDrawer(){
-  drawer.classList.remove("open"); scrim.classList.remove("open"); drawer.setAttribute("aria-hidden","true");
-  if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (e) {}
+  if (!drawer.classList.contains("open")) return;
+  drawer.classList.remove("open"); scrim.classList.remove("open");
+  drawer.inert = true;
+  backgroundInert(false);
+  if (canFocus(lastFocus)) lastFocus.focus({preventScroll:true});
+  if (document.activeElement !== lastFocus) document.getElementById("view").focus({preventScroll:true});
+  lastFocus = null;
+  drawer.setAttribute("aria-hidden","true");
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) hideClosedDrawer();
+  else drawerTimer = setTimeout(hideClosedDrawer, 200);
+}
+function containDrawerTab(event){
+  if (event.key !== "Tab" || !drawer.classList.contains("open")) return false;
+  var stops = drawerStops(), first = stops[0], last = stops[stops.length - 1];
+  var index = stops.indexOf(document.activeElement);
+  if (!first){
+    event.preventDefault(); document.getElementById("drawer-close").focus();
+  } else if (event.shiftKey && index <= 0){
+    event.preventDefault(); last.focus();
+  } else if (!event.shiftKey && (index < 0 || document.activeElement === last)){
+    event.preventDefault(); first.focus();
+  }
+  return true;
 }
 document.getElementById("drawer-close").addEventListener("click", closeDrawer);
 scrim.addEventListener("click", closeDrawer);
 document.addEventListener("keydown", function(e){
-  if (e.key === "Escape" && drawer.classList.contains("open")) { closeDrawer(); return; }
+  if (containDrawerTab(e)) return;
+  if (e.key === "Escape" && drawer.classList.contains("open")) { e.preventDefault(); closeDrawer(); return; }
   var tg = e.target && e.target.tagName;
   if (tg === "INPUT" || tg === "TEXTAREA" || tg === "SELECT" || drawer.classList.contains("open")) return;
   if (e.altKey || e.ctrlKey || e.metaKey) return;

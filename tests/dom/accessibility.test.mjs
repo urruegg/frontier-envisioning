@@ -23,6 +23,15 @@ describe("accessibility structure", () => {
     assert.equal(bp.doc.getElementById("drawer").hasAttribute("inert"), true);
   });
 
+  it("keeps modal chrome out of document landmarks and names the status region", () => {
+    const drawer = bp.doc.getElementById("drawer");
+    assert.equal(drawer.querySelectorAll("header").length, 0);
+    assert.equal(drawer.querySelectorAll(".drawer-head #drawer-close").length, 1);
+    assert.equal(bp.doc.getElementById("scrim").getAttribute("aria-hidden"), "true");
+    assert.equal(bp.doc.getElementById("banner").parentElement.getAttribute("aria-label"), "Blueprint status");
+    assert.equal(bp.doc.getElementById("banner").parentElement.tagName, "SECTION");
+  });
+
   it("exposes organisation SVG controls independently rather than flattening them into an image", async () => {
     await bp.go("#/org");
     const svg = bp.view().querySelector("svg.orgsvg");

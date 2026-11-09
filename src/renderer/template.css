@@ -351,11 +351,12 @@ dl.kv dd{margin:0;font-size:12.5px}
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .15s;z-index:40}
 .scrim.open{opacity:1;pointer-events:auto}
 .drawer{position:fixed;inset-block:0;inset-inline-end:0;width:min(620px,96vw);background:var(--panel);z-index:50;box-shadow:-8px 0 24px rgba(0,0,0,.18);transform:translateX(105%);transition:transform .18s;display:flex;flex-direction:column}
+.drawer[hidden]{display:none}
 [dir="rtl"] .drawer{transform:translateX(-105%)}
 .drawer.open{transform:none}
-.drawer header{display:flex;justify-content:space-between;gap:10px;padding:14px 18px;border-block-end:1px solid var(--line-soft)}
-.drawer header h2{margin:0;font-size:18px}
-.drawer header p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
+.drawer .drawer-head{display:flex;justify-content:space-between;gap:10px;padding:14px 18px;border-block-end:1px solid var(--line-soft)}
+.drawer .drawer-head h2{margin:0;font-size:18px}
+.drawer .drawer-head p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
 .drawer .x{all:unset;cursor:pointer;font-size:24px;line-height:1;padding:2px 8px;border-radius:4px}
 .drawer .x:hover{background:var(--chip)}
 .drawer .x:focus-visible{outline:2px solid var(--focus)}
@@ -696,7 +697,7 @@ svg.flsvg{width:100%;min-width:860px;height:auto;display:block;background:var(--
 .flwrap.paused .flring,.flwrap.paused .flpulse{animation-play-state:paused}
 .flwrap.still .fl-p,.flwrap.still .flgate-halo,.flwrap.still .flpulse{visibility:hidden}
 .flwrap.still .flring{animation:none}
-@media (prefers-reduced-motion: reduce){ .flring,.flpulse{animation:none} .flpath{transition:none} }
+@media (prefers-reduced-motion: reduce){ .flring,.flpulse{animation:none} .flpath,.drawer,.scrim{transition:none} }
 .flctl{display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap;margin:10px 0 2px}
 .flbtn{font-size:12px;padding:5px 12px}
 .flflow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:var(--ink-2)}
