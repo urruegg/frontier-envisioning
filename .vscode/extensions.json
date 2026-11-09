@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "GitHub.copilot-chat",
+    "ms-python.python",
+    "charliermarsh.ruff",
+    "dbaeumer.vscode-eslint",
+    "ms-playwright.playwright",
+    "ms-azuretools.vscode-bicep",
+    "ms-azuretools.azure-dev",
+    "github.vscode-github-actions",
+    "EditorConfig.EditorConfig"
+  ]
+}

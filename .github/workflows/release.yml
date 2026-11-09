@@ -1,0 +1,99 @@
+# Gate L3: a release is built from a tag vX.Y.Z pushed by the release manager (a person).
+# Strict L1 on the tag, release bundle, SBOM (Microsoft SBOM tool), build provenance attestation,
+# then a draft GitHub release after the `release-approval` environment approval. A person publishes the draft.
+# Human-maintained: agent edits are blocked by .github/hooks.
+name: release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build release ${{ github.ref_name }}
+    if: ${{ vars.RELEASE_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: "22"
+      - name: Tag matches the plugin version
+        run: |
+          v="$(python -c "import json;print(json.load(open('plugin/.claude-plugin/plugin.json'))['version'])")"
+          if [ "v$v" != "$GITHUB_REF_NAME" ]; then echo "tag $GITHUB_REF_NAME does not match plugin version $v"; exit 1; fi
+      - name: Install development dependencies
+        run: |
+          python -m pip install -r requirements-dev.txt
+          if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
+      - name: Gate L1 (strict) on the tag
+        run: python tools/dev.py ci
+      - name: Gate L2 on the tag
+        run: |
+          npx playwright install --with-deps chromium
+          python tools/dev.py site e2e --strict
+      - name: Release bundle and manifest
+        run: |
+          python tools/dev.py bundle
+          python tools/verify_release.py --write release-manifest.json
+          python tools/release_notes.py "$GITHUB_REF_NAME" > release-notes.md
+      - name: Collect the release assets
+        run: |
+          mkdir -p release
+          cp dist/*.zip release/
+          cp "build/demo/Frontier Company Blueprint - Template (Caldova sample).html" release/
+          cp build/demo/identity/*.zip release/
+          cp build/demo/identity/caldova-agent-identity/catalog.html "release/Caldova - agent identity catalogue.html"
+          cp release-manifest.json release/
+      - name: SBOM (SPDX, Microsoft SBOM tool)
+        run: |
+          curl -sSfLo "$RUNNER_TEMP/sbom-tool" https://github.com/microsoft/sbom-tool/releases/download/v4.1.5/sbom-tool-linux-x64
+          echo "bf5d4f99bc98c119d549d08fc02ae92598a7a42772f17317c01031a92632e05b  $RUNNER_TEMP/sbom-tool" | sha256sum --check --strict
+          chmod +x "$RUNNER_TEMP/sbom-tool"
+          "$RUNNER_TEMP/sbom-tool" generate -b release -bc plugin -pn frontier-envisioning -pv "${GITHUB_REF_NAME#v}" \
+            -ps "Microsoft Innovation Hub Switzerland" -nsb "https://github.com/${GITHUB_REPOSITORY}"
+          (cd release/_manifest && zip -qr ../sbom-spdx.zip .)
+          rm -rf release/_manifest
+      - name: Checksums
+        run: (cd release && sha256sum -- * > SHA256SUMS.txt)
+      - name: Build provenance attestation
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+        with:
+          subject-path: "release/*"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: release-${{ github.ref_name }}
+          path: |
+            release/
+            release-notes.md
+          retention-days: 90
+
+  publish:
+    name: Draft GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+    environment: release-approval
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: release-${{ github.ref_name }}
+          path: out
+      - name: Create the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" out/release/* --repo "$GITHUB_REPOSITORY" --draft \
+            --title "Frontier Envisioning ${GITHUB_REF_NAME#v}" --notes-file out/release-notes.md --verify-tag

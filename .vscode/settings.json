@@ -1,0 +1,14 @@
+{
+  "files.eol": "\n",
+  "files.readonlyInclude": {
+    "plugin/skills/frontier-blueprint/templates/frontier-blueprint-template.html": true,
+    "plugin/install/plugin-install.json": true,
+    "dist/**": true,
+    "build/**": true
+  },
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["tests/unit", "tests/pipeline"],
+  "chat.useAgentsMdFile": true,
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "[python]": { "editor.rulers": [160] }
+}

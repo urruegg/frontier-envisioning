@@ -1,0 +1,6 @@
+# Code owners review every change. Use an authorized team when the repository moves to an organisation (ENG-D1).
+*                       @urruegg_microsoft
+/.github/               @urruegg_microsoft
+/plugin/                @urruegg_microsoft
+/infra/                 @urruegg_microsoft
+/releases/              @urruegg_microsoft

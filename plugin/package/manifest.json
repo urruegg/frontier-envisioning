@@ -1,0 +1,49 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/vDevPreview/MicrosoftTeams.schema.json",
+  "manifestVersion": "devPreview",
+  "version": "1.4.0",
+  "id": "8162856f-c1cf-5841-8ec4-6c1ca6a183de",
+  "packageName": "com.cowork.plugin.frontier-envisioning",
+  "developer": {
+    "name": "Microsoft Innovation Hub",
+    "websiteUrl": "https://www.microsoft.com/en-ch/",
+    "privacyUrl": "https://go.microsoft.com/fwlink/?LinkId=521839",
+    "termsOfUseUrl": "https://www.microsoft.com/en-us/legal/terms-of-use"
+  },
+  "name": {
+    "short": "Frontier Envisioning",
+    "full": "Innovation Hub Frontier Solution Envisioning"
+  },
+  "description": {
+    "short": "Envision a customer's human-led, agent-operated Frontier company.",
+    "full": "Plugin for Microsoft Innovation Hub solution envisioning. It gathers a customer's business context from Work IQ (meetings, transcripts, mail, Teams chats, files) and public sources into a cited context pack; builds an interactive Frontier Company Blueprint: a hypothesis hybrid organisation in the HAIRO style with journeys, lead and specialist agents, role profiles, trigger canvases, approval seams, a use-case portfolio, discovery questions and a target architecture grounded in Microsoft's Frontier guidance; merges the feedback captured live in the workshop; writes the PRD, solution design and ADRs for the MVP agents; and creates the agent identity kit: naming convention with environment postfixes, journey colours from the customer's brand, icons in the Microsoft 365 sizes, identity cards, catalogue, validation and stamping scripts; and models the business value case in CHF (value tree, assumption register to clarify in the workshop, NPV, ROI, payback) and what the agents cost (Copilot Credits, licences, Azure, people, purchase options, guardrails). Since 1.4 the blueprint follows the Innovation Hub journey: Part 1 Vision (overview, org model, blueprint, journeys with the Agent Factory and DevSecOps, attendees' contributions) and Part 2 Design (agents, agent identity, target architecture with the landing zone along the Cloud Adoption Framework, Well-Architected and Responsible AI, architecture decision records, use cases with problem statement and business value, IT readiness, FinOps), with Microsoft product icons. Microsoft-internal evidence is kept out of customer versions."
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "accentColor": "#0F6CBD",
+  "agentSkills": [
+    {
+      "folder": "skills/frontier-envisioning"
+    },
+    {
+      "folder": "skills/frontier-context-discovery"
+    },
+    {
+      "folder": "skills/frontier-blueprint"
+    },
+    {
+      "folder": "skills/frontier-solution-design"
+    },
+    {
+      "folder": "skills/frontier-agent-identity"
+    },
+    {
+      "folder": "skills/frontier-value-case"
+    },
+    {
+      "folder": "skills/frontier-finops"
+    }
+  ]
+}

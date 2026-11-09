@@ -1,0 +1,14 @@
+# Normalise text to LF in the repository and in working trees, so generated files and checksums
+# are identical on every platform (the plugin package is built byte for byte).
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.png binary
+*.jpg binary
+*.ico binary
+*.zip binary
+*.pptx binary
+*.docx binary
+*.xlsx binary
+# generated files: collapse in diffs
+plugin/skills/frontier-blueprint/templates/frontier-blueprint-template.html linguist-generated=true -diff
+plugin/install/plugin-install.json linguist-generated=true

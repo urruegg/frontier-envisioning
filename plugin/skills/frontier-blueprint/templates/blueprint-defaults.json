@@ -1,0 +1,2492 @@
+{
+ "_comment": "Generic, customer-neutral defaults used by seed_blueprint.py. Edit to change the Innovation Hub canon.",
+ "frontier": {
+  "current_phase": 1,
+  "target_phase": 3,
+  "automation_current": 2,
+  "automation_target": 3,
+  "note": "Phases can coexist across functions. Microsoft recommends building on a digital process automation foundation and layering agentic reasoning on top."
+ },
+ "human_led": {
+  "Direction": "Strategy and targets the lead agents plan against",
+  "Accountability": "A named agent boss for every agent",
+  "Judgement": "Every case the policy did not foresee",
+  "Relationships": "Customers, suppliers, partners and employees"
+ },
+ "approval_seam": "Nothing leaves the company without a person signing it off: a price, a commitment to a customer, a purchase above the delegation of authority, a payment, a posting, a decision about a person.",
+ "governance": {
+  "items": [
+   {
+    "name": "Policies & standards",
+    "desc": "Delegation of authority and the AI policy define what an agent may decide alone"
+   },
+   {
+    "name": "Risk classification",
+    "desc": "Purpose, autonomy level and risk tier per agent; EU AI Act where applicable"
+   },
+   {
+    "name": "Data protection",
+    "desc": "Swiss revFADP and EU GDPR; customer and supplier confidentiality"
+   },
+   {
+    "name": "Records & retention",
+    "desc": "What each agent run keeps, for how long, and who may see it"
+   }
+  ]
+ },
+ "intelligence_resources": {
+  "title": "Intelligence Resources",
+  "subtitle": "IT and HR jointly run the agent workforce",
+  "lifecycle": [
+   "Planned",
+   "Prototype",
+   "Pilot",
+   "Active",
+   "Upskilling",
+   "Retired"
+  ],
+  "agent_file": [
+   "Role profile",
+   "Instructions, versioned",
+   "Seven declarations",
+   "Feedback log",
+   "Access list",
+   "KPIs"
+  ],
+  "runs_on": [
+   {
+    "name": "Microsoft Agent 365",
+    "desc": "Who the agent is: registry, identity, access, policies"
+   },
+   {
+    "name": "Foundry Control Plane",
+    "desc": "Tracing, evaluations and guardrails"
+   },
+   {
+    "name": "Observability",
+    "desc": "Cost, quality and success rate of every run"
+   }
+  ]
+ },
+ "security": [
+  {
+   "name": "Injection defence",
+   "desc": "An agent that reads outside text (customer requests, supplier documents, emails) never writes without approval"
+  },
+  {
+   "name": "Least privilege",
+   "desc": "Each agent reaches only its own journey, region and systems"
+  },
+  {
+   "name": "Conditional access",
+   "desc": "Policies apply to every agent's Microsoft Entra Agent ID"
+  },
+  {
+   "name": "Audit trail",
+   "desc": "Every run records who asked, what ran and what changed"
+  },
+  {
+   "name": "Data residency",
+   "desc": "Processing in Swiss or EU regions where available (to confirm per service)"
+  }
+ ],
+ "knowledge": [
+  {
+   "name": "Work IQ",
+   "desc": "Context and memory from Teams, Outlook, meetings and SharePoint",
+   "scope": "internal"
+  },
+  {
+   "name": "Fabric IQ & data agents",
+   "desc": "Governed business semantics over the OneLake data products",
+   "scope": "internal"
+  },
+  {
+   "name": "Business systems",
+   "desc": "Systems of record through governed connectors",
+   "scope": "internal"
+  },
+  {
+   "name": "Web grounding",
+   "desc": "Fresh, cited public information: markets, suppliers, regulation",
+   "scope": "external"
+  },
+  {
+   "name": "Scoped per agent",
+   "desc": "Each agent sees only the data its task needs",
+   "scope": "principle"
+  }
+ ],
+ "build_run": [
+  "Microsoft 365 Copilot and Copilot Cowork",
+  "Microsoft Copilot Studio (agents and workflows)",
+  "Microsoft Foundry Agent Service",
+  "Microsoft Agent Framework",
+  "Microsoft Fabric (data agents, Fabric IQ)",
+  "Power Automate"
+ ],
+ "foundation": [
+  {
+   "name": "Microsoft Entra",
+   "desc": "One directory: accounts for people, Agent IDs for agents"
+  },
+  {
+   "name": "Microsoft 365",
+   "desc": "The workplace people and agents share"
+  },
+  {
+   "name": "Microsoft Graph",
+   "desc": "Connects people, agents and content"
+  },
+  {
+   "name": "Microsoft Fabric / OneLake",
+   "desc": "One governed data estate"
+  },
+  {
+   "name": "Microsoft Purview",
+   "desc": "Classification, DLP and audit for people and agents"
+  }
+ ],
+ "horizons": [
+  {
+   "h": "H1",
+   "label": "Now (0–6 months)",
+   "meaning": "Quick wins on Microsoft 365 Copilot and Copilot Studio with documents and existing data"
+  },
+  {
+   "h": "H2",
+   "label": "Next (6–18 months)",
+   "meaning": "Lead agents orchestrating specialists, integrated with systems of record and data products"
+  },
+  {
+   "h": "H3",
+   "label": "Later (18+ months)",
+   "meaning": "Agent-operated journeys with bounded autonomy and exceptions to people"
+  }
+ ],
+ "architecture": {
+  "title": "Target architecture · Microsoft Frontier layers",
+  "intro": "One layered architecture that every journey reuses. The layer names are the Innovation Hub canon synthesised from Microsoft guidance (Cloud Adoption Framework for AI agents, Azure Architecture Center agent design patterns, Agent 365 and Microsoft IQ); the components are Microsoft's. Verify product availability before decisions.",
+  "principles": [
+   {
+    "name": "Lowest complexity that works",
+    "desc": "Start with one agent with tools; add agents only for security boundaries, separate owners or planned growth"
+   },
+   {
+    "name": "The workflow owns the process, the agent owns the judgement",
+    "desc": "Deterministic steps, audit and approvals run as workflows that call agents where reasoning is needed"
+   },
+   {
+    "name": "Systems of record stay authoritative",
+    "desc": "Agents read live and write only through declared, least-privilege actions; no shadow copies"
+   },
+   {
+    "name": "One identity per agent",
+    "desc": "Every agent has a Microsoft Entra Agent ID, a named owner and an entry in the Agent 365 registry"
+   },
+   {
+    "name": "Approval seams are designed, not prompted",
+    "desc": "Human approvals are workflow steps with state, not instructions to a model"
+   },
+   {
+    "name": "Outside content is data, never instruction",
+    "desc": "Emails, documents and web text cannot change agent behaviour or trigger writes"
+   }
+  ],
+  "layers": [
+   {
+    "name": "0 · Journey & operating model",
+    "purpose": "Journeys, outcomes, human-agent ratio, decision rights",
+    "blocks": [
+     {
+      "name": "Journeys in scope",
+      "desc": "[Fill from the context pack]"
+     },
+     {
+      "name": "Agent bosses",
+      "desc": "A named owner for every agent",
+      "kind": "control"
+     },
+     {
+      "name": "Intelligence Resources",
+      "desc": "IT and HR run the agent lifecycle",
+      "kind": "control"
+     }
+    ]
+   },
+   {
+    "name": "1 · Experience & channels",
+    "purpose": "Where people delegate, review and approve",
+    "blocks": [
+     {
+      "name": "Microsoft 365 Copilot & Cowork",
+      "desc": "Chat, delegated long-running work",
+      "status": "GA"
+     },
+     {
+      "name": "Microsoft Teams & Teams mobile",
+      "desc": "Employees, technicians, approvals",
+      "status": "GA"
+     },
+     {
+      "name": "Outlook",
+      "desc": "Customers and suppliers",
+      "status": "GA"
+     },
+     {
+      "name": "Customer and partner portals",
+      "desc": "[Existing channels to confirm]",
+      "kind": "system"
+     }
+    ]
+   },
+   {
+    "name": "2 · Orchestration & agents",
+    "purpose": "Lead agents coordinating specialist agents and deterministic workflows",
+    "blocks": [
+     {
+      "name": "Lead agents",
+      "desc": "Copilot Studio multi-agent orchestration",
+      "status": "GA",
+      "kind": "agent"
+     },
+     {
+      "name": "Specialist agents",
+      "desc": "Copilot Studio or Foundry Agent Service",
+      "kind": "agent"
+     },
+     {
+      "name": "Microsoft Agent Framework",
+      "desc": "Pro-code agents and workflows",
+      "status": "GA"
+     },
+     {
+      "name": "Workflows & approvals",
+      "desc": "Copilot Studio workflows, Power Automate",
+      "kind": "workflow"
+     }
+    ]
+   },
+   {
+    "name": "3 · Knowledge & context (IQ)",
+    "purpose": "Permission-aware grounding and memory",
+    "blocks": [
+     {
+      "name": "Work IQ",
+      "desc": "Work context from Microsoft 365",
+      "status": "GA"
+     },
+     {
+      "name": "Fabric IQ & Fabric data agents",
+      "desc": "Governed business semantics over OneLake",
+      "status": "GA"
+     },
+     {
+      "name": "Foundry IQ / Azure AI Search",
+      "desc": "Shared knowledge bases: manuals, cases",
+      "status": "GA and preview"
+     },
+     {
+      "name": "Web grounding",
+      "desc": "Cited public information",
+      "status": "To confirm"
+     }
+    ]
+   },
+   {
+    "name": "4 · Tools & actions",
+    "purpose": "Read and write systems of record",
+    "blocks": [
+     {
+      "name": "Power Platform connectors",
+      "desc": "Systems of record, SharePoint, Teams"
+     },
+     {
+      "name": "MCP servers & A2A",
+      "desc": "Approved tool and agent protocols"
+     },
+     {
+      "name": "Governed access layer",
+      "desc": "Declared write actions, read-before-write",
+      "kind": "control"
+     },
+     {
+      "name": "Systems of record",
+      "desc": "[ERP, CRM, HCM to confirm]",
+      "kind": "system"
+     }
+    ]
+   },
+   {
+    "name": "5 · Models",
+    "purpose": "Reasoning matched to the task",
+    "blocks": [
+     {
+      "name": "Model choice per agent",
+      "desc": "Copilot Studio and Foundry model catalog"
+     },
+     {
+      "name": "Model router",
+      "desc": "Right-size cost and quality (Foundry)"
+     }
+    ]
+   },
+   {
+    "name": "6 · Identity, security & governance",
+    "purpose": "Every agent identifiable, governed and protected",
+    "blocks": [
+     {
+      "name": "Microsoft Entra Agent ID",
+      "desc": "An identity per agent, Conditional Access",
+      "status": "GA",
+      "kind": "control"
+     },
+     {
+      "name": "Microsoft Agent 365",
+      "desc": "Registry and control plane",
+      "status": "GA",
+      "kind": "control"
+     },
+     {
+      "name": "Microsoft Purview",
+      "desc": "DLP, audit, data security for AI",
+      "kind": "control"
+     },
+     {
+      "name": "Microsoft Defender",
+      "desc": "Threat protection for AI and agents",
+      "kind": "control"
+     },
+     {
+      "name": "Environments & DLP policies",
+      "desc": "Dev, test, prod; connector groups",
+      "kind": "control"
+     }
+    ]
+   },
+   {
+    "name": "7 · Observability, evaluation & operations",
+    "purpose": "Quality, safety, cost and value",
+    "blocks": [
+     {
+      "name": "Foundry Control Plane",
+      "desc": "Tracing, evaluations, guardrails",
+      "status": "GA and preview",
+      "kind": "control"
+     },
+     {
+      "name": "Copilot Studio analytics & evaluations",
+      "desc": "Test sets and run health",
+      "kind": "control"
+     },
+     {
+      "name": "Azure Monitor / Application Insights",
+      "desc": "Operational telemetry"
+     },
+     {
+      "name": "Copilot Credits & cost alerts",
+      "desc": "Consumption per agent and workflow"
+     }
+    ]
+   },
+   {
+    "name": "✚ · Approval seams",
+    "purpose": "Human checkpoints between agent steps (cross-cutting)",
+    "blocks": [
+     {
+      "name": "Request information step",
+      "desc": "Copilot Studio workflows",
+      "kind": "workflow"
+     },
+     {
+      "name": "Tool approval",
+      "desc": "Microsoft Agent Framework",
+      "kind": "workflow"
+     },
+     {
+      "name": "Teams approvals",
+      "desc": "Adaptive cards with recorded decisions",
+      "kind": "workflow"
+     },
+     {
+      "name": "Cowork checkpoints",
+      "desc": "Approvals in delegated work",
+      "kind": "workflow"
+     }
+    ]
+   }
+  ],
+  "patterns": [
+   {
+    "pattern": "Sequential",
+    "where": "Linear, auditable steps with a human gate",
+    "why": "Clear dependencies; progressive refinement"
+   },
+   {
+    "pattern": "Concurrent",
+    "where": "Independent research or checks in parallel",
+    "why": "Independent perspectives; latency matters"
+   },
+   {
+    "pattern": "Group chat (maker-checker)",
+    "where": "Drafting with structured review before an approval seam",
+    "why": "Validation and consensus with an auditable thread"
+   },
+   {
+    "pattern": "Handoff",
+    "where": "Lead agents routing a case to the right specialist",
+    "why": "The right specialist emerges while the case is processed"
+   },
+   {
+    "pattern": "Magentic",
+    "where": "Open-ended problems without a known plan (use sparingly)",
+    "why": "Needs a reviewable plan; avoid for deterministic paths"
+   }
+  ],
+  "sources": [
+   "Microsoft Work Trend Index 2025: The year the Frontier Firm is born",
+   "Cloud Adoption Framework: AI agents (plan, govern and secure, build, manage)",
+   "Azure Architecture Center: AI agent orchestration patterns",
+   "Microsoft Learn: Microsoft Entra Agent ID; Microsoft Agent 365; Microsoft IQ",
+   "Microsoft Learn: Copilot Studio workflows and the request-information step"
+  ]
+ },
+ "discovery_bank": {
+  "Business & process": [
+   "Which steps of the journey are rule-based and which need judgement?",
+   "Who decides at each step today, and on which thresholds?",
+   "What volumes run through the journey per month?"
+  ],
+  "Data": [
+   "Where does the data each step needs live, and is it complete?",
+   "Which data is confidential or personal?"
+  ],
+  "Systems & integration": [
+   "Which systems of record does the journey touch, and do they expose APIs?",
+   "Which actions may a workflow perform with a service identity?"
+  ],
+  "Governance & risk": [
+   "What may an agent decide alone, and what must a person approve?",
+   "Which regulations, works-council or NDA constraints apply?"
+  ],
+  "Value & KPIs": [
+   "Which KPI would prove success, and what is today's baseline?"
+  ],
+  "Adoption & change": [
+   "Which team would co-design and pilot the first agent?",
+   "How will roles and targets change when agents take over routine work?"
+  ]
+ },
+ "factory": {
+  "journey": {
+   "name": "Agent Factory",
+   "short_name": "Factory",
+   "kind": "factory",
+   "color": "#2F3A45",
+   "journey_name": "Idea-to-Agent journey",
+   "journey_tagline": "How every agent goes from hypothesis to a governed agent in production: DevSecOps with GitHub Copilot, evaluations first and a human at every gate",
+   "vision": "Every agent is specified, built, evaluated, reviewed and released the same way: as code, through pull requests, with evaluations as the definition of done.",
+   "ai_contribution": "Factory agents draft specifications, evaluation sets, code, reviews and release notes; people approve every gate.",
+   "business_impact": "Shorter lead time from idea to pilot, fewer failed releases, auditable agents and predictable cost.",
+   "stages": [
+    {
+     "name": "Specify",
+     "happens": "The validated use case becomes a specification: trigger canvas, seven declarations, harness decision and plan",
+     "pain": "Ideas arrive as slides; nobody can say when an agent is ready to build",
+     "ai": "Drafts the specification and the declarations from the blueprint, the workshop notes and the transcripts",
+     "agent": "Spec Architect Agent"
+    },
+    {
+     "name": "Evaluations first",
+     "happens": "Golden questions, refusal cases and acceptance thresholds are written before the build",
+     "pain": "Agents are tested by trying them out; quality is a feeling",
+     "ai": "Generates evaluation cases from the canvas and real questions",
+     "agent": "Eval Engineer Agent"
+    },
+    {
+     "name": "Build as code",
+     "happens": "Topics, tools, workflows and knowledge are built in a branch with GitHub Copilot and pushed to DEV",
+     "pain": "Agents built by clicking in one environment cannot be reviewed or reproduced",
+     "ai": "Builds task by task from the plan, each task with a failing evaluation first",
+     "agent": "Copilot Studio Builder Agent"
+    },
+    {
+     "name": "Verify (pull request)",
+     "happens": "Checks, evaluations and a security review run on every pull request; a person approves",
+     "pain": "Changes reach users without review",
+     "ai": "Reviews read-only and reports findings with evidence",
+     "agent": "Security Reviewer Agent"
+    },
+    {
+     "name": "Release",
+     "happens": "The same artefact is promoted from TEST to PROD with approvals",
+     "pain": "Manual exports and imports; environments drift",
+     "ai": "Prepares the promotion and the release notes and checks the gates",
+     "agent": "Release Manager Agent"
+    },
+    {
+     "name": "Operate & learn",
+     "happens": "Telemetry, cost and feedback flow back into the backlog; autonomy grows with evidence",
+     "pain": "Nobody sees how agents perform or what they cost",
+     "ai": "Summarises telemetry, cost and incidents and proposes improvements",
+     "agent": "Ops Analyst Agent"
+    }
+   ],
+   "personas": [
+    {
+     "role": "Product owner",
+     "goal": "The right agents, in the right order, with measurable value",
+     "pain": "No shared definition of ready or done",
+     "help": "Specifications and gates make readiness visible",
+     "decides": "Accepts use cases and signs the Definition of Ready",
+     "kind": "Internal"
+    },
+    {
+     "role": "Maker or developer",
+     "goal": "Build agents fast without breaking what works",
+     "pain": "Manual steps and no tests",
+     "help": "GitHub Copilot builds task by task against evaluations",
+     "decides": "Accountable for every change",
+     "kind": "Internal"
+    },
+    {
+     "role": "IT security and data protection",
+     "goal": "No secrets, no oversharing, no unsafe actions",
+     "pain": "Agents appear without review",
+     "help": "Read-only security review on every pull request",
+     "decides": "Approves security-relevant changes",
+     "kind": "Internal"
+    },
+    {
+     "role": "Release approver",
+     "goal": "Predictable releases",
+     "pain": "Environment drift",
+     "help": "One artefact promoted with approvals",
+     "decides": "Approves TEST and PROD releases",
+     "kind": "Internal"
+    }
+   ],
+   "orchestrator": {
+    "name": "Spec Architect Agent",
+    "mission": "Turns validated use cases into specifications and plans every factory run",
+    "capability": "Specification, seven declarations, harness decision and plan for every agent",
+    "owner": "Product owner",
+    "autonomy": "Act with approval",
+    "horizon": "H1",
+    "lifecycle": "Planned",
+    "status": "hypothesis",
+    "technology": "GitHub Copilot custom agent in the factory repository",
+    "channels": [
+     "GitHub Copilot CLI",
+     "Visual Studio Code"
+    ]
+   },
+   "agents": [
+    {
+     "name": "Copilot Studio Builder Agent",
+     "capability": "Builds topics, tools, workflows and knowledge as code from the plan and pushes them to DEV",
+     "autonomy": "Act within guardrails",
+     "horizon": "H1",
+     "technology": "GitHub Copilot agent mode and Copilot CLI with the Power Platform CLI",
+     "owner": "Maker or developer"
+    },
+    {
+     "name": "Eval Engineer Agent",
+     "capability": "Writes evaluation sets first and runs them in DEV and TEST",
+     "autonomy": "Act within guardrails",
+     "horizon": "H1",
+     "technology": "GitHub Copilot custom agent; Copilot Studio evaluations",
+     "owner": "Domain owner and QA"
+    },
+    {
+     "name": "Security Reviewer Agent",
+     "capability": "Reviews every pull request read-only: secrets, data policies, prompt injection, oversharing",
+     "autonomy": "Assist",
+     "horizon": "H1",
+     "technology": "GitHub Copilot code review and a read-only custom agent",
+     "owner": "IT security"
+    },
+    {
+     "name": "Release Manager Agent",
+     "capability": "Prepares the promotion from TEST to PROD and the release notes; never approves its own release",
+     "autonomy": "Act with approval",
+     "horizon": "H2",
+     "technology": "GitHub Actions or Power Platform pipelines with approvals",
+     "owner": "Release approver"
+    },
+    {
+     "name": "Ops Analyst Agent",
+     "capability": "Reads telemetry, cost and feedback and proposes backlog items and autonomy changes",
+     "autonomy": "Assist",
+     "horizon": "H2",
+     "technology": "Agent 365, Copilot Studio analytics and the cost reports",
+     "owner": "Operations owner"
+    }
+   ],
+   "systems": [
+    "GitHub (repository, Actions, Issues)",
+    "Copilot Studio (DEV, TEST, PROD)",
+    "Power Platform pipelines",
+    "Microsoft Agent 365"
+   ],
+   "channels": {
+    "people": [
+     "GitHub",
+     "Visual Studio Code"
+    ],
+    "triggered": [
+     "Pull request",
+     "Release approval"
+    ]
+   },
+   "kpis": [
+    {
+     "kpi": "Lead time",
+     "definition": "Days from an accepted use case to the agent in TEST"
+    },
+    {
+     "kpi": "Evaluation pass rate",
+     "definition": "Share of golden questions that pass at release"
+    },
+    {
+     "kpi": "Change failure rate",
+     "definition": "Share of releases rolled back or hot-fixed"
+    },
+    {
+     "kpi": "Credits per conversation",
+     "definition": "Copilot Credits per conversation at release, against the budget"
+    }
+   ],
+   "approval_seam": "Agents never approve their own work: a person approves every pull request, release and autonomy change."
+  },
+  "title": "Agent Factory: from hypothesis to a governed agent",
+  "intro": "The Agent Factory is the journey every agent takes: a DevSecOps loop with GitHub Copilot, evaluations first and a human at every gate, following the Copilot Studio lifecycle (create, build, test and evaluate, publish, monitor). The board shows where each agent of this blueprint stands; the steps show how it moves on.",
+  "lifecycle": [
+   {
+    "id": "hypothesis",
+    "name": "Hypothesis",
+    "what": "Proposed in the blueprint from evidence and Microsoft patterns",
+    "gate": "The workshop validates the use case and the agent",
+    "icons": [
+     "m365copilot"
+    ]
+   },
+   {
+    "id": "validated",
+    "name": "Validated",
+    "what": "Confirmed or adjusted by the customer in the workshop",
+    "gate": "Canvas, seven declarations and identity complete",
+    "icons": [
+     "copilotstudio"
+    ]
+   },
+   {
+    "id": "designed",
+    "name": "Designed",
+    "what": "Trigger canvas, seven declarations and identity complete",
+    "gate": "Definition of Ready signed by the product owner and the technical owner",
+    "icons": [
+     "github"
+    ]
+   },
+   {
+    "id": "ready",
+    "name": "Ready for build",
+    "what": "Handover package complete: specification, evaluation set, identity, value and cost, readiness",
+    "gate": "Handover to the Agent Factory",
+    "icons": [
+     "github",
+     "ghcopilot"
+    ]
+   },
+   {
+    "id": "build",
+    "name": "In build",
+    "what": "Built as code with GitHub Copilot in DEV; evaluations first",
+    "gate": "Pull request with evaluations and security review, approved by a person",
+    "icons": [
+     "ghcopilot",
+     "vscode",
+     "copilotstudio"
+    ]
+   },
+   {
+    "id": "release",
+    "name": "Released",
+    "what": "Promoted to TEST and PROD with approvals",
+    "gate": "Release approver",
+    "icons": [
+     "github",
+     "copilotstudio"
+    ]
+   },
+   {
+    "id": "operate",
+    "name": "Operate & learn",
+    "what": "Observed, measured and improved; autonomy grows with evidence",
+    "gate": "The business owner promotes autonomy",
+    "icons": [
+     "agent365",
+     "entra",
+     "purview"
+    ]
+   }
+  ],
+  "handover": [
+   [
+    "validated",
+    "Validated in the workshop"
+   ],
+   [
+    "canvas",
+    "Trigger canvas complete"
+   ],
+   [
+    "declarations",
+    "Seven declarations made"
+   ],
+   [
+    "identity",
+    "Identity: display names and icons"
+   ],
+   [
+    "value",
+    "Business value validated (gate V2)"
+   ],
+   [
+    "cost",
+    "Cost envelope modelled (gate F1)"
+   ],
+   [
+    "readiness",
+    "IT readiness for the build stage"
+   ],
+   [
+    "owner",
+    "Agent boss named"
+   ]
+  ],
+  "steps": [
+   {
+    "id": "1",
+    "name": "Idea & intake",
+    "loop": "plan",
+    "what": "A business team brings an idea as a use-case card: problem, value, feasibility and the agent it needs. The product owner accepts it into the backlog, or parks it.",
+    "agent": "Spec Architect Agent",
+    "tools": [
+     [
+      "github",
+      "GitHub Issues and Projects: one issue per use case"
+     ],
+     [
+      "m365copilot",
+      "Microsoft 365 Copilot: the business team writes and refines the card"
+     ]
+    ],
+    "gate": "The product owner accepts the use case (value and feasibility rated)",
+    "evidence": "Use-case card in the backlog with value, feasibility and owner",
+    "superpowers": [
+     "brainstorming"
+    ],
+    "cat": [
+     "AI Use Case Assessment"
+    ]
+   },
+   {
+    "id": "2",
+    "name": "Design",
+    "loop": "plan",
+    "what": "Canvas, seven declarations, Responsible AI impact and the build choice: Agent Builder, Copilot Studio or Microsoft Foundry, and in Copilot Studio the Standard or the GitHub Copilot harness. Every behaviour goes into the smallest component that makes it reliable and inspectable.",
+    "agent": "Spec Architect Agent",
+    "tools": [
+     [
+      "agentbuilder",
+      "Agent Builder when knowledge and instructions are enough"
+     ],
+     [
+      "copilotstudio",
+      "Copilot Studio when actions, workflows or DEV, TEST and PROD are needed"
+     ],
+     [
+      "foundry",
+      "Microsoft Foundry for code-first agents and custom models"
+     ]
+    ],
+    "gate": "Definition of Ready: the product owner and the technical owner sign",
+    "evidence": "Design document, declarations, harness decision record",
+    "superpowers": [
+     "brainstorming"
+    ],
+    "cat": [
+     "Copilot Agent Advisor",
+     "Copilot Studio Harness Picker",
+     "Topic Blueprint",
+     "Enterprise Agent Design Authority (EADA)",
+     "Agent RAI Impact Assessment"
+    ]
+   },
+   {
+    "id": "3",
+    "name": "Specify & plan",
+    "loop": "plan",
+    "what": "Specification, evaluation set and plan as files in the repository; the agent is initialised or cloned from DEV with the Power Platform CLI (pac copilot) and edited as code. Evaluation cases come first.",
+    "agent": "Spec Architect Agent · Eval Engineer Agent",
+    "tools": [
+     [
+      "github",
+      "Specification, evaluation sets and plan as files in the repository"
+     ],
+     [
+      "vscode",
+      "Visual Studio Code with GitHub Copilot"
+     ]
+    ],
+    "gate": "Plan review",
+    "evidence": "plan.md and evaluation sets in the repository",
+    "superpowers": [
+     "writing-plans",
+     "test-driven-development"
+    ],
+    "cat": [
+     "Agent Evaluation Designer",
+     "Copilot Studio Knowledge Readiness",
+     "Copilot Studio MCP Readiness"
+    ]
+   },
+   {
+    "id": "4",
+    "name": "Build (DEV loop)",
+    "loop": "dev",
+    "what": "Task by task in a branch: a failing evaluation case, then the build, then the case passes. Agents are pushed to DEV from the repository.",
+    "agent": "Copilot Studio Builder Agent",
+    "tools": [
+     [
+      "ghcopilot",
+      "GitHub Copilot agent mode and the Copilot CLI"
+     ],
+     [
+      "copilotstudio",
+      "Copilot Studio DEV: agent files pushed from the repository"
+     ],
+     [
+      "powerautomate",
+      "Workflows for the deterministic steps"
+     ]
+    ],
+    "gate": "Review after every task",
+    "evidence": "Commits with passing evaluations",
+    "superpowers": [
+     "using-git-worktrees",
+     "subagent-driven-development",
+     "verification-before-completion"
+    ],
+    "cat": [
+     "Skill Authoring Coach",
+     "Agent Harness Explorer",
+     "Tool Tracer"
+    ]
+   },
+   {
+    "id": "5",
+    "name": "Verify (pull request)",
+    "loop": "gate",
+    "what": "Pack, policy checks, evaluations and a read-only security review on every pull request. A person approves; agents never approve their own work.",
+    "agent": "Security Reviewer Agent",
+    "tools": [
+     [
+      "github",
+      "GitHub Actions and branch protection: main is protected"
+     ],
+     [
+      "ghcopilot",
+      "Copilot code review"
+     ],
+     [
+      "defender",
+      "Security posture of the pipeline"
+     ]
+    ],
+    "gate": "Human in the loop: code owners approve the pull request",
+    "evidence": "Pull request with checks, evaluation results and review",
+    "superpowers": [
+     "requesting-code-review",
+     "receiving-code-review"
+    ],
+    "cat": [
+     "Copilot Studio Test Planner",
+     "Agent Test",
+     "Agent Red Team",
+     "Power Platform Solution Compare"
+    ]
+   },
+   {
+    "id": "6",
+    "name": "Release",
+    "loop": "ops",
+    "what": "The same artefact is promoted from TEST to PROD; secretless pipelines with approvals.",
+    "agent": "Release Manager Agent",
+    "tools": [
+     [
+      "github",
+      "GitHub environments with approvals and federated credentials (no secrets)"
+     ],
+     [
+      "copilotstudio",
+      "Copilot Studio TEST and PROD environments"
+     ],
+     [
+      "powerautomate",
+      "Power Platform pipelines (alternative)"
+     ]
+    ],
+    "gate": "The release approver approves, through the customer's change process",
+    "evidence": "Release notes generated from linked work items",
+    "superpowers": [
+     "finishing-a-development-branch"
+    ],
+    "cat": [
+     "Power Automate Documentation"
+    ]
+   },
+   {
+    "id": "7",
+    "name": "Operate & learn",
+    "loop": "ops",
+    "what": "Registry, identity, telemetry and cost; recurring fixes become factory skills; autonomy grows with evidence.",
+    "agent": "Ops Analyst Agent",
+    "tools": [
+     [
+      "agent365",
+      "Agent 365: registry and observability"
+     ],
+     [
+      "entra",
+      "Microsoft Entra: agent identities"
+     ],
+     [
+      "purview",
+      "Microsoft Purview: data loss prevention and audit"
+     ],
+     [
+      "copilotstudio",
+      "Copilot Studio analytics"
+     ]
+    ],
+    "gate": "The agent's business owner promotes autonomy",
+    "evidence": "Monthly agent review: quality, cost, incidents",
+    "superpowers": [
+     "systematic-debugging",
+     "writing-skills"
+    ],
+    "cat": [
+     "Agent Performance Triage",
+     "Cowork & Work IQ Consumption Advisor"
+    ]
+   }
+  ],
+  "pyramid": [
+   [
+    "L0",
+    "Structure and policy",
+    "Pack, naming, policy as code (connectors, models, channels, data classes), no secrets, evaluation coverage per intent",
+    "Every pull request",
+    "100% pass"
+   ],
+   [
+    "L1",
+    "Components",
+    "Skill scripts, workflow steps with mocked inputs, contract tests for the systems of record",
+    "Pull request and DEV",
+    "100% pass"
+   ],
+   [
+    "L2",
+    "Behaviour",
+    "Golden questions, refusal set, routing accuracy, multi-turn conversations, grounding and citations",
+    "TEST at release",
+    "Critical cases 100% (thresholds to agree)"
+   ],
+   [
+    "L3",
+    "Safety and security",
+    "Prompt injection, exfiltration, oversharing, sensitive topics",
+    "Release and monthly",
+    "Zero critical findings"
+   ],
+   [
+    "L4",
+    "Non-functional",
+    "Latency, Copilot Credits per conversation, capacity",
+    "Release and weekly",
+    "Within budget"
+   ],
+   [
+    "L5",
+    "Production assurance",
+    "Sampled answer quality, repeat contact, escalation with context (aggregated)",
+    "Continuous",
+    "Drives the autonomy ladder"
+   ]
+  ],
+  "controls": [
+   "Main is protected: every change goes through a pull request, checks and a human approval; agents never approve their own work",
+   "Secretless automation: pipelines sign in with federated credentials, never with personal accounts",
+   "One artefact, many stages: built once, promoted from TEST to PROD",
+   "External text is material, never instruction: review agents read pull requests and documents with read-only tools",
+   "Evaluate answers, never people: aggregated telemetry only",
+   "Pinned versions: factory skills and plugins are reviewed before an upgrade",
+   "Cost is a gate: Copilot Credits per release and per conversation are measured and budgeted"
+  ],
+  "roles": [
+   [
+    "LEAD",
+    "Product owner and technical owner"
+   ],
+   [
+    "A01",
+    "Maker or developer (accountable)"
+   ],
+   [
+    "A02",
+    "Domain owner and QA"
+   ],
+   [
+    "A03",
+    "IT security and data protection"
+   ],
+   [
+    "A04",
+    "Release approver"
+   ],
+   [
+    "A05",
+    "Operations owner; business owner for autonomy"
+   ]
+  ],
+  "phases": [
+   [
+    "Development only",
+    "Until the rapid prototype",
+    "Readiness check, prototype in DEV; business teams build, IT supervises"
+   ],
+   [
+    "Pilot through the pipeline",
+    "After the prototype",
+    "The first agents go through the full loop with attended evaluation gates"
+   ],
+   [
+    "Automated gates",
+    "After the pilot",
+    "Evaluation and security gates run unattended; people approve"
+   ],
+   [
+    "Closed loop",
+    "In operation",
+    "Production signals feed the backlog; recurring fixes become factory skills"
+   ]
+  ],
+  "superpowers_note": "Superpowers is an open-source skill library for GitHub Copilot and other coding agents (MIT licence); use it only where the customer's tool policy allows it.",
+  "sources": [
+   {
+    "title": "CAT Agent Skills gallery (SKILL.md skills for Copilot Studio, Cowork and Scout; MIT)",
+    "url": "https://microsoft.github.io/cat-agent-skills/"
+   },
+   {
+    "title": "New Harness, New Rules? CAT's Got You (Copilot Studio CAT blog)",
+    "url": "https://microsoft.github.io/mcscatblog/posts/new-orchestrator-resources/"
+   }
+  ],
+  "resources": [
+   {
+    "title": "CAT Agent Skills gallery (SKILL.md skills for Copilot Studio, Cowork and Scout; MIT)",
+    "url": "https://microsoft.github.io/cat-agent-skills/"
+   },
+   {
+    "title": "Copilot Studio plugin with the mcs-assistant (experimental)",
+    "url": "https://github.com/microsoft/copilot-studio-plugin"
+   },
+   {
+    "title": "New Copilot Studio tech guide and the BlastBox Omega reference pattern",
+    "url": "https://microsoft.github.io/new-copilot-studio-tech-guide/"
+   },
+   {
+    "title": "Choose a harness (Microsoft Learn)",
+    "url": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/choose-harness"
+   },
+   {
+    "title": "Power Platform CLI: pac copilot (Microsoft Learn)",
+    "url": "https://learn.microsoft.com/en-us/power-platform/developer/cli/reference/copilot"
+   },
+   {
+    "title": "ALM for Copilot Studio (Microsoft Learn)",
+    "url": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/alm"
+   },
+   {
+    "title": "copilot-alm-starter (GitHub)",
+    "url": "https://github.com/microsoft/copilot-alm-starter"
+   },
+   {
+    "title": "Evaluation gate in Azure DevOps (Copilot Studio CAT blog)",
+    "url": "https://microsoft.github.io/mcscatblog/posts/copilot-studio-eval-gate-azure-devops/"
+   },
+   {
+    "title": "Agent Review Pipeline (Copilot Agent Kit, Microsoft Learn)",
+    "url": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/kit-agent-review-pipeline"
+   },
+   {
+    "title": "Agent evaluation in Copilot Studio (Microsoft Learn)",
+    "url": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/agents-experience/analytics-agent-evaluation-intro"
+   }
+  ]
+ },
+ "landing_zone": {
+  "title": "Agent landing zone: one pattern for every agent",
+  "intro": "Every agent lives in the same landing zone: shared platform services and guardrails, and one landing zone per journey with DEV, TEST and PROD. Select an area for its details, or a principle to see where it applies.",
+  "caption": "Letters follow the Cloud Adoption Framework design areas. Icons in the journey zones are the agents' identity icons.",
+  "principles": {
+   "waf": {
+    "short": "WAF",
+    "name": "Well-Architected (Azure and Power Platform)",
+    "items": [
+     [
+      "rel",
+      "Reliability",
+      "Agents degrade gracefully; workflows retry and hand over to people"
+     ],
+     [
+      "sec",
+      "Security",
+      "Least privilege, no secrets, data policies and threat protection"
+     ],
+     [
+      "cost",
+      "Cost Optimization",
+      "Credits and Azure spend budgeted, measured and allocated per agent"
+     ],
+     [
+      "ops",
+      "Operational Excellence",
+      "Everything as code, automated deployment, observability"
+     ],
+     [
+      "perf",
+      "Performance Efficiency",
+      "Fast answers within capacity and quotas"
+     ],
+     [
+      "exp",
+      "Experience Optimization",
+      "Agents meet people where they work, accessible and consistent"
+     ]
+    ]
+   },
+   "caf": {
+    "short": "CAF",
+    "name": "Cloud Adoption Framework for AI agents",
+    "items": [
+     [
+      "plan",
+      "Plan for agents",
+      "Use cases, skills and data readiness before the build"
+     ],
+     [
+      "govern",
+      "Govern and secure agents",
+      "Policies, identities, data protection and Responsible AI"
+     ],
+     [
+      "build",
+      "Build agents",
+      "Standard build paths, reusable components, the Agent Factory"
+     ],
+     [
+      "manage",
+      "Manage agents",
+      "Registry, lifecycle, monitoring and cost"
+     ]
+    ]
+   },
+   "rai": {
+    "short": "RAI",
+    "name": "Responsible AI",
+    "items": [
+     [
+      "fair",
+      "Fairness",
+      "No agent decides about people; outcomes checked for bias"
+     ],
+     [
+      "safe",
+      "Reliability and safety",
+      "Evaluations, red teaming and human approval for actions"
+     ],
+     [
+      "priv",
+      "Privacy and security",
+      "Data minimisation, data classes per stage, no individual tracking"
+     ],
+     [
+      "incl",
+      "Inclusiveness",
+      "Accessible to every employee, in their languages"
+     ],
+     [
+      "transp",
+      "Transparency",
+      "People know they talk to an agent and see its sources"
+     ],
+     [
+      "acc",
+      "Accountability",
+      "Every agent has a human owner who answers for it"
+     ]
+    ]
+   }
+  },
+  "classes": [
+   [
+    "public",
+    "Public",
+    "#2E7D32",
+    "any stage"
+   ],
+   [
+    "internal",
+    "Internal",
+    "#0F6CBD",
+    "any stage"
+   ],
+   [
+    "confidential",
+    "Confidential",
+    "#C9A400",
+    "TEST and PROD only, with approval"
+   ],
+   [
+    "restricted",
+    "Strictly confidential",
+    "#C62828",
+    "needs a separate review"
+   ]
+  ],
+  "stages": {
+   "now": "exists today",
+   "next": "next step",
+   "later": "later"
+  },
+  "areas": {
+   "P": {
+    "title": "Design principles: WAF, CAF and Responsible AI",
+    "sub": "Start here",
+    "bullets": [
+     "Well-Architected: reliability, security, cost, operations, performance, experience",
+     "Cloud Adoption Framework for AI agents: plan, govern and secure, build, manage",
+     "Responsible AI: fairness, reliability and safety, privacy and security, inclusiveness, transparency, accountability"
+    ],
+    "label": "Design principles"
+   },
+   "A": {
+    "letter": "A",
+    "title": "Tenant, licences and billing",
+    "sub": "Design area: billing and the Microsoft Entra tenant",
+    "logos": [
+     "m365copilot"
+    ],
+    "bullets": [
+     "One Microsoft 365 and Entra tenant for every agent",
+     "Licences and Copilot Credits planned per user group and environment",
+     "Billing plans and budgets per environment group"
+    ],
+    "applies": {
+     "cost": "A credit budget per environment; pay-as-you-go until a usage baseline",
+     "plan": "Licences and credits planned before the pilot",
+     "incl": "Employees without a Copilot licence can still use published agents"
+    },
+    "label": "Tenant, licences and billing"
+   },
+   "B": {
+    "letter": "B",
+    "title": "Identity and access",
+    "sub": "Design area: identity and access management",
+    "logos": [
+     "entra"
+    ],
+    "bullets": [
+     "Builders, testers and approvers with least-privilege roles",
+     "Deployment principals per environment with federated credentials",
+     "Agent identities, Conditional Access and access reviews for agents"
+    ],
+    "applies": {
+     "sec": "Least privilege for people, pipelines and agents",
+     "govern": "Every agent registered with an owner",
+     "priv": "Delegated identity where the user's rights must apply",
+     "acc": "Approvers named per environment"
+    },
+    "label": "Identity and access"
+   },
+   "C": {
+    "letter": "C",
+    "title": "Policies and environment groups",
+    "sub": "Design area: resource organisation and governance",
+    "logos": [
+     "copilotstudio"
+    ],
+    "bullets": [
+     "Managed environments in environment groups per stage",
+     "Data policies classify connectors, MCP servers and HTTP",
+     "Naming and the publisher prefix from the agent identity kit"
+    ],
+    "applies": {
+     "govern": "Rules per stage, enforced by environment groups",
+     "ops": "Environments created from a template",
+     "sec": "Data policies per stage",
+     "safe": "Risky connectors blocked by default",
+     "manage": "Environment inventory and owners"
+    },
+    "label": "Policies and environment groups"
+   },
+   "D1": {
+    "letter": "D",
+    "title": "Control plane: Microsoft Agent 365",
+    "sub": "Platform landing zone: agent registry and policies",
+    "logos": [
+     "agent365"
+    ],
+    "bullets": [
+     "Registry of every agent with its owner and status",
+     "Access and policy for agents across platforms",
+     "Observability of agent activity"
+    ],
+    "applies": {
+     "govern": "One registry for all agents",
+     "manage": "Lifecycle from proposal to retirement",
+     "acc": "An owner for every agent",
+     "transp": "What each agent can do is visible",
+     "ops": "Agent activity in one place"
+    },
+    "label": "Control plane: Agent 365"
+   },
+   "D2": {
+    "letter": "D",
+    "title": "Security and compliance: Defender and Purview",
+    "sub": "Platform landing zone: security",
+    "logos": [
+     "defender",
+     "purview"
+    ],
+    "bullets": [
+     "Threat protection for agents and their tools",
+     "Data loss prevention, sensitivity labels and audit",
+     "Retention and eDiscovery for agent interactions"
+    ],
+    "applies": {
+     "sec": "Threat protection and posture management",
+     "priv": "Labels and data loss prevention follow the data",
+     "safe": "Prompt-injection and oversharing detection",
+     "govern": "Audit and retention"
+    },
+    "label": "Security and compliance"
+   },
+   "D3": {
+    "letter": "D",
+    "title": "Observability and value",
+    "sub": "Platform landing zone: management",
+    "logos": [
+     "powerbi"
+    ],
+    "bullets": [
+     "Conversation and workflow telemetry per agent",
+     "Copilot Credits and Azure cost per agent (FinOps)",
+     "Value and quality reports, aggregated, never per employee"
+    ],
+    "applies": {
+     "ops": "Alerts and dashboards per agent",
+     "perf": "Latency and capacity watched",
+     "cost": "Plan versus actual per agent",
+     "manage": "Monthly agent review",
+     "priv": "Aggregated signals only"
+    },
+    "label": "Observability and value"
+   },
+   "D4": {
+    "letter": "D",
+    "title": "Integration: connectors, MCP and agent-to-agent",
+    "sub": "Platform landing zone: connectivity",
+    "logos": [
+     "powerautomate"
+    ],
+    "bullets": [
+     "Certified and custom connectors through data policies",
+     "MCP servers reviewed before use",
+     "Agent-to-agent only after a security review"
+    ],
+    "applies": {
+     "rel": "Workflows with retries and fallbacks",
+     "sec": "Every integration through a reviewed path",
+     "build": "Reusable connectors and MCP servers",
+     "priv": "Only the data the agent needs"
+    },
+    "label": "Integration: connectors, MCP, A2A"
+   },
+   "E": {
+    "letter": "E",
+    "title": "Systems of record: they stay authoritative",
+    "sub": "Design area: enterprise integration",
+    "bullets": [
+     "Agents read and write through declared actions and workflows",
+     "Read-only first; writes after a separate gate",
+     "No copies of master data in the agent"
+    ],
+    "applies": {
+     "rel": "The source of truth stays where it is",
+     "acc": "Writes are approved and logged",
+     "build": "One integration pattern per system"
+    },
+    "label": "Systems of record"
+   },
+   "G": {
+    "letter": "G",
+    "title": "Approved building blocks",
+    "sub": "Design area: platform automation, reusable assets",
+    "logos": [
+     "copilotstudio",
+     "powerautomate"
+    ],
+    "bullets": [
+     "Reusable topics, tools, workflows and prompts",
+     "Approved knowledge sources",
+     "Templates for new agents"
+    ],
+    "applies": {
+     "build": "Build from approved blocks",
+     "ops": "Blocks versioned in the repository",
+     "safe": "Blocks reviewed once, reused often",
+     "manage": "A catalogue of blocks and owners"
+    },
+    "label": "Approved building blocks"
+   },
+   "H": {
+    "letter": "H",
+    "title": "Sandbox: personal productivity and the prototype playground",
+    "sub": "Try and learn, safely",
+    "logos": [
+     "agentbuilder",
+     "m365copilot"
+    ],
+    "bullets": [
+     "Agent Builder for personal and team agents",
+     "A sealed playground for prototypes, with synthetic data",
+     "Promotion into a journey landing zone only through the Agent Factory"
+    ],
+    "applies": {
+     "plan": "Ideas proven before they are built",
+     "sec": "Sealed from production data",
+     "safe": "Synthetic data only",
+     "incl": "Everyone can try agents safely"
+    },
+    "label": "Sandbox and playground"
+   },
+   "I": {
+    "letter": "I",
+    "title": "Agents as code: the Agent Factory",
+    "sub": "Design area: platform automation and DevOps",
+    "logos": [
+     "github",
+     "ghcopilot"
+    ],
+    "bullets": [
+     "Specifications, evaluations and agents as code in the repository",
+     "Pull requests with checks, evaluations and human approval",
+     "Secretless pipelines promote one artefact from DEV to PROD"
+    ],
+    "applies": {
+     "build": "One build path for every agent",
+     "ops": "Everything as code, automated deployment",
+     "sec": "Protected main branch, secret scanning",
+     "acc": "People approve; agents never approve their own work",
+     "safe": "Evaluations and red teaming before release",
+     "rel": "Reproducible releases"
+    },
+    "label": "Agents as code"
+   },
+   "J": {
+    "letter": "J",
+    "title": "Front doors: where people meet the agents",
+    "sub": "Experience: channels",
+    "logos": [
+     "teams",
+     "m365copilot",
+     "outlook"
+    ],
+    "bullets": [
+     "Microsoft 365 Copilot and Teams first",
+     "One front door per journey: the lead agent",
+     "Accessible, multilingual, with sources shown"
+    ],
+    "applies": {
+     "exp": "Agents where people already work",
+     "incl": "Accessible and in the users' languages",
+     "manage": "One front door per journey"
+    },
+    "label": "Front doors"
+   },
+   "R": {
+    "title": "Retired agents",
+    "sub": "Lifecycle: retirement",
+    "bullets": [
+     "Unused or replaced agents are retired on purpose",
+     "Connections, identities and credits released"
+    ],
+    "applies": {
+     "manage": "Lifecycle ends cleanly",
+     "cost": "No spend on unused agents",
+     "sec": "No orphaned identities or connections"
+    },
+    "label": "Retired agents"
+   },
+   "X": {
+    "title": "Vendor agents stay outside the landing zone",
+    "sub": "Scope boundary",
+    "bullets": [
+     "Agents embedded in vendor applications run in the vendor's platform",
+     "Connected only through reviewed agent-to-agent or API paths"
+    ],
+    "applies": {
+     "sec": "Reviewed before any connection",
+     "build": "Integrate, do not rebuild",
+     "acc": "Ownership stays with the vendor contract"
+    },
+    "label": "Vendor agents outside"
+   },
+   "D": {
+    "letter": "D",
+    "title": "Platform landing zone: shared services for every agent",
+    "sub": "Platform landing zone",
+    "bullets": [
+     "Control plane, security and compliance, observability and integration, shared by every journey"
+    ],
+    "label": "Platform landing zone"
+   },
+   "F": {
+    "letter": "F",
+    "title": "Agent landing zones: one per journey",
+    "sub": "Workload landing zones",
+    "bullets": [
+     "Each journey gets its own landing zone with DEV, TEST and PROD inside the platform guardrails",
+     "The data classes allowed per zone and stage are agreed with data protection"
+    ],
+    "label": "Agent landing zones"
+   }
+  },
+  "common": [
+   "Each journey gets a dedicated landing zone with its development, test and production environments, inside the guardrails of the platform landing zone (Cloud Adoption Framework).",
+   "Environments, data policies, identities and budgets are created from the same template, so every journey starts compliant."
+  ],
+  "sources": [
+   {
+    "title": "Cloud Adoption Framework: AI agents",
+    "url": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ai-agents/"
+   },
+   {
+    "title": "Azure Well-Architected Framework",
+    "url": "https://learn.microsoft.com/en-us/azure/well-architected/"
+   },
+   {
+    "title": "Power Platform Well-Architected",
+    "url": "https://learn.microsoft.com/en-us/power-platform/well-architected/"
+   },
+   {
+    "title": "Microsoft Responsible AI principles",
+    "url": "https://www.microsoft.com/en-us/ai/principles-and-approach"
+   }
+  ]
+ },
+ "adr_canon": [
+  {
+   "id": "ADR-F01",
+   "title": "Build every agent through the Agent Factory",
+   "status": "proposed",
+   "context": "Agents built by clicking in one environment cannot be reviewed, reproduced or promoted safely.",
+   "decision": "Agents are specified, built, evaluated and released as code through pull requests with human approval; the GitHub Copilot harness where it fits.",
+   "consequences": "Needs a repository, a pipeline and builder licences (IT readiness); every agent follows one quality bar.",
+   "alternatives": "Build per environment in the maker portal; export and import solutions by hand.",
+   "areas": [
+    "I"
+   ],
+   "canon": true
+  },
+  {
+   "id": "ADR-F02",
+   "title": "Read-only first; writes only after a separate gate",
+   "status": "proposed",
+   "context": "Writes into systems of record carry the highest risk.",
+   "decision": "MVP agents read and draft; every write goes through a declared action held by a workflow and a person's confirmation, opened after its own review.",
+   "consequences": "Value starts with drafting and advice; automation grows with evidence.",
+   "alternatives": "Writes from day one with approval prompts only.",
+   "areas": [
+    "E",
+    "D4"
+   ],
+   "canon": true
+  },
+  {
+   "id": "ADR-F03",
+   "title": "Systems of record stay authoritative",
+   "status": "proposed",
+   "context": "Copies of master data in agents drift and leak.",
+   "decision": "Agents act through connectors and declared actions on the systems of record; they keep no copies of master data.",
+   "consequences": "Integration effort per system; data stays where it is governed.",
+   "alternatives": "Replicate data into the agent's knowledge.",
+   "areas": [
+    "E"
+   ],
+   "canon": true
+  },
+  {
+   "id": "ADR-F04",
+   "title": "One landing-zone pattern for every agent",
+   "status": "proposed",
+   "context": "Agents appear in default environments without rules.",
+   "decision": "A managed environment per journey and stage inside environment groups, with data policies, identities and budgets from one template.",
+   "consequences": "Environments are created on purpose; every journey starts compliant.",
+   "alternatives": "One shared environment per stage for all journeys.",
+   "areas": [
+    "C",
+    "F"
+   ],
+   "canon": true
+  },
+  {
+   "id": "ADR-F05",
+   "title": "Aggregated signals only",
+   "status": "proposed",
+   "context": "Agent telemetry can expose individuals.",
+   "decision": "Quality, value and cost are measured per agent, process or team, never per employee.",
+   "consequences": "Works-council and data-protection alignment is simpler; no individual performance views.",
+   "alternatives": "Per-user analytics.",
+   "areas": [
+    "D3"
+   ],
+   "canon": true
+  },
+  {
+   "id": "ADR-F06",
+   "title": "Evaluation is the definition of done",
+   "status": "proposed",
+   "context": "Without evaluations, quality is a feeling and regressions go unnoticed.",
+   "decision": "No build task without a failing evaluation case; releases gate on agreed thresholds (evaluation pyramid L0 to L5).",
+   "consequences": "Evaluation sets are part of the handover package; thresholds are agreed with the business owner.",
+   "alternatives": "Manual testing before release.",
+   "areas": [
+    "I"
+   ],
+   "canon": true
+  },
+  {
+   "id": "ADR-F07",
+   "title": "Pay-as-you-go until a usage baseline",
+   "status": "proposed",
+   "context": "Pre-purchase commitments cannot be refunded.",
+   "decision": "Copilot Credits on pay-as-you-go with budgets and alerts; capacity packs or pre-purchase only after three months of measured usage.",
+   "consequences": "Slightly higher unit price at the start; no stranded commitment.",
+   "alternatives": "Capacity packs or a pre-purchase plan from day one.",
+   "areas": [
+    "A"
+   ],
+   "canon": true
+  }
+ ],
+ "it_readiness": {
+  "title": "IT readiness: prepare discovery and design",
+  "intro": "What IT prepares before the architecture design workshop, the prototype and the first build, and how we check it is ready. Owners and dates are agreed in the workshop; the status is captured live and exported with the workshop notes.",
+  "workshop": {
+   "title": "Architecture design workshop",
+   "outcomes": [
+    "Engineering control plane decided or narrowed to two options",
+    "Environment design and data policies agreed per stage",
+    "Identity approach for builders, pipelines and agents",
+    "Owners and dates for every open readiness item",
+    "Bill of materials of the systems the MVP agents touch"
+   ],
+   "who": [
+    "Enterprise architect",
+    "Power Platform administrator",
+    "IT security and identity",
+    "Copilot Studio specialist",
+    "Application owners of the systems of record",
+    "Data protection",
+    "Business product owner"
+   ],
+   "agenda": [
+    [
+     "0:00",
+     "Why we are here: the blueprint, the MVPs and the Agent Factory"
+    ],
+    [
+     "0:20",
+     "What we build and where: the agent landing zone"
+    ],
+    [
+     "0:50",
+     "Engineering control plane: GitHub, Azure DevOps or both"
+    ],
+    [
+     "1:30",
+     "Break"
+    ],
+    [
+     "1:40",
+     "Environments, data policies and identity"
+    ],
+    [
+     "2:30",
+     "Systems of record, data and knowledge"
+    ],
+    [
+     "3:00",
+     "Readiness owners, dates and decisions"
+    ],
+    [
+     "3:30",
+     "Close"
+    ]
+   ]
+  },
+  "control_plane": {
+   "options": [
+    {
+     "id": "A",
+     "name": "GitHub Enterprise Cloud",
+     "logos": [
+      "github",
+      "ghcopilot"
+     ],
+     "fits": "GitHub is approved and linked to Microsoft Entra ID",
+     "strengths": "GitHub Copilot agents, Actions, code scanning and the factory in one place",
+     "watch": "Data residency and the scope of the security approval"
+    },
+    {
+     "id": "B",
+     "name": "Azure DevOps",
+     "logos": [],
+     "fits": "Azure DevOps is the standard for Power Platform and Dynamics 365 projects",
+     "strengths": "Boards, Pipelines and the Power Platform Build Tools",
+     "watch": "GitHub Copilot licences are still needed for the build team"
+    },
+    {
+     "id": "C",
+     "name": "Combination",
+     "logos": [
+      "github"
+     ],
+     "fits": "Code and Copilot in GitHub; boards or releases in Azure DevOps",
+     "strengths": "Keeps existing processes while adopting the factory",
+     "watch": "Two places to govern and audit"
+    }
+   ],
+   "criteria": [
+    "Existing standard and approvals",
+    "Identity integration with Microsoft Entra ID",
+    "GitHub Copilot agent features",
+    "Pipelines for Power Platform",
+    "Data residency",
+    "Licences and cost"
+   ]
+  },
+  "groups": [
+   {
+    "id": "tenant",
+    "title": "Tenant, licences and credits",
+    "logos": [
+     "m365copilot",
+     "copilotstudio"
+    ],
+    "items": [
+     {
+      "item": "Copilot Credits allocated to the playground, DEV and TEST, or a pay-as-you-go billing plan linked",
+      "why": "Building, testing and evaluating consume credits; without them preview and testing are blocked",
+      "owner": "Power Platform admin",
+      "stage": "prototype",
+      "id": "P-01"
+     },
+     {
+      "item": "A budget owner per environment, consumption alerts and a fixed credit budget for the prototype",
+      "why": "No cost surprises from the first build",
+      "owner": "Licensing with the business sponsor",
+      "stage": "prototype",
+      "id": "P-02"
+     },
+     {
+      "item": "GitHub Copilot licences (Business or Enterprise) for the build team, with the Copilot CLI policy enabled",
+      "why": "The Agent Factory builds agents as code with GitHub Copilot",
+      "owner": "IT licensing",
+      "stage": "build",
+      "id": "P-03"
+     },
+     {
+      "item": "Microsoft 365 Copilot licences for the core team and testers, or Copilot Credits for unlicensed users",
+      "why": "Licensed users' employee-facing use is included; other use consumes credits",
+      "owner": "IT licensing",
+      "stage": "prototype",
+      "id": "P-04"
+     },
+     {
+      "item": "The GitHub Copilot harness available in Copilot Studio for the environments that use it",
+      "why": "Agents built on the GitHub Copilot harness need it in DEV and TEST",
+      "owner": "Power Platform admin",
+      "stage": "build",
+      "id": "P-05"
+     }
+    ]
+   },
+   {
+    "id": "environments",
+    "title": "Environments and governance",
+    "logos": [
+     "copilotstudio",
+     "powerapps"
+    ],
+    "items": [
+     {
+      "item": "A sealed playground environment (managed, with Dataverse and Copilot Studio) for the prototype",
+      "why": "Prototypes run with synthetic data, away from production",
+      "owner": "Power Platform admin",
+      "stage": "prototype",
+      "id": "P-06"
+     },
+     {
+      "item": "DEV and TEST environments for the agent solutions as managed environments; PROD later",
+      "why": "Agents move through stages as one artefact",
+      "owner": "Power Platform admin",
+      "stage": "build",
+      "id": "P-07"
+     },
+     {
+      "item": "Environment groups with rules per stage: personal productivity, development, test, production",
+      "why": "Guardrails apply automatically to every new environment",
+      "owner": "Power Platform admin",
+      "stage": "build",
+      "id": "P-08"
+     },
+     {
+      "item": "Data policies per environment with connectors, MCP servers and HTTP classified",
+      "why": "Agents can only reach what is allowed per stage",
+      "owner": "Power Platform admin with data protection",
+      "stage": "prototype",
+      "id": "P-09"
+     },
+     {
+      "item": "Approved knowledge sources usable in the playground and DEV",
+      "why": "Agents answer from approved content only",
+      "owner": "Knowledge owners",
+      "stage": "prototype",
+      "id": "P-10"
+     },
+     {
+      "item": "Solution publisher and prefix, and a platform solution for shared tables, roles and connection references",
+      "why": "Technical names stay stable from DEV to PROD",
+      "owner": "Power Platform team",
+      "stage": "build",
+      "id": "P-11"
+     },
+     {
+      "item": "Agent naming convention and environment names confirmed (agent identity kit)",
+      "why": "Names and icons are right from the first save",
+      "owner": "Power Platform team",
+      "stage": "build",
+      "id": "P-12"
+     }
+    ]
+   },
+   {
+    "id": "identity",
+    "title": "Identity and access",
+    "logos": [
+     "entra"
+    ],
+    "items": [
+     {
+      "item": "Accounts and roles for all builders in the playground, DEV and TEST (maker, author, tester)",
+      "why": "Builders can work from day one",
+      "owner": "IT identity",
+      "stage": "prototype",
+      "id": "P-13"
+     },
+     {
+      "item": "A deployment service principal per environment (app registration and application user) with federated credentials",
+      "why": "Pipelines sign in without secrets",
+      "owner": "IT identity",
+      "stage": "build",
+      "id": "P-14"
+     },
+     {
+      "item": "Service-owned connections for the workflows that agents call",
+      "why": "Workflows keep working when people change roles",
+      "owner": "IT identity",
+      "stage": "build",
+      "id": "P-15"
+     },
+     {
+      "item": "An approach for Microsoft Entra Agent ID, Agent 365 registration and Conditional Access for agents",
+      "why": "Every agent has an identity, an owner and policies",
+      "owner": "IT identity and security",
+      "stage": "pilot",
+      "id": "P-16"
+     },
+     {
+      "item": "A test identity and consent for automated evaluations",
+      "why": "Evaluations run unattended in the pipeline",
+      "owner": "IT identity",
+      "stage": "build",
+      "id": "P-17"
+     }
+    ]
+   },
+   {
+    "id": "control",
+    "title": "Engineering control plane",
+    "logos": [
+     "github",
+     "ghcopilot"
+    ],
+    "items": [
+     {
+      "item": "A GitHub organisation linked to Microsoft Entra ID, or an Azure DevOps project (decision D-01)",
+      "why": "The factory needs one place for code, reviews and pipelines",
+      "owner": "IT with enterprise architecture",
+      "stage": "build",
+      "id": "P-18"
+     },
+     {
+      "item": "A repository for the Agent Factory starter kit, with branch permissions for the build team",
+      "why": "Specifications, evaluations and agents live as code",
+      "owner": "IT",
+      "stage": "build",
+      "id": "P-19"
+     },
+     {
+      "item": "Branch protection or rulesets, code owners and a named approver for pull requests and releases",
+      "why": "People approve every change",
+      "owner": "IT",
+      "stage": "build",
+      "id": "P-20"
+     },
+     {
+      "item": "Secret scanning with push protection, and pipeline service connections to DEV and TEST",
+      "why": "No secrets in code; secretless deployment",
+      "owner": "IT security",
+      "stage": "build",
+      "id": "P-21"
+     },
+     {
+      "item": "GitHub Copilot policies for the Copilot CLI and MCP servers, and an allow-list of plugins and skills",
+      "why": "Only approved tools reach the build team",
+      "owner": "IT security",
+      "stage": "build",
+      "id": "P-22"
+     },
+     {
+      "item": "Tool approval for the GitHub Copilot CLI and open-source factory add-ons where the policy requires it",
+      "why": "The build team works with approved, pinned tools",
+      "owner": "IT security",
+      "stage": "build",
+      "id": "P-23"
+     }
+    ]
+   },
+   {
+    "id": "workstation",
+    "title": "Workstations and network",
+    "logos": [
+     "vscode"
+    ],
+    "items": [
+     {
+      "item": "Developer workstations prepared to the workstation standard below, or a Dev Box or virtual machine",
+      "why": "Builders can run the factory locally",
+      "owner": "Workplace engineering",
+      "stage": "build",
+      "id": "P-24"
+     },
+     {
+      "item": "Proxy and firewall allow the GitHub, GitHub Copilot and Power Platform endpoints and the package registries",
+      "why": "Copilot and the CLI work on the customer network",
+      "owner": "Network team",
+      "stage": "build",
+      "id": "P-25"
+     }
+    ]
+   },
+   {
+    "id": "data",
+    "title": "Systems of record, data and knowledge",
+    "logos": [],
+    "items": [
+     {
+      "item": "A bill of materials of all systems of record the agents touch, with API availability and owners",
+      "why": "Integration effort and owners are known before the build",
+      "owner": "Application owners",
+      "stage": "prototype",
+      "id": "P-26"
+     },
+     {
+      "item": "Read-only test access or synthetic data for the prototype; no production system touched",
+      "why": "Safe prototyping",
+      "owner": "Application owners",
+      "stage": "prototype",
+      "id": "P-27"
+     },
+     {
+      "item": "Knowledge sources for the prototype: approved SharePoint sites and libraries",
+      "why": "Grounded answers from approved content",
+      "owner": "Knowledge owners",
+      "stage": "prototype",
+      "id": "P-28"
+     },
+     {
+      "item": "Architecture documents and non-functional requirements (naming, data residency, security standards)",
+      "why": "The design follows the customer's standards",
+      "owner": "Enterprise architect",
+      "stage": "workshop",
+      "id": "P-29"
+     },
+     {
+      "item": "Data-protection and works-council position for the prototype, including consent for knowledge capture",
+      "why": "No surprises in the pilot",
+      "owner": "Data protection",
+      "stage": "prototype",
+      "id": "P-30"
+     }
+    ]
+   }
+  ],
+  "checks": [
+   {
+    "id": "R-01",
+    "kind": "technical",
+    "check": "Sign-in and roles",
+    "test": "Builders open Copilot Studio in the playground and DEV and save an agent in the agreed solution",
+    "evidence": "Screenshot of the agent in the solution"
+   },
+   {
+    "id": "R-02",
+    "kind": "technical",
+    "check": "Credits and harness",
+    "test": "An agent is previewed and tested in DEV without a credit error",
+    "evidence": "Test conversation"
+   },
+   {
+    "id": "R-03",
+    "kind": "technical",
+    "check": "Workstation tools",
+    "test": "All workstation checks pass",
+    "evidence": "Workstation checklist"
+   },
+   {
+    "id": "R-04",
+    "kind": "technical",
+    "check": "GitHub Copilot",
+    "test": "Copilot answers in Visual Studio Code and in the CLI on the customer network",
+    "evidence": "Screenshot"
+   },
+   {
+    "id": "R-05",
+    "kind": "technical",
+    "check": "Power Platform CLI",
+    "test": "pac lists the agents in DEV",
+    "evidence": "Command output"
+   },
+   {
+    "id": "R-06",
+    "kind": "technical",
+    "check": "Repository",
+    "test": "The factory repository clones; a branch and a pull request can be created",
+    "evidence": "Pull request link"
+   },
+   {
+    "id": "R-07",
+    "kind": "technical",
+    "check": "Pipeline",
+    "test": "A pipeline signs in with federated credentials and deploys a solution to DEV",
+    "evidence": "Pipeline run"
+   },
+   {
+    "id": "R-08",
+    "kind": "technical",
+    "check": "Knowledge",
+    "test": "An approved knowledge source answers in DEV",
+    "evidence": "Test conversation with citation"
+   },
+   {
+    "id": "R-09",
+    "kind": "technical",
+    "check": "Data policy",
+    "test": "A blocked connector is blocked; an allowed one works",
+    "evidence": "Screenshot"
+   },
+   {
+    "id": "R-10",
+    "kind": "technical",
+    "check": "System of record",
+    "test": "A read-only test call or synthetic data works for each MVP system",
+    "evidence": "Test result"
+   },
+   {
+    "id": "R-11",
+    "kind": "technical",
+    "check": "Evaluation",
+    "test": "An evaluation set runs in DEV and the results are stored",
+    "evidence": "Evaluation results"
+   },
+   {
+    "id": "R-12",
+    "kind": "technical",
+    "check": "Network",
+    "test": "No proxy errors in Copilot Studio, GitHub or the CLI",
+    "evidence": "Checklist"
+   },
+   {
+    "id": "R-13",
+    "kind": "functional",
+    "check": "Agent specifications",
+    "test": "Canvas and seven declarations for each MVP agent",
+    "evidence": "Specification in the repository"
+   },
+   {
+    "id": "R-14",
+    "kind": "functional",
+    "check": "Test sets",
+    "test": "Golden questions and refusal cases for each MVP agent",
+    "evidence": "Evaluation set in the repository"
+   },
+   {
+    "id": "R-15",
+    "kind": "functional",
+    "check": "Owners",
+    "test": "Product owner, agent boss and release approver named",
+    "evidence": "RACI"
+   }
+  ],
+  "workstation": [
+   {
+    "id": "W-01",
+    "check": "code --version and git --version",
+    "expected": "Both return a version"
+   },
+   {
+    "id": "W-02",
+    "check": "node --version",
+    "expected": "Version 22 or later"
+   },
+   {
+    "id": "W-03",
+    "check": "pwsh --version",
+    "expected": "Version 7"
+   },
+   {
+    "id": "W-04",
+    "check": "copilot --version, then /login in the Copilot CLI",
+    "expected": "Signed in with the work GitHub account"
+   },
+   {
+    "id": "W-05",
+    "check": "Approved factory skills and plugins in the Copilot CLI",
+    "expected": "Listed as installed, pinned versions"
+   },
+   {
+    "id": "W-06",
+    "check": "dotnet --version and pac",
+    "expected": "pac shows the pinned version"
+   },
+   {
+    "id": "W-07",
+    "check": "pac auth create against DEV, then pac copilot list",
+    "expected": "The agents in DEV are listed"
+   },
+   {
+    "id": "W-08",
+    "check": "Copilot Studio extension for Visual Studio Code",
+    "expected": "An agent from DEV is cloned into the workspace"
+   },
+   {
+    "id": "W-09",
+    "check": "gh auth status (GitHub) or a clone from Azure Repos",
+    "expected": "The factory repository clones"
+   },
+   {
+    "id": "W-10",
+    "check": "Network",
+    "expected": "Copilot answers in Visual Studio Code and in the CLI"
+   },
+   {
+    "id": "W-11",
+    "check": "No secrets",
+    "expected": "No credentials in files or scripts, ever"
+   }
+  ],
+  "questions": [
+   {
+    "id": "Q-01",
+    "group": "Engineering control plane",
+    "question": "Which platform is the standard for source control and pipelines today (GitHub, Azure DevOps or both)?",
+    "who": "IT with enterprise architecture"
+   },
+   {
+    "id": "Q-02",
+    "group": "Engineering control plane",
+    "question": "What does the security approval for GitHub cover: an organisation linked to Entra ID, private repositories, GitHub Copilot?",
+    "who": "IT security"
+   },
+   {
+    "id": "Q-03",
+    "group": "Engineering control plane",
+    "question": "Are GitHub Copilot licences available for the build team, and is the Copilot CLI policy enabled?",
+    "who": "IT licensing"
+   },
+   {
+    "id": "Q-04",
+    "group": "Engineering control plane",
+    "question": "Which data-residency rules apply to source code, work items and pipeline logs?",
+    "who": "Enterprise architecture"
+   },
+   {
+    "id": "Q-05",
+    "group": "Engineering control plane",
+    "question": "Who may create repositories and pipelines, and who approves pull requests and releases?",
+    "who": "IT with the Power Platform team"
+   },
+   {
+    "id": "Q-06",
+    "group": "Environments, governance and cost",
+    "question": "Which environments host the playground, DEV and TEST, are they managed environments, and who administers them?",
+    "who": "Power Platform team"
+   },
+   {
+    "id": "Q-07",
+    "group": "Environments, governance and cost",
+    "question": "Which environment groups and rules apply per stage?",
+    "who": "Power Platform team"
+   },
+   {
+    "id": "Q-08",
+    "group": "Environments, governance and cost",
+    "question": "Which data classes are allowed per landing zone and stage?",
+    "who": "Data protection"
+   },
+   {
+    "id": "Q-09",
+    "group": "Environments, governance and cost",
+    "question": "Which connectors, MCP servers and HTTP calls may the prototype use?",
+    "who": "Power Platform team"
+   },
+   {
+    "id": "Q-10",
+    "group": "Environments, governance and cost",
+    "question": "Copilot Credits: a fixed allocation per environment or a pay-as-you-go billing plan, and who owns the budget?",
+    "who": "Licensing with the business sponsor"
+   },
+   {
+    "id": "Q-11",
+    "group": "Environments, governance and cost",
+    "question": "Which publisher prefix and naming conventions apply?",
+    "who": "Power Platform team"
+   },
+   {
+    "id": "Q-12",
+    "group": "Environments, governance and cost",
+    "question": "How do solutions move from DEV to TEST to PROD today?",
+    "who": "Copilot Studio specialist"
+   },
+   {
+    "id": "Q-13",
+    "group": "Identity and security",
+    "question": "Are deployment principals per environment with federated credentials acceptable?",
+    "who": "IT identity"
+   },
+   {
+    "id": "Q-14",
+    "group": "Identity and security",
+    "question": "Are service-owned connections and runtime principals with minimal roles acceptable for agent workflows?",
+    "who": "IT identity"
+   },
+   {
+    "id": "Q-15",
+    "group": "Identity and security",
+    "question": "How are Microsoft Entra Agent ID, Agent 365 registration and Conditional Access for agents handled?",
+    "who": "IT identity and security"
+   },
+   {
+    "id": "Q-16",
+    "group": "Identity and security",
+    "question": "How do users sign in to the agents (single sign-on and the signed-in identity)?",
+    "who": "IT identity"
+   },
+   {
+    "id": "Q-17",
+    "group": "Systems of record, data and knowledge",
+    "question": "For each system of record: which API, test instance, owner and identity for agent access?",
+    "who": "Application owners"
+   },
+   {
+    "id": "Q-18",
+    "group": "Systems of record, data and knowledge",
+    "question": "Are there test instances or sandboxes, or do we use synthetic data?",
+    "who": "Application owners"
+   },
+   {
+    "id": "Q-19",
+    "group": "Systems of record, data and knowledge",
+    "question": "Which SharePoint sites and libraries may agents use as knowledge in DEV?",
+    "who": "Knowledge owners"
+   },
+   {
+    "id": "Q-20",
+    "group": "Workstations and network",
+    "question": "Can the build team install the workstation tools, or is a Dev Box needed?",
+    "who": "Workplace engineering"
+   },
+   {
+    "id": "Q-21",
+    "group": "Workstations and network",
+    "question": "Are the GitHub, Copilot and package-registry endpoints reachable through the proxy?",
+    "who": "Network team"
+   },
+   {
+    "id": "Q-22",
+    "group": "Workstations and network",
+    "question": "Are MCP servers (Microsoft Learn, Dataverse, Copilot Studio) allowed on workstations?",
+    "who": "IT security"
+   },
+   {
+    "id": "Q-23",
+    "group": "Operating model",
+    "question": "Who implements connections, authentication, data policies, channels and single sign-on?",
+    "who": "IT with the Power Platform team"
+   },
+   {
+    "id": "Q-24",
+    "group": "Operating model",
+    "question": "How are agent releases approved in change management?",
+    "who": "IT service management"
+   },
+   {
+    "id": "Q-25",
+    "group": "Operating model",
+    "question": "Which data-protection and works-council rules apply to the prototype and the pilot?",
+    "who": "Data protection"
+   },
+   {
+    "id": "Q-26",
+    "group": "Operating model",
+    "question": "Which monitoring and audit are expected for the pilot: Purview audit, Application Insights, Agent 365?",
+    "who": "IT security and operations"
+   }
+  ],
+  "decisions": [
+   {
+    "id": "D-01",
+    "decision": "Engineering control plane",
+    "options": "GitHub Enterprise Cloud, Azure DevOps or a combination",
+    "recommendation": "GitHub when the approval covers private repositories linked to Entra ID; otherwise Azure DevOps or a combination",
+    "owner": "IT with enterprise architecture"
+   },
+   {
+    "id": "D-02",
+    "decision": "Environment design",
+    "options": "One environment per journey and stage, or shared environments per stage",
+    "recommendation": "A managed environment per journey and stage inside environment groups (ADR-F04)",
+    "owner": "Power Platform team with data protection"
+   },
+   {
+    "id": "D-03",
+    "decision": "Release mechanism",
+    "options": "Power Platform pipelines, GitHub Actions or Azure Pipelines",
+    "recommendation": "One artefact promoted with approvals",
+    "owner": "Copilot Studio specialist"
+   },
+   {
+    "id": "D-04",
+    "decision": "Source of truth for agents",
+    "options": "Agent files and solution sources in Git, or the maker portal",
+    "recommendation": "The repository is the source of truth (ADR-F01)",
+    "owner": "Copilot Studio specialist"
+   },
+   {
+    "id": "D-05",
+    "decision": "Connections and runtime identity",
+    "options": "User-delegated, service-owned connections or managed identities",
+    "recommendation": "Service-owned connections with least privilege for workflows; delegated identity where the user's rights must apply",
+    "owner": "IT identity"
+   },
+   {
+    "id": "D-06",
+    "decision": "Developer-tool supply chain",
+    "options": "Open plugin marketplace, or an allow-list with pinned versions",
+    "recommendation": "An allow-list with pinned versions, reviewed before upgrades",
+    "owner": "IT security"
+   },
+   {
+    "id": "D-07",
+    "decision": "Publisher prefix and environment names",
+    "options": "From the agent identity kit, or per project",
+    "recommendation": "From the agent identity kit",
+    "owner": "Power Platform team"
+   },
+   {
+    "id": "D-08",
+    "decision": "Copilot Credits model",
+    "options": "Pay-as-you-go, capacity packs or pre-purchase",
+    "recommendation": "Pay-as-you-go until a usage baseline (ADR-F07, FinOps page)",
+    "owner": "Licensing with the business sponsor"
+   }
+  ],
+  "environments": [
+   {
+    "name": "Playground",
+    "purpose": "Sealed prototype and learning, synthetic data",
+    "type": "Managed environment with Dataverse",
+    "status": "to create"
+   },
+   {
+    "name": "DEV",
+    "purpose": "Build from the repository",
+    "type": "Managed environment, development group",
+    "status": "to create"
+   },
+   {
+    "name": "TEST",
+    "purpose": "Evaluations and user acceptance",
+    "type": "Managed environment, test group",
+    "status": "to create"
+   },
+   {
+    "name": "PROD",
+    "purpose": "Live agents",
+    "type": "Managed environment, production group",
+    "status": "later"
+   }
+  ],
+  "timeline": [
+   [
+    "Before the architecture workshop",
+    "Architecture documents and non-functional requirements shared; owners named"
+   ],
+   [
+    "Architecture design workshop",
+    "Decisions D-01 to D-08 taken or owned"
+   ],
+   [
+    "Before the prototype",
+    "Playground, credits, accounts, knowledge and synthetic data ready (checks R-01 to R-12)"
+   ],
+   [
+    "Before the first build",
+    "Repository, pipeline, principals, DEV and TEST ready; handover package complete"
+   ],
+   [
+    "Pilot",
+    "Agent identities, Agent 365 registration and monitoring in place"
+   ]
+  ]
+ }
+}

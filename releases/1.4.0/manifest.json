@@ -1,0 +1,48 @@
+{
+ "schema": "frontier-release-manifest/1.0",
+ "version": "1.4.0",
+ "date": "2026-11-08",
+ "provenance": "Built and validated in Copilot Cowork and published on 8 November 2026 (self-test 29 of 29, skill validators, package validator, install check, customer-neutrality scan). Imported into this repository as the engineering baseline; the repository reproduces the artefacts below.",
+ "artefacts": [
+  {
+   "name": "frontier-envisioning-plugin-1.4.0.zip",
+   "build_path": "dist/frontier-envisioning-plugin-1.4.0.zip",
+   "bytes": 528160,
+   "sha256": "9598fdbf83336918f78c776d55b423bcb7137055766e9978e5eecbadd981185f"
+  },
+  {
+   "name": "Frontier Company Blueprint - Template (Caldova sample).html",
+   "build_path": "build/demo/Frontier Company Blueprint - Template (Caldova sample).html",
+   "bytes": 679295,
+   "sha256": "75fb675e4a9caac4e013dc97166fd997219e5237da4103ebf8d10dd448c5e699",
+   "normalise": "generated-date",
+   "sha256_normalised": "4984847e2ef25f163c10418fd7c5d3ae9883e320ca8b3f4f4154dac4f56e53cb"
+  },
+  {
+   "name": "Caldova - agent identity package v1.0.zip",
+   "build_path": "build/demo/identity/Caldova - agent identity package v1.0.zip",
+   "bytes": 3308707,
+   "sha256": "2026c84c5806e0b8c2003e837f15e635fb78f2fa79f247164c47c1a5b51a5400"
+  },
+  {
+   "name": "Caldova - agent identity catalogue.html",
+   "build_path": "build/demo/identity/caldova-agent-identity/catalog.html",
+   "bytes": 299998,
+   "sha256": "08e2da864f13575d0a630d90954e81a06283a1082a32cf10adfd30d038fa20f1"
+  }
+ ],
+ "not_reproduced": [
+  {
+   "name": "frontier-envisioning-1.4.0-complete.zip",
+   "bytes": 4655874,
+   "sha256": "bb23538f98fe7e606fcdb03a571fd47466565a3a2f9306f9d9a49835de763488",
+   "reason": "assembled in Cowork with a hand-written START-HERE; the repository builds its own bundle with tools/build_release.py"
+  },
+  {
+   "name": "frontier-envisioning-1.4.0-source.zip",
+   "bytes": 641996,
+   "sha256": "87dda87c08da3687223b68978b9494bda1c3095fa59d6c02f2e9ace3bea3ef49",
+   "reason": "replaced by the Git tag v1.4.0 and GitHub's source archives"
+  }
+ ]
+}

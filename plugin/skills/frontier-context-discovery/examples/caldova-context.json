@@ -1,0 +1,49 @@
+{
+ "schema": "frontier-context/1.0",
+ "customer": {"name": "Caldova Industrial AG", "short": "Caldova", "industry": "Building technology manufacturing (fictitious sample)", "hq": "Switzerland", "size": "about 12,000 employees in 40 countries", "languages": ["de", "fr", "it", "en"], "src": ["E03"]},
+ "engagement": {"title": "Frontier solution envisioning", "scope": "enterprise", "workshop_date": "12 November 2026", "location": "Microsoft Innovation Hub Switzerland", "objectives": ["Agree the journeys and MVP shortlist", "Validate the hybrid organisation hypothesis", "Plan the architecture session with IT"]},
+ "sources": [
+  {"id": "E01", "type": "transcript", "title": "Discovery call with the CIO and the Head of Digital", "date": "2026-09-29", "source": "Teams meeting transcript", "participants": "Caldova CIO, Head of Digital; Microsoft account team", "visibility": "customer", "summary": "Priorities: grow service, control spend, faster quotes; about 1,200 Copilot users; IT wants one platform for agents.", "quote": "We want to grow service without growing the back office."},
+  {"id": "E02", "type": "email", "title": "Account team thread: workshop preparation", "date": "2026-10-06", "source": "Outlook", "visibility": "internal", "summary": "Workshop scope agreed internally; sales reps prepare meetings from five systems."},
+  {"id": "E03", "type": "web", "title": "Caldova Group annual report 2025", "date": "2026-03-15", "source": "Public website", "visibility": "customer", "summary": "Service revenue to reach 45% of group revenue by 2030."},
+  {"id": "E05", "type": "transcript", "title": "Service operations call", "date": "2026-10-14", "source": "Teams meeting transcript", "participants": "Head of Service Operations, Dispatch lead; Microsoft", "visibility": "customer", "summary": "About 900 technicians; reports written after hours; second-visit rate about 12%."}
+ ],
+ "facts": [
+  {"id": "F001", "category": "strategy", "statement": "Grow service revenue without growing the back office at the same pace", "evidence": [{"source": "E01", "at": "00:04:12", "quote": "We want to grow service without growing the back office."}], "confidence": "high", "visibility": "customer"},
+  {"id": "F002", "category": "pain", "journey": "Service", "statement": "Technicians write service reports after hours; incomplete reports delay invoicing", "evidence": [{"source": "E05", "at": "00:07:40", "quote": "Our technicians spend the evening writing reports."}], "confidence": "high", "visibility": "customer"},
+  {"id": "F003", "category": "metric", "journey": "Service", "statement": "Second-visit rate is about 12%", "evidence": [{"source": "E05", "at": "00:11:05"}], "confidence": "medium", "visibility": "customer"},
+  {"id": "F004", "category": "pain", "journey": "Commercial", "statement": "Sales reps prepare customer meetings from five systems", "evidence": [{"source": "E02"}], "confidence": "medium", "visibility": "internal"},
+  {"id": "F005", "category": "system", "statement": "Dynamics 365 Field Service holds work orders; SAP S/4HANA handles billing", "evidence": [{"source": "E05", "at": "00:15:30"}], "confidence": "high", "visibility": "customer"},
+  {"id": "F006", "category": "governance", "statement": "The works council must approve voice recording of technicians", "evidence": [{"source": "E05", "at": "00:22:10"}], "confidence": "medium", "visibility": "customer"}
+ ],
+ "stakeholders": [
+  {"name": "", "role": "CIO", "org": "customer", "stance": "sponsor", "interests": "One governed platform for agents", "src": ["E01"]},
+  {"name": "", "role": "Head of Service Operations", "org": "customer", "stance": "champion", "interests": "Technician time, first-time fix", "src": ["E05"]}
+ ],
+ "journeys": [
+  {"name": "Service", "function": "Field service", "why": "Largest growth lever and the clearest daily pain", "stages": ["Detect & request", "Diagnose", "Plan & dispatch", "Fix on site", "Report & learn"], "src": ["E05"]},
+  {"name": "Commercial", "function": "Sales", "why": "Quote cycle of five to eight days", "stages": ["Signal & lead", "Discover & qualify", "Configure & quote", "Negotiate & close", "Order & handover"], "src": ["E01"]}
+ ],
+ "systems": [
+  {"name": "Dynamics 365 Field Service", "role": "Field service management", "src": ["E05"]},
+  {"name": "SAP S/4HANA", "role": "ERP", "src": ["E05"]},
+  {"name": "Dynamics 365 Sales", "role": "CRM", "src": ["E01"]}
+ ],
+ "kpis": [
+  {"kpi": "Second-visit rate", "baseline": "about 12%", "target": "< 7%", "journey": "Service", "src": ["E05"]}
+ ],
+ "constraints": [
+  {"text": "Works council approval for voice recording", "type": "works council", "src": ["E05"]},
+  {"text": "Real data only under NDA", "type": "NDA", "src": ["E01"]}
+ ],
+ "ideas": [
+  {"name": "Voice-to-service report", "journey": "Service", "who": "Head of Service Operations", "src": ["E05"]},
+  {"name": "Account brief before every meeting", "journey": "Commercial", "who": "Microsoft account team", "src": ["E02"]}
+ ],
+ "decisions": [{"text": "Workshop on 12 November with service, procurement, finance and IT", "date": "2026-10-06", "src": ["E02"]}],
+ "actions": [{"text": "Share 20 anonymised service reports under NDA", "owner": "Caldova Service Operations", "due": "2026-11-19", "src": ["E05"]}],
+ "open_questions": [
+  {"q": "Which Field Service actions may a workflow call with a service identity?", "journey": "Service", "category": "Systems & integration", "why": "Defines the write envelope"},
+  {"q": "What are today's win rate and quote cycle time per segment?", "journey": "Commercial", "category": "Value & KPIs"}
+ ]
+}

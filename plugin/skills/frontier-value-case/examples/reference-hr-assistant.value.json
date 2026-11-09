@@ -1,0 +1,26 @@
+{
+ "schema": "frontier-value/1.0",
+ "customer": "Caldova Industrial AG",
+ "short": "Caldova",
+ "title": "Reference case: HR policy assistant (worked example of the method; fictitious)",
+ "version": "1.0", "date": "2026-11-04", "status": "hypothesis", "currency": "CHF",
+ "horizon_years": 3, "discount_rate": 0.08, "realisation_default": 0.5, "adoption_ramp": [1.0],
+ "assumptions": [
+  {"id": "ASS-001", "statement": "Employees who can use the assistant", "unit": "employees", "low": 4000, "base": 5000, "high": 5000, "source_type": "hypothesis", "confidence": "medium", "owner": "HR operations", "question": "How many employees can reach the assistant in Teams?", "status": "open", "scope": "value"},
+  {"id": "ASS-002", "statement": "Sessions per employee per month", "unit": "sessions", "low": 1, "base": 2, "high": 3, "source_type": "hypothesis", "confidence": "low", "owner": "HR operations", "question": "How often does an employee look up an HR policy today?", "status": "open", "scope": "value"},
+  {"id": "ASS-003", "statement": "Share of sessions that replace an HR ticket", "unit": "share", "low": 0.1, "base": 0.25, "high": 0.4, "source_type": "hypothesis", "confidence": "low", "owner": "HR operations", "question": "How many HR tickets are policy questions the assistant could answer?", "status": "open", "scope": "value"},
+  {"id": "ASS-004", "statement": "HR handling time per ticket", "unit": "minutes", "low": 6, "base": 10, "high": 15, "source_type": "hypothesis", "confidence": "medium", "owner": "HR operations", "question": "How long does HR spend on a policy ticket?", "status": "open", "scope": "value"},
+  {"id": "ASS-005", "statement": "Loaded HR cost per hour", "unit": "CHF/h", "low": 85, "base": 100, "high": 115, "source_type": "hypothesis", "confidence": "medium", "owner": "Finance", "question": "What is the loaded cost of one HR hour?", "status": "open", "scope": "value"},
+  {"id": "ASS-006", "statement": "Realisation factor for released HR capacity", "unit": "share", "low": 0.25, "base": 0.5, "high": 0.75, "source_type": "benchmark", "confidence": "medium", "owner": "Finance", "question": "How much of the released HR time will be redeployed to other work?", "status": "open", "scope": "value", "note": "Forrester convention (Microsoft-commissioned study, US composite firm)"},
+  {"id": "ASS-007", "statement": "Employee search time saved per session", "unit": "minutes", "low": 2, "base": 5, "high": 8, "source_type": "hypothesis", "confidence": "low", "owner": "HR operations", "question": "How long does an employee search for a policy today?", "status": "open", "scope": "value"}
+ ],
+ "use_cases": [
+  {"id": "UC-HR", "name": "HR policy assistant", "agents": ["HR-A01"],
+   "vars": {"employees": "ASS-001", "per_employee": "ASS-002", "ticket_share": "ASS-003", "minutes": "ASS-004", "rate": "ASS-005", "realisation": "ASS-006", "search": "ASS-007", "sessions": "employees * per_employee"},
+   "levers": [
+    {"id": "L1", "name": "HR ticket handling released", "driver": "efficiency", "category": "capacity", "formula": "sessions * ticket_share * minutes / 60 * rate * realisation"},
+    {"id": "L2", "name": "Employee search time (shown, not booked)", "driver": "efficiency", "category": "capacity", "formula": "sessions * search / 60 * rate", "booked": false, "note": "Released employee time is capacity; it is not booked without a named use"}
+   ],
+   "break_even_on": "ASS-003"}
+ ]
+}

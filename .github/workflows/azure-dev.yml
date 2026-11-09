@@ -1,0 +1,75 @@
+# Showcase deployment (Azure Static Web Apps) with the Azure Developer CLI and OpenID Connect.
+# Set up once with `azd pipeline config` (see docs/engineering/deployment.md); variables live in the
+# GitHub environments `dev` and `prod`. Pushes to main deploy dev; prod is deployed by hand and needs
+# the environment approval. Runs only when the repository variable SHOWCASE_ENABLED is 'true'.
+# Human-maintained: agent edits are blocked by .github/hooks.
+name: azure-dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        options: [dev, prod]
+        default: dev
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "infra/**"
+      - "azure.yaml"
+      - "plugin/**"
+      - "src/renderer/**"
+      - "tools/build_site.py"
+      - "tools/build_demo.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: azure-dev-${{ inputs.environment || 'dev' }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy showcase (${{ inputs.environment || 'dev' }})
+    if: ${{ vars.SHOWCASE_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: ${{ inputs.environment || 'dev' }}
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+      AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+      SITE_AUTH_MODE: ${{ vars.SITE_AUTH_MODE || 'entra' }}
+      SITE_AUTH_TENANT_ID: ${{ vars.SITE_AUTH_TENANT_ID }}
+      SITE_AUTH_CLIENT_ID: ${{ vars.SITE_AUTH_CLIENT_ID }}
+      SITE_AUTH_CLIENT_SECRET: ${{ secrets.SITE_AUTH_CLIENT_SECRET }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: "22"
+      - name: Build the package and the Caldova demo
+        run: python tools/dev.py package demo
+      - name: Install azd
+        uses: Azure/setup-azd@0b7e3a35ab00f2eee7080c845eb39c3f0ebfa553 # v2
+      - name: Sign in to Azure (OpenID Connect)
+        run: azd auth login --client-id "$AZURE_CLIENT_ID" --federated-credential-provider "github" --tenant-id "$AZURE_TENANT_ID"
+      - name: Provision
+        run: azd provision --no-prompt
+      - name: Deploy
+        run: azd deploy --no-prompt
+      - name: Smoke check
+        run: |
+          url="$(azd env get-value SITE_URL)"
+          python tools/smoke_site.py --url "$url" --auth "$SITE_AUTH_MODE"

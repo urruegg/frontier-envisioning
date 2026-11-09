@@ -1,0 +1,25 @@
+# GitHub Actions: blocks pull requests whose agent identity is inconsistent.
+# Adjust IDENTITY_ROOT to where the package lives in the repository; pin actions to commit SHAs.
+name: identity-validate
+on:
+  pull_request:
+    paths:
+      - '**/identity/**'
+      - '**/agent-identity.json'
+      - '**/palette.json'
+permissions:
+  contents: read
+env:
+  IDENTITY_ROOT: __IDENTITY_ROOT__
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate names, colours and icon files
+        run: python "$IDENTITY_ROOT/scripts/validate_identity.py" --root "$IDENTITY_ROOT"
+      - name: Unit tests (naming, icons and stamping)
+        run: python -m unittest discover -s "$IDENTITY_ROOT/scripts/tests" -v

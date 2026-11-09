@@ -1,0 +1,24 @@
+{
+  "name": "frontier-envisioning",
+  "version": "1.4.0",
+  "description": "Innovation Hub Frontier solution envisioning and architecture design for Copilot Cowork: discover customer context from Work IQ and workshop transcripts, build the hypothesis hybrid Frontier Company Blueprint along the Hub journey (vision: HAIRO org model, journeys, the Agent Factory with DevSecOps, attendees; design: lead and specialist agents, agent identity, target architecture with landing zone (CAF, WAF, Responsible AI) and ADRs, use cases with problem and value, IT readiness, FinOps), merge workshop feedback, write the PRD, solution design, ADRs and IT readiness checklist for MVP agents, create the agent identity kit, and model the business value case and the agent costs.",
+  "author": {
+    "name": "Microsoft Innovation Hub Switzerland"
+  },
+  "license": "MIT",
+  "keywords": [
+    "frontier-firm",
+    "solution-envisioning",
+    "agents",
+    "target-architecture",
+    "workshop",
+    "work-iq",
+    "copilot-cowork",
+    "agent-identity",
+    "business-value",
+    "finops",
+    "agent-factory",
+    "landing-zone",
+    "architecture-design"
+  ]
+}

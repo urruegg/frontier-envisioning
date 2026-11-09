@@ -1,0 +1,441 @@
+{
+ "schema": "frontier-value/1.0",
+ "customer": "Caldova Industrial AG",
+ "short": "Caldova",
+ "title": "Value case for the MVP agents (fictitious demo)",
+ "version": "0.1",
+ "date": "2026-11-04",
+ "status": "hypothesis",
+ "currency": "CHF",
+ "horizon_years": 3,
+ "discount_rate": 0.08,
+ "realisation_default": 0.5,
+ "assumptions": [
+  {
+   "id": "ASS-001",
+   "statement": "Field technicians who use the agent",
+   "unit": "technicians",
+   "low": 600,
+   "base": 900,
+   "high": 900,
+   "source_type": "customer",
+   "confidence": "medium",
+   "src": [
+    "E05"
+   ],
+   "owner": "Head of Service Operations",
+   "question": "How many technicians will use the agent after the roll-out?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-002",
+   "statement": "Service reports per technician per month",
+   "unit": "reports",
+   "low": 40,
+   "base": 50,
+   "high": 65,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Service planning lead",
+   "question": "How many jobs does a technician close in a month?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-003",
+   "statement": "Minutes to write a report today",
+   "unit": "minutes",
+   "low": 10,
+   "base": 15,
+   "high": 25,
+   "source_type": "customer",
+   "confidence": "medium",
+   "src": [
+    "E05"
+   ],
+   "owner": "Head of Service Operations",
+   "question": "How long does a technician spend on a report today, and when?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-004",
+   "statement": "Minutes to review and confirm a drafted report",
+   "unit": "minutes",
+   "low": 3,
+   "base": 6,
+   "high": 9,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Technician panel",
+   "question": "How long does checking a drafted report take in the prototype?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-005",
+   "statement": "Loaded cost of a technician hour",
+   "unit": "CHF/h",
+   "low": 85,
+   "base": 95,
+   "high": 110,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Finance",
+   "question": "What is the loaded cost of one technician hour?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-006",
+   "statement": "Realisation factor for released time",
+   "unit": "share",
+   "low": 0.25,
+   "base": 0.5,
+   "high": 0.75,
+   "source_type": "benchmark",
+   "confidence": "medium",
+   "owner": "Finance",
+   "question": "How much of the released time will be redeployed to billable or planned work?",
+   "status": "open",
+   "scope": "value",
+   "note": "Forrester convention (Microsoft-commissioned studies, US composite firms)"
+  },
+  {
+   "id": "ASS-007",
+   "statement": "Share of report time paid as overtime today",
+   "unit": "share",
+   "low": 0,
+   "base": 0,
+   "high": 0.3,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Finance and HR",
+   "question": "Is evening report writing paid as overtime? If yes, which share would stop?",
+   "status": "open",
+   "scope": "value",
+   "note": "Cash only when a spend stops; zero until the customer names it"
+  },
+  {
+   "id": "ASS-008",
+   "statement": "Cost of one overtime hour",
+   "unit": "CHF/h",
+   "low": 100,
+   "base": 120,
+   "high": 140,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Finance",
+   "question": "What does one overtime hour cost?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-009",
+   "statement": "Jobs that avoid a second visit thanks to complete reports",
+   "unit": "share",
+   "low": 0.002,
+   "base": 0.005,
+   "high": 0.01,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "src": [
+    "E05"
+   ],
+   "owner": "Head of Service Operations",
+   "question": "How many second visits are caused by missing or wrong report data?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-010",
+   "statement": "Cost of a second visit",
+   "unit": "CHF",
+   "low": 120,
+   "base": 180,
+   "high": 250,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Finance",
+   "question": "What does a second visit cost in time and travel?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-011",
+   "statement": "Expected loss avoided by complete safety checklists",
+   "unit": "CHF/month",
+   "low": 500,
+   "base": 1500,
+   "high": 3000,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Health and safety lead",
+   "question": "Which incidents or penalties do incomplete safety checklists cause today?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-021",
+   "statement": "Purchase requests per month",
+   "unit": "requests",
+   "low": 800,
+   "base": 1500,
+   "high": 2200,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Head of Procurement Operations",
+   "question": "How many purchase requests do employees raise in a month?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-022",
+   "statement": "Employee minutes per request today",
+   "unit": "minutes",
+   "low": 15,
+   "base": 25,
+   "high": 40,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Head of Procurement Operations",
+   "question": "How long does an employee need to find the right channel and raise a request?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-023",
+   "statement": "Employee minutes per request with the agent",
+   "unit": "minutes",
+   "low": 5,
+   "base": 8,
+   "high": 12,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Employee panel",
+   "question": "How long does the same request take with the agent in the prototype?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-024",
+   "statement": "Loaded cost of an employee hour",
+   "unit": "CHF/h",
+   "low": 80,
+   "base": 90,
+   "high": 105,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Finance",
+   "question": "What loaded hourly cost should we use for office employees?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-025",
+   "statement": "Procurement minutes per request today",
+   "unit": "minutes",
+   "low": 10,
+   "base": 15,
+   "high": 25,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Head of Procurement Operations",
+   "question": "How long does procurement spend clarifying and re-routing a request?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-026",
+   "statement": "Share of that procurement effort the agent removes",
+   "unit": "share",
+   "low": 0.2,
+   "base": 0.4,
+   "high": 0.6,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "owner": "Head of Procurement Operations",
+   "question": "Which clarifications would the agent answer before a request reaches procurement?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-027",
+   "statement": "Loaded cost of a procurement hour",
+   "unit": "CHF/h",
+   "low": 90,
+   "base": 105,
+   "high": 120,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Finance",
+   "question": "What is the loaded cost of one procurement hour?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-028",
+   "statement": "Indirect spend per month that passes through requests",
+   "unit": "CHF/month",
+   "low": 4000000,
+   "base": 6000000,
+   "high": 9000000,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Chief Procurement Officer",
+   "question": "How much indirect spend per month starts as a request?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-029",
+   "statement": "Spend moved from maverick buying to negotiated channels",
+   "unit": "share",
+   "low": 0.01,
+   "base": 0.03,
+   "high": 0.05,
+   "source_type": "hypothesis",
+   "confidence": "low",
+   "src": [
+    "E06"
+   ],
+   "owner": "Chief Procurement Officer",
+   "question": "How many points of maverick buying can the agent move to catalogues and contracts?",
+   "status": "open",
+   "scope": "value"
+  },
+  {
+   "id": "ASS-030",
+   "statement": "Price advantage of negotiated channels",
+   "unit": "share",
+   "low": 0.04,
+   "base": 0.07,
+   "high": 0.1,
+   "source_type": "hypothesis",
+   "confidence": "medium",
+   "owner": "Chief Procurement Officer",
+   "question": "What price advantage do catalogues and frame contracts give over free buying?",
+   "status": "open",
+   "scope": "value"
+  }
+ ],
+ "use_cases": [
+  {
+   "id": "UC09",
+   "name": "Voice-to-service report",
+   "agents": [
+    "D3-A05"
+   ],
+   "adoption_ramp": [
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    0.8,
+    0.9
+   ],
+   "vars": {
+    "technicians": "ASS-001",
+    "reports": "ASS-002",
+    "before": "ASS-003",
+    "after": "ASS-004",
+    "rate": "ASS-005",
+    "realisation": "ASS-006",
+    "ot_share": "ASS-007",
+    "ot_rate": "ASS-008",
+    "second": "ASS-009",
+    "visit_cost": "ASS-010",
+    "safety": "ASS-011",
+    "jobs": "technicians * reports",
+    "hours": "jobs * (before - after) / 60"
+   },
+   "levers": [
+    {
+     "id": "L1",
+     "name": "Report writing time released",
+     "driver": "efficiency",
+     "category": "capacity",
+     "formula": "hours * (1 - ot_share) * rate * realisation"
+    },
+    {
+     "id": "L2",
+     "name": "Overtime that stops",
+     "driver": "efficiency",
+     "category": "cash",
+     "formula": "hours * ot_share * ot_rate",
+     "note": "Counted once: the overtime share is taken out of the capacity lever"
+    },
+    {
+     "id": "L3",
+     "name": "Second visits avoided",
+     "driver": "quality",
+     "category": "capacity",
+     "formula": "jobs * second * visit_cost * realisation",
+     "note": "Travel costs become cash once the customer confirms them"
+    },
+    {
+     "id": "L4",
+     "name": "Safety checklist completeness",
+     "driver": "strategic",
+     "category": "risk",
+     "formula": "safety",
+     "ramp": false,
+     "note": "Expected loss avoided; reported separately, never in the budget view"
+    }
+   ],
+   "break_even_on": "ASS-006"
+  },
+  {
+   "id": "UC05",
+   "name": "Guided buying and intake",
+   "agents": [
+    "D2-A01"
+   ],
+   "adoption_ramp": [
+    0.3,
+    0.6,
+    0.8,
+    0.9
+   ],
+   "vars": {
+    "requests": "ASS-021",
+    "emp_before": "ASS-022",
+    "emp_after": "ASS-023",
+    "emp_rate": "ASS-024",
+    "proc_minutes": "ASS-025",
+    "removed": "ASS-026",
+    "proc_rate": "ASS-027",
+    "spend": "ASS-028",
+    "moved": "ASS-029",
+    "advantage": "ASS-030",
+    "realisation": "ASS-006"
+   },
+   "levers": [
+    {
+     "id": "L1",
+     "name": "Employee time released",
+     "driver": "efficiency",
+     "category": "capacity",
+     "formula": "requests * (emp_before - emp_after) / 60 * emp_rate * realisation"
+    },
+    {
+     "id": "L2",
+     "name": "Procurement effort released",
+     "driver": "efficiency",
+     "category": "capacity",
+     "formula": "requests * proc_minutes * removed / 60 * proc_rate * realisation"
+    },
+    {
+     "id": "L3",
+     "name": "Better prices through negotiated channels",
+     "driver": "revenue",
+     "category": "cash",
+     "formula": "spend * moved * advantage",
+     "note": "Cash: lower external prices; confirm the baseline with the spend cube"
+    }
+   ],
+   "break_even_on": "ASS-021"
+  }
+ ]
+}

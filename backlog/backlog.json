@@ -1,0 +1,177 @@
+{
+ "schema": "frontier-backlog/1.0",
+ "labels": [
+  {
+   "name": "type:epic",
+   "color": "3E4B9E",
+   "description": "A body of work that groups issues"
+  },
+  {
+   "name": "type:feature",
+   "color": "1D76DB",
+   "description": "New capability for users of the plugin"
+  },
+  {
+   "name": "type:bug",
+   "color": "D73A4A",
+   "description": "Something does not work as documented"
+  },
+  {
+   "name": "type:chore",
+   "color": "6A737D",
+   "description": "Engineering work without user-visible change"
+  },
+  {
+   "name": "type:docs",
+   "color": "0075CA",
+   "description": "Documentation"
+  },
+  {
+   "name": "type:decision",
+   "color": "FBCA04",
+   "description": "A decision people take; record it as an ADR or in the PRD"
+  },
+  {
+   "name": "type:spike",
+   "color": "C5DEF5",
+   "description": "Time-boxed investigation"
+  },
+  {
+   "name": "area:plugin",
+   "color": "5319E7",
+   "description": "Plugin skills, scripts and packaging"
+  },
+  {
+   "name": "area:renderer",
+   "color": "0E8A16",
+   "description": "Blueprint HTML (src/renderer)"
+  },
+  {
+   "name": "area:identity",
+   "color": "1F883D",
+   "description": "Agent identity kit"
+  },
+  {
+   "name": "area:value-finops",
+   "color": "0B7285",
+   "description": "Business value and FinOps"
+  },
+  {
+   "name": "area:discovery",
+   "color": "2B7489",
+   "description": "Context discovery and transcripts"
+  },
+  {
+   "name": "area:hubworks",
+   "color": "8250DF",
+   "description": "HubWorks integration"
+  },
+  {
+   "name": "area:engineering",
+   "color": "24292F",
+   "description": "Repository, CI, tests and tooling"
+  },
+  {
+   "name": "area:infra",
+   "color": "0366D6",
+   "description": "Showcase hosting (Bicep, azd, Static Web Apps)"
+  },
+  {
+   "name": "area:copilot",
+   "color": "6F42C1",
+   "description": "Copilot instructions, agents, skills and hooks"
+  },
+  {
+   "name": "area:docs",
+   "color": "0075CA",
+   "description": "Documentation and guides"
+  },
+  {
+   "name": "priority:P1",
+   "color": "B60205",
+   "description": "Do next"
+  },
+  {
+   "name": "priority:P2",
+   "color": "D93F0B",
+   "description": "Planned"
+  },
+  {
+   "name": "priority:P3",
+   "color": "FEF2C0",
+   "description": "Later"
+  },
+  {
+   "name": "size:S",
+   "color": "C2E0C6",
+   "description": "Up to a day"
+  },
+  {
+   "name": "size:M",
+   "color": "BFD4F2",
+   "description": "Two to four days"
+  },
+  {
+   "name": "size:L",
+   "color": "F9D0C4",
+   "description": "A week or more: split before starting"
+  },
+  {
+   "name": "status:ready",
+   "color": "0E8A16",
+   "description": "Definition of Ready met (set by a person)"
+  },
+  {
+   "name": "status:needs-decision",
+   "color": "FBCA04",
+   "description": "Waits for an open decision"
+  },
+  {
+   "name": "status:blocked",
+   "color": "B60205",
+   "description": "Blocked by something else"
+  },
+  {
+   "name": "agent:copilot",
+   "color": "8957E5",
+   "description": "Suitable for the Copilot cloud agent once ready"
+  },
+  {
+   "name": "human-only",
+   "color": "000000",
+   "description": "Done by a person: settings, approvals, releases, Azure"
+  },
+  {
+   "name": "approved:design",
+   "color": "0E8A16",
+   "description": "Spec and plan approved (set by a person)"
+  },
+  {
+   "name": "approved:release",
+   "color": "0E8A16",
+   "description": "Release approved (set by a person)"
+  }
+ ],
+ "milestones": [
+  {
+   "key": "M0",
+   "title": "M0 · Intake baseline",
+   "description": "Repository bootstrapped and protected; gates L0 to L2 green; release 1.4.0 reproduced; Copilot, Superpowers and the Azure dev environment ready."
+  },
+  {
+   "key": "1.5.0",
+   "title": "1.5.0 · Operate loop and HubWorks",
+   "description": "Release 1.5 of the PRD release plan: operate loop (plan versus actual), HubWorks integration (F-01 to F-06, F-08), German labels, slide export, Copilot Studio prototype pack."
+  },
+  {
+   "key": "1.6.0",
+   "title": "1.6.0 · FOCUS and shared engagement data",
+   "description": "Release 1.6 of the PRD release plan: FOCUS 1.5 alignment, Agent 365 cost data, Hub outcome pack, shared engagement folder and multi-facilitator feedback."
+  },
+  {
+   "key": "Later",
+   "title": "Later",
+   "description": "frontier-diagrams, the ready-for-build handover with IaC, and the 2.0 items of the PRD release plan."
+  }
+ ]
+}
