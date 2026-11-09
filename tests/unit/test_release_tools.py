@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 from unittest import mock
 
@@ -119,6 +120,84 @@ class Bootstrap(unittest.TestCase):
             self.assertTrue(i["milestone"] in milestones or i["milestone"] == "", i["id"])
             self.assertIn("## Acceptance criteria", i["body"], i["id"])
             self.assertTrue(any(lab.startswith("type:") for lab in i["labels"]), i["id"])
+
+
+class ReleaseDocuments(unittest.TestCase):
+    def test_complete_bundle_contains_both_authoritative_documents(self):
+        bundle = load("tools/build_release.py")
+        packager = load("tools/build_package.py")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            dist = root / "dist"
+            demo = root / "build" / "demo"
+            plugin = root / "plugin"
+            documents = {
+                "docs/prd.md": b"requirements\r\n",
+                "docs/solution-design.md": b"architecture\n",
+                "docs/prd-and-solution-design.md": b"legacy links\n",
+                "docs/analysis/existing.md": b"existing analysis\n",
+            }
+            files = {
+                dist / "frontier-envisioning-plugin-1.6.1.zip": b"package",
+                demo / bundle.DEMO_HTML_NAME: b"blueprint",
+                demo / "identity" / "caldova-agent-identity" / "catalog.html": b"catalogue",
+                demo / "identity" / "caldova-agent-identity.zip": b"identity kit",
+                plugin / "README.md": b"guide",
+                plugin / "MIT.md": b"licence",
+                plugin / "THIRD-PARTY-NOTICES.md": b"notices",
+                root / "CHANGELOG.md": b"history",
+                root / ".github" / "agent-policy" / "policy.md": b"engineering policy",
+                root / "docs" / "engineering" / "policy.md": b"engineering policy",
+                root / "docs" / "sprint" / "S-001.md": b"sprint",
+                root / "docs" / "intake" / "audit.json": b'{"raw": "audit evidence"}',
+                **{root / name: data for name, data in documents.items()},
+            }
+            for path, data in files.items():
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(data)
+            with mock.patch.object(bundle, "ROOT", root), \
+                    mock.patch.object(bundle, "PLUGIN", plugin), \
+                    mock.patch.object(bundle, "DEMO_DIR", demo), \
+                    mock.patch.object(bundle, "plugin_version", return_value="1.6.1"), \
+                    mock.patch.object(bundle, "load_module", return_value=packager), \
+                    contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(bundle.main(["--dist", str(dist)]), 0)
+            expected = {
+                "install/frontier-envisioning-plugin-1.6.1.zip": b"package",
+                "README.md": b"guide",
+                "MIT.md": b"licence",
+                "THIRD-PARTY-NOTICES.md": b"notices",
+                "CHANGELOG.md": b"history",
+                f"demo/{bundle.DEMO_HTML_NAME}": b"blueprint",
+                "demo/Caldova - agent identity catalogue.html": b"catalogue",
+                "demo/caldova-agent-identity.zip": b"identity kit",
+                **documents,
+            }
+            with zipfile.ZipFile(dist / "frontier-envisioning-1.6.1-complete.zip") as archive:
+                prefix = "frontier-envisioning-1.6.1/"
+                for name, data in expected.items():
+                    with self.subTest(path=name):
+                        self.assertIn(prefix + name, archive.namelist())
+                        self.assertEqual(archive.read(prefix + name), data)
+                self.assertCountEqual(
+                    archive.namelist(),
+                    [prefix + name for name in [*expected, "START-HERE.md"]],
+                )
+                start = archive.read(prefix + "START-HERE.md").decode("utf-8")
+                for name in documents:
+                    self.assertIn(name if not name.startswith("docs/analysis/") else "docs/analysis/", start)
+                for entry in archive.infolist():
+                    self.assertEqual(entry.date_time, packager.FIXED_DATE)
+                    self.assertEqual(entry.create_system, 3)
+                    self.assertEqual(entry.compress_type, zipfile.ZIP_DEFLATED)
+                    self.assertEqual(entry.external_attr, 0o644 << 16)
+            self.assertEqual(
+                (dist / "SHA256SUMS.txt").read_bytes(),
+                "".join(
+                    f"{fe_lib.sha256_file(path)}  {path.name}\n"
+                    for path in sorted(dist.glob("*.zip"))
+                ).encode("utf-8"),
+            )
 
 
 class ReleaseWorkflowContracts(unittest.TestCase):
