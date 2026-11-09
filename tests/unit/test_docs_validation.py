@@ -100,6 +100,38 @@ class DocumentationValidation(unittest.TestCase):
                 with self.subTest(text=text):
                     self.assertIn(diagnostic, "\n".join(self.docs.link_errors(root, source, text)))
 
+    def test_unmatched_prose_bracket_does_not_hide_later_invalid_links(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            package(root)
+            put(root, "docs/recovery.md", header() + (
+                "\nUnmatched [prose\n\n[Bad](missing.md)\n[Escape](../../outside.md)\n"
+            ))
+            errors = self.docs.check_documents(root, list(root.rglob("*.md")))
+            self.assertIn("docs/recovery.md: local link missing: missing.md", errors)
+            self.assertIn("docs/recovery.md: local link escapes repository: ../../outside.md", errors)
+
+    def test_deeply_nested_labels_do_not_crash_document_checks(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            package(root)
+            nested = "[" * 1200 + "x" + "]" * 1200
+            put(root, "docs/nested.md", header() + "\n" + nested + "\n")
+            self.assertEqual(self.docs.check_documents(root, list(root.rglob("*.md"))), [])
+            put(root, "docs/nested.md", header() + "\n## " + nested + "\n[Section](#x)\n")
+            self.assertEqual(self.docs.check_documents(root, list(root.rglob("*.md"))), [])
+
+    def test_deeply_nested_labels_still_validate_inner_and_following_links(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            package(root)
+            nested = "[" * 1200 + "[Bad](missing.md)" + "]" * 1200
+            put(root, "docs/nested.md", header() + "\n" + nested + "\n[Escape](../../outside.md)\n")
+            self.assertEqual(self.docs.check_documents(root, list(root.rglob("*.md"))), [
+                "docs/nested.md: local link escapes repository: ../../outside.md",
+                "docs/nested.md: local link missing: missing.md",
+            ])
+
     def test_eligibility_excludes_historical_and_product_contracts(self):
         for path in ("docs/spec/new.md", "docs/engineering/guide.md", ".github/agent-policy/review.md",
                      "README.md", "CONTRIBUTING.md", "SECURITY.md", "backlog/README.md", "infra/README.md",
@@ -131,6 +163,27 @@ class DocumentationValidation(unittest.TestCase):
             self.assertEqual(self.docs.check_documents(root, list(root.rglob("*.md"))), [])
             put(root, "docs/sprint/README.md", header())
             self.assertIn("uncatalogued child S-001.md", "\n".join(self.docs.check_documents(root, list(root.rglob("*.md")))))
+
+    def test_sprint_metadata_and_rows_share_whole_document_reference_definitions(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            path, text = package(root)
+            definitions = {"issue": ISSUE, "idea": "../idea/x.md", "spec": "../spec/x.md", "plan": "../plan/x.md"}
+            for kind, target in definitions.items():
+                label = kind.title()
+                text = text.replace(f"[{label}]({target})", f"[{label}][{kind}]")
+            text = text.replace(f"[#10]({ISSUE})", "[#10][ISSUE]")
+            text += "\n" + "\n".join(f"[{key}]: {value}" for key, value in definitions.items()) + "\n"
+            put(root, "docs/sprint/S-001.md", text)
+            self.assertEqual(self.docs.link_errors(root, path, text), [])
+            self.assertEqual(self.docs.sprint_errors(root, path, text), [])
+            self.assertEqual(self.docs.check_documents(root, list(root.rglob("*.md"))), [])
+            for invalid in (
+                text.replace("[Plan][plan]", "Missing", 1),
+                text.replace("| [Plan][plan] | Maintainer", "| Missing | Maintainer"),
+            ):
+                with self.subTest(invalid=invalid):
+                    self.assertTrue(self.docs.sprint_errors(root, path, invalid))
 
     def test_malformed_angle_target_has_an_explicit_diagnostic(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -30,6 +30,7 @@ FOLDERS = ("idea", "spec", "plan", "sprint")
 WORK_KINDS = {"issue", "idea", "spec", "plan"}
 SPRINT_COLUMNS = ("Issue", "Idea", "Spec", "Plan", "Owner", "Dependencies", "State", "PR/evidence")
 ISSUE = re.compile(r"^https://github\.com/urruegg/frontier-envisioning/issues/[1-9]\d*$")
+REFERENCE_DEFINITION = re.compile(r"^ {0,3}\[([^\]\n]+)\]:[ \t]*(.*)$", re.M)
 
 
 def eligible(relative: Path) -> bool:
@@ -162,6 +163,12 @@ def _label(label: str) -> str:
     return " ".join(label.split()).casefold()
 
 
+def _reference_definitions(text: str) -> dict[str, str]:
+    """Resolve fragments against definitions from the enclosing document's prose."""
+    return {_label(match[1]): match[2].strip()
+            for match in REFERENCE_DEFINITION.finditer(_mask_code(_body(text)))}
+
+
 def _closing_bracket(body: str, start: int) -> int | None:
     depth, index = 1, start + 1
     while index < len(body):
@@ -214,35 +221,41 @@ def _inline_target(body: str, start: int) -> tuple[str | None, int, str | None]:
 
 def _heading_text(title: str) -> str:
     """Keep displayed labels, not inline destinations or reference identifiers."""
-    result, index = [], 0
-    masked = _mask_code(title)
-    while index < len(title):
-        if masked[index] != "[":
-            result.append(title[index])
-            index += 1
-            continue
-        close = _closing_bracket(masked, index)
-        if close is None:
-            result.append(title[index:])
-            break
-        result.append(_heading_text(title[index + 1:close]))
-        index = close + 1
-        if index < len(title) and title[index] == "(":
-            _, end, error = _inline_target(title, index + 1)
-            if not error:
-                index = end
-        elif index < len(title) and title[index] == "[":
-            end = _closing_bracket(title, index)
-            if end is not None:
-                index = end + 1
+    result = []
+    pending = [(title, 0)]
+    while pending:
+        title, index = pending.pop()
+        masked = _mask_code(title)
+        while index < len(title):
+            if masked[index] != "[":
+                result.append(title[index])
+                index += 1
+                continue
+            close = _closing_bracket(masked, index)
+            if close is None:
+                result.append(title[index:])
+                break
+            label = title[index + 1:close]
+            index = close + 1
+            if index < len(title) and title[index] == "(":
+                _, end, error = _inline_target(title, index + 1)
+                if not error:
+                    index = end
+            elif index < len(title) and title[index] == "[":
+                end = _closing_bracket(title, index)
+                if end is not None:
+                    index = end + 1
+            pending.append((title, index))
+            title, index = label, 0
+            masked = _mask_code(title)
     return "".join(result)
 
 
-def links(text: str) -> tuple[list[str], list[str]]:
+def links(text: str, definitions: dict[str, str] | None = None) -> tuple[list[str], list[str]]:
     """Return raw targets and syntax errors; never scan inside image alt text."""
     body = _mask_code(_body(text))
     targets, errors = [], []
-    definitions: dict[str, str] = {}
+    definitions = dict(definitions or {})
 
     def definition(match: re.Match[str]) -> str:
         key, value = _label(match[1]), match[2].strip()
@@ -254,10 +267,11 @@ def links(text: str) -> tuple[list[str], list[str]]:
         targets.append(value)
         return ""
 
-    body = re.sub(r"(?m)^ {0,3}\[([^\]\n]+)\]:[ \t]*(.*)$", definition, body)
+    body = REFERENCE_DEFINITION.sub(definition, body)
 
-    def scan(part: str) -> None:
-        index = 0
+    pending = [(body, 0)]
+    while pending:
+        part, index = pending.pop()
         while index < len(part):
             if part[index] == "\\":
                 index += 2
@@ -268,7 +282,8 @@ def links(text: str) -> tuple[list[str], list[str]]:
             start = index
             close = _closing_bracket(part, start)
             if close is None:
-                break
+                index += 1
+                continue
             label = part[start + 1:close]
             image = start > 0 and part[start - 1] == "!"
             index = close + 1
@@ -292,9 +307,9 @@ def links(text: str) -> tuple[list[str], list[str]]:
             elif _label(label) in definitions:
                 targets.append(definitions[_label(label)])
             if not image:
-                scan(label)
+                pending.append((part, index))
+                part, index = label, 0
 
-    scan(body)
     return targets, errors
 
 
@@ -332,8 +347,8 @@ def destination(target: str) -> str:
     return re.sub(r"\\([!\"#$%&'()*+,\-./:;<=>?@\[\\\]^_`{|}~])", r"\1", target)
 
 
-def destinations(text: str) -> tuple[list[str], list[str]]:
-    raw_targets, errors = links(text)
+def destinations(text: str, definitions: dict[str, str] | None = None) -> tuple[list[str], list[str]]:
+    raw_targets, errors = links(text, definitions)
     targets = []
     for raw in raw_targets:
         try:
@@ -369,8 +384,8 @@ def _local_path(root: Path, source: Path, url: SplitResult) -> Path:
     return ((root / path.lstrip("/")) if path.startswith("/") else (source.parent / path)).resolve()
 
 
-def link_errors(root: Path, source: Path, text: str) -> list[str]:
-    targets, errors = destinations(text)
+def link_errors(root: Path, source: Path, text: str, definitions: dict[str, str] | None = None) -> list[str]:
+    targets, errors = destinations(text, definitions)
     for target in targets:
         try:
             url = _url(target)
@@ -402,10 +417,11 @@ def link_errors(root: Path, source: Path, text: str) -> list[str]:
     return list(dict.fromkeys(errors))
 
 
-def work_kinds(root: Path, source: Path, text: str) -> tuple[set[str], list[str]]:
+def work_kinds(root: Path, source: Path, text: str,
+               definitions: dict[str, str] | None = None) -> tuple[set[str], list[str]]:
     kinds: set[str] = set()
-    targets, _ = destinations(text)
-    errors = link_errors(root, source, text)
+    targets, _ = destinations(text, definitions)
+    errors = link_errors(root, source, text, definitions)
     for target in targets:
         try:
             url = _url(target)
@@ -427,7 +443,8 @@ def sprint_errors(root: Path, path: Path, text: str) -> list[str]:
     if not path.is_relative_to(root / "docs" / "sprint") or path.name == "README.md":
         return []
     values, _ = _metadata(text)
-    kinds, reference_errors = work_kinds(root, path, values.get("References", ""))
+    definitions = _reference_definitions(text)
+    kinds, reference_errors = work_kinds(root, path, values.get("References", ""), definitions)
     errors = link_errors(root, path, text) + reference_errors
     if not WORK_KINDS.issubset(kinds):
         errors.append("sprint References must link issue, idea, spec and plan")
@@ -449,12 +466,12 @@ def sprint_errors(root: Path, path: Path, text: str) -> list[str]:
             cells = _cells(row)
             if len(cells) != len(SPRINT_COLUMNS):
                 errors.append(f"sprint row {number} has malformed columns")
-                errors.extend(link_errors(root, path, row))
+                errors.extend(link_errors(root, path, row, definitions))
                 continue
             if not cells[4] or not cells[6]:
                 errors.append(f"sprint row {number} has missing owner or state")
             for kind, cell in zip(("issue", "idea", "spec", "plan"), cells):
-                kinds, cell_errors = work_kinds(root, path, cell)
+                kinds, cell_errors = work_kinds(root, path, cell, definitions)
                 errors.extend(cell_errors)
                 if kind not in kinds:
                     errors.append(f"sprint row {number} lacks {kind} link in its column")
