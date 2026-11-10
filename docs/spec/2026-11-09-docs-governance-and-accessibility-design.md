@@ -2,16 +2,21 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-09 |
 | Author | Copilot SDK in VS Code; AI-assisted design and maintenance |
-| Status | Design, implementation plans and readiness approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); delivery evidence separate |
+| Status | Human design, plans and readiness approved; delivery in progress: D1-D5 in draft PR #12, G1 Proposed, G2 running; A not started; human #8 pending |
 | Scope | The eight approved repository improvements, delivered in bounded workstreams |
 | References | [Spec catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
 
-The design-stage approval statements below are retained as recorded evidence.
-Current plan/readiness approval is linked in the metadata; it does not accept
-policies, grant protected permissions or prove delivery.
+The design-stage source evidence below is retained. Exact subsequent human
+plan/readiness quotes and #6 comments are recorded in the
+[idea's approval provenance](../idea/2026-11-09-docs-governance-and-accessibility.md#approval-provenance).
+PR #11 was merged on 2026-11-09 at main `b0b4776`; D1-D5 are
+implemented/reviewed in [draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12),
+not merged. [SPRINT-001](../sprint/SPRINT-001-docs-governance-and-accessibility.md)
+records remaining G/A/human work. Approval does not accept Proposed policies,
+grant protected permissions or establish label-field changes.
 
 ## Approved source and approval boundary
 
@@ -19,7 +24,7 @@ The user approved `frontier-docs-governance-proposal.md` on 9 November 2026.
 Its SHA-256 is
 `1a82b7be5241bdd1108439c3aedc97a7ec2aa9ec6557c86d2d1a93957156c46c`.
 This repository spec records that design as a portable work package; it does
-not promote proposed policies, plans or permissions to active state.
+not activate Proposed policies or grant permissions.
 
 The user explicitly requested delegated implementation **after plan approval**.
 No implementation worker starts until that approval is recorded. People also
