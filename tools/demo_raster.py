@@ -1,12 +1,12 @@
 # Copyright (c) 2026 Urs Rüegg
 # SPDX-License-Identifier: MIT
-"""Replay verified 1.4.0 raster inputs only when all regenerated non-raster inputs match.
+"""Replay verified 1.4.0 rasters only when all version-approved generated inputs match.
 
 The archived PNG bytes avoid undeclared SVG converters and platform-dependent floating-point
 rasterisation. This does not replay the golden ZIP: code still generates its remaining files,
 and any changed input or tampered raster blocks the build.
-The explicitly enabled 1.6.1 preview uses 1.6.0 provenance only when no current
-record exists; a present record is never ignored.
+The finite 1.6.1 input correction retains 1.6.0 raster provenance. A present
+1.6.1 release record is authority for the finished rebuilt ZIP, not the old rasters.
 """
 from __future__ import annotations
 
@@ -20,6 +20,11 @@ from fe_lib import ROOT
 PROFILE = ROOT / "tests" / "fixtures" / "caldova-raster-1.4.0"
 SUPPORTED_VERSIONS = {"1.4.0", "1.5.0", "1.6.0"}
 PREVIEW_VERSIONS = {"1.6.1"}
+BASE_PROFILE_SHA256 = "46d37eef1a55f8655c4d09447b6335e39ec3b356621186339404c813ecfa5d15"
+CURRENT_INPUT_PROFILE = "tests/fixtures/caldova-raster-1.6.1-inputs.json"
+CURRENT_INPUT_PROFILE_SHA256 = "8b51e87d6db7c198be16f0e85b93f47eda13ced09fb4341c72eb956d08c85031"
+CURRENT_INPUT_PATHS = {"catalog.html", "scripts/identity_docs.py"}
+IDENTITY_ARCHIVE = "Caldova - agent identity package v1.0.zip"
 
 
 class RasterProfileError(Exception):
@@ -40,29 +45,85 @@ def _verify(data: bytes, expected: str, label: str) -> None:
         raise RasterProfileError(f"raster profile {label} hash differs")
 
 
+def _read_record(path: Path, label: str) -> dict:
+    try:
+        record = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise RasterProfileError(f"{label} is missing or malformed: {path.name}") from exc
+    if not isinstance(record, dict):
+        raise RasterProfileError(f"{label} must be an object")
+    return record
+
+
+def _release_identity_digest(version: str) -> str:
+    release = _read_record(ROOT / "releases" / version / "manifest.json", f"{version} release record")
+    artefacts = release.get("artefacts")
+    if not isinstance(artefacts, list) or not all(isinstance(a, dict) for a in artefacts):
+        raise RasterProfileError(f"{version} release record artefacts are malformed")
+    identities = [a.get("sha256") for a in artefacts if a.get("name") == IDENTITY_ARCHIVE]
+    if len(identities) != 1 or not isinstance(identities[0], str) or not re.fullmatch(r"[0-9a-f]{64}", identities[0]):
+        raise RasterProfileError(f"{version} release record identity digest is missing or malformed")
+    return identities[0]
+
+
+def _current_inputs(inputs: dict) -> tuple[dict, dict]:
+    path = ROOT / CURRENT_INPUT_PROFILE
+    record = _read_record(path, "current input profile")
+    _verify(path.read_bytes(), CURRENT_INPUT_PROFILE_SHA256, "current input profile")
+    if (set(record) != {"schema", "version", "base_profile_sha256", "inputs"}
+            or record["schema"] != "frontier-demo-current-inputs/1.0" or record["version"] != "1.6.1"
+            or record["base_profile_sha256"] != BASE_PROFILE_SHA256):
+        raise RasterProfileError("current input profile schema, version or base hash differs")
+    overrides = record["inputs"]
+    if not isinstance(overrides, dict) or set(overrides) != CURRENT_INPUT_PATHS:
+        raise RasterProfileError("current input profile must override exactly the two approved paths")
+    for name, digest in overrides.items():
+        if (name not in inputs or not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest)
+                or digest == inputs[name]):
+            raise RasterProfileError(f"current input profile override is invalid: {name}")
+    return dict(inputs, **overrides), {
+        "version": "1.6.1", "path": CURRENT_INPUT_PROFILE, "sha256": CURRENT_INPUT_PROFILE_SHA256,
+        "changed_paths": sorted(overrides),
+    }
+
+
+def verify_release_identity(archive: Path, report: dict) -> None:
+    """Verify the completed canonical archive; only the explicit unreleased preview has no digest."""
+    expected = report.get("expected_release_identity_sha256")
+    if expected is None:
+        if report.get("version") == "1.6.1" and report.get("preview") is True:
+            return
+        raise RasterProfileError("finished identity archive has no authoritative release digest")
+    _verify(archive.read_bytes(), expected, "finished identity archive")
+
+
 def replay(kit: Path, profile_dir: Path = PROFILE, version: str = "1.4.0") -> dict:
     if version not in SUPPORTED_VERSIONS | PREVIEW_VERSIONS:
         raise RasterProfileError(f"historical raster replay is not approved for {version}")
     manifest_path = profile_dir / "manifest.json"
     if not manifest_path.is_file():
         raise RasterProfileError("verified 1.4.0 raster profile is missing")
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if version == "1.6.1":
+        _verify(manifest_path.read_bytes(), BASE_PROFILE_SHA256, "current input profile base")
+    manifest = _read_record(manifest_path, "historical raster profile")
     if manifest.get("schema") != "frontier-demo-raster/1.0" or manifest.get("version") != "1.4.0":
         raise RasterProfileError("unsupported historical raster profile")
-    reference_version = version
+    reference_version = "1.6.0" if version == "1.6.1" else version
     release_path = ROOT / "releases" / reference_version / "manifest.json"
-    if not release_path.is_file() and version in PREVIEW_VERSIONS:
-        reference_version = "1.6.0"
-        release_path = ROOT / "releases" / reference_version / "manifest.json"
     if not release_path.is_file():
         raise RasterProfileError(f"raster reference release record is missing: {reference_version}")
-    release = json.loads(release_path.read_text(encoding="utf-8"))
-    expected_source = next(a["sha256"] for a in release["artefacts"] if a["name"] == "Caldova - agent identity package v1.0.zip")
+    expected_source = _release_identity_digest(reference_version)
     if manifest.get("source_archive_sha256") != expected_source:
         raise RasterProfileError("raster profile provenance does not match the release record")
     inputs, assets = manifest.get("inputs"), manifest.get("assets")
     if not isinstance(inputs, dict) or not inputs or not isinstance(assets, dict) or not assets:
         raise RasterProfileError("raster profile inputs or assets are missing")
+    current_profile = None
+    expected_release = expected_source
+    preview = version == "1.6.1" and not (ROOT / "releases" / version / "manifest.json").exists()
+    if version == "1.6.1":
+        inputs, current_profile = _current_inputs(inputs)
+        expected_release = None if preview else _release_identity_digest(version)
     files = [p for p in kit.rglob("*") if p.is_file() and "__pycache__" not in p.parts]
     generated = {p.relative_to(kit).as_posix() for p in files if p.suffix.lower() != ".png" and p != kit / "README.md"}
     if generated != set(inputs):
@@ -90,4 +151,6 @@ def replay(kit: Path, profile_dir: Path = PROFILE, version: str = "1.4.0") -> di
     visuals = sum(Path(name).name == "card.png" or Path(name).parent.as_posix() == "visuals" for name in assets)
     return {"method": "frozen-release-raster", "converted": 0, "restored": len(pending), "restored_visuals": visuals,
             "profile_version": "1.4.0", "source_archive_sha256": expected_source, "readme_sha256": readme_hash,
-            "reference_version": reference_version, "preview": reference_version != version}
+            "version": version, "reference_version": reference_version, "preview": preview,
+            "current_input_profile": current_profile, "verified_inputs": len(inputs),
+            "expected_release_identity_sha256": expected_release}
