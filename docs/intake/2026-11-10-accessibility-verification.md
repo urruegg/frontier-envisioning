@@ -157,6 +157,12 @@ a new failing browser assertion measured it, followed by a narrow-only grid
 fix. The title now has 224px, branding moves below it, and all four targeted
 header/reflow tests pass. No content is clipped or globally overflow-hidden.
 
+Permanent review images (fictitious Caldova data only):
+
+- [Filtered organisation, desktop](accessibility-review-2026-11-10/org-filtered-desktop.png).
+- [Evidence modal, desktop](accessibility-review-2026-11-10/evidence-dialog.png).
+- [Readable Overview at 320px](accessibility-review-2026-11-10/overview-320.png).
+
 Final read-only spec/correctness review found no new blockers in the owned
 blueprint implementation or scoped documentation-contract correction.
 The known catalogue scope block and human acceptance still prevent a
