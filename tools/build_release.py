@@ -25,8 +25,12 @@ START = """# Frontier Envisioning {v} - start here
 Microsoft Innovation Hub · complete package
 
 This bundle holds the Frontier Envisioning plugin for Copilot Cowork, its documentation and the demo
-built for the fictitious Caldova Industrial AG. The source of truth is the Git repository; this bundle
-is built from the release tag v{v} by the release workflow.
+built for the fictitious Caldova Industrial AG. The source of truth is the Git repository.
+Published releases are built from tag v{v}; local unreleased builds are development candidates.
+
+Private repository analyses and intake records are not included. The current distribution is for
+Microsoft-internal use; a successful technical build is not external publication or IP clearance.
+Retain all licences and product-icon notices.
 
 ## Install the plugin (two minutes)
 
@@ -43,7 +47,6 @@ is built from the release tag v{v} by the release workflow.
 | `CHANGELOG.md` | What changed in each release |
 | `docs/prd.md` | Product requirements, release plan and product decisions |
 | `docs/solution-design.md` | Architecture, components, flows and verification |
-| `docs/analysis/` | Existing analysis documents |
 | `demo/` | The Caldova blueprint, the agent identity kit and its catalogue (all fictitious) |
 """
 
@@ -75,10 +78,13 @@ def main(argv=None) -> int:
         (demo_html.read_bytes(), f"demo/{DEMO_HTML_NAME}"),
         (catalogue.read_bytes(), "demo/Caldova - agent identity catalogue.html"),
     ]
-    for p in sorted((ROOT / "docs" / "analysis").glob("*.md")):
-        entries.append((p.read_bytes(), f"docs/analysis/{p.name}"))
     if kit_zip:
         entries.append((kit_zip.read_bytes(), f"demo/{kit_zip.name}"))
+    errors = bp.distribution_errors(entries)
+    if errors:
+        for error in errors:
+            print("ERROR:", error)
+        return 1
     out = dist / f"frontier-envisioning-{v}-complete.zip"
     top = f"frontier-envisioning-{v}"
     with zipfile.ZipFile(out, "w") as zf:

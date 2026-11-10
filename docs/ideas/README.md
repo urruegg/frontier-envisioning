@@ -11,6 +11,7 @@
 
 | Idea | State | Governing work |
 |---|---|---|
+| [Anonymised distribution](2026-11-10-anonymised-distribution.md) | Maintainer-requested cleanup; internal audience assumed, no external clearance | [#20](https://github.com/urruegg/frontier-envisioning/issues/20), [SPRINT-002](../sprints/SPRINT-002-anonymised-distribution.md) |
 | [Traceable documentation and accessibility](2026-11-09-docs-governance-and-accessibility.md) | Main integration #15 and final human sign-off recorded; sole ownership corrected through #17; policies Proposed, protected routing open. Plural-layout amendment under #18 | [#6](https://github.com/urruegg/frontier-envisioning/issues/6), [#18](https://github.com/urruegg/frontier-envisioning/issues/18), [delivery evidence](../sprints/SPRINT-001-docs-governance-and-accessibility.md) |
 
 The idea states problem, evidence, scope and alternatives. It is not an execution

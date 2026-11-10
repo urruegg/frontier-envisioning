@@ -30,8 +30,8 @@ They must not be hidden inside the initial import.
 
 | Boundary | Location and state |
 |---|---|
-| Target repository | `urruegg_microsoft/frontier-envisioning`; existing Git history and `origin`; clean `main` tracking `origin/main` before this document |
-| Export container | `C:\Users\urruegg\source\urruegg_microsoft\frontier-envisioning-github-repo` |
+| Target repository | Enterprise owner redacted for current-tree anonymisation; the original target is retained in private Git history. Existing history and `origin`; clean `main` tracking `origin/main` before this document |
+| Export container | Machine-specific path anonymised as `C:\workspaces\frontier-envisioning-github-repo`; this does not relocate the actual checkout |
 | Exported engineering source | The `frontier-envisioning` subdirectory of the export container |
 | Product baseline | Frontier Envisioning 1.4.0, dated 2026-11-08 |
 | Upstream research | Innovation-Hub-Agentic-Toolkit at commit `5e85bbe8f9d94e4abddf60fb8f834790838f4f37` |

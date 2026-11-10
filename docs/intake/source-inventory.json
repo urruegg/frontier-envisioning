@@ -1,6 +1,8 @@
 {
   "baselineVersion": "1.4.0",
-  "repository": "urruegg_microsoft/frontier-envisioning",
+  "repository": "redacted-owner/frontier-envisioning",
+  "repositoryRedacted": true,
+  "redactionNote": "Enterprise owner anonymised in current-tree metadata on 2026-11-10; original receipt remains in private Git history at 8aa79de429ee5bb90f2780d962cc4612f9b6916e. Original file records and hashes are unchanged.",
   "files": [
     {
       "path": ".editorconfig",

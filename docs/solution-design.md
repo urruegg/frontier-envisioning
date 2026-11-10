@@ -9,6 +9,13 @@
 | Scope | Part B with unreleased accessibility design, technical sources and the historical 1.6.0 file inventory |
 | References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md) |
 
+**Unreleased 1.6.1 distribution hygiene (#20).** Both builders reuse the package
+module's bounded, recursive byte/ZIP validator before writing inventory,
+archive or checksum output. Member names, text and ZIP comments are inspected;
+the complete bundle no longer includes the analysis-directory wildcard.
+Valid entry bytes, ordering and fixed ZIP metadata are preserved. See the
+[distribution spec](specs/2026-11-10-anonymised-distribution-design.md).
+
 This document revision is independent of the plugin version. It is the
 authoritative technical design; [prd.md](prd.md) owns the requirements,
 release plan, product decisions and shared product/basis/licence/provenance

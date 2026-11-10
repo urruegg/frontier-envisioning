@@ -9,6 +9,12 @@
 | Scope | Shared product context, unreleased 1.6.1 requirements and original Part A |
 | References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md) |
 
+**Unreleased 1.6.1 distribution hygiene (#20).** Current source references are
+anonymised without changing attribution or private historical evidence. Plugin
+and complete-bundle builds must fail on the defined privacy checks before
+writing output; the complete bundle excludes internal repository analyses.
+The assumed audience is Microsoft internal, not an external publication approval.
+
 This document revision is independent of the plugin version. It is the
 authoritative requirements document; [solution-design.md](solution-design.md)
 owns the companion technical design.

@@ -6,6 +6,22 @@ Envision any customer as a Frontier company — **human-led, agent-operated**. T
 
 ---
 
+## Distribution boundary
+
+The current distribution is prepared for Microsoft-internal use; the engineering
+repository remains private. The plugin and complete bundle exclude private
+repository analyses and intake records. Their build checks reject
+enterprise-suffix identifiers, personal profile paths, common credential
+patterns and explicitly classified internal Markdown, including nested ZIP
+content and comments.
+
+Unreleased builds are development candidates. An offline install-plan check is
+not an actual Cowork install or a published release.
+
+These are technical checks, not public/customer redistribution approval or an
+exhaustive confidentiality assessment. Retain copyright, licences and Microsoft
+product-icon terms. Confirm content/IP clearance before sharing externally.
+
 ## Install it in Copilot Cowork (two minutes)
 
 1. **Download** `frontier-envisioning-plugin-1.6.1.zip`. Keep it zipped.
@@ -14,7 +30,7 @@ Envision any customer as a Frontier company — **human-led, agent-operated**. T
 
    > **Install the Frontier PlugIn**
 
-4. **Approve** when Cowork asks to save the skills to your OneDrive (`Documents/Cowork/skills`). Cowork checks the package and confirms the five skills it installed.
+4. **Approve** when Cowork asks to save the skills to your OneDrive (`Documents/Cowork/skills`). Cowork checks the package and confirms the seven skills it installed.
 5. **Start a new chat** and try one of these:
 
    > Build the Frontier blueprint demo for Caldova

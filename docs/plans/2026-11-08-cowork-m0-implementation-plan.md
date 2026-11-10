@@ -104,7 +104,7 @@ documents.
 - [ ] Verify the destination still has only the expected documentation changes.
 
 ```powershell
-Set-Location 'C:\Users\urruegg\source\urruegg_microsoft\frontier-envisioning'
+Set-Location 'C:\workspaces\frontier-envisioning'
 git --no-pager status --short --branch
 git remote get-url origin
 ```
@@ -128,8 +128,8 @@ Expected: a new local branch; the initial commit and `origin` remain intact.
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-$source = 'C:\Users\urruegg\source\urruegg_microsoft\frontier-envisioning-github-repo\frontier-envisioning'
-$target = 'C:\Users\urruegg\source\urruegg_microsoft\frontier-envisioning'
+$source = 'C:\workspaces\frontier-envisioning-github-repo\frontier-envisioning'
+$target = 'C:\workspaces\frontier-envisioning'
 $roots = @(
   '.devcontainer', '.editorconfig', '.gitattributes', '.github', '.gitignore',
   '.pre-commit-config.yaml', '.vscode', 'AGENTS.md', 'CHANGELOG.md',
@@ -176,7 +176,8 @@ foreach ($file in $files) {
 New-Item -ItemType Directory -Path (Join-Path $target 'docs\intake') -Force | Out-Null
 [ordered]@{
   baselineVersion = '1.4.0'
-  repository = 'urruegg_microsoft/frontier-envisioning'
+  repository = 'redacted-owner/frontier-envisioning'
+  repositoryRedacted = $true
   files = @($inventory)
 } | ConvertTo-Json -Depth 5 |
   Set-Content -LiteralPath (Join-Path $target 'docs\intake\source-inventory.json') -Encoding utf8
@@ -521,7 +522,7 @@ use PowerShell/Windows paths.
 **Files:** `.github/CODEOWNERS`, related engineering guides and M0 evidence.
 
 - [ ] Set CODEOWNERS to an eligible maintainer/team. If the correct initial
-      owner is the target repository owner, use `@urruegg_microsoft`; do not
+      owner is the current approved repository owner, use `@urruegg`; do not
       invent a team or reviewer.
 - [ ] Require L1, L2 and IaC on the intended branch and prove an intentionally
       failing PR cannot merge. Verify actual ruleset enforcement; branch
