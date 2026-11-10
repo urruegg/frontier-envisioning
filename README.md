@@ -20,7 +20,7 @@ The identity kit supplies branding, not Entra identity provisioning. HubWorks is
 | Current product baseline | **1.6.0** (8 November 2026), imported from Copilot Cowork; 1.4.0 records retained |
 | Development patch | **1.6.1**: bounded sticky navigation fixes the workflow legend overlap; not yet released |
 | Repository home | [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning), private; use approved work material only |
-| Sole maintainer | [@urruegg](https://github.com/urruegg), the public-cloud account; enterprise-only `@urruegg_microsoft` is not a second collaborator |
+| Sole maintainer | [@urruegg](https://github.com/urruegg), the public-cloud account; no second collaborator is implied |
 | Plugin licence | MIT (Microsoft product icons: see [THIRD-PARTY-NOTICES.md](plugin/THIRD-PARTY-NOTICES.md)) |
 | Demo data | the fictitious Caldova Industrial AG only |
 | Status | Intake: see [docs/engineering/intake-plan.md](docs/engineering/intake-plan.md) and milestone *M0 · Intake baseline* |

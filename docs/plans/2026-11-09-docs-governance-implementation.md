@@ -91,7 +91,7 @@ Per-command Windows environment:
 
 ```powershell
 if (Test-Path Env:PYTHONHOME) { Remove-Item Env:PYTHONHOME }
-$primary = 'C:\Users\urruegg\source\urruegg_microsoft\frontier-envisioning'
+$primary = 'C:\workspaces\frontier-envisioning'
 Set-Location $primary
 $env:PATH = (Join-Path $primary '.venv\Scripts') + ';' + $env:PATH
 $env:PYTHONUTF8 = '1'

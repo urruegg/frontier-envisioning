@@ -21,7 +21,7 @@ The plugin runs inside Copilot Cowork. This repository adds the engineering arou
 The approved private source, issue and PR host is `urruegg/frontier-envisioning`. Identity-kit branding is not Entra identity provisioning; HubWorks is controlled source integration, not an assumed runtime loader. A document, status or harness selection does not prove implemented, approved, published or deployed capability.
 
 `@urruegg` is the sole human maintainer and intended code owner for every path.
-The same person's enterprise-only account, `@urruegg_microsoft`, is not a
+The same person's enterprise-only account is not a
 collaborator or reviewer to add here. Public-cloud hosting does not mean public
 repository visibility. The maintainer reviews changes and records sign-off;
 GitHub does not allow PR authors to formally approve their own PRs. Never

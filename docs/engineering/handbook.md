@@ -61,6 +61,16 @@ Copilot Cowork checks that cannot run in GitHub (skill structure and score, rout
 - **Release steps.** Verify evidence and the `release-approval` environment/reviewer/tag policy, explicitly enable `RELEASE_ENABLED`, review and merge, tag the approved commit, run strict L1/L2, approve the draft release and record its manifest. These are human operations. Showcase `prod` is a separate boundary.
 - **Distribution.** The plugin package from the GitHub release goes to Cowork users: chat install ("Install the Frontier PlugIn") or the organisation catalogue (decision D-02).
 
+For current Microsoft-internal distribution, `package` and `bundle` validate their
+ordered bytes before writing output: enterprise-suffix identifiers, personal
+profile paths, common credential patterns, classified Markdown and nested ZIP
+content/comments must pass the shared distribution guard. The complete bundle
+has an explicit document list and excludes repository analyses/intake records.
+Run `python tools/dev.py package demo bundle`, verify checksums and use the
+extracted plugin's install-preparation script for an offline integrity check.
+Building is not external/public content or IP approval; the repository stays
+private and original release records remain immutable.
+
 ## 6. Environments
 
 | Unit | Development | Test | Production |

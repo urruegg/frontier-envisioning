@@ -11,6 +11,7 @@
 
 | Plan | Owner during execution | Tracking and delivery evidence |
 |---|---|---|
+| [Anonymised distribution](2026-11-10-anonymised-distribution-plan.md) | `@urruegg` accountable; inline AI-assisted maintenance | [#20](https://github.com/urruegg/frontier-envisioning/issues/20), [SPRINT-002](../sprints/SPRINT-002-anonymised-distribution.md); no external clearance inferred |
 | [Plural documentation layout](2026-11-10-documentation-layout-plan.md) | `@urruegg` accountable; scoped AI-assisted cleanup | [#18](https://github.com/urruegg/frontier-envisioning/issues/18); maintainer-directed naming/removal amendment, evidence in [SPRINT-001](../sprints/SPRINT-001-docs-governance-and-accessibility.md) |
 | [Master implementation/delegation plan](2026-11-09-docs-governance-implementation.md) | Parent coordinator; `@urruegg` accountable | [#6](https://github.com/urruegg/frontier-envisioning/issues/6); integration through human-merged [#15](https://github.com/urruegg/frontier-envisioning/pull/15); protected human work remains separate |
 | [Documentation foundation](2026-11-09-documentation-foundation-plan.md) | Bounded docs/builder workers | [#10](https://github.com/urruegg/frontier-envisioning/issues/10), human-merged [#12](https://github.com/urruegg/frontier-envisioning/pull/12); compatibility-index contract superseded by #18 |

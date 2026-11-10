@@ -11,6 +11,7 @@
 
 | Sprint | Goal | State |
 |---|---|---|
+| [SPRINT-002](SPRINT-002-anonymised-distribution.md) | Anonymised current references and validated distribution artifacts | [#20](https://github.com/urruegg/frontier-envisioning/issues/20); local strict gates, eleven-entry bundle and seven-skill offline install verification pass; internal candidate, review/clearance separate |
 | [SPRINT-001](SPRINT-001-docs-governance-and-accessibility.md) | Documentation foundations, governance, accessibility and linked plural-layout cleanup | #15 human-merged with L1/L2 evidence and final sign-off; #17 human-merged ownership correction. #18 cleanup tracked; policies Proposed, protected routing still open |
 
 Sprint state records delivery, not design approval, permissions or an invented

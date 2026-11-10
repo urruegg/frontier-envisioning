@@ -27,7 +27,7 @@ existing Python gates and actual Microsoft Edge/assistive technology.
 
 ## Account and acceptance refinement (2026-11-10)
 
-The user clarified that `@urruegg_microsoft` is their enterprise-only GitHub
+The user clarified that their second account is enterprise-only GitHub
 account, whereas `@urruegg` is their account for this repository on GitHub's
 public-cloud platform. The repository is private and single-user.
 This explicit decision supersedes the earlier second-contributor invitation,

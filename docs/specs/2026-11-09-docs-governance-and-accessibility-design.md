@@ -136,7 +136,7 @@ CODEOWNERS does not grant access or create an eligible independent reviewer.
 Last matching pattern wins. The user's 10 November account correction
 supersedes the original two-account proposal: `@urruegg` is the sole public-cloud
 maintainer and intended owner of every path, including infrastructure and
-governance. The same person's enterprise-only `@urruegg_microsoft` account is
+governance. The same person's enterprise-only account is
 not a second collaborator to invite or use for reviews here. The repository
 remains private; no host or visibility change is requested.
 

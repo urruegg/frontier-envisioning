@@ -13,8 +13,8 @@
 
 - Approved home: [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning), private. The user confirmed Microsoft approval on 9 November 2026. This does not authorize public visibility or automatic server administration.
 - Account decision on 10 November 2026: `@urruegg` is the sole maintainer on
-  GitHub's public-cloud platform. `@urruegg_microsoft` is the same person's
-  enterprise-only account and is not an eligible second collaborator for this
+  GitHub's public-cloud platform. The same person's
+  enterprise-only account is not an eligible second collaborator for this
   repository. Do not invite it or assign it ownership here. The repository
   remains private; the platform name is not a visibility setting.
 - Git, Python 3.11+ and the GitHub CLI signed in: `gh auth login` (scopes `repo` and `workflow`).
