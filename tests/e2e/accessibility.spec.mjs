@@ -664,6 +664,16 @@ test("organisation and ADR filters expose pressed state and interactive SVG grou
   expect(problems).toEqual([]);
 });
 
+test("narrow header reserves readable title space rather than one-word columns", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 });
+  await open(page, "/blueprint.html");
+  const title = await page.locator("#top .ttl").boundingBox();
+  const branding = await page.locator("#top .cobrand").boundingBox();
+  expect(title.width).toBeGreaterThanOrEqual(200);
+  expect(branding.y).toBeGreaterThanOrEqual(title.y + title.height);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(321);
+});
+
 test("all 14 views reflow at 320 CSS pixels without document overflow", async ({ page }, info) => {
   await page.setViewportSize({ width: 320, height: 900 });
   const problems = watchProblems(page);

@@ -178,11 +178,13 @@ merged, with policies still Proposed. The parent reports cloud L1/L2/IaC
 passed for both PRs, CodeQL neutral. A1-A4 are implemented; A5 documentation
 is handed off. Catalogue AA contrast leaves full accessibility L2 red and
 A4/A5 acceptance incomplete. The excluded generator needs a new human scope
-decision, not an inferred extension of the approved plan. Final parent
-verification, human #8 and manual acceptance remain pending.
-The A5 documentation handoff additionally records strict L1 failure on
-document-contract date/content pins; no full-L1 pass is claimed for that
-revision. Parent resolution must preserve real dates and historical evidence.
+decision, not an inferred extension of the approved plan. Human #8 and manual
+acceptance remain pending.
+The initial A5 documentation-contract failure was corrected in `2703703`
+while preserving historical hashes/results and real revision dates.
+Final parent strict L1 passes (145 tests, one expected skip, 311 subtests,
+34 plugin checks and 41 DOM tests). Full strict L2 remains red:
+42 passed and the two catalogue AA schemes failed. No failure is waived.
 See [SPRINT-001](../sprint/SPRINT-001-docs-governance-and-accessibility.md) for
 delivery evidence. No policy activation, label-field change, protected edit,
 release or deployment is claimed.

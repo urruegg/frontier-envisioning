@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-10 |
 | Author | Copilot; AI-assisted A5 documentation and evidence maintenance |
-| Status | Blocked A5 documentation handoff: strict L1 document-contract failures; A4/A5 acceptance, catalogue AA and human checks outstanding |
+| Status | Strict L1 passed after scoped contract correction; full L2 blocked by catalogue AA; human acceptance outstanding |
 | Scope | New implementation evidence and handoff for #7; not the original audit, approval or a release record |
 | References | [Issue #7](https://github.com/urruegg/frontier-envisioning/issues/7), [Approved spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [A5 plan](../plan/2026-11-09-accessibility-plan.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Testing strategy](../engineering/testing-strategy.md), [Original audit](2026-11-09-accessibility-audit.json) |
 
@@ -97,22 +97,79 @@ section subtests hash A.8, B.5 and B.9. The requested real-date metadata,
 NFR-0012 update and clearly separated development design/evidence trigger
 those contracts. The historical 1.6.0 acceptance/release tables are unchanged.
 No backdating, fixture/hash update, test edit, skip or waiver was made.
-The parent needs a separately bounded documentation-contract resolution;
-this docs-only worker cannot make source/test changes.
+The docs-only worker did not change tests. The subsequent bounded correction
+`2703703` now allows real ISO revision dates and the named approved current
+accessibility additions while retaining original historical results, IDs,
+anchors, provenance and inventory checks. The original fixture/hashes remain
+unchanged; mutation regressions demonstrate those protections still fail when
+historical content is altered.
 
 The L1 attempt stopped before self-test, its package/demo/reproduction steps,
 DOM and final archive scan. Only the standalone package and DOM results above
 are claimed fresh. There is no `ALL GATES PASSED` result for full L1.
-No fresh full L2 was delegated or run here; the parent owns final browser
-verification, exact counts and review.
+That description is the initial A5 attempt, not the final integration result.
+
+## Final parent verification (2026-11-10)
+
+After `2703703` and the focused narrow-header follow-up,
+`python tools/dev.py check --strict` ended with
+**ALL GATES PASSED**: **145 passed, 1 skipped, 311 subtests passed**;
+all 34 plugin checks and 41 DOM tests passed. The skip is the expected
+unreleased 1.6.1 reproduction check; no release manifest was fabricated.
+
+`python tools/dev.py site e2e --strict` then completed with
+**42 passed, 2 failed**. Both failures are the standalone identity-catalogue
+AA cases, one per scheme; full L2 remains blocked, not waived. Every other
+browser test passed, including all fourteen views, focus/tab regressions,
+filtered operable nodes, 320px reflow and the existing workflow/legend checks.
+
+Parsing actual scan-summary records from the final run gives **140 executions,
+136 distinct labelled states, 134 states with no applicable WCAG violations**.
+The two remaining states are the catalogue in light/dark; retries account for
+four extra executions. Best-practice-only and incomplete findings remain
+attached. These counts do not establish full WCAG conformance.
+
+```text
+=== summary (strict L1)
+ok    0.0s  template drift (src/renderer -> blueprint template)
+ok    3.3s  lint
+ok    1.5s  documentation metadata, links and traceability
+ok    9.0s  customer-neutrality scan
+ok   62.9s  unit tests
+ok   43.8s  plugin self-test
+ok    0.3s  package
+ok   24.8s  Caldova demo
+ok    0.0s  release reproduction
+ok   12.0s  DOM tests (happy-dom)
+ok    7.2s  customer-neutrality scan
+ALL GATES PASSED
+
+=== summary (strict L2)
+ok    0.1s  showcase site
+FAILED: browser tests failed  220.6s  browser tests (Playwright)
+GATE FAILED: browser tests failed
+42 passed, 2 catalogue-only failures
+```
+
+Offline Edge screenshots were visually inspected for the filtered organisation,
+evidence modal and 320px Overview. Review exposed a squeezed 115px title column;
+a new failing browser assertion measured it, followed by a narrow-only grid
+fix. The title now has 224px, branding moves below it, and all four targeted
+header/reflow tests pass. No content is clipped or globally overflow-hidden.
+
+Final read-only spec/correctness review found no new blockers in the owned
+blueprint implementation or scoped documentation-contract correction.
+The known catalogue scope block and human acceptance still prevent a
+merge-ready verdict. Generator, historical raster/profile, release records
+and protected controls remain unchanged.
 
 ## Human and parent handoff
 
 - Keep #6/#7 and A4/A5 acceptance open while catalogue AA remains unresolved.
-- Resolve the strict L1 documentation-contract blocker without backdating or
-  weakening preservation of historical evidence; then rerun full verification.
-- Parent reviews screenshots/focus/diagram reachability and runs final L2;
-  automation is not a manual inspection claim.
+- Strict L1 document-contract integration is resolved without backdating or
+  weakening historical protection; the final L2 catalogue scope block remains.
+- Parent publishes the draft and screenshots with the actual red L2 result;
+  automation is not a manual assistive-technology inspection claim.
 - Human [#8](https://github.com/urruegg/frontier-envisioning/issues/8) owns
   Narrator/screen-reader, 200–400% zoom, real Windows high-contrast and voice
   acceptance, plus protected ownership/access/routing actions.

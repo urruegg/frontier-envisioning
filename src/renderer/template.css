@@ -853,6 +853,10 @@ svg.wfsvg{display:block}
 
 /* Reflow text and cards, not the contents of locally scrollable 2D diagrams/tables. */
 @media (max-width:700px){
+  header.top{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px}
+  .vdiv{display:none}
+  .ttl{min-inline-size:0}
+  .cobrand{grid-column:1 / -1;margin-inline-start:0;text-align:start}
   .banner .pill{white-space:normal;max-inline-size:100%;overflow-wrap:anywhere}
   .outcomes,.foundation,.grid2,.agtop,.mrow,dl.kv,.q .row{grid-template-columns:minmax(0,1fr)}
   .alist,.mrow > div,.kv dd{min-inline-size:0;overflow-wrap:anywhere}

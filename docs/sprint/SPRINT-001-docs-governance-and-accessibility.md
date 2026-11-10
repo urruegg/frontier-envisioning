@@ -84,8 +84,9 @@ L2 red. This is not only the original best-practice empty-header finding.
 No new scope approval, gate waiver or catalogue assertion skip is recorded.
 A4/A5 acceptance and human #8 protected routing/access/ownership plus manual
 Narrator/zoom/real high-contrast/voice checks remain open.
-Fresh A5 strict L1 also fails on pinned document dates/content; this needs a
-separately bounded parent resolution, not backdating or test edits in A5.
+The initial A5 document-contract integration failure was resolved in `2703703`
+without backdating or weakening historical protections. Final strict L1 passes;
+full L2 still fails only on the two excluded-catalogue AA cases.
 
 ## Current implementation evidence
 
@@ -127,8 +128,17 @@ separately bounded parent resolution, not backdating or test edits in A5.
   full strict L1 attempt stopped at document-contract tests: 6 failed,
   135 passed, 1 skipped, 234 subtests passed. A standalone DOM run then
   passed all 41 tests. No source/test/fixture changes or backdating were made.
-  Full L2 remains blocking; parent final verification and human acceptance
-  are not completed by documentation, standalone checks or earlier L1 results.
+  That was the initial A5 checkpoint, not the final verification result.
+- Parent correction `2703703` retains the historical fixture/hashes and
+  mutation guards while permitting real revision dates and the approved
+  current accessibility additions. Final `check --strict`:
+  **ALL GATES PASSED**, 145 tests, one expected unreleased-version skip,
+  311 subtests, 34 plugin checks and 41 DOM tests.
+- Final `site e2e --strict`: **42 passed, 2 failed**, both standalone
+  catalogue AA schemes. Axe summaries contain 140 executions and 136 distinct
+  labelled states; 134 have no applicable WCAG violations, with incomplete/
+  best-practice findings retained. This is not manual acceptance or full
+  conformance. See the [final handoff](../intake/2026-11-10-accessibility-verification.md#final-parent-verification-2026-11-10).
 
 ## Historical planning evidence (before PR #11 merge)
 
