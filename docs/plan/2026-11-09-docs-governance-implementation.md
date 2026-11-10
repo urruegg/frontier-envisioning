@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
+| Version | 0.5 |
 | Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | Human design, plans and readiness approved; D1-D5 in draft PR #12, G1-G3 in draft PR #13 (policies Proposed); A1-A4 implemented, A5 docs handed off, A4/A5 acceptance blocked; human #8 pending |
+| Status | PRs #12/#13/#14 human-merged to their bases; remaining stack awaits main integration; catalogue AA and human #8 acceptance remain blocked; policies Proposed |
 | Scope | Coordinated delegated implementation of the eight approved requirements |
 | References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md) |
 
@@ -170,13 +170,16 @@ Manual assistive-technology approval is not inferred from automated tests.
 - [ ] People review/merge; people separately tag, release and deploy.
 
 Delivery note on 2026-11-10: human design, plan and readiness approval recorded;
-D1-D5 implemented and spec/code-reviewed in
-[draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12), not merged.
-G1-G3 delivered in
-[draft PR #13](https://github.com/urruegg/frontier-envisioning/pull/13), not
-merged, with policies still Proposed. The parent reports cloud L1/L2/IaC
-passed for both PRs, CodeQL neutral. A1-A4 are implemented; A5 documentation
-is handed off. Catalogue AA contrast leaves full accessibility L2 red and
+D1-D5 were human-merged to main through
+[PR #12](https://github.com/urruegg/frontier-envisioning/pull/12).
+G1-G3 were human-merged through
+[PR #13](https://github.com/urruegg/frontier-envisioning/pull/13) into the
+foundation branch, and accessibility through
+[PR #14](https://github.com/urruegg/frontier-envisioning/pull/14) into governance.
+Those stacked merges are not yet on main; a separate main integration PR is
+required. Policies remain Proposed. Cloud L1/L2/IaC passed for #12/#13,
+CodeQL neutral; #14 cloud L2 retained the two catalogue failures.
+Catalogue AA contrast leaves full accessibility L2 red and
 A4/A5 acceptance incomplete. The excluded generator needs a new human scope
 decision, not an inferred extension of the approved plan. Human #8 and manual
 acceptance remain pending.

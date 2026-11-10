@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
+| Version | 0.5 |
 | Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | Human design, plans and readiness approved; D1-D5 in draft PR #12, G1-G3 in draft PR #13 (policies Proposed); A1-A4 implemented, A5 docs handed off, A4/A5 acceptance blocked; human #8 pending; sprint incomplete |
+| Status | PRs #12/#13/#14 human-merged to their respective bases; only #12 is on main; remaining stack awaits main integration, catalogue scope approval and human #8 acceptance |
 | Scope | The bounded work package for the eight approved requirements; not a delivery-date commitment |
 | References | [Sprint catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
 
@@ -24,9 +24,9 @@ protected controls by agent, or claim assistive-technology acceptance from scans
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#10](https://github.com/urruegg/frontier-envisioning/issues/10) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Documentation](../plan/2026-11-09-documentation-foundation-plan.md) | `@urruegg` accountable; parent coordinates docs/builder workers | Human plan/readiness evidence recorded | D1-D5 implemented and spec/code-reviewed; not merged | [Draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12), targets main |
-| [#9](https://github.com/urruegg/frontier-envisioning/issues/9) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Governance](../plan/2026-11-09-agent-governance-plan.md) | `@urruegg` accountable; parent coordinates governance worker | Stacked on #10 draft PR #12 | G1-G3 delivered, not merged; policies Proposed; human activation pending | [Draft PR #13](https://github.com/urruegg/frontier-envisioning/pull/13), HEAD `fb0c182`, targets `feat/10-documentation-foundation` |
-| [#7](https://github.com/urruegg/frontier-envisioning/issues/7) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Accessibility](../plan/2026-11-09-accessibility-plan.md) | `@urruegg` accountable; parent coordinates renderer and bounded A5 docs work | Human plan/readiness evidence recorded; stacked on governance #13; shared-doc writers finished | A1-A4 implemented, A5 docs handed off; catalogue AA blocks A4/A5 acceptance; final parent verification/manual checks pending | Renderer HEAD `4969c13`; [new handoff](../intake/2026-11-10-accessibility-verification.md); prior browser 41 passed, 2 failed; no accessibility PR yet |
+| [#10](https://github.com/urruegg/frontier-envisioning/issues/10) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Documentation](../plan/2026-11-09-documentation-foundation-plan.md) | `@urruegg` accountable; parent coordinates docs/builder workers | Human plan/readiness evidence recorded | D1-D5 implemented, reviewed and human-merged to main | [PR #12](https://github.com/urruegg/frontier-envisioning/pull/12), main merge `4a7d62f` |
+| [#9](https://github.com/urruegg/frontier-envisioning/issues/9) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Governance](../plan/2026-11-09-agent-governance-plan.md) | `@urruegg` accountable; parent coordinates governance worker | Main integration of the human-merged stack | Human-merged into the foundation branch, not yet main; policies remain Proposed | [PR #13](https://github.com/urruegg/frontier-envisioning/pull/13), merge `c0dcae4` into `feat/10-documentation-foundation` |
+| [#7](https://github.com/urruegg/frontier-envisioning/issues/7) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Accessibility](../plan/2026-11-09-accessibility-plan.md) | `@urruegg` accountable; parent coordinates renderer and bounded A5 docs work | Main integration, separate catalogue scope decision and human acceptance | Human-merged into governance branch; full L2 remains blocked, not waived | [PR #14](https://github.com/urruegg/frontier-envisioning/pull/14), merge `240f557`; [verification](../intake/2026-11-10-accessibility-verification.md), 42 browser passes and two catalogue failures |
 | [#8](https://github.com/urruegg/frontier-envisioning/issues/8) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Human handoff](../plan/2026-11-09-human-governance-plan.md) | `@urruegg`; human execution only | #10/#9 before routing activation; #7 before manual accessibility acceptance | Human action pending | No settings, invitation or protected edit performed |
 
 ## Readiness
@@ -88,7 +88,30 @@ The initial A5 document-contract integration failure was resolved in `2703703`
 without backdating or weakening historical protections. Final strict L1 passes;
 full L2 still fails only on the two excluded-catalogue AA cases.
 
-## Current implementation evidence
+## Human merge and integration checkpoint (2026-11-10)
+
+The user stated that all three PRs are approved and execution may proceed.
+Authenticated PR records and fetched Git ancestry confirm #12 merged to main,
+#13 merged to the foundation branch, and #14 merged to the governance branch.
+The approved accessibility head is contained in `240f557`, but not in current
+main `4a7d62f`. Human merges into feature branches do not propagate to main.
+
+A separate draft integration branch, `chore/6-integrate-approved-stack`,
+starts from the exact human-merged stack. Preparing that PR does not merge it,
+waive L2 or extend permission to the excluded identity generator. The separate
+catalogue scope question remained unanswered when the user-input facility was
+unavailable; no expansion is inferred from PR approval.
+
+The checkpoint evidence below predates these merges and is retained as history.
+Current acceptance still requires the catalogue decision and human #8 actions.
+
+Fresh verification of the exact human-merged tree `240f557`:
+`python tools/dev.py check --strict` ended with **ALL GATES PASSED**;
+`python tools/dev.py site e2e --strict` reported **42 passed, 2 failed**,
+the same light/dark catalogue AA cases. No failing assertion was suppressed.
+The three tracking-document updates add no production or guardrail change.
+
+## Implementation checkpoints before human merges
 
 - D1-D5 implemented and spec/code-reviewed in
   [draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12),
