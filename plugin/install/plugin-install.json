@@ -41,7 +41,7 @@
    "files": {
     "SKILL.md": "00b10a76eb764ae95e8002c62b3740e7d70803689ebae31a5d6b988f58be9e19",
     "examples/caldova-blueprint.json": "ffe20f641748b44e973754807c20fcaca3082d9eefb4fe53f1958d96f78f0c68",
-    "references/authoring-guide.md": "e3642a7f584284ad6488d113fee2cfd4227ee402666471965a7bdd44d9067148",
+    "references/authoring-guide.md": "1ff3cfa6de6e7ed41eb4b497e98faa4da7616a057b2033e9231ef5da271edbe8",
     "references/blueprint-schema.md": "808cc8bee4aef857dfcdc46aabcf0dec196f6dbae6893dba5084b8a7122903e0",
     "scripts/build_blueprint.py": "fa834be3a44ccb9acc952b59ecea0b9c56eee209836a8c0c04b4abd9429ab9d0",
     "scripts/build_with_identity.py": "867dbc7fd35842741de44700ed0bb70aa46726e66c9899c71fd6c6a080bc78ea",

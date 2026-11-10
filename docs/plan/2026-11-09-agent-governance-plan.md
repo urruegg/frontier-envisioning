@@ -2,17 +2,21 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
-| Date | 2026-11-09 |
+| Version | 0.4 |
+| Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | Plan/readiness human-approved; G1 implemented (policies Proposed), G2 running, G3 pending; human activation not inferred |
+| Status | Plan/readiness human-approved; G1-G3 delivered in open draft PR #13; policies Proposed; human activation pending |
 | Scope | DG-03/DG-05 and the non-protected prose portion of DG-04 |
 | References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/9), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md), [Human dependency](2026-11-09-human-governance-plan.md) |
 
-Delivery on 2026-11-09: G1 committed at `d07bd7e`, policies still Proposed;
-G2 runs on `docs/9-agent-governance`, stacked on the D1-D5 foundation in
-[draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12), not
-merged. G3 review and human #8 routing/activation remain outstanding.
+Delivery as of 2026-11-10: G1-G3 are delivered in open
+[draft PR #13](https://github.com/urruegg/frontier-envisioning/pull/13),
+HEAD `fb0c182`, targeting `feat/10-documentation-foundation`. It is stacked
+on the D1-D5 foundation in
+[draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12);
+neither is merged. Policies remain Proposed and human #8 routing/activation
+remains outstanding. The parent reports cloud L1/L2/IaC passed for both PRs,
+with CodeQL neutral; this does not establish human activation.
 Approval provenance and label-field limitations are recorded in the linked
 idea/master/sprint; future task instructions below are not completion claims.
 

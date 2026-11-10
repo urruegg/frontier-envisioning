@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
-| Date | 2026-11-09 |
+| Version | 0.4 |
+| Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | Plan/readiness human-approved on #6; A1-A5 not started; manual acceptance pending |
+| Status | Plan/readiness human-approved on #6; A1-A4 implemented, A5 docs handed off; A4/A5 acceptance blocked by catalogue AA; final parent verification and human acceptance pending |
 | Scope | DG-08: measured renderer barriers and repeatable WCAG 2.2 AA-oriented checks |
 | References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/7), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md), [Baseline](../intake/2026-11-09-accessibility-audit.json) |
 
@@ -23,6 +23,27 @@ stay unchanged.
 
 **Tech Stack:** Vanilla JS/CSS/HTML, node:test/happy-dom, Playwright,
 axe-core 4.11.0, existing Python build/version/gate tooling.
+
+## Delivery note (2026-11-10)
+
+The approved task instructions below remain the execution contract, not
+completed acceptance checkboxes. A1 is `1a10453`; A2 is `5478918`/`4b8d653`;
+A3 is `463dc99`; A4 is `0857eda`/`4969c13`. A5 documentation is handed off
+with [new verification evidence](../intake/2026-11-10-accessibility-verification.md).
+The branch is stacked on governance draft PR #13, following foundation
+draft PR #12; neither PR is merged.
+
+The prior full browser run has 41 passed and 2 failed tests. The catalogue
+has actual AA contrast failures (Later wave 4.40:1; Finance header 4.33:1)
+in both schemes, beyond the design-stage best-practice finding below.
+Full L2 is red. The excluded identity generator requires a separate human
+scope decision; none is approved. Preserve its assertions, generated inputs
+and historical guards. Parent final L2, screenshot review and #8 manual AT
+acceptance are still pending; A4/A5 acceptance is not complete.
+The single fresh A5 strict L1 attempt also failed on document-contract date
+and content pins. Its exact summary and separate passing 41-test DOM run
+are in the handoff; resolving those contracts needs a bounded parent task,
+not backdating or out-of-scope test changes by this documentation worker.
 
 ---
 

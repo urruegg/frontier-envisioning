@@ -148,3 +148,19 @@ Use only official Microsoft names: Microsoft IQ, Work IQ, Fabric IQ, Foundry IQ,
 | Plan-to-Deliver | Demand sensing, Supply planning, Production scheduling, Logistics, Exceptions | Supply Chain Lead Agent | Demand Signal, Supply Risk, Schedule Proposal, Shipment Exception |
 | Incident-to-Resolve (IT) | Intake, Triage, Diagnose, Resolve, Learn | IT Service Lead Agent | Ticket Triage, Knowledge, Remediation Proposal, Problem Analysis |
 | Contact-to-Resolution (customer service) | Contact, Understand, Resolve, Follow up, Learn | Customer Care Lead Agent | Intent & Routing, Case Summary, Answer Drafting, Follow-up |
+
+## 10. Accessible workshop use and verification
+
+Keep labels meaningful without relying on colour alone. Brand colours and
+Microsoft icons are preserved; the renderer adapts text foregrounds for contrast.
+Filtered diagram labels stay readable and keyboard-operable. Use Tab/Shift+Tab
+within a drawer, Escape to return to its trigger, and Arrow/Home/End within
+labelled tabs. Filters expose pressed state. Selected controls have 24 CSS
+pixel minimum hit areas; narrow pages reflow at 320px with local diagram scrolling.
+
+Before handover, check both colour schemes, keyboard focus, a narrow viewport
+and the authored brand palette. Development automation targets WCAG 2.2 AA,
+but does not certify conformance. The separate identity catalogue still has
+blocking AA text contrast (Later wave 4.40:1; Finance header 4.33:1) in this
+development patch. Manual Narrator/screen-reader, zoom, real Windows
+high-contrast and voice acceptance remain pending; do not describe them as passed.
