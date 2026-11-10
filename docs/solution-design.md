@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.0 |
-| Date | 2026-11-09 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split and metadata) |
+| Version | 1.1 |
+| Date | 2026-11-10 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split and accessibility maintenance) |
 | Status | Maintained design; no new product or release approval implied |
-| Scope | Original Part B, technical sources and the historical 1.6.0 file inventory |
+| Scope | Part B with unreleased accessibility design, technical sources and the historical 1.6.0 file inventory |
 | References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Compatibility index](prd-and-solution-design.md), [Docs](README.md), [D2 plan](plan/2026-11-09-documentation-foundation-plan.md) |
 
 This document revision is independent of the plugin version. It is the
@@ -189,6 +189,33 @@ Identifiers are allocated once and never reused. The blueprint id and version ti
 
 **Theming and accessibility.** CSS custom properties with light and dark schemes; accent and journey colours from data; logical properties for right-to-left support; ARIA roles and labels on interactive SVG nodes; visible focus; print rules that hide navigation.
 
+**Unreleased 1.6.1 accessibility implementation (#7).** The drawer remains a
+labelled `div` dialog, not a native `dialog`. Closed markup is `hidden`, `inert`
+and `aria-hidden="true"`; an open drawer exposes `aria-modal="true"`, focuses
+Close and contains Tab/Shift+Tab among visible, enabled, non-inert stops.
+Opening snapshots each background element's existing inert state, then makes
+the page, rail and skip link inert. Replacing drawer content preserves the
+outer trigger and snapshot. Closing restores those exact prior states and
+returns focus to that trigger, or the view if the trigger is unavailable.
+The drawer becomes inert immediately; its delayed hide preserves normal
+motion, is cancelled on rapid reopening and is immediate for reduced motion.
+
+Journey, architecture and factory tabs have named tablists, roving tab stops
+and labelled panels. Arrow/Home/End activation restores focus after rendering
+without changing the intended route. Global view shortcuts retain input,
+modifier and drawer guards; default agent deep links remain intact.
+Org/ADR filters use `aria-pressed`, not tab selection. Interactive SVG roots
+use labelled groups so their keyboard-operable children remain exposed.
+
+Rendered text uses the higher-contrast black/white foreground on validated
+opaque data-colour fills, or neutral ink on neutral panels. Brand values,
+swatches, journey cues and Microsoft icon artwork are preserved. Filtered
+Org/portfolio labels and filled backgrounds remain fully opaque; dimming is
+restricted to decorative strokes, restored on keyboard focus. Checked target
+families have at least 24 × 24 CSS pixel hit areas. Narrow rules wrap the banner
+and min-content columns and stack affected grids at 320px; diagrams and tables
+retain local scrolling. There is no global overflow-hiding workaround.
+
 **Agent identity.** When agents carry an `identity` (from the identity kit), the journey view, the agents view and the role card show the agent's icon and its display names per environment. Icons must be base64 SVG or PNG data URIs (checked by the build and the renderer); anything else is ignored.
 
 **Landing zone and factory (1.4.0).** The landing-zone diagram is computed for any number of journeys (width 1200): the tenant, identity, policy and front-door areas; the platform landing zone with four shared services; one agent landing zone per journey with its environments, data classes and agent icons, flanked by the sandbox and the Agent Factory; the systems of record, building blocks, vendor agents and retired agents. An agent's factory stage is computed in the browser from its lifecycle text and the eight handover checks, so nothing is stored twice. Product icons are looked up by key or by text rules and embedded only when used.
@@ -274,6 +301,29 @@ Versioning follows semantic versioning; `manifest.json` and `plugin.json` must c
 | Tool descriptions | `validate_tool_descriptions.py` | Passed |
 | Package | `validate_package.py` on the install package | Passed; one expected warning (builder metadata) |
 | Install | Self-test simulation: build, extract, check, alter, check | Passed; the altered copy is refused |
+
+### Development accessibility evidence (2026-11-10; not release results)
+
+The following paragraphs retain the pre-correction A5 measurements. The
+user subsequently authorised the targeted catalogue correction in A6;
+the dated handoff separates its fresh results from this initial checkpoint.
+
+Development-only axe-core 4.11.0 runs through Playwright under the real hosting
+CSP; it is not embedded in the offline product. DOM and automated browser
+regressions cover focus, tabs, filters, contrast, target sizes, reflow and
+preserved workflow/legend behaviour. The retained browser run has 41 passed
+and 2 failed tests; the failures are catalogue AA text contrast in both colour
+schemes (Later wave 4.40:1; Finance header 4.33:1). The excluded identity
+generator, hosted catalogue copy, historical profiles and hashes are unchanged.
+Full L2 is blocking; no assertion is skipped or waived.
+
+Best-practice and incomplete findings remain reported separately. SVG and
+composited colours still need human assessment. Manual Narrator, zoom, real
+Windows high-contrast and voice checks are pending under #8. A4/A5 acceptance
+and full WCAG conformance are not claimed. Current evidence and the outstanding
+scope decision are in the [verification handoff](intake/2026-11-10-accessibility-verification.md)
+and [testing strategy](engineering/testing-strategy.md). The release table
+above remains the historical 1.6.0 record.
 
 Behavioural tests to run before organisation-wide release (isolated skill-validator runs):
 

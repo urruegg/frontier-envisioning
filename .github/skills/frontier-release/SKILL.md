@@ -6,10 +6,14 @@ description: Prepare and verify a Frontier Envisioning release - version bump, c
 
 ## Prepare (agent or person, in a pull request)
 
+Read `AGENTS.md` and the linked real issue/idea/spec/plan/sprint, with explicit human plan approval and readiness evidence. New records use singular `docs/idea/`, `docs/spec/`, `docs/plan/`, `docs/sprint/`; preserve historical `docs/plans/` links. Verify live issue/approval evidence separately from local docs checks. Human decisions do not prove protected label fields changed.
+
 1. `python tools/dev.py bump X.Y.Z --date YYYY-MM-DD` (plugin.json, manifest.json, seven SKILL.md, build_blueprint.PLUGIN_VERSION, plugin README, archive date, CHANGELOG section).
-2. Write the CHANGELOG section (user-facing, by area), update `docs/prd-and-solution-design.md` (A.9 acceptance criteria, A.12 release plan, B.9 quality results) and the plugin README.
+2. Write the CHANGELOG section (user-facing, by area), update `docs/prd.md` (A.9 acceptance criteria and A.12 release plan), `docs/solution-design.md#b9-quality-and-testing` (actual quality results) and the plugin README. Keep released records immutable.
 3. `python tools/dev.py check bundle`; quote the summary.
-4. Release checklist in the pull request (template): Cowork skill validators and behavioural prompts (PRD B.9) run in Copilot Cowork by a person; install from the package in a Cowork chat.
+4. Release checklist in the pull request (template): Cowork skill validators and behavioural prompts (solution design B.9) run in Copilot Cowork by a person; install from the package in a Cowork chat. Record actual results only; missing checks remain pending.
+
+Eligible prose may go to `docs-agent`; checker/code stays with `frontier-builder`, HTML with `frontier-renderer` where supported, without tool/model broadening or universal handoff claims. Protected session-start still uses legacy routing until human #8 action; report that dependency. Policy remains Proposed, and files/status do not grant approval or access.
 
 ## Publish (people only; hooks block agents)
 

@@ -9,7 +9,9 @@ Runs the plugin's one-step build (frontier-blueprint/scripts/build_with_identity
 examples with the reviewed identity config and palette, the value case and the FinOps model - the same
 inputs as the published 1.4.0 demo, so tools/verify_release.py can compare the results byte for byte.
 Text is written as LF, and identity ZIP entries use stable ordering and Unix creator metadata.
-The 1.4.0 baseline uses verified frozen raster inputs guarded by every generated non-raster file.
+Received baselines and the finite 1.6.1 correction use verified frozen rasters guarded by every
+version-approved non-raster input. Current identity output is verified against its own release
+record after rebuilding and canonicalising, separately from historical raster provenance.
 Other versions require successful card/visual conversion; --no-png is an explicitly SVG-only
 development variant, not release reproduction. Full wrapper evidence is saved as build-report.json.
 For released versions, the FinOps rate-age calculation uses the recorded release date rather
@@ -103,7 +105,13 @@ def main(argv=None) -> int:
     summary = json.loads(proc.stdout[i:])
     manifest = ROOT / "releases" / plugin_version() / "manifest.json"
     if not a.no_png and manifest.is_file():
-        day = json.loads(manifest.read_text(encoding="utf-8"))["date"]
+        try:
+            day = json.loads(manifest.read_text(encoding="utf-8"))["date"]
+            if not isinstance(day, str):
+                raise ValueError("date is not a string")
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print(f"ERROR: current release record is malformed: {exc}")
+            return 1
         if not (summary.get("value_finops") or {}).get("finops"):
             print("ERROR: released demo did not produce its FinOps model")
             return 1
@@ -145,6 +153,7 @@ def main(argv=None) -> int:
             maker.zip_dir(paths["kit"], paths["zip"])
             canonicalise_outputs(out, paths["zip"])
             identity["png"] = rasters
+            demo_raster.verify_release_identity(paths["zip"], rasters)
         except demo_raster.RasterProfileError as exc:
             print(f"ERROR: {exc}")
             return 1

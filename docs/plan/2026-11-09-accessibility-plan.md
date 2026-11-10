@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
-| Date | 2026-11-09 |
+| Version | 0.4 |
+| Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | Plan and readiness approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); delivery and manual acceptance evidence separate |
+| Status | Plan/readiness human-approved on #6; A1-A4 implemented, A5 docs handed off; A4/A5 acceptance blocked by catalogue AA; final parent verification and human acceptance pending |
 | Scope | DG-08: measured renderer barriers and repeatable WCAG 2.2 AA-oriented checks |
 | References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/7), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md), [Baseline](../intake/2026-11-09-accessibility-audit.json) |
 
@@ -24,6 +24,27 @@ stay unchanged.
 **Tech Stack:** Vanilla JS/CSS/HTML, node:test/happy-dom, Playwright,
 axe-core 4.11.0, existing Python build/version/gate tooling.
 
+## Delivery note (2026-11-10)
+
+The approved task instructions below remain the execution contract, not
+completed acceptance checkboxes. A1 is `1a10453`; A2 is `5478918`/`4b8d653`;
+A3 is `463dc99`; A4 is `0857eda`/`4969c13`. A5 documentation is handed off
+with [new verification evidence](../intake/2026-11-10-accessibility-verification.md).
+The branch is stacked on governance draft PR #13, following foundation
+draft PR #12; neither PR is merged.
+
+The prior full browser run has 41 passed and 2 failed tests. The catalogue
+has actual AA contrast failures (Later wave 4.40:1; Finance header 4.33:1)
+in both schemes, beyond the design-stage best-practice finding below.
+Full L2 is red. The excluded identity generator requires a separate human
+scope decision; none is approved. Preserve its assertions, generated inputs
+and historical guards. Parent final L2, screenshot review and #8 manual AT
+acceptance are still pending; A4/A5 acceptance is not complete.
+The single fresh A5 strict L1 attempt also failed on document-contract date
+and content pins. Its exact summary and separate passing 41-test DOM run
+are in the handoff; resolving those contracts needs a bounded parent task,
+not backdating or out-of-scope test changes by this documentation worker.
+
 ---
 
 ## Ownership and exclusions
@@ -39,6 +60,57 @@ the identity kit generator. The catalogue's ten empty-table-header occurrences
 are best-practice-only here, not a claim that its full accessibility passes.
 Keep that separate guarded product-output decision recorded; do not mask it
 by rewriting only the hosted copy.
+
+## Task A6: targeted catalogue CI correction (2026-11-10)
+
+The user's request to solve the linked PR #15 job now authorises this small
+correction, superseding only the original catalogue-generator exclusion.
+All historical data, raster bytes, release records and human controls remain
+outside the edit scope. Implement on the existing PR #15 branch.
+
+**Files:** `plugin/skills/frontier-agent-identity/kit/scripts/identity_docs.py`,
+`tools/demo_raster.py`, `tools/build_demo.py`, new focused unit tests and a
+new version-scoped current-input record under `tests/fixtures/`.
+Do not edit `tests/fixtures/caldova-raster-1.4.0/`.
+
+- [ ] Reproduce the two existing browser failures unchanged.
+- [ ] Write focused generator tests proving the status text's rendered
+      contrast is at least 4.5:1 and header text has no lowering opacity.
+- [ ] Replace only rendered status foreground and subtitle opacity:
+
+```python
+foreground = L.accessible_shade(st["fg"], st["bg"], target=4.6)
+```
+
+```css
+.jhead small{font-size:14px}
+```
+
+- [ ] Test and implement an explicit 1.6.1 current-input record, pinned to
+      the base profile. It may override exactly the two named inputs;
+      unrelated input changes, unsupported versions and tampered PNGs fail.
+- [ ] Keep historical archive provenance distinct from current release
+      output identity. Validate any present release record against the
+      completed canonical identity archive; a mismatch fails the build.
+- [ ] Regenerate current expected inputs through the real generator; inspect
+      and prove that only the two allowed inputs change. Do not copy a golden
+      ZIP or change historical hashes to make the build pass.
+- [ ] Run focused unit tests, both unchanged catalogue AA cases, full strict
+      L1/L2, repeat-build identity hashing and the protected/historical diff.
+- [ ] Update the changelog, current verification report and sprint with actual
+      results. Commit/push the fix to PR #15, verify cloud checks and leave
+      approval, merge, release and manual acceptance to people.
+
+```powershell
+python -m pytest tests\unit\test_demo_raster.py tests\unit\test_identity_catalogue.py -q
+npx playwright test --grep "site and identity catalogue AA" --retries=0 --workers=1
+python tools\dev.py check --strict
+python tools\dev.py site e2e --strict
+```
+
+Expected: catalogue assertions and complete gates pass without exclusions.
+The existing unreleased-version reproduction skip remains honest; no release
+manifest is fabricated. This task does not authorise #8's human-only actions.
 
 ## Task A1: development-only accessibility checks and failing regressions
 

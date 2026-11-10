@@ -37,6 +37,13 @@ github/instructions/              agent-identity.instructions.md for GitHub Copi
 
 `named[]` (brand colours with sources), `journeys{}` (`background`, `glyph`, `contrast`, `tint`, `tintStrong`, `textOnWhite`, `brandColour`, `themeSlot`, `note`), `environments{}` (`band`, `label`, `separator`, `brandColour`), `ui{}` (`text`, `muted`, `background`, `line`, `accent`, `dark`, `headingFont`, `bodyFont`), `statusStyles{}` (chip colours per status class), `sourceShort`, `status`, `wordmark`, `logo`.
 
+The HTML catalogue renders status text with an accessible shade against the
+status background, targeting 4.6:1 to keep a margin above the 4.5:1 normal-text
+minimum. Journey-header subtitles retain the full foreground opacity; an icon
+colour pair's contrast must not be reduced by a translucent text style.
+These display corrections do not change the source palette, icon artwork,
+names or identity cards. Browser contrast checks cover the actual HTML output.
+
 ## 4. Commands
 
 | Step | Command |

@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.0 |
-| Date | 2026-11-09 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split and metadata) |
+| Version | 1.1 |
+| Date | 2026-11-10 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split and accessibility maintenance) |
 | Status | Maintained requirements; no new product or release approval implied |
-| Scope | Shared product context, unreleased 1.6.1 requirement and original Part A |
+| Scope | Shared product context, unreleased 1.6.1 requirements and original Part A |
 | References | [Solution design](solution-design.md), [Compatibility index](prd-and-solution-design.md), [Docs](README.md), [D2 plan](plan/2026-11-09-documentation-foundation-plan.md) |
 
 This document revision is independent of the plugin version. It is the
@@ -53,6 +53,27 @@ and real-browser overlap/hit-testing at 1440px and 1024px.
 This is an unreleased correction to the 1.6.0 source baseline. Historical release
 records remain immutable; publishing and tenant acceptance are separate human
 steps.
+
+### Measured accessibility delivery (#7, 2026-11-10)
+
+This subsection preserves the initial A5 checkpoint before the targeted
+catalogue correction. Its failed measurements are historical evidence, not
+the current gate result; see the verification handoff's A6 results below.
+
+The development patch also implements modal focus containment and return,
+labelled roving tabs, pressed-state filters, interactive SVG grouping,
+rendered text contrast, selected 24 CSS pixel targets and scoped 320px reflow.
+Brand data and Microsoft icon artwork remain unchanged. NFR-0012 states the
+target; it is not a conformance claim or a revision of 1.6.0 acceptance.
+
+The identity catalogue still fails applicable AA text contrast: Later wave
+4.40:1 and the Finance header 4.33:1, in both colour schemes. Full L2 remains
+red. Remediation requires a separate human scope decision for the excluded
+identity generator and guarded outputs; no gate waiver is approved.
+Manual assistive-technology acceptance remains under
+[#8](https://github.com/urruegg/frontier-envisioning/issues/8).
+See the [verification handoff](intake/2026-11-10-accessibility-verification.md)
+for implementation evidence and limits. A4/A5 acceptance is incomplete.
 
 ## Part A — Product Requirements
 
@@ -302,7 +323,7 @@ Priority: **M** must, **S** should, **C** could. Verified by: **T** automated te
 | NFR-0009 | Quality | The MOS3 package passes static package validation with no FAIL |
 | NFR-0010 | Performance | Build under 2 seconds for 30 agents; HTML under 1 MB for 50 agents and 30 sources |
 | NFR-0011 | Compatibility | Current Edge and Chrome; works offline from a local file; printable per view |
-| NFR-0012 | Accessibility | Keyboard navigation (arrows, Enter, Escape), ARIA roles and labels, visible focus, logical CSS properties, light and dark colour schemes |
+| NFR-0012 | Accessibility | Target WCAG 2.2 AA, not certified conformance. Visible focus; modal Tab/Shift+Tab containment, Escape and exact trigger return with a view fallback; labelled roving tabs with Arrow/Home/End activation; pressed-state filters and keyboard-operable SVG groups. Applicable AA checks in both colour schemes and sampled brand variants; selected controls at least 24 × 24 CSS pixels; all fourteen pages reflow at 320 CSS pixels without document overflow (test tolerance 1px), retaining local 2D diagram/table scrolling. Automated browser checks do not replace manual zoom, screen-reader, real high-contrast and voice acceptance. Catalogue AA must pass the unchanged browser checks; see the dated verification handoff. |
 | NFR-0013 | Maintainability | Schemas versioned (`frontier-context/1.0`, `frontier-blueprint/1.0`); the Hub canon in one editable defaults file and one reference document; a self-test covers every script |
 | NFR-0014 | Currency | Product availability carries a date and source; the canon is reviewed after each major Microsoft announcement event |
 | NFR-0015 | Determinism | The identity kit renders the same icon pixels on every machine; its unit tests fail when committed icons drift from the config |
