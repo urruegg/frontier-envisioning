@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-10 |
 | Author | Copilot; AI-assisted A5 documentation and evidence maintenance |
-| Status | Strict L1 passed after scoped contract correction; full L2 blocked by catalogue AA; human acceptance outstanding |
+| Status | Targeted catalogue correction passes local L1/L2; current PR #15 cloud checks and human acceptance tracked separately |
 | Scope | New implementation evidence and handoff for #7; not the original audit, approval or a release record |
 | References | [Issue #7](https://github.com/urruegg/frontier-envisioning/issues/7), [Approved spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [A5 plan](../plan/2026-11-09-accessibility-plan.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Testing strategy](../engineering/testing-strategy.md), [Original audit](2026-11-09-accessibility-audit.json) |
 
@@ -52,7 +52,7 @@ retains incomplete and best-practice findings; SVG/composited-colour review
 is still necessary. The prior renderer DOM run passed 41 tests; fresh A5
 validation is separated below.
 
-## Blocking implementation finding and required decision
+## Original blocking implementation finding
 
 The catalogue has actual AA normal-text contrast failures in both schemes:
 Later wave **4.40:1** and Finance header **4.33:1**, below 4.5:1.
@@ -60,12 +60,14 @@ The design-stage best-practice-only characterisation did not establish
 catalogue conformance. Full L2 is red. Do not skip its assertion, waive its gate,
 rewrite the hosted copy, or alter generator/profile/release hashes to pass.
 
-The identity generator is outside this renderer plan. A scope-approval question
+At that checkpoint the identity generator was outside the renderer plan. A scope-approval question
 could not be answered because the user-input facility was unavailable.
-No expanded scope is approved. A person must decide a separate versioned
+No expanded scope had been approved then. A person needed to decide a versioned
 identity-output phase and its guarded-output verification before remediation.
 The [approved spec's dated finding](../spec/2026-11-09-docs-governance-and-accessibility-design.md#implementation-finding-2026-11-10)
-records this without rewriting the original approval.
+records this without rewriting the original approval. The subsequent A6
+authorisation and correction below supersede this delivery blocker, not its
+historical failed measurements.
 
 ## Fresh A5 checks (2026-11-10)
 
@@ -169,13 +171,76 @@ The known catalogue scope block and human acceptance still prevent a
 merge-ready verdict. Generator, historical raster/profile, release records
 and protected controls remain unchanged.
 
+## A6: linked catalogue CI failure corrected
+
+The user explicitly requested root-cause analysis and resolution of
+[PR #15 job 129801070832](https://github.com/urruegg/frontier-envisioning/actions/runs/42807578160/job/129801070832?pr=15).
+This authorised the targeted catalogue generator/current-version correction;
+it did not authorise a test waiver, historical rewrite or protected action.
+The [A6 spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md#targeted-ci-correction-authorised-2026-11-10)
+and [plan](../plan/2026-11-09-accessibility-plan.md#task-a6-targeted-catalogue-ci-correction-2026-11-10)
+record the bounded change.
+
+Root causes and fixes:
+
+- The Later-wave foreground `#0F6CBD` on `#DDEAF6` measured 4.40:1.
+  The catalogue now uses the existing accessible-shade helper for rendered
+  status text, targeting 4.6:1; the measured minimum is 4.61:1.
+- `.jhead small` used `opacity:.95`, reducing the Finance subtitle to 4.33:1.
+  Removing that opacity preserves its valid foreground/background contrast.
+- The source palette, icon artwork, cards, names and the historical identity
+  data remain unchanged. The existing browser AA assertions are unchanged.
+
+Commits `423ec42` and `53015ba` implement the correction and canonical-LF
+verification. Exactly two of 205 regenerated non-raster inputs intentionally
+change: `catalog.html` and `scripts/identity_docs.py`.
+The separately pinned
+[1.6.1 input record](../../tests/fixtures/caldova-raster-1.6.1-inputs.json)
+permits only those changes and is pinned to the original base profile.
+All 205 inputs, all 223 PNGs and the README remain verified; the original
+fixture and release records are not rewritten.
+
+Historical raster provenance and current identity-ZIP authority are now
+separate: if a current release manifest exists, its expected hash is checked
+against the completed canonical rebuilt ZIP. A missing input/base verification
+record, malformed present release record or changed input/raster fails
+explicitly. An absent current release manifest is explicitly an unreleased
+preview, not a bypass of a present record. No golden archive is copied.
+
+Red/green and local verification:
+
+- Unchanged catalogue browser cases: **2 failed → 2 passed**.
+- Generator tests reproduce the old 4.40:1 pair and 0.95 opacity.
+- Current-input, raster, final-archive and LF/pin regressions fail before the
+  correction and pass afterwards; focused suite: **47 passed, 63 subtests**.
+- Full strict L1: **ALL GATES PASSED**, 156 unit/pipeline tests, 375 subtests,
+  one expected unreleased-version reproduction skip, 34 plugin checks and
+  41 DOM tests.
+- Full strict L2: **ALL GATES PASSED**, all 44 browser tests passed.
+- Independent spec/correctness review found no generator/guard defect; the
+  matching parent reference documentation and generated install inventory
+  must be committed together so a clean checkout is self-contained.
+
+Repeat builds produced identical SHA-256 values:
+
+| Output | SHA-256 |
+|---|---|
+| Current identity ZIP | `e40b132d2e1d396ad7ee681d09931b3e35cd5728081cb01235b17396059cfdf9` |
+| Current catalogue | `5eb2902c5ec2e03c3c2d33a883a375347afd3913e89527fb4c22723d9672d63c` |
+| Canonical-LF current-input record | `27e0277754cecfa6239f4138e810aecd4908622ff6537da456dc2fc222108236` |
+
+These are current build measurements, not invented release manifests. Five
+empty-header best-practice findings per catalogue scheme remain reported,
+not waived WCAG failures. Manual assistive-technology acceptance and complete
+WCAG certification are not implied by the automated pass.
+
 ## Human and parent handoff
 
-- Keep #6/#7 and A4/A5 acceptance open while catalogue AA remains unresolved.
-- Strict L1 document-contract integration is resolved without backdating or
-  weakening historical protection; the final L2 catalogue scope block remains.
-- Parent publishes the draft and screenshots with the actual red L2 result;
-  automation is not a manual assistive-technology inspection claim.
+- Keep #6's human acceptance and main integration work explicit. The original
+  catalogue AA blocker is resolved by A6, not waived or removed from the test.
+- Parent publishes the self-contained correction to PR #15, verifies its
+  current cloud checks and records them separately from local results.
+- Automation is not a manual assistive-technology inspection claim.
 - Human [#8](https://github.com/urruegg/frontier-envisioning/issues/8) owns
   Narrator/screen-reader, 200–400% zoom, real Windows high-contrast and voice
   acceptance, plus protected ownership/access/routing actions.

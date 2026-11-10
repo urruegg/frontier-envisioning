@@ -293,7 +293,7 @@ class ProductDocumentSplit(unittest.TestCase):
             "all fourteen pages reflow at 320 CSS pixels without document overflow",
             "retaining local 2D diagram/table scrolling",
             "Automated browser checks do not replace manual",
-            "Catalogue AA remains unresolved",
+            "Catalogue AA must pass the unchanged browser checks",
         ):
             with self.subTest(requirement=requirement):
                 self.assertIn(requirement, rows[0])
@@ -526,6 +526,8 @@ class ProductDocumentPreservationRegressions(unittest.TestCase):
             ("prd.md", "not certified conformance", "certified conformance"),
             ("prd.md", "Tab/Shift+Tab containment", "no keyboard containment"),
             ("prd.md", "reflow at 320 CSS pixels", "reflow at 1280 CSS pixels"),
+            ("prd.md", "Catalogue AA must pass the unchanged browser checks",
+             "Catalogue AA checks may be skipped"),
             ("prd.md", "Later wave\n4.40:1", "Later wave\n4.50:1"),
             ("prd.md", "Finance header 4.33:1", "Finance header 4.50:1"),
             ("prd.md", "Full L2 remains\nred", "Full L2 remains\ngreen"),
@@ -546,8 +548,8 @@ class ProductDocumentPreservationRegressions(unittest.TestCase):
         documents = dict(self.contract.documents)
         for document, marker, addition in (
             (
-                "prd.md", "Catalogue AA remains unresolved;",
-                "Catalogue AA remains unresolved; further manual evidence is pending;",
+                "prd.md", "Catalogue AA must pass the unchanged browser checks;",
+                "Catalogue AA must pass the unchanged browser checks; further manual evidence is pending;",
             ),
             ("prd.md", "## Part A —", "Further development evidence is pending.\n\n## Part A —"),
             (

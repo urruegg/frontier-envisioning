@@ -61,6 +61,57 @@ are best-practice-only here, not a claim that its full accessibility passes.
 Keep that separate guarded product-output decision recorded; do not mask it
 by rewriting only the hosted copy.
 
+## Task A6: targeted catalogue CI correction (2026-11-10)
+
+The user's request to solve the linked PR #15 job now authorises this small
+correction, superseding only the original catalogue-generator exclusion.
+All historical data, raster bytes, release records and human controls remain
+outside the edit scope. Implement on the existing PR #15 branch.
+
+**Files:** `plugin/skills/frontier-agent-identity/kit/scripts/identity_docs.py`,
+`tools/demo_raster.py`, `tools/build_demo.py`, new focused unit tests and a
+new version-scoped current-input record under `tests/fixtures/`.
+Do not edit `tests/fixtures/caldova-raster-1.4.0/`.
+
+- [ ] Reproduce the two existing browser failures unchanged.
+- [ ] Write focused generator tests proving the status text's rendered
+      contrast is at least 4.5:1 and header text has no lowering opacity.
+- [ ] Replace only rendered status foreground and subtitle opacity:
+
+```python
+foreground = L.accessible_shade(st["fg"], st["bg"], target=4.6)
+```
+
+```css
+.jhead small{font-size:14px}
+```
+
+- [ ] Test and implement an explicit 1.6.1 current-input record, pinned to
+      the base profile. It may override exactly the two named inputs;
+      unrelated input changes, unsupported versions and tampered PNGs fail.
+- [ ] Keep historical archive provenance distinct from current release
+      output identity. Validate any present release record against the
+      completed canonical identity archive; a mismatch fails the build.
+- [ ] Regenerate current expected inputs through the real generator; inspect
+      and prove that only the two allowed inputs change. Do not copy a golden
+      ZIP or change historical hashes to make the build pass.
+- [ ] Run focused unit tests, both unchanged catalogue AA cases, full strict
+      L1/L2, repeat-build identity hashing and the protected/historical diff.
+- [ ] Update the changelog, current verification report and sprint with actual
+      results. Commit/push the fix to PR #15, verify cloud checks and leave
+      approval, merge, release and manual acceptance to people.
+
+```powershell
+python -m pytest tests\unit\test_demo_raster.py tests\unit\test_identity_catalogue.py -q
+npx playwright test --grep "site and identity catalogue AA" --retries=0 --workers=1
+python tools\dev.py check --strict
+python tools\dev.py site e2e --strict
+```
+
+Expected: catalogue assertions and complete gates pass without exclusions.
+The existing unreleased-version reproduction skip remains honest; no release
+manifest is fabricated. This task does not authorise #8's human-only actions.
+
 ## Task A1: development-only accessibility checks and failing regressions
 
 **Create:** `tests/e2e/accessibility.spec.mjs`,

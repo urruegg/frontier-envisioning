@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.5 |
+| Version | 0.6 |
 | Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | PRs #12/#13/#14 human-merged to their bases; remaining stack awaits main integration; catalogue AA and human #8 acceptance remain blocked; policies Proposed |
+| Status | A6 catalogue correction passes local L1/L2; PR #15 cloud/main integration and human #8 acceptance tracked separately; policies Proposed |
 | Scope | Coordinated delegated implementation of the eight approved requirements |
 | References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md) |
 
@@ -179,15 +179,17 @@ foundation branch, and accessibility through
 Those stacked merges are not yet on main; a separate main integration PR is
 required. Policies remain Proposed. Cloud L1/L2/IaC passed for #12/#13,
 CodeQL neutral; #14 cloud L2 retained the two catalogue failures.
-Catalogue AA contrast leaves full accessibility L2 red and
-A4/A5 acceptance incomplete. The excluded generator needs a new human scope
-decision, not an inferred extension of the approved plan. Human #8 and manual
-acceptance remain pending.
+The catalogue AA blocker was resolved by targeted A6 following the user's
+explicit request to solve PR #15's linked failure. Generator text styles and
+finite current-version verification changed; original historical profiles,
+PNGs and release records did not. The unchanged AA tests now pass locally.
+Current cloud/main integration and human #8/manual acceptance remain pending.
 The initial A5 documentation-contract failure was corrected in `2703703`
 while preserving historical hashes/results and real revision dates.
-Final parent strict L1 passes (145 tests, one expected skip, 311 subtests,
-34 plugin checks and 41 DOM tests). Full strict L2 remains red:
-42 passed and the two catalogue AA schemes failed. No failure is waived.
+The initial verified stack had 145 tests/311 subtests and two catalogue L2
+failures. A6 local strict L1 now passes 156 tests/375 subtests, one expected
+unreleased skip, 34 plugin checks and 41 DOM tests; strict L2 passes all
+44 tests. No failure is waived. See the dated handoff for distinct checkpoints.
 See [SPRINT-001](../sprint/SPRINT-001-docs-governance-and-accessibility.md) for
 delivery evidence. No policy activation, label-field change, protected edit,
 release or deployment is claimed.

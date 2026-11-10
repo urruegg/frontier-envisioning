@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.5 |
+| Version | 0.6 |
 | Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
@@ -11,7 +11,7 @@
 
 | Sprint | Goal | State |
 |---|---|---|
-| [SPRINT-001](SPRINT-001-docs-governance-and-accessibility.md) | Documentation foundations, explicit governance and measured accessibility improvement | PRs #12/#13/#14 human-merged; only #12 is on main. Remaining stack awaits main integration; catalogue AA and human #8 acceptance remain blocking. Policies remain Proposed; sprint incomplete |
+| [SPRINT-001](SPRINT-001-docs-governance-and-accessibility.md) | Documentation foundations, explicit governance and measured accessibility improvement | A6 catalogue correction passes local L1/L2; current PR #15 cloud checks/main integration and human #8 acceptance remain separate. Policies Proposed; sprint incomplete |
 
 Sprint state records delivery, not design approval, permissions or an invented
 schedule. Each ready item has a real issue and governing idea/spec/plan links.

@@ -183,6 +183,30 @@ no catalogue assertion is skipped, and no gate waiver, hosted-copy rewrite,
 profile/hash change or manual acceptance is authorised. A1-A4 implementation
 and A5 documentation do not complete A4/A5 acceptance or #8.
 
+## Targeted CI correction authorised (2026-11-10)
+
+After review of the catalogue blocker, the user requested: "please analyze the
+root cause and adjust or solve the test", linking PR #15's failing browser job.
+That is authority for the narrowly coupled catalogue correction, not a gate
+waiver or a historical/profile rewrite.
+
+The confirmed causes are insufficient Later-wave status foreground contrast
+and `.jhead small` opacity reducing Finance's otherwise valid colour pair.
+Use the existing accessible-shade helper for rendered status text and remove
+subtitle opacity. Preserve palette data, icons and all non-catalogue outputs.
+
+Only unreleased 1.6.1 may use separately recorded current-input hashes for
+`catalog.html` and `scripts/identity_docs.py`. All other generated inputs and
+every PNG remain checked against the unchanged historical profile. A present
+current release record must verify the completed rebuilt identity ZIP, not
+be confused with the historical archive's raster-provenance hash.
+
+Acceptance: focused generator/guard regressions fail before the fix, the
+existing catalogue AA assertions pass unchanged in both schemes, strict L1/L2
+pass, repeat builds are deterministic, and historical fixtures/releases plus
+human-only controls are unchanged. Manual assistive-technology acceptance
+remains separate under #8.
+
 ## Delivery, dependencies and safeguards
 
 - Documentation #10 establishes the reusable records and document/checker surfaces.

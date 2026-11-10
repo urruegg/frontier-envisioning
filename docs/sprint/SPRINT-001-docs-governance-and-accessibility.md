@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.5 |
+| Version | 0.6 |
 | Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | PRs #12/#13/#14 human-merged to their respective bases; only #12 is on main; remaining stack awaits main integration, catalogue scope approval and human #8 acceptance |
+| Status | Targeted A6 catalogue correction passes local automated gates; PR #15 main integration/cloud verification and human #8 acceptance remain separate; policies Proposed |
 | Scope | The bounded work package for the eight approved requirements; not a delivery-date commitment |
 | References | [Sprint catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
 
@@ -26,7 +26,7 @@ protected controls by agent, or claim assistive-technology acceptance from scans
 |---|---|---|---|---|---|---|---|
 | [#10](https://github.com/urruegg/frontier-envisioning/issues/10) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Documentation](../plan/2026-11-09-documentation-foundation-plan.md) | `@urruegg` accountable; parent coordinates docs/builder workers | Human plan/readiness evidence recorded | D1-D5 implemented, reviewed and human-merged to main | [PR #12](https://github.com/urruegg/frontier-envisioning/pull/12), main merge `4a7d62f` |
 | [#9](https://github.com/urruegg/frontier-envisioning/issues/9) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Governance](../plan/2026-11-09-agent-governance-plan.md) | `@urruegg` accountable; parent coordinates governance worker | Main integration of the human-merged stack | Human-merged into the foundation branch, not yet main; policies remain Proposed | [PR #13](https://github.com/urruegg/frontier-envisioning/pull/13), merge `c0dcae4` into `feat/10-documentation-foundation` |
-| [#7](https://github.com/urruegg/frontier-envisioning/issues/7) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Accessibility](../plan/2026-11-09-accessibility-plan.md) | `@urruegg` accountable; parent coordinates renderer and bounded A5 docs work | Main integration, separate catalogue scope decision and human acceptance | Human-merged into governance branch; full L2 remains blocked, not waived | [PR #14](https://github.com/urruegg/frontier-envisioning/pull/14), merge `240f557`; [verification](../intake/2026-11-10-accessibility-verification.md), 42 browser passes and two catalogue failures |
+| [#7](https://github.com/urruegg/frontier-envisioning/issues/7) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Accessibility](../plan/2026-11-09-accessibility-plan.md) | `@urruegg` accountable; parent coordinates renderer and targeted catalogue correction | Main integration, current cloud verification and human acceptance | A6 fixes the two catalogue failures; local strict L1/L2 pass, all 44 browser tests | [PR #15](https://github.com/urruegg/frontier-envisioning/pull/15); [A6 verification](../intake/2026-11-10-accessibility-verification.md#a6-linked-catalogue-ci-failure-corrected) |
 | [#8](https://github.com/urruegg/frontier-envisioning/issues/8) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Human handoff](../plan/2026-11-09-human-governance-plan.md) | `@urruegg`; human execution only | #10/#9 before routing activation; #7 before manual accessibility acceptance | Human action pending | No settings, invitation or protected edit performed |
 
 ## Readiness
@@ -77,16 +77,29 @@ rather than promising an unmeasured calendar deadline.
 
 ## Open blockers and next checkpoint
 
-The next checkpoint is parent review/final accessibility verification and a
-human scope decision for the excluded identity generator. Catalogue AA text
-contrast (Later wave 4.40:1; Finance header 4.33:1, both schemes) leaves full
-L2 red. This is not only the original best-practice empty-header finding.
-No new scope approval, gate waiver or catalogue assertion skip is recorded.
-A4/A5 acceptance and human #8 protected routing/access/ownership plus manual
-Narrator/zoom/real high-contrast/voice checks remain open.
-The initial A5 document-contract integration failure was resolved in `2703703`
-without backdating or weakening historical protections. Final strict L1 passes;
-full L2 still fails only on the two excluded-catalogue AA cases.
+The user authorised the targeted catalogue correction by requesting resolution
+of PR #15's linked CI failure. A6 now passes local strict L1/L2 without changing
+the AA assertions or historical profiles. Current cloud verification and human
+merge into main are the next delivery checks. Human #8 protected
+routing/access/ownership and manual Narrator/zoom/real high-contrast/voice
+acceptance remain open; the sprint is not declared fully complete.
+
+The earlier A5 contract failure and catalogue failures below are preserved
+checkpoints, not the current gate result.
+
+## A6 current automated verification
+
+Generator corrections `423ec42`/`53015ba` resolve the original two catalogue
+failures: accessible rendered status text and full-opacity subtitles.
+Only two version-scoped current input hashes change; 205 generated inputs,
+223 original PNGs, README and final-release ZIP authority remain checked.
+Independent review found no generator/guard defect; commit the matching parent
+reference/inventory together before publishing.
+
+Local strict L1 passes: 156 tests, 375 subtests, one expected unreleased skip,
+34 plugin checks and 41 DOM tests. Local strict L2 passes all 44 tests.
+The [dated report](../intake/2026-11-10-accessibility-verification.md#a6-linked-catalogue-ci-failure-corrected)
+records red/green evidence, deterministic hashes and remaining manual limits.
 
 ## Human merge and integration checkpoint (2026-11-10)
 
@@ -103,7 +116,8 @@ catalogue scope question remained unanswered when the user-input facility was
 unavailable; no expansion is inferred from PR approval.
 
 The checkpoint evidence below predates these merges and is retained as history.
-Current acceptance still requires the catalogue decision and human #8 actions.
+At that checkpoint the catalogue decision was still missing. The later
+explicit CI-fix request authorises A6; human #8 actions remain outstanding.
 
 Fresh verification of the exact human-merged tree `240f557`:
 `python tools/dev.py check --strict` ended with **ALL GATES PASSED**;

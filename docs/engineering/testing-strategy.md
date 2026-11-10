@@ -52,7 +52,7 @@ checkbox/evidence/resource controls at least 24 × 24 CSS pixels. Reflow checks
 measure all pages at 320 CSS pixels (maximum document width 321px) and preserve
 local workflow scrolling. These are automated tests, not manual AT sign-off.
 
-### Current blocking result
+### Recorded blocker and targeted catalogue correction
 
 The retained full browser report for renderer HEAD `4969c13` has **41 passed,
 2 failed** tests. Blueprint states, the site index and sampled brand/filter
@@ -62,26 +62,41 @@ fails AA in both schemes: Later wave **4.40:1**, Finance header **4.33:1**
 best-practice empty-header finding. Full L2 is red; no gating waiver,
 catalogue assertion skip or hosted-copy workaround is authorised.
 
-The identity generator and historical profile/hash inputs are excluded from
-the approved renderer work. A separate human scope decision is required
-before remediation. The [dated handoff](../intake/2026-11-10-accessibility-verification.md)
-separates retained evidence from fresh A5 checks; the parent will rerun final
-L2 and record exact counts, distinguishing retries from distinct scan states.
+Those are the recorded pre-correction results, not a claim that the tests are
+flaky. The user's subsequent request to solve PR #15's linked failure
+authorises the targeted generator/current-version correction in
+[A6](../plan/2026-11-09-accessibility-plan.md#task-a6-targeted-catalogue-ci-correction-2026-11-10).
+Historical profile and release records remain excluded.
+
+The correction must leave the AA assertions enabled. Unit tests cover rendered
+status colour pairs and opaque header text. The 1.6.1 build separately verifies
+its two deliberately changed catalogue inputs while retaining all other
+historical input and PNG checks. A present current release record must match
+the completed rebuilt identity archive, not be mistaken for the historical
+archive that supplies raster provenance. Missing, malformed or tampered
+verification data fails explicitly.
+
+The [dated handoff](../intake/2026-11-10-accessibility-verification.md) retains
+earlier results and records the fresh A6 local/cloud results separately.
+Repeat builds must produce identical catalogue/identity hashes, without
+copying a golden archive or updating immutable historical hashes.
 
 Human #8 still owns Narrator/screen-reader, 200–400% zoom, real Windows
 high-contrast and voice acceptance. Axe has incomplete SVG coverage; rendered
 composites, focus indicators, screenshots and diagram reachability also need
-review. A4/A5 acceptance remains incomplete. L1 success cannot waive L2 or
+review. Automated acceptance is recorded only after the actual L1/L2 results;
+L1 success cannot waive L2 or
 replace those human checks.
 
-The fresh A5 strict L1 attempt also stops at `ProductDocumentSplit` contracts
+The initial A5 strict L1 attempt stopped at `ProductDocumentSplit` contracts
 that pin PRD/design metadata to 2026-11-09 and hash the original patch note
 and A.8/B.5/B.9 sections. Requested real-date maintenance and development
-documentation therefore need a separately bounded contract resolution.
-Do not backdate the documents or silently update preservation fixtures.
+documentation needed the bounded correction `2703703`, which preserved
+historical hashes/results while allowing actual dates and named development
+additions. Do not backdate documents or silently update preservation fixtures.
 The [handoff](../intake/2026-11-10-accessibility-verification.md#fresh-a5-checks-2026-11-10)
-records the exact failure summary and the separate passing 41-test DOM run;
-full L1 success is not claimed.
+records that initial failure separately from the subsequently passing full
+L1 verification.
 
 ## Rules
 

@@ -304,6 +304,10 @@ Versioning follows semantic versioning; `manifest.json` and `plugin.json` must c
 
 ### Development accessibility evidence (2026-11-10; not release results)
 
+The following paragraphs retain the pre-correction A5 measurements. The
+user subsequently authorised the targeted catalogue correction in A6;
+the dated handoff separates its fresh results from this initial checkpoint.
+
 Development-only axe-core 4.11.0 runs through Playwright under the real hosting
 CSP; it is not embedded in the offline product. DOM and automated browser
 regressions cover focus, tabs, filters, contrast, target sizes, reflow and
