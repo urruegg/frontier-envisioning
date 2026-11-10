@@ -93,6 +93,18 @@ function idSrc(a, env){
 function idEnvIcon(a, env, cls){ var src = idSrc(a, env); return src ? h("img",{class:cls || "aicon", src:src, alt:"", "aria-hidden":"true"}) : null; }
 function isMvp(a){ return !!(a && (a.mvp || (a.identity && a.identity.status_class === "mvp"))); }
 function hex(c, fallback){ return /^#[0-9A-Fa-f]{6}$/.test(c || "") ? c : fallback; }
+/* Black or white, whichever has the higher WCAG contrast on this opaque sRGB fill.
+   The crossover is sqrt(.05 * 1.05) - .05; do not round ratios to pass AA. */
+function onColor(c){
+  c = hex(c, "#0F6CBD");
+  var rgb = [1,3,5].map(function(i){
+    var v = parseInt(c.slice(i, i + 2), 16) / 255;
+    return v <= .04045 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4);
+  });
+  return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722 > .1791287847 ? "#000000" : "#FFFFFF";
+}
+function filled(c){ c = hex(c, ACCENT); return "background:" + c + ";color:" + onColor(c); }
+function domainStyle(c){ c = hex(c, ACCENT); return "--d:" + c + ";--d-on:" + onColor(c); }
 function soft(c, a){ c = hex(c, "#0F6CBD"); var r = parseInt(c.slice(1,3),16), g = parseInt(c.slice(3,5),16), b = parseInt(c.slice(5,7),16); return "rgba(" + r + "," + g + "," + b + "," + a + ")"; }
 var DARK = !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
 function wrapWords(t, max, lines){
@@ -170,6 +182,7 @@ var M = BP.meta || {};
 var D = arr(BP.domains);
 var ACCENT = hex(M.accent, "#0F6CBD");
 document.documentElement.style.setProperty("--accent", ACCENT);
+document.documentElement.style.setProperty("--accent-on", onColor(ACCENT));
 document.documentElement.style.setProperty("--accent-soft", DARK ? soft(ACCENT, .18) : soft(ACCENT, .09));
 document.documentElement.style.setProperty("--accent-line", soft(ACCENT, .45));
 document.title = (M.title || ((M.customer || "Customer") + " \u00b7 Frontier Company Blueprint"));
@@ -399,8 +412,11 @@ function go(v, opts){
 function dom(){ return D[state.d] || D[0] || {agents:[]}; }
 function setDomainColor(c){
   var st = document.documentElement.style;
+  c = hex(c, ACCENT);
   st.setProperty("--domain", c);
-  st.setProperty("--domain-soft", DARK ? soft(c, .2) : soft(c, .1));
+  st.setProperty("--domain-on", onColor(c));
+  /* Keep muted text readable even for white journeys and nested soft pills. */
+  st.setProperty("--domain-soft", soft(c, .1));
 }
 
 /* ---------------- chrome ---------------- */
@@ -453,9 +469,10 @@ function renderSubnav(){
   if (DOMAIN_VIEWS.indexOf(state.view) < 0 || D.length < 1) return;
   t.appendChild(h("span",{class:"lbl"}, M.domain_label || "Journey"));
   D.forEach(function(d, i){
-    t.appendChild(h("button",{type:"button",role:"tab",class:"tab",style:"--d:" + d.color,"aria-selected": i === state.d ? "true" : "false",
-      onclick:function(){ state.d = i; if (state.view === "agents") state.agent = null; render(); }},
-      h("span",{class:"num",style:"background:" + d.color}, String(i + 1)), d.name));
+    t.appendChild(h("button",{type:"button",id:"journey-tab-" + i,role:"tab",class:"tab",style:domainStyle(d.color),
+      "aria-controls":"journey-panel","aria-selected": i === state.d ? "true" : "false",tabindex:i === state.d ? "0" : "-1",
+      onclick:function(){ activateTab("journey-tab-" + i,function(){ state.d = i; if (state.view === "agents") state.agent = null; }); }},
+      h("span",{class:"num",style:filled(d.color)}, String(i + 1)), d.name));
   });
 }
 function pager(){
@@ -466,28 +483,100 @@ function pager(){
 }
 
 /* ---------------- drawer ---------------- */
-var drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim"), lastFocus = null;
+var drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim"), lastFocus = null, drawerTimer = null;
+var drawerBackground = [];
+function canFocus(node){
+  if (!node || !node.isConnected || typeof node.focus !== "function" ||
+      node.matches(":disabled") || node.closest("[hidden],[inert]") || !node.getClientRects().length) return false;
+  var visibility = window.getComputedStyle(node).visibility;
+  return visibility !== "hidden" && visibility !== "collapse";
+}
+function drawerStops(){
+  return Array.from(drawer.querySelectorAll("a[href],button,input,select,textarea,summary,[tabindex]")).filter(function(node){
+    return node.tabIndex >= 0 && canFocus(node);
+  });
+}
+function hideClosedDrawer(){
+  drawerTimer = null;
+  if (!drawer.classList.contains("open")) drawer.hidden = true;
+}
 function openDrawer(title, sub, body){
-  lastFocus = document.activeElement;
+  clearTimeout(drawerTimer); drawerTimer = null;
+  // Replacing a role card or opening its evidence keeps the original page trigger.
+  if (!drawer.classList.contains("open")){
+    lastFocus = document.activeElement;
+    drawerBackground = Array.from(document.querySelectorAll(".page,.rail,.skip")).map(function(node){
+      var saved = {node:node, inert:node.inert};
+      node.inert = true;
+      return saved;
+    });
+  }
   document.getElementById("drawer-title").textContent = title || "";
   document.getElementById("drawer-sub").textContent = sub || "";
   var b = document.getElementById("drawer-body");
   b.replaceChildren(); add(b, body);
   b.scrollTop = 0;
-  drawer.classList.add("open"); scrim.classList.add("open"); drawer.setAttribute("aria-hidden","false");
-  setTimeout(function(){ try { document.getElementById("drawer-close").focus(); } catch (e) {} }, 30);
+  drawer.hidden = false; drawer.inert = false; drawer.setAttribute("aria-hidden","false");
+  drawer.classList.add("open"); scrim.classList.add("open");
+  document.getElementById("drawer-close").focus();
 }
 function closeDrawer(){
-  drawer.classList.remove("open"); scrim.classList.remove("open"); drawer.setAttribute("aria-hidden","true");
-  if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (e) {}
+  if (!drawer.classList.contains("open")) return;
+  drawer.classList.remove("open"); scrim.classList.remove("open");
+  drawer.inert = true;
+  drawerBackground.forEach(function(saved){ saved.node.inert = saved.inert; });
+  drawerBackground = [];
+  if (canFocus(lastFocus)) lastFocus.focus({preventScroll:true});
+  if (document.activeElement !== lastFocus) document.getElementById("view").focus({preventScroll:true});
+  lastFocus = null;
+  drawer.setAttribute("aria-hidden","true");
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) hideClosedDrawer();
+  else drawerTimer = setTimeout(hideClosedDrawer, 200);
+}
+function containDrawerTab(event){
+  if (event.key !== "Tab" || !drawer.classList.contains("open")) return false;
+  var stops = drawerStops(), first = stops[0], last = stops[stops.length - 1];
+  var index = stops.indexOf(document.activeElement);
+  if (!first){
+    event.preventDefault(); document.getElementById("drawer-close").focus();
+  } else if (event.shiftKey && index <= 0){
+    event.preventDefault(); last.focus();
+  } else if (!event.shiftKey && (index < 0 || document.activeElement === last)){
+    event.preventDefault(); first.focus();
+  }
+  return true;
 }
 document.getElementById("drawer-close").addEventListener("click", closeDrawer);
 scrim.addEventListener("click", closeDrawer);
+function activateTab(id, update){
+  update();
+  render();
+  document.getElementById(id).focus();
+}
+function navigateTabs(event){
+  var tab = event.target && event.target.closest ? event.target.closest('[role="tab"]') : null;
+  var list = tab && tab.closest('[role="tablist"]');
+  if (!list) return false;
+  var tabs = Array.from(list.querySelectorAll('[role="tab"]')).filter(function(node){
+    return node.closest('[role="tablist"]') === list;
+  });
+  var index = tabs.indexOf(tab), next = index;
+  if (event.key === "ArrowRight") next = (index + 1) % tabs.length;
+  else if (event.key === "ArrowLeft") next = (index + tabs.length - 1) % tabs.length;
+  else if (event.key === "Home") next = 0;
+  else if (event.key === "End") next = tabs.length - 1;
+  else return false;
+  event.preventDefault(); event.stopPropagation();
+  tabs[next].click();
+  return true;
+}
 document.addEventListener("keydown", function(e){
-  if (e.key === "Escape" && drawer.classList.contains("open")) { closeDrawer(); return; }
+  if (containDrawerTab(e)) return;
+  if (e.key === "Escape" && drawer.classList.contains("open")) { e.preventDefault(); closeDrawer(); return; }
   var tg = e.target && e.target.tagName;
   if (tg === "INPUT" || tg === "TEXTAREA" || tg === "SELECT" || drawer.classList.contains("open")) return;
   if (e.altKey || e.ctrlKey || e.metaKey) return;
+  if (navigateTabs(e)) return;
   var i = ORDER.indexOf(state.view);
   if (e.key === "ArrowRight" && ORDER[i+1]) go(ORDER[i+1]);
   if (e.key === "ArrowLeft" && ORDER[i-1]) go(ORDER[i-1]);
@@ -540,7 +629,7 @@ function roleCard(a){
         h("dt",null,"Channels"), h("dd",null, logosFor(arr(a.channels || (d.channels && d.channels.people)).join(" "), 18), val(a.channels || (d.channels && d.channels.people))),
         h("dt",null,"Technology"), h("dd",null, logosFor(a.technology, 18), val(a.technology)),
         h("dt",null,"Horizon"), h("dd",null, val(a.horizon))),
-      idIcon(a, "avatar idicon") || h("div",{class:"avatar",style:"background:" + (d.color || ACCENT)}, initials(orgLabel(a)))),
+      idIcon(a, "avatar idicon") || h("div",{class:"avatar",style:filled(d.color)}, initials(orgLabel(a)))),
     h("div",{class:"small-lbl"},"Responsibility"),
     h("p",{style:"margin:0"}, a.capability || a.mission || TBC, evPills(a.src)),
     h("div",{class:"btnrow"},
@@ -823,7 +912,7 @@ function flCard(i, q, sel){
   g.appendChild(svgGlyph(pl.glyph, x + 27, y + 19, 20, col));
   g.appendChild(s("text",{x:x + 62, y:y + 27, class:"fleyb"}, pl.label.toUpperCase()));
   var jl = js.length ? js.map(function(d){ return d.short_name || d.name; }).join(" \u00b7 ") : String((q && q.scope) || "");
-  if (jl) g.appendChild(s("text",{x:x + 62, y:y + 42, class:"fljr", fill:col}, wrapWords(jl, 40, 1)[0]));
+  if (jl) g.appendChild(s("text",{x:x + 62, y:y + 42, class:"fljr", fill:"var(--ink-2)"}, wrapWords(jl, 40, 1)[0]));
   if (!q){
     g.appendChild(s("text",{x:x + 22, y:y + 82, class:"fltt"}, "To be discovered"));
     wrapWords("No hypothesis yet: ask in the workshop which " + pl.signal.toLowerCase() + " matters most.", 44, 3).forEach(function(t, k){ g.appendChild(s("text",{x:x + 22, y:y + 108 + k * 16, class:"flrt"}, t)); });
@@ -1380,7 +1469,7 @@ function orgSvg(){
     return rev ? "M" + p1[0].toFixed(1) + " " + p1[1].toFixed(1) + " A" + r + " " + r + " 0 " + large + " 0 " + p0[0].toFixed(1) + " " + p0[1].toFixed(1)
                : "M" + p0[0].toFixed(1) + " " + p0[1].toFixed(1) + " A" + r + " " + r + " 0 " + large + " 1 " + p1[0].toFixed(1) + " " + p1[1].toFixed(1);
   }
-  var svg = s("svg",{viewBox:"0 0 " + W + " " + W, class:"orgsvg", role:"img", "aria-label":"Hybrid organisation model: human leaders in the centre, lead agents in the inner ring, specialist agents in the outer ring, grouped by " + (M.domain_label_plural || "journeys")});
+  var svg = s("svg",{viewBox:"0 0 " + W + " " + W, class:"orgsvg", role:"group", "aria-label":"Hybrid organisation model: human leaders in the centre, lead agents in the inner ring, specialist agents in the outer ring, grouped by " + (M.domain_label_plural || "journeys")});
   var gEdges = s("g"), gNodes = s("g"), gLabels = s("g"), gRings = s("g");
   svg.appendChild(gRings); svg.appendChild(gEdges); svg.appendChild(gNodes); svg.appendChild(gLabels);
   gRings.appendChild(s("circle",{cx:C, cy:C, r:R1, fill:"none", stroke:"var(--line-soft)", "stroke-width":1.5}));
@@ -1427,7 +1516,7 @@ function orgSvg(){
     arcG.appendChild(s("path",{id:pid, d:arcPath(bottom ? R3 + 26 : R3 + 14, a0, a1, bottom), fill:"none", stroke:"none"}));
     var tp = s("textPath",{href:"#" + pid, startOffset:"50%", "text-anchor":"middle"}, String(d.short_name || d.name).toUpperCase());
     tp.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + pid);
-    arcG.appendChild(s("text",{class:"dlabel", "text-anchor":"middle", style:"fill:" + d.color}, tp));
+    arcG.appendChild(s("text",{class:"dlabel", "text-anchor":"middle", style:"fill:var(--ink)"}, tp));
     nodeEvents(arcG, "Filter on " + d.name, function(){ state.orgDomain = state.orgDomain === d.id ? null : d.id; render(); });
     arcG.setAttribute("style","cursor:pointer");
     gLabels.appendChild(arcG);
@@ -1444,10 +1533,10 @@ function orgSvg(){
       var p = P(R2, ang);
       if (o && state.orgStage >= 2) gEdges.appendChild(s("line",{x1:lp[0], y1:lp[1], x2:p[0], y2:p[1], class:"edge" + (dim ? " dim" : ""), stroke:d.color}));
       var rs = ringStyle(a);
-      var g = s("g",{class:"node" + (dim ? " dim" : ""), opacity: rs.faded ? .35 : null});
+      var g = s("g",{class:"node" + (dim ? " dim" : "") + (rs.faded ? " faded" : "")});
       if (a.mvp) g.appendChild(s("circle",{cx:p[0], cy:p[1], r:27, fill:"none", stroke:"var(--accent)", "stroke-width":3}));
       g.appendChild(s("circle",{class:"ring", cx:p[0], cy:p[1], r:21, fill:"var(--panel)", stroke:d.color, "stroke-width":2.5, "stroke-dasharray":rs.dash}));
-      g.appendChild(s("text",{x:p[0], y:p[1] + 4.5, "text-anchor":"middle", style:"font-size:12.5px;font-weight:700;fill:" + d.color}, initials(orgLabel(a))));
+      g.appendChild(s("text",{x:p[0], y:p[1] + 4.5, "text-anchor":"middle", style:"font-size:12.5px;font-weight:700;fill:var(--ink)"}, initials(orgLabel(a))));
       badge(g, p[0], p[1], 21, a);
       g.appendChild(s("title",null, nameOf(a) + " \u2014 " + (a.capability || "")));
       nodeEvents(g, nameOf(a) + ", specialist agent in " + d.name, function(){ openAgent(a.id); });
@@ -1465,11 +1554,11 @@ function orgSvg(){
     });
     if (o && state.orgStage >= 2){
       var rs2 = ringStyle(o);
-      var g2 = s("g",{class:"node" + (dim ? " dim" : ""), opacity: rs2.faded ? .35 : null});
+      var g2 = s("g",{class:"node" + (dim ? " dim" : "") + (rs2.faded ? " faded" : "")});
       if (o.mvp) g2.appendChild(s("circle",{cx:lp[0], cy:lp[1], r:38, fill:"none", stroke:"var(--accent)", "stroke-width":3}));
       if (rs2.dash) g2.appendChild(s("circle",{cx:lp[0], cy:lp[1], r:33, fill:"none", stroke:d.color, "stroke-width":2, "stroke-dasharray":"5 4"}));
       g2.appendChild(s("circle",{class:"ring", cx:lp[0], cy:lp[1], r:28, fill:d.color, stroke:"var(--panel)", "stroke-width":2}));
-      g2.appendChild(s("text",{x:lp[0], y:lp[1] + 5, "text-anchor":"middle", style:"font-size:14px;font-weight:700;fill:#fff"}, initials(orgLabel(o))));
+      g2.appendChild(s("text",{x:lp[0], y:lp[1] + 5, "text-anchor":"middle", style:"font-size:14px;font-weight:700;fill:" + onColor(d.color)}, initials(orgLabel(o))));
       badge(g2, lp[0], lp[1], 28, o);
       g2.appendChild(s("title",null, nameOf(o) + " \u2014 " + (o.mission || "")));
       nodeEvents(g2, nameOf(o) + ", lead agent for " + d.name, function(){ openAgent(o.id); });
@@ -1505,7 +1594,7 @@ function orgSvg(){
     var gc = s("g",{class:"node"});
     var cy = C + (nl > 1 ? lr + lnode + 44 : lnode + 44);
     gc.appendChild(s("rect",{x:C - 130, y:cy - 16, width:260, height:32, rx:16, fill:"var(--accent)"}));
-    gc.appendChild(s("text",{x:C, y:cy + 5, "text-anchor":"middle", style:"font-size:13px;font-weight:700;fill:#fff"}, "+ " + cta));
+    gc.appendChild(s("text",{x:C, y:cy + 5, "text-anchor":"middle", style:"font-size:13px;font-weight:700;fill:var(--accent-on)"}, "+ " + cta));
     nodeEvents(gc, cta, function(){ state.orgStage = Math.min(3, state.orgStage + 1); render(); });
     gNodes.appendChild(gc);
   }
@@ -1518,8 +1607,8 @@ function renderOrg(){
       return h("button",{type:"button","aria-pressed": state.orgStage === x[0] ? "true" : "false", onclick:function(){ state.orgStage = x[0]; render(); }}, x[1]);
     }));
   var chips = h("div",{class:"filters",style:"margin-top:8px"},
-    h("button",{type:"button",class:"tab",style:"--d:var(--ink)","aria-selected": !state.orgDomain ? "true" : "false", onclick:function(){ state.orgDomain = null; render(); }}, h("span",{class:"num",style:"background:var(--grey)"},"\u2217"), "All"),
-    D.map(function(d){ return h("button",{type:"button",class:"tab",style:"--d:" + d.color,"aria-selected": state.orgDomain === d.id ? "true" : "false", onclick:function(){ state.orgDomain = state.orgDomain === d.id ? null : d.id; render(); }}, h("span",{class:"num",style:"background:" + d.color}, String(D.indexOf(d) + 1)), d.short_name || d.name); }));
+    h("button",{type:"button",class:"tab",style:domainStyle("#5E5E5E"),"aria-pressed": !state.orgDomain ? "true" : "false", onclick:function(){ state.orgDomain = null; render(); }}, h("span",{class:"num",style:filled("#5E5E5E")},"\u2217"), "All"),
+    D.map(function(d){ return h("button",{type:"button",class:"tab",style:domainStyle(d.color),"aria-pressed": state.orgDomain === d.id ? "true" : "false", onclick:function(){ state.orgDomain = state.orgDomain === d.id ? null : d.id; render(); }}, h("span",{class:"num",style:filled(d.color)}, String(D.indexOf(d) + 1)), d.short_name || d.name); }));
   var cb = function(key, label){
     var id = "chk-" + key;
     return h("label",{class:"chk",for:id}, h("input",{type:"checkbox",id:id, checked: state[key] ? true : null, onchange:function(e){ state[key] = e.target.checked; render(); }}), label);
@@ -1544,7 +1633,7 @@ function renderOrg(){
       h("thead",null, h("tr",null, ["Agent","Role","Journey","Autonomy","Horizon","Lifecycle","Status"].map(function(c){ return h("th",{scope:"col"}, c); }))),
       h("tbody",null, ALL.map(function(a){
         var au = autonomyOf(a);
-        return h("tr",null, h("td",null, h("button",{type:"button",class:"agentlink",style:"all:unset;cursor:pointer;font-weight:700;color:" + a._d.color, onclick:function(){ openAgent(a.id); }}, h("span",{class:"anm",style:"display:inline-flex"}, idIcon(a), nameOf(a)))),
+        return h("tr",null, h("td",null, h("button",{type:"button",class:"agentlink",style:"all:unset;cursor:pointer;font-weight:700;color:var(--ink)", onclick:function(){ openAgent(a.id); }}, h("span",{class:"anm",style:"display:inline-flex"}, idIcon(a), nameOf(a)))),
           h("td",null, a.role === "lead" ? "Lead" : "Specialist"), h("td",null, a._d.name), h("td",null, au ? au.label : TBC), h("td",null, a.horizon || TBC), h("td",null, a.lifecycle || "Planned"), h("td",null, statusPill(note("val|agent|" + a.id).status || a.status)));
       }))))));
   return [h("h2",{class:"sec"}, "How " + (M.short || M.customer || "the company") + " could work: human-led, agent-operated"),
@@ -1788,7 +1877,7 @@ function agentStage(a){
 function agentChip(a, small){
   var d = a._d || {};
   return h("button",{type:"button",class:"agchip" + (small ? " sm" : ""),style:"--d:" + (d.color || ACCENT),title:(nameOf(a)) + (d.name ? " \u00b7 " + d.name : ""),onclick:function(){ openAgent(a.id); }},
-    idIcon(a, "aicon") || h("span",{class:"aicon ini",style:"background:" + (d.color || ACCENT)}, initials(shortOf(a))), h("span",{class:"agn"}, shortOf(a)), isMvp(a) ? h("span",{class:"pill acc"},"MVP") : null);
+    idIcon(a, "aicon") || h("span",{class:"aicon ini",style:filled(d.color)}, initials(shortOf(a))), h("span",{class:"agn"}, shortOf(a)), isMvp(a) ? h("span",{class:"pill acc"},"MVP") : null);
 }
 function lifecycleRow(L){
   return h("div",{class:"chev"}, L.map(function(st, i){
@@ -1826,9 +1915,11 @@ function factorySteps(){
   var fa = String(st.agent || "").split(" \u00b7 ").map(function(n){ return agentByName(n.replace(/\s*\(.*\)$/, "")); }).filter(Boolean);
   var LOOP = {plan:"Plan gates", dev:"DEV loop", gate:"Human-in-the-loop gate", ops:"OPS loop"};
   return [h("div",{class:"fsteps",role:"tablist","aria-label":"Idea-to-agent steps"}, S.map(function(x, i){
-      return h("button",{type:"button",role:"tab",class:"fstep lp-" + x.loop,"aria-selected": i === state.fstep ? "true" : "false",onclick:function(){ state.fstep = i; render(); }}, h("span",{class:"n"}, x.id), h("span",null, x.name));
+      return h("button",{type:"button",id:"factory-tab-" + i,role:"tab",class:"fstep lp-" + x.loop,
+        "aria-controls":"factory-step-panel","aria-selected": i === state.fstep ? "true" : "false",tabindex:i === state.fstep ? "0" : "-1",
+        onclick:function(){ activateTab("factory-tab-" + i,function(){ state.fstep = i; }); }}, h("span",{class:"n"}, x.id), h("span",null, x.name));
     })),
-    h("div",{class:"fdetail lp-" + st.loop},
+    h("div",{class:"fdetail lp-" + st.loop,id:"factory-step-panel",role:"tabpanel","aria-labelledby":"factory-tab-" + state.fstep},
       h("div",{class:"fdh"}, h("b",null, st.id + " \u00b7 " + st.name), h("span",{class:"pill"}, LOOP[st.loop] || st.loop || "")),
       h("p",null, st.what || ""),
       h("div",{class:"grid2"},
@@ -1861,7 +1952,7 @@ function renderFactorySections(){
   })));
   var roles = arr(FAC.roles).map(function(r){ return [AG[r.id], r.decides]; }).filter(function(x){ return x[0]; });
   if (roles.length) out.push(h("h3",{class:"sub"},"Factory roles: people decide, agents prepare"), h("div",{class:"roleg"}, roles.map(function(x){
-    var a = x[0]; return h("button",{type:"button",class:"rolec",onclick:function(){ openAgent(a.id); }}, idIcon(a, "aicon lg") || h("span",{class:"aicon lg ini",style:"background:" + ((a._d || {}).color || ACCENT)}, initials(shortOf(a))), h("b",null, nameOf(a)), h("small",null, a.capability || a.mission || ""), h("span",{class:"note"}, h("b",null,"Decides: "), x[1]));
+    var a = x[0]; return h("button",{type:"button",class:"rolec",onclick:function(){ openAgent(a.id); }}, idIcon(a, "aicon lg") || h("span",{class:"aicon lg ini",style:filled((a._d || {}).color)}, initials(shortOf(a))), h("b",null, nameOf(a)), h("small",null, a.capability || a.mission || ""), h("span",{class:"note"}, h("b",null,"Decides: "), x[1]));
   })));
   if (arr(FAC.phases).length) out.push(h("h3",{class:"sub"},"Roll-out"), h("div",{class:"tscroll"}, h("table",{class:"t"}, h("thead",null, h("tr",null, ["Phase","When","What"].map(function(c){ return h("th",{scope:"col"}, c); }))), h("tbody",null, FAC.phases.map(function(p){ return h("tr",null, h("td",null, h("b",null, p[0])), h("td",null, p[1]), h("td",null, p[2])); })))));
   var res = arr(FAC.resources).filter(function(r){ return /^https:\/\//.test(r.url || ""); });
@@ -1897,7 +1988,7 @@ function lzIcon(a, x, y, z, col){
   var src = a && a.identity && a.identity.icon, g = s("g",{class:"lzag"}, s("title",null, nameOf(a) + (isMvp(a) ? " \u00b7 MVP" : "")));
   if (isMvp(a)) g.appendChild(s("rect",{x:x - 2.5, y:y - 2.5, width:z + 5, height:z + 5, rx:8, class:"mvpring"}));
   if (src && ICON_OK.test(src)) g.appendChild(s("image",{href:src, x:x, y:y, width:z, height:z}));
-  else { g.appendChild(s("rect",{x:x, y:y, width:z, height:z, rx:6, fill:col || ACCENT})); g.appendChild(s("text",{x:x + z / 2, y:y + z / 2 + 4, "text-anchor":"middle", class:"lzini"}, initials(shortOf(a)))); }
+  else { col = hex(col, ACCENT); g.appendChild(s("rect",{x:x, y:y, width:z, height:z, rx:6, fill:col})); g.appendChild(s("text",{x:x + z / 2, y:y + z / 2 + 4, "text-anchor":"middle", class:"lzini",style:"fill:" + onColor(col)}, initials(shortOf(a)))); }
   return g;
 }
 function lzSvg(){
@@ -1997,7 +2088,7 @@ function lzPanel(){
     var d = domById(a.domain) || {}, di = D.indexOf(d), team = lzTeam(a);
     var ucs = UCS.filter(function(u){ return u.domain === d.id; });
     return h("div",{class:"lzpanel",id:"lzpanel",style:"--d:" + (d.color || ACCENT)},
-      h("div",{class:"lzph"}, h("span",{class:"lzbadge2",style:"background:" + (d.color || ACCENT)}, "F"), h("div",null, h("h3",null, (d.name || a.domain) + " landing zone"), h("div",{class:"note"}, d.journey_name || "")), h("button",{type:"button",class:"btn",onclick:function(){ go("journeys",{d:di}); }},"Open journey")),
+      h("div",{class:"lzph"}, h("span",{class:"lzbadge2",style:filled(d.color)}, "F"), h("div",null, h("h3",null, (d.name || a.domain) + " landing zone"), h("div",{class:"note"}, d.journey_name || "")), h("button",{type:"button",class:"btn",onclick:function(){ go("journeys",{d:di}); }},"Open journey")),
       h("div",{class:"btnrow"}, ["DEV","TEST","PROD"].map(function(k){ var st = (a.stages || {})[k] || "later"; return h("span",{class:"stgrow"}, h("b",null, k + " "), stagePill(st)); })),
       arr(a.classes).length ? [h("div",{class:"small-lbl"},"Data classes"), h("div",{class:"btnrow"}, a.classes.map(function(c){ var C = lzClass(c); return h("span",{class:"pill"}, h("span",{class:"dot",style:"background:" + (C ? C[2] : "#999")}), " " + (C ? C[1] + " \u00b7 " + C[3] : c)); }))] : null,
       h("div",{class:"small-lbl"},"Agents"), h("div",{class:"btnrow"}, team.map(function(x){ return agentChip(x, true); })),
@@ -2034,7 +2125,7 @@ function renderDecisions(A){
   var shown = list.filter(function(x){ return f === "all" || adrStatus(x) === f; });
   var out = [h("h3",{class:"sub"},"Architecture decision records"),
     h("p",{class:"note"},"Each decision with its context, consequences and alternatives. Decisions marked Hub canon are the Innovation Hub's standard proposals; the workshop agrees, adjusts or rejects them."),
-    h("div",{class:"filters"}, [["all","All \u00b7 " + list.length]].concat(Object.keys(counts).map(function(k){ return [k, k.charAt(0).toUpperCase() + k.slice(1) + " \u00b7 " + counts[k]]; })).map(function(x){ return h("button",{type:"button",class:"tab","aria-selected": f === x[0] ? "true" : "false",onclick:function(){ state.adrFilter = x[0]; render(); }}, x[1]); })),
+    h("div",{class:"filters"}, [["all","All \u00b7 " + list.length]].concat(Object.keys(counts).map(function(k){ return [k, k.charAt(0).toUpperCase() + k.slice(1) + " \u00b7 " + counts[k]]; })).map(function(x){ return h("button",{type:"button",class:"tab","aria-pressed": f === x[0] ? "true" : "false",onclick:function(){ state.adrFilter = x[0]; render(); }}, x[1]); })),
     h("div",{class:"adrs"}, shown.map(function(x){
       var st = adrStatus(x), dec = x.decision && !/^(proposed|agreed|accepted)$/i.test(String(x.decision)) ? x.decision : null;
       return h("article",{class:"adr" + (state.adr === x.id ? " sel" : ""),id:"adr-" + x.id},
@@ -2062,10 +2153,14 @@ function renderArchitecture(){
   if (tabs.length < 2 && !LZ) return renderArchitectureClassic();
   if (!tabs.some(function(t){ return t[0] === state.archTab; })) state.archTab = tabs[0][0];
   var out = [h("h2",{class:"sec"}, A.title || "Target architecture"), A.intro ? h("p",{class:"lead"}, A.intro, evPills(A.src)) : null,
-    h("div",{class:"atabs",role:"tablist","aria-label":"Target architecture views"}, tabs.map(function(t){ return h("button",{type:"button",role:"tab",class:"atab","aria-selected": t[0] === state.archTab ? "true" : "false",onclick:function(){ state.archTab = t[0]; render(); }}, t[1]); }))];
-  if (state.archTab === "lz") return out.concat(renderLandingZone());
-  if (state.archTab === "decisions") return out.concat(renderDecisions(A));
-  return out.concat(renderArchitectureClassic(state.archTab));
+    h("div",{class:"atabs",role:"tablist","aria-label":"Target architecture views"}, tabs.map(function(t){ return h("button",{
+      type:"button",id:"architecture-tab-" + t[0],role:"tab",class:"atab","aria-controls":"architecture-panel",
+      "aria-selected": t[0] === state.archTab ? "true" : "false",tabindex:t[0] === state.archTab ? "0" : "-1",
+      onclick:function(){ activateTab("architecture-tab-" + t[0],function(){ state.archTab = t[0]; }); }}, t[1]); }))];
+  var content = state.archTab === "lz" ? renderLandingZone()
+    : state.archTab === "decisions" ? renderDecisions(A)
+    : renderArchitectureClassic(state.archTab);
+  return out.concat([h("section",{id:"architecture-panel",role:"tabpanel","aria-labelledby":"architecture-tab-" + state.archTab}, content)]);
 }
 
 /* ---------------- use case: Innovation Hub use-case template ---------------- */
@@ -2089,7 +2184,7 @@ function ucDetail(u){
   var tf = String(u.timeframe || "");
   var figs = arr(u.figures);
   var head = h("div",{class:"uchead",style:"--d:" + (d.color || ACCENT)},
-    h("span",{class:"n",style:"background:" + (d.color || ACCENT)}, String(u.id)), h("h2",null, u.name || ""),
+    h("span",{class:"n",style:filled(d.color)}, String(u.id)), h("h2",null, u.name || ""),
     h("span",{class:"pill d"}, d.name || ""), h("span",{class:"pill"}, quadrant(v, f) + " \u00b7 V" + v + " / F" + f), u.mvp ? h("span",{class:"pill acc"},"MVP candidate") : null,
     statusPill(note("val|uc|" + u.id).status || u.status), ags.length ? h("span",{class:"btnrow",style:"margin:0"}, ags.map(function(a){ return agentChip(a, true); })) : null);
   var general = h("section",{class:"ucs"}, h("div",{class:"bar gen"},"General"), h("div",{class:"tpl two"},
@@ -2279,9 +2374,9 @@ function valueSection(){
       vk("NPV, cash only", chf(T.npv_budget, true), "budget view"), T.risk_year ? vk("Risk reduction", chf(T.risk_year, true), "per year, not in the views") : null),
     h("div",{class:"tscroll"}, h("table",{class:"t"}, h("thead",null, h("tr",null, ["Use case","Value per year (range)","Cash per year","Cost per year","NPV","ROI","Payback","Status"].map(function(c){ return h("th",{scope:"col"}, c); }))),
       h("tbody",null, rows.map(function(u){
-        var v = valueOf(u), d = domById(u.domain) || {}, ry = v.range_year || {};
+        var v = valueOf(u), ry = v.range_year || {};
         return h("tr",null,
-          h("td",null, h("button",{type:"button",class:"agentlink",style:"font-weight:700;color:" + (d.color || ACCENT),onclick:function(){ openUseCase(u); }}, u.id + " " + u.name)),
+          h("td",null, h("button",{type:"button",class:"agentlink",style:"font-weight:700;color:var(--ink)",onclick:function(){ openUseCase(u); }}, u.id + " " + u.name)),
           h("td",{class:"nowrap"}, h("b",null, chf(ry.base, true)), h("div",{class:"note"}, chf(ry.low, true) + " \u2013 " + chf(ry.high, true))),
           h("td",{class:"nowrap"}, chf(v.budget_year, true)),
           h("td",{class:"nowrap"}, chf(v.cost_year, true), v.build ? h("div",{class:"note"}, "+ " + chf(v.build, true) + " build") : null),
@@ -2465,7 +2560,7 @@ function renderIdentity(){
   out.push(h("h3",{class:"sub"},"Journey colours"),
     I.brand && I.brand.source ? h("p",{class:"note"}, "Colours from " + I.brand.source + ".") : null,
     h("div",{class:"swatches"}, js.map(function(j){
-      var d = domById(j.id) || {}, c = hex(j.colour, d.color || ACCENT), g = hex(j.glyph, "#FFFFFF");
+      var d = domById(j.id) || {}, c = hex(j.colour, d.color || ACCENT), g = onColor(c);
       return h("div",{class:"sw"},
         h("div",{class:"chip",style:"background:" + c + ";color:" + g}, h("b",null, j.id + " \u00b7 " + (j.name || d.journey_name || d.name || "")), h("span",null, j.po ? "PO area: " + j.po : "")),
         h("div",{class:"meta"}, h("code",null, c), j.colour_name ? h("span",null, String(j.colour_name)) : null, j.contrast ? h("span",{class:"note"}, j.contrast + ":1 with the glyph") : null));
@@ -2474,7 +2569,7 @@ function renderIdentity(){
       var en = envs.filter(function(x){ return x.name === e; })[0] || {};
       var band = hex(en.band, null);
       return h("div",{class:"band"},
-        h("div",{class:"bchip" + (band ? "" : " clean"),style: band ? "background:" + band + ";color:" + hex(en.label, "#FFFFFF") : null}, band ? e : e + " \u00b7 no band"),
+        h("div",{class:"bchip" + (band ? "" : " clean"),style: band ? filled(band) : null}, band ? e : e + " \u00b7 no band"),
         h("div",{class:"note"}, band ? [(en.band_name ? en.band_name + " \u00b7 " : "") + band, en.label_contrast ? " \u00b7 label " + en.label_contrast + ":1" : ""] : "Production stays clean: no postfix, no band"));
     })) : null);
   out.push(h("h3",{class:"sub"},"Agent family"),
@@ -2483,7 +2578,7 @@ function renderIdentity(){
       if (!mine.length) return null;
       var j = js.filter(function(x){ return x.id === d.id; })[0] || {};
       return h("div",{class:"fcol",style:"--fc:" + hex(j.colour, d.color)},
-        h("div",{class:"fhead",style:"color:" + hex(j.glyph, "#FFFFFF")}, h("b",null, d.id + " \u00b7 " + (d.journey_name || d.name)), j.po ? h("span",null, "PO area: " + j.po) : null),
+        h("div",{class:"fhead",style:"color:" + onColor(hex(j.colour, d.color))}, h("b",null, d.id + " \u00b7 " + (d.journey_name || d.name)), j.po ? h("span",null, "PO area: " + j.po) : null),
         mine.map(function(t){
           return h("button",{type:"button",class:"fitem",onclick:function(){ openIdentity(t.a, t.d); }},
             idIcon(t.a, "aicon md") || h("span",{class:"aicon md"}), h("span",{class:"fx"}, h("b",null, nameOf(t.a)), idStatus(t.a)));
@@ -2609,7 +2704,7 @@ function matrixSvg(){
   var W = 560, H = 440, L = 56, T = 24, R = 18, B = 50, iw = W - L - R, ih = H - T - B;
   function X(f){ return L + (f - 0.5) / 5 * iw; }
   function Y(v){ return T + ih - (v - 0.5) / 5 * ih; }
-  var svg = s("svg",{viewBox:"0 0 " + W + " " + H, class:"matrix", role:"img", "aria-label":"Use case portfolio by value and feasibility"});
+  var svg = s("svg",{viewBox:"0 0 " + W + " " + H, class:"matrix", role:"group", "aria-label":"Use case portfolio by value and feasibility"});
   svg.appendChild(s("rect",{x:X(3), y:T, width:L + iw - X(3), height:Y(3) - T, fill:"var(--ok-soft)"}));
   svg.appendChild(s("rect",{x:L, y:T, width:X(3) - L, height:Y(3) - T, fill:"var(--accent-soft)"}));
   svg.appendChild(s("rect",{x:X(3), y:Y(3), width:L + iw - X(3), height:T + ih - Y(3), fill:"var(--warn-soft)"}));
@@ -2645,11 +2740,11 @@ function matrixSvg(){
     var u = p.u, cx = p.x, cy = p.y;
     var d = domById(u.domain) || {color:ACCENT};
     var st = String(note("val|uc|" + u.id).status || u.status || "").toLowerCase();
-    var g = s("g",{class:"bub", tabindex:"0", role:"button", "aria-label":u.id + " " + u.name + ", value " + u.value + ", feasibility " + u.feasibility, opacity: st === "rejected" ? .35 : null});
+    var g = s("g",{class:"bub" + (st === "rejected" ? " faded" : ""), tabindex:"0", role:"button", "aria-label":u.id + " " + u.name + ", value " + u.value + ", feasibility " + u.feasibility});
     g.appendChild(s("circle",{cx:cx, cy:cy, r:p.r, fill:d.color, stroke: u.mvp ? "var(--ink)" : "var(--panel)", "stroke-width": u.mvp ? 3 : 2}));
     var uv = valueOf(u);
     if (uv && uv.status !== "validated") g.appendChild(s("circle",{cx:cx, cy:cy, r:p.r + 4.5, fill:"none", stroke:"var(--ink)", "stroke-width":1.4, "stroke-dasharray":"3 3", opacity:.75}));
-    g.appendChild(s("text",{x:cx, y:cy + 4, "text-anchor":"middle", style:"font-size:" + (String(u.id).length > 4 ? 8.5 : 10) + "px;font-weight:700;fill:#fff"}, String(u.id)));
+    g.appendChild(s("text",{x:cx, y:cy + 4, "text-anchor":"middle", style:"font-size:" + (String(u.id).length > 4 ? 8.5 : 10) + "px;font-weight:700;fill:" + onColor(d.color)}, String(u.id)));
     g.appendChild(s("title",null, u.id + " \u00b7 " + u.name + (uv ? " \u00b7 value " + chf((uv.range_year || {}).base, true) + " per year (" + (uv.status || "hypothesis") + ")" : "")));
     g.addEventListener("click", function(){ openUseCase(u); });
     g.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openUseCase(u); } });
@@ -2661,7 +2756,7 @@ function ucAgentIcons(u){
   var ags = arr(u.agents).map(agentByName).filter(Boolean);
   if (!ags.length) return "\u2014";
   return h("span",{class:"ucags"}, ags.slice(0, 5).map(function(a){ var d = a._d || {};
-    return h("button",{type:"button",class:"ucag",title:nameOf(a),"aria-label":nameOf(a),onclick:function(){ openAgent(a.id); }}, idIcon(a, "aicon") || h("span",{class:"aicon ini",style:"background:" + (d.color || ACCENT)}, initials(shortOf(a)))); }),
+    return h("button",{type:"button",class:"ucag",title:nameOf(a),"aria-label":nameOf(a),onclick:function(){ openAgent(a.id); }}, idIcon(a, "aicon") || h("span",{class:"aicon ini",style:filled(d.color)}, initials(shortOf(a)))); }),
     ags.length > 5 ? h("span",{class:"small-lbl"}, "+" + (ags.length - 5)) : null);
 }
 function renderUseCases(){
@@ -2670,7 +2765,7 @@ function renderUseCases(){
     h("thead",null, h("tr",null, ["ID","Use case","Journey","Agents","Value","Feasibility","Horizon","Status"].map(function(c){ return h("th",{scope:"col"}, c); }))),
     h("tbody",null, rows.map(function(u){
       var d = domById(u.domain) || {};
-      return h("tr",null, h("td",null, h("b",null, u.id)), h("td",null, h("button",{type:"button",style:"all:unset;cursor:pointer;font-weight:700;color:" + (d.color || ACCENT),onclick:function(){ openUseCase(u); }}, u.name), u.mvp ? h("span",{class:"pill acc",style:"margin-inline-start:6px"},"MVP") : null, evPills(u.src)),
+      return h("tr",null, h("td",null, h("b",null, u.id)), h("td",null, h("button",{type:"button",style:"all:unset;cursor:pointer;font-weight:700;color:var(--ink)",onclick:function(){ openUseCase(u); }}, u.name), u.mvp ? h("span",{class:"pill acc",style:"margin-inline-start:6px"},"MVP") : null, evPills(u.src)),
         h("td",null, d.name || ""), h("td",null, ucAgentIcons(u)), h("td",null, String(u.value || TBC)), h("td",null, String(u.feasibility || TBC)), h("td",null, u.horizon || TBC), h("td",null, statusPill(note("val|uc|" + u.id).status || u.status)));
     }))));
   return [h("h2",{class:"sec"},"Use case portfolio"), h("p",{class:"lead"}, BP.use_case_intro || "Every candidate placed by value and feasibility. Bubble colour = journey, dark ring = MVP candidate. Select a bubble or a row for the detail and to record the workshop verdict."),
@@ -2845,7 +2940,9 @@ function render(scrollTop){
   var out;
   try { out = RENDER[state.view](); }
   catch (e) { out = [h("div",{class:"empty"}, h("b",null,"This view could not be drawn."), h("p",null, String(e && e.message || e)))]; if (window.console) console.error(e); }
-  v.replaceChildren(); add(v, out); v.appendChild(pager());
+  var selectedJourney = document.querySelector('#subnav [role="tab"][aria-selected="true"]');
+  var content = selectedJourney ? h("section",{id:"journey-panel",role:"tabpanel","aria-labelledby":selectedJourney.id}, out) : out;
+  v.replaceChildren(); add(v, content); v.appendChild(pager());
   writeHash();
   if (scrollTop) { try { window.scrollTo(0, 0); v.focus({preventScroll:true}); } catch (e) {} }
 }

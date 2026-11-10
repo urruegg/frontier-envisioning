@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
-| Date | 2026-11-09 |
+| Version | 0.4 |
+| Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted design and maintenance |
-| Status | Human design, plans and readiness approved; delivery in progress: D1-D5 in draft PR #12, G1 Proposed, G2 running; A not started; human #8 pending |
+| Status | Human design, plans and readiness approved; D1-D5 in draft PR #12, G1-G3 in draft PR #13 (policies Proposed); A1-A4 implemented, A5 docs handed off, A4/A5 acceptance blocked; human #8 pending |
 | Scope | The eight approved repository improvements, delivered in bounded workstreams |
 | References | [Spec catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
 
@@ -14,8 +14,11 @@ plan/readiness quotes and #6 comments are recorded in the
 [idea's approval provenance](../idea/2026-11-09-docs-governance-and-accessibility.md#approval-provenance).
 PR #11 was merged on 2026-11-09 at main `b0b4776`; D1-D5 are
 implemented/reviewed in [draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12),
-not merged. [SPRINT-001](../sprint/SPRINT-001-docs-governance-and-accessibility.md)
-records remaining G/A/human work. Approval does not accept Proposed policies,
+not merged. G1-G3 are delivered in
+[draft PR #13](https://github.com/urruegg/frontier-envisioning/pull/13), also
+not merged; policies remain Proposed.
+[SPRINT-001](../sprint/SPRINT-001-docs-governance-and-accessibility.md)
+records renderer delivery and remaining acceptance/human work. Approval does not accept Proposed policies,
 grant protected permissions or establish label-field changes.
 
 ## Approved source and approval boundary
@@ -162,6 +165,23 @@ plan neither masks them in hosting nor changes golden/profile hashes.
 
 Human zoom, screen-reader, voice and real Windows high-contrast assessment
 are distinct acceptance records. Passing automation is not full WCAG certification.
+
+### Implementation finding (2026-11-10)
+
+The original design-stage audit and approval above are retained, not rewritten.
+Implementation verification found actual catalogue AA text-contrast failures
+in both schemes: Later wave **4.40:1**, Finance header **4.33:1**. The earlier
+best-practice-only catalogue assessment was incomplete; full L2 is red even
+though the covered blueprint states are clean. The retained full browser
+report has 41 passed and 2 failed tests; final parent verification is pending.
+See the [new implementation handoff](../intake/2026-11-10-accessibility-verification.md).
+
+The identity generator remains excluded. A new phase needs an explicit human
+scope decision and guarded-output verification; the scope question was
+unanswered when user input was unavailable. No changed scope is approved,
+no catalogue assertion is skipped, and no gate waiver, hosted-copy rewrite,
+profile/hash change or manual acceptance is authorised. A1-A4 implementation
+and A5 documentation do not complete A4/A5 acceptance or #8.
 
 ## Delivery, dependencies and safeguards
 

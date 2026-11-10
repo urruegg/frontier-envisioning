@@ -15,17 +15,19 @@
 <nav class="rail" id="rail" aria-label="Views"></nav>
 <div class="page">
   <header class="top" id="top"></header>
-  <div class="banner" id="banner" role="note"></div>
+  <section aria-label="Blueprint status">
+    <div class="banner" id="banner" role="note"></div>
+  </section>
   <nav class="crumb" id="crumb" aria-label="Breadcrumb"></nav>
   <div class="subnav" id="subnav" role="tablist" aria-label="Journeys"></div>
   <main id="view" tabindex="-1"></main>
   <footer class="note" id="footnote"></footer>
 </div>
-<div class="scrim" id="scrim"></div>
-<aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
-  <header><div><h2 id="drawer-title"></h2><p id="drawer-sub"></p></div><button type="button" class="x" id="drawer-close" aria-label="Close">&times;</button></header>
+<div class="scrim" id="scrim" aria-hidden="true"></div>
+<div class="drawer" id="drawer" hidden inert aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+  <div class="drawer-head"><div><h2 id="drawer-title"></h2><p id="drawer-sub"></p></div><button type="button" class="x" id="drawer-close" aria-label="Close">&times;</button></div>
   <div class="body" id="drawer-body"></div>
-</aside>
+</div>
 <script type="application/json" id="bp-data">"__BLUEPRINT_DATA__"</script>
 <script>
 /*__JS__*/

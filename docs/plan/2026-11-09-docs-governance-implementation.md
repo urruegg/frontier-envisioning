@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
-| Date | 2026-11-09 |
+| Version | 0.4 |
+| Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | Human design, plans and readiness approved; D1-D5 implemented/reviewed in draft PR #12, G1 Proposed, G2 running; A not started; human #8 pending |
+| Status | Human design, plans and readiness approved; D1-D5 in draft PR #12, G1-G3 in draft PR #13 (policies Proposed); A1-A4 implemented, A5 docs handed off, A4/A5 acceptance blocked; human #8 pending |
 | Scope | Coordinated delegated implementation of the eight approved requirements |
 | References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md) |
 
@@ -83,8 +83,8 @@ serial execution over a complicated coordination mechanism.
 - [x] Parent established isolated implementation worktrees. G2 started clean
       on `docs/9-agent-governance` at `d07bd7e`, stacked on unmerged draft
       PR #12 (`feat/10-documentation-foundation`, targeting main).
-- [x] Bounded workers and review checkpoints used for D1-D5/G1; current
-      G2 uses existing dependencies. Each later task must recheck its base.
+- [x] Bounded workers and review checkpoints used for D1-D5/G1; G2 used
+      existing dependencies. Each later task must recheck its base.
 - [x] #8 and manual accessibility checks remain outside agent delegation.
 
 Per-command Windows environment:
@@ -169,11 +169,22 @@ Manual assistive-technology approval is not inferred from automated tests.
 - [ ] Sprint links real PR/evidence and retains open human/manual actions.
 - [ ] People review/merge; people separately tag, release and deploy.
 
-Current state on 2026-11-09: human design, plan and readiness approval recorded;
+Delivery note on 2026-11-10: human design, plan and readiness approval recorded;
 D1-D5 implemented and spec/code-reviewed in
 [draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12), not merged.
-G1 implemented at `d07bd7e` with policies still Proposed; G2 running; G3 and
-A1-A5 not started. Human #8 and manual acceptance remain pending.
+G1-G3 delivered in
+[draft PR #13](https://github.com/urruegg/frontier-envisioning/pull/13), not
+merged, with policies still Proposed. The parent reports cloud L1/L2/IaC
+passed for both PRs, CodeQL neutral. A1-A4 are implemented; A5 documentation
+is handed off. Catalogue AA contrast leaves full accessibility L2 red and
+A4/A5 acceptance incomplete. The excluded generator needs a new human scope
+decision, not an inferred extension of the approved plan. Human #8 and manual
+acceptance remain pending.
+The initial A5 documentation-contract failure was corrected in `2703703`
+while preserving historical hashes/results and real revision dates.
+Final parent strict L1 passes (145 tests, one expected skip, 311 subtests,
+34 plugin checks and 41 DOM tests). Full strict L2 remains red:
+42 passed and the two catalogue AA schemes failed. No failure is waived.
 See [SPRINT-001](../sprint/SPRINT-001-docs-governance-and-accessibility.md) for
 delivery evidence. No policy activation, label-field change, protected edit,
 release or deployment is claimed.

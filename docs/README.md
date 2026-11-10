@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
-| Date | 2026-11-09 |
+| Version | 0.2 |
+| Date | 2026-11-10 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained catalogue; approval not inferred |
 | Scope | Active documentation and historical record routing; document revision, not product version |
@@ -20,6 +20,7 @@
 | [engineering/copilot-and-superpowers.md](engineering/copilot-and-superpowers.md) | AI-assisted engineering: GitHub Copilot surfaces, Superpowers, agents, skills, hooks |
 | [engineering/workstation-setup.md](engineering/workstation-setup.md) | Dev container, local setup, VS Code, Copilot CLI |
 | [engineering/testing-strategy.md](engineering/testing-strategy.md) | Test levels, what each gate proves |
+| [intake/2026-11-10-accessibility-verification.md](intake/2026-11-10-accessibility-verification.md) | New #7 implementation handoff; catalogue AA blocker and pending human acceptance, not the original audit |
 | [engineering/deployment.md](engineering/deployment.md) | Showcase hosting on Azure Static Web Apps with azd, Bicep and OpenID Connect |
 | [engineering/github-setup.md](engineering/github-setup.md) | Creating and configuring the GitHub repository |
 | [analysis/hubworks-integration-analysis.md](analysis/hubworks-integration-analysis.md) | HubWorks integration analysis (Microsoft internal, sharing copy) |

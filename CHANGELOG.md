@@ -6,6 +6,9 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
 
 - **Workflow legend stays usable while scrolling.** The agent-selection list is sticky only within the upper agent summary and trigger canvas. It no longer covers the full-width workflow header or node-type legend; pointer clicks, keyboard activation and agent switching remain available at desktop and responsive widths.
 - Added bounded-layout DOM coverage and real-browser pointer/occlusion regressions at 1440px and 1024px. This patch is in development; historical release records are unchanged.
+- **Accessibility implementation (2026-11-10, #7).** The evidence/role drawer contains focus, restores the exact trigger and prior background inert states, and handles content replacement, rapid reopening and reduced motion. Labelled roving tabs, pressed-state filters and grouped interactive SVGs preserve keyboard navigation and deep links.
+- **Readable, responsive blueprint.** Rendered text foregrounds adapt to data-colour fills without changing brand values or Microsoft icons. Filtered Org/portfolio labels stay opaque; selected controls have 24 CSS pixel targets, and all fourteen pages reflow at 320px while retaining local diagram/table scrolling.
+- Development-only axe-core 4.11.0 and DOM/browser regressions cover both schemes, sampled brand colours, focus, tabs, targets and reflow. **Delivery remains incomplete:** full L2 is red on identity-catalogue AA contrast (Later wave 4.40:1; Finance header 4.33:1, both schemes). Its excluded generator needs a human scope decision; assertions and output/profile guards are unchanged. Manual AT acceptance is pending. This is development delivery, not a release or WCAG certification.
 
 ## 1.6.0 — 2026-11-08
 
