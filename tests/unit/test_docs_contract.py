@@ -5,6 +5,7 @@ import hashlib
 import json
 import re
 import unittest
+from datetime import date
 from pathlib import Path
 
 import yaml
@@ -12,6 +13,16 @@ import yaml
 from tests.unit._util import ROOT, load
 
 fe_lib = load("tools/fe_lib.py")
+
+
+def assert_iso_calendar_date(case: unittest.TestCase, value: str) -> None:
+    """Revision dates may advance, but must be strict ISO calendar dates."""
+    case.assertRegex(value, r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError:
+        case.fail(f"invalid ISO calendar date: {value}")
+    case.assertEqual(parsed.isoformat(), value)
 
 
 class DocsAgentContract(unittest.TestCase):
@@ -45,7 +56,7 @@ class DocsAgentContract(unittest.TestCase):
             set(fields), {"Version", "Date", "Author", "Status", "Scope", "References"}
         )
         self.assertRegex(fields["Version"], r"^\d+\.\d+(?:\.\d+)?$")
-        self.assertEqual(fields["Date"], "2026-11-09")
+        assert_iso_calendar_date(self, fields["Date"])
         self.assertRegex(fields["Author"], r"(?i)AI-assisted|Copilot")
         self.assertRegex(fields["Status"], r"(?i)no approval")
         self.assertRegex(fields["Scope"], r"(?i)approved.*repository-owned")
@@ -143,11 +154,53 @@ class ProductDocumentSplit(unittest.TestCase):
 
     @staticmethod
     def content_digest(text: str) -> str:
-        """Allow companion links, but no prose, table or result rewrites."""
+        """Allow companion links; hash every remaining prose/table/result byte."""
         text = re.sub(
             r"\[([^]]+)\]\((?:prd|solution-design)\.md#[^)]+\)", r"\1", text
         )
         return hashlib.sha256(text.strip().encode("utf-8")).hexdigest()
+
+    def split_development_block(
+        self, text: str, start: str, end: str = ""
+    ) -> tuple[str, str]:
+        """Separate one explicit #7 addition, retaining its original neighbours."""
+        self.assertEqual(text.count(start), 1, f"missing/duplicate addition: {start}")
+        prefix, addition = text.split(start, 1)
+        if end:
+            self.assertEqual(text.count(end), 1, f"missing/duplicate boundary: {end}")
+            self.assertIn(end, addition, "development addition must precede its boundary")
+            addition, suffix = addition.split(end, 1)
+            return prefix + end + suffix, start + addition
+        return prefix, start + addition
+
+    def original_section_content(self, section: str, block: str) -> str:
+        """Keep the D2 migration receipt while admitting only approved A5 deltas."""
+        if section == "A.8 Non-functional requirements":
+            rows = re.findall(r"(?m)^\| NFR-0012 \| [^\n]+$", block)
+            self.assertEqual(len(rows), 1, "NFR-0012 must remain one table row")
+            # Original source: 19ec70f460f0d06dc3bca090bdb8973a9397ab8b,
+            # docs/prd-and-solution-design.md. Its SHA-256 was verified against
+            # source_sha256 in the unchanged migration receipt during implementation.
+            original = (
+                "| NFR-0012 | Accessibility | Keyboard navigation (arrows, Enter, Escape), "
+                "ARIA roles and labels, visible focus, logical CSS properties, "
+                "light and dark colour schemes |"
+            )
+            return block.replace(rows[0], original, 1)
+        if section == "B.5 Blueprint HTML design":
+            return self.split_development_block(
+                block,
+                "\n\n**Unreleased 1.6.1 accessibility implementation (#7).**",
+                "\n\n**Agent identity.**",
+            )[0]
+        if section == "B.9 Quality and testing":
+            return self.split_development_block(
+                block,
+                "\n\n### Development accessibility evidence (",
+                "\n\nBehavioural tests to run before organisation-wide release "
+                "(isolated skill-validator runs):",
+            )[0]
+        return block
 
     def test_one_actual_h1_and_truthful_document_metadata(self) -> None:
         texts = dict(self.documents)
@@ -169,7 +222,7 @@ class ProductDocumentSplit(unittest.TestCase):
                 )
                 self.assertRegex(fields["Version"], r"^\d+\.\d+(?:\.\d+)?$")
                 self.assertNotEqual(fields["Version"], "1.6.1")
-                self.assertEqual(fields["Date"], "2026-11-09")
+                assert_iso_calendar_date(self, fields["Date"])
                 self.assertIn("Urs Rüegg", fields["Author"])
                 self.assertIn("Copilot", fields["Author"])
                 self.assertRegex(fields["Status"], r"(?i)no.*approval")
@@ -194,7 +247,10 @@ class ProductDocumentSplit(unittest.TestCase):
             for index, match in enumerate(matches):
                 end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
                 block = text[match.start():end].split("## Appendix — File inventory")[0]
-                actual[match.group(1)] = self.content_digest(block)
+                section = match.group(1)
+                actual[section] = self.content_digest(
+                    self.original_section_content(section, block)
+                )
         self.assertEqual(set(actual), set(self.baseline["content_sha256"]))
         for section, expected in self.baseline["content_sha256"].items():
             with self.subTest(section=section):
@@ -210,6 +266,9 @@ class ProductDocumentSplit(unittest.TestCase):
             self.content_digest(context), self.baseline["shared_context_sha256"]
         )
         patch = prd[prd.index("## 1.6.1 patch:"):].split("## Part A —", 1)[0]
+        patch, _ = self.split_development_block(
+            patch, "\n\n### Measured accessibility delivery ("
+        )
         self.assertEqual(self.content_digest(patch), self.baseline["patch_sha256"])
         design = self.documents["solution-design.md"]
         inventory_heading = "## Appendix — File inventory (1.6.0)"
@@ -220,6 +279,65 @@ class ProductDocumentSplit(unittest.TestCase):
         )
         self.assertRegex(prd, r"(?i)historical.*(?:results|claims)")
         self.assertRegex(design, r"(?i)historical.*(?:results|claims)")
+
+    def test_current_accessibility_delta_is_truthful(self) -> None:
+        """Approved current requirements/evidence are not historical release results."""
+        prd = self.documents["prd.md"]
+        rows = re.findall(r"(?m)^\| NFR-0012 \| [^\n]+$", prd)
+        self.assertEqual(len(rows), 1)
+        for requirement in (
+            "| NFR-0012 | Accessibility | Target WCAG 2.2 AA, not certified conformance.",
+            "Visible focus", "Tab/Shift+Tab containment", "Escape and exact trigger return",
+            "Arrow/Home/End activation", "pressed-state filters",
+            "keyboard-operable SVG groups", "both colour schemes", "24 × 24 CSS pixels",
+            "all fourteen pages reflow at 320 CSS pixels without document overflow",
+            "retaining local 2D diagram/table scrolling",
+            "Automated browser checks do not replace manual",
+            "Catalogue AA remains unresolved",
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, rows[0])
+
+        design = self.documents["solution-design.md"]
+        _, implementation = self.split_development_block(
+            design,
+            "\n\n**Unreleased 1.6.1 accessibility implementation (#7).**",
+            "\n\n**Agent identity.**",
+        )
+        implementation = " ".join(implementation.split())
+        for detail in (
+            "Tab/Shift+Tab", 'aria-modal="true"', "exact prior states",
+            "roving tab stops", "Arrow/Home/End", "keyboard-operable",
+            "24 × 24 CSS pixel hit areas", "320px", "no global overflow-hiding workaround",
+        ):
+            with self.subTest(implementation=detail):
+                self.assertIn(detail, implementation)
+
+        _, patch = self.split_development_block(
+            prd[prd.index("## 1.6.1 patch:"):].split("## Part A —", 1)[0],
+            "\n\n### Measured accessibility delivery (",
+        )
+        _, evidence = self.split_development_block(
+            design,
+            "\n\n### Development accessibility evidence (",
+            "\n\nBehavioural tests to run before organisation-wide release "
+            "(isolated skill-validator runs):",
+        )
+        for label, block in (("patch", patch), ("evidence", evidence)):
+            prose = " ".join(block.split())
+            with self.subTest(current_delta=label):
+                self.assertIn("Later wave 4.40:1", prose)
+                self.assertIn("Finance header 4.33:1", prose)
+                self.assertIn("both colour schemes", prose)
+                self.assertRegex(prose, r"Full L2 (?:remains red|is blocking)")
+                self.assertIn("#8", prose)
+                self.assertRegex(prose, r"(?:acceptance is incomplete|acceptance .*not claimed)")
+                self.assertRegex(prose, r"(?:no gate waiver is approved|no assertion is skipped or waived)")
+        prose = " ".join(evidence.split())
+        self.assertIn("41 passed and 2 failed tests", prose)
+        self.assertIn("Manual Narrator, zoom, real Windows high-contrast and voice checks are pending", prose)
+        self.assertIn("not release results", prose)
+        self.assertIn("above remains the historical 1.6.0 record", prose)
 
     def test_companion_references_resolve_to_the_correct_document(self) -> None:
         prd = self.documents["prd.md"]
@@ -274,6 +392,180 @@ class ProductDocumentSplit(unittest.TestCase):
             "sprint/SPRINT-001-docs-governance-and-accessibility.md",
         ):
             self.assertIn(f"]({target})", catalogue)
+
+
+class ProductDocumentPreservationRegressions(unittest.TestCase):
+    """Exercise the contracts in memory; never rewrite docs or the migration receipt."""
+
+    def setUp(self) -> None:
+        self.contract = ProductDocumentSplit()
+        self.contract.setUp()
+
+    def assert_mutation_rejected(
+        self, document: str, original: str, replacement: str, check: str
+    ) -> None:
+        verify = getattr(self.contract, check)
+        verify()  # A rejection must not be caused by an unrelated existing failure.
+        text = self.contract.documents[document]
+        # Current prose may be rewrapped without changing the asserted evidence.
+        match = re.search(r"\s+".join(re.escape(word) for word in original.split()), text)
+        self.assertIsNotNone(match, f"mutation target missing: {original}")
+        self.assertNotEqual(original, replacement)
+        try:
+            self.contract.documents[document] = (
+                text[:match.start()] + replacement + text[match.end():]
+            )
+            with self.assertRaises(AssertionError):
+                verify()
+        finally:
+            self.contract.documents[document] = text
+
+    def test_metadata_accepts_real_revision_dates(self) -> None:
+        documents = dict(self.contract.documents)
+        for value in ("2026-11-10", "2028-02-29", "2027-01-01"):
+            with self.subTest(date=value):
+                self.contract.documents = {
+                    name: re.sub(r"(?m)^\| Date \| .+ \|$", f"| Date | {value} |", text)
+                    for name, text in documents.items()
+                }
+                self.contract.test_one_actual_h1_and_truthful_document_metadata()
+
+    def test_metadata_rejects_invalid_iso_calendar_dates(self) -> None:
+        original = re.search(
+            r"(?m)^\| Date \| .+ \|$", self.contract.documents["prd.md"]
+        ).group()
+        for value in (
+            "2026-02-29", "2026-11-31", "2026-13-01", "0000-01-01",
+            "2026-1-01", "20261110", "2026-W46-2", "2026-11-10T00:00:00",
+        ):
+            with self.subTest(date=value):
+                self.assert_mutation_rejected(
+                    "prd.md", original, f"| Date | {value} |",
+                    "test_one_actual_h1_and_truthful_document_metadata",
+                )
+
+    def test_original_sections_still_reject_result_and_prose_mutations(self) -> None:
+        for document, original, replacement in (
+            ("prd.md", "all 34 checks | Passed |", "all 34 checks | Failed |"),
+            ("prd.md", "Current Edge and Chrome;", "Only a legacy browser;"),
+            (
+                "solution-design.md",
+                "Passed; one expected warning (builder metadata)",
+                "Failed; no warnings",
+            ),
+            ("solution-design.md", "print rules that hide navigation", "no print rules"),
+            (
+                "solution-design.md", "Behavioural tests to run before",
+                "Behavioural tests NOT to run before",
+            ),
+            ("solution-design.md", "**Agent identity.** When", "**Agent identity.** Never"),
+        ):
+            with self.subTest(document=document, mutation=original):
+                self.assert_mutation_rejected(
+                    document, original, replacement,
+                    "test_substantive_original_section_content_is_unchanged",
+                )
+
+    def test_original_patch_and_provenance_still_reject_mutations(self) -> None:
+        for original, replacement in (
+            ("This is an unreleased correction", "This is a released correction"),
+            ("| Date | 9 November 2026 |", "| Date | 10 November 2026 |"),
+        ):
+            with self.subTest(mutation=original):
+                self.assert_mutation_rejected(
+                    "prd.md", original, replacement,
+                    "test_original_product_context_unreleased_note_and_inventory_are_retained",
+                )
+        inventory = self.contract.documents["solution-design.md"].split(
+            "## Appendix — File inventory (1.6.0)", 1
+        )[1]
+        original = next(line for line in inventory.splitlines() if line.startswith("| `"))
+        self.assert_mutation_rejected(
+            "solution-design.md", original, original.replace("| `", "| `invented/", 1),
+            "test_original_product_context_unreleased_note_and_inventory_are_retained",
+        )
+
+    def test_identifiers_and_anchors_still_reject_mutations(self) -> None:
+        self.assert_mutation_rejected(
+            "prd.md", "| NFR-0013 |", "| NFR-9999 |",
+            "test_original_identifiers_and_section_headings_are_retained",
+        )
+        self.assert_mutation_rejected(
+            "prd.md", "(solution-design.md#b9-quality-and-testing)",
+            "(solution-design.md#b9-invented-anchor)",
+            "test_companion_references_resolve_to_the_correct_document",
+        )
+
+    def test_missing_or_duplicate_delta_boundaries_are_rejected(self) -> None:
+        for document, marker in (
+            ("prd.md", "| NFR-0012 |"),
+            ("solution-design.md", "**Unreleased 1.6.1 accessibility implementation (#7).**"),
+            ("solution-design.md", "**Agent identity.**"),
+            ("solution-design.md", "### Development accessibility evidence ("),
+            (
+                "solution-design.md", "Behavioural tests to run before organisation-wide release "
+                "(isolated skill-validator runs):",
+            ),
+        ):
+            for replacement in ("", marker + "\n\n" + marker):
+                with self.subTest(document=document, marker=marker, replacement=replacement):
+                    self.assert_mutation_rejected(
+                        document, marker, replacement,
+                        "test_substantive_original_section_content_is_unchanged",
+                    )
+        marker = "### Measured accessibility delivery ("
+        for replacement in ("", marker + "\n\n" + marker):
+            with self.subTest(patch_boundary=replacement):
+                self.assert_mutation_rejected(
+                    "prd.md", marker, replacement,
+                    "test_original_product_context_unreleased_note_and_inventory_are_retained",
+                )
+
+    def test_current_delta_cannot_silence_targets_or_failed_evidence(self) -> None:
+        for document, original, replacement in (
+            ("prd.md", "not certified conformance", "certified conformance"),
+            ("prd.md", "Tab/Shift+Tab containment", "no keyboard containment"),
+            ("prd.md", "reflow at 320 CSS pixels", "reflow at 1280 CSS pixels"),
+            ("prd.md", "Later wave\n4.40:1", "Later wave\n4.50:1"),
+            ("prd.md", "Finance header 4.33:1", "Finance header 4.50:1"),
+            ("prd.md", "Full L2 remains\nred", "Full L2 remains\ngreen"),
+            ("prd.md", "A4/A5 acceptance is incomplete", "A4/A5 acceptance is complete"),
+            ("prd.md", "no gate waiver is approved", "a gate waiver is approved"),
+            ("solution-design.md", "Later wave 4.40:1", "Later wave 4.50:1"),
+            ("solution-design.md", "Finance header 4.33:1", "Finance header 4.50:1"),
+            ("solution-design.md", "Full L2 is blocking", "Full L2 is passing"),
+            ("solution-design.md", "41 passed\nand 2 failed tests", "43 passed\nand 0 failed tests"),
+            ("solution-design.md", "voice checks are pending", "voice checks are complete"),
+        ):
+            with self.subTest(document=document, mutation=original):
+                self.assert_mutation_rejected(
+                    document, original, replacement, "test_current_accessibility_delta_is_truthful"
+                )
+
+    def test_current_additions_can_evolve_without_changing_original_hashes(self) -> None:
+        documents = dict(self.contract.documents)
+        for document, marker, addition in (
+            (
+                "prd.md", "Catalogue AA remains unresolved;",
+                "Catalogue AA remains unresolved; further manual evidence is pending;",
+            ),
+            ("prd.md", "## Part A —", "Further development evidence is pending.\n\n## Part A —"),
+            (
+                "solution-design.md", "**Agent identity.**",
+                "Further implementation review is pending.\n\n**Agent identity.**",
+            ),
+            (
+                "solution-design.md", "Behavioural tests to run before",
+                "Further development evidence is pending.\n\nBehavioural tests to run before",
+            ),
+        ):
+            with self.subTest(document=document, addition=addition):
+                self.contract.documents = dict(documents)
+                self.assertIn(marker, documents[document])
+                self.contract.documents[document] = documents[document].replace(marker, addition, 1)
+                self.contract.test_substantive_original_section_content_is_unchanged()
+                self.contract.test_original_product_context_unreleased_note_and_inventory_are_retained()
+                self.contract.test_current_accessibility_delta_is_truthful()
 
 
 class IssueWorkPackage(unittest.TestCase):
