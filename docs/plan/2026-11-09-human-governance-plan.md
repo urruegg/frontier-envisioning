@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
-| Date | 2026-11-09 |
+| Version | 0.3 |
+| Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; human handoff preparation; AI-assisted maintenance |
-| Status | Human-only handoff plan approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); no protected action performed or delegated |
+| Status | Final human sign-off recorded on #8; sole-public-cloud-account refinement directed by the user; protected execution remains human-only |
 | Scope | DG-06, protected intake routing and manual accessibility acceptance |
 | References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/8), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md) |
 
@@ -25,49 +25,53 @@ existing Python gates and actual Microsoft Edge/assistive technology.
 
 ---
 
-## H1: collaborator eligibility and ownership (person only)
+## Account and acceptance refinement (2026-11-10)
 
-- [ ] Verify the repository is the approved private `urruegg/frontier-envisioning`.
-      Confirm whether `@urruegg_microsoft` is already an accepted collaborator
-      with effective write access and whether account/enterprise policy permits
-      external collaboration with this personal repository.
-- [ ] If eligible and missing, the person sends the invitation and verifies
-      actual acceptance/effective access. Do not grant admin merely to satisfy
-      CODEOWNERS. If account policy prevents it, stop and record that decision;
-      do not bypass enterprise restrictions or silently change source host.
-- [ ] The person applies this ownership content in their governed branch:
+The user clarified that `@urruegg_microsoft` is their enterprise-only GitHub
+account, whereas `@urruegg` is their account for this repository on GitHub's
+public-cloud platform. The repository is private and single-user.
+This explicit decision supersedes the earlier second-contributor invitation,
+shared ownership and infrastructure-owner exception. No second account is
+required or to be invited for review.
+
+The user's [final governance/manual-accessibility sign-off](https://github.com/urruegg/frontier-envisioning/issues/8#issuecomment-6768225688)
+is recorded. It does not prove execution of protected changes or supply
+scenario-level AT evidence that was not provided.
+
+For the scoped documentation refinement under the existing #8 work package:
+
+1. Update active account/review guidance and the linked spec/sprint.
+2. Keep historical intake/release evidence and bootstrap test fixtures intact.
+3. Validate documentation contracts and the required repository gate; open a
+   documentation-only PR with actual results and the human-applied target below.
+4. Leave CODEOWNERS, hooks, labels, permissions, settings and merge to the user.
+
+## H1: sole public-cloud ownership (person only)
+
+- [x] User decision: use `@urruegg` only; no enterprise-account invitation or
+      collaborator-eligibility exercise is part of this repository's plan.
+- [ ] Verify the repository remains private `urruegg/frontier-envisioning`
+      and the actual owner account has the needed repository access.
+- [ ] The person replaces the protected CODEOWNERS content with this minimal
+      all-path ownership rule, removing the imported enterprise-account rules:
 
 ```text
-# Default accountable maintainer
+# Sole public-cloud maintainer; every path, including infrastructure/governance
 *                       @urruegg
-
-# Documentation and Frontier domain design, including lifecycle records
-/docs/                  @urruegg @urruegg_microsoft
-
-# Product and immutable release records
-/plugin/                @urruegg @urruegg_microsoft
-/releases/              @urruegg @urruegg_microsoft
-
-# Preserve current infrastructure ownership
-/infra/                 @urruegg_microsoft
-
-# Future repository-owned data definitions; no data folder is created
-/data/                  @urruegg @urruegg_microsoft
-
-# Repository governance
-/.github/               @urruegg @urruegg_microsoft
-/AGENTS.md              @urruegg @urruegg_microsoft
 ```
 
 - [ ] Verify GitHub's CODEOWNERS errors display/API and base-branch behaviour.
-      `/docs/` covers all requested children. Last matching line wins; owners
-      are not accumulated from multiple matching lines.
-- [ ] Verify actual review settings separately. Two listed owners do not
-      require two approvals; draft PRs do not automatically request owner review.
-      Do not claim enabled rulesets/approvals from a local configuration file.
+      The default covers all requested docs, product, infrastructure, data and
+      governance paths. Any retained later rule must also use only `@urruegg`,
+      because last matching rules override the default.
+- [ ] Verify actual review settings separately against the
+      [sole-maintainer model](../engineering/github-setup.md#4-sole-maintainer-review-and-merge).
+      Ownership does not grant self-approval rights. Draft PRs do not request
+      owner review automatically. No server setting is inferred from this plan.
 
-No ownership transfer of `/infra/` is inferred. Any later transfer needs a
-separate explicit human decision.
+The infrastructure entry is intentionally corrected to the same person's
+eligible public-cloud account, not left on the ineligible enterprise account.
+No permission, protected-file edit or settings change is performed by an agent.
 
 ## H2: protected session-start routing (person only)
 
@@ -104,7 +108,7 @@ class IntakeContextRouting(unittest.TestCase):
         session = load(str(Path(".github") / "hooks" / "scripts" / "session_start.py"))
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
-            self.assertEqual(session.main([]), 0)
+            self.assertEqual(session.main(), 0)
         context = json.loads(output.getvalue())["additionalContext"]
         for expected in ("docs/idea/", "docs/spec/", "docs/plan/", "docs/sprint/",
                          "AGENTS.md", "python tools/dev.py check", "Human-only"):
@@ -128,15 +132,22 @@ agent's prose/renderer PRs.
 
 ## H3: real approval and activation records (person only)
 
+- [x] The user's final governance/manual-accessibility sign-off is recorded
+      on #8; no further approval request is needed for that decision.
 - [ ] Record design and separate plan approval and required readiness labels
       against real issues. Do not backdate them or label implementation complete
       merely because this plan exists.
 - [ ] Review Proposed policies and record actual acceptance before changing
       their state to active. Verify effective repository controls separately.
-- [ ] Review/merge the relevant PRs through normal governance. No agent approves
-      or merges its own work or configures protection to make CI pass.
-- [ ] Link actual invitation/access, CODEOWNERS, routing PR and approval evidence
-      from #8 and SPRINT-001. Keep any prevented/missing action explicitly open.
+- [ ] The maintainer reviews the current PR head and passing L1/L2/IaC checks,
+      records explicit sign-off and performs the human merge when permitted.
+      GitHub does not allow formal self-approval of an authored PR or approval
+      of a Copilot PR assigned by that user. Agent review is advisory, not
+      independent human approval. An unmet server requirement needs a human
+      governance decision, never an agent bypass or invented review.
+- [ ] Link actual owner-access verification, CODEOWNERS/routing PR and sign-off
+      evidence from #8 and SPRINT-001. The enterprise invitation is no longer
+      applicable. Keep actual unperformed operations explicitly open.
 - [ ] Releases, tags, publication and deployment remain separate human decisions;
       this plan is not authority to execute them.
 
@@ -144,6 +155,9 @@ agent's prose/renderer PRs.
 
 Prerequisite: renderer automation and the scoped PR screenshots/evidence exist.
 
+- [x] Final acceptance sign-off received from the user on 10 November 2026.
+      The following scenario records remain separate evidence requirements;
+      no tool/OS version or performed test is invented from the sign-off.
 - [ ] In current Edge test the fourteen views and important dialog/tab/workflow
       states at 200% and 400% browser zoom. Check reading order, visible focus,
       reachability and no page-level horizontal overflow; distinguish real 2D

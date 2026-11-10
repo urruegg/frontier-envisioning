@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
+| Version | 0.5 |
 | Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; user-requested work; AI-assisted maintenance |
-| Status | Human design, plans and readiness approved; D1-D5 in draft PR #12, G1-G3 in draft PR #13 (policies Proposed); A1-A4 implemented, A5 docs handed off, A4/A5 acceptance blocked; human #8 pending |
+| Status | Delivered through human-merged #15; final sign-off recorded on #8; sole-account refinement requested; protected operations not inferred complete |
 | Scope | Repository documentation, engineering intake, agent governance and HTML accessibility |
 | References | [Idea catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md) |
 
@@ -44,8 +44,11 @@ prove structure, and people retain decisions and permissions.
   source/issue/PR host. No Azure Repos/Azure Boards migration is included.
 - Caldova Industrial AG is the fictitious sample. No customer data or secrets
   are introduced.
-- Accountable maintainer: `@urruegg`. Human-owned collaboration and ownership
-  changes are tracked in [#8](https://github.com/urruegg/frontier-envisioning/issues/8).
+- Sole accountable maintainer/intended code owner: `@urruegg`. The user's
+  10 November account correction rules out the enterprise-only account as a
+  second collaborator. Human-owned ownership/routing changes and recorded
+  maintainer sign-off are tracked in [#8](https://github.com/urruegg/frontier-envisioning/issues/8);
+  formal self-approval is not claimed.
 - Scope excludes releases, deployments, permissions, protected hook edits by
   agents, historical rewriting and blanket packaged-document header changes.
 

@@ -20,6 +20,14 @@ The plugin runs inside Copilot Cowork. This repository adds the engineering arou
 
 The approved private source, issue and PR host is `urruegg/frontier-envisioning`. Identity-kit branding is not Entra identity provisioning; HubWorks is controlled source integration, not an assumed runtime loader. A document, status or harness selection does not prove implemented, approved, published or deployed capability.
 
+`@urruegg` is the sole human maintainer and intended code owner for every path.
+The same person's enterprise-only account, `@urruegg_microsoft`, is not a
+collaborator or reviewer to add here. Public-cloud hosting does not mean public
+repository visibility. The maintainer reviews changes and records sign-off;
+GitHub does not allow PR authors to formally approve their own PRs. Never
+claim independent approval, use another account to simulate it, or bypass a
+server rule. See the [sole-maintainer review model](docs/engineering/github-setup.md#4-sole-maintainer-review-and-merge).
+
 ## 2. Repository map: where to edit
 
 | Path | Edit? | Notes |
@@ -48,7 +56,7 @@ Use the Superpowers skills when they are available (see `docs/engineering/copilo
 5. **Test first** (`test-driven-development`): failing test, minimal code, passing test, refactor, commit. Code/checker changes need real red/green tests; prose uses applicable document validation, not fictional code tests. Conventional commit messages (`feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`), the issue id in the body.
 6. **Debug systematically** (`systematic-debugging`): reproduce, find the root cause, then fix. No guesses.
 7. **Verify before claiming done** (`verification-before-completion`): run `python tools/dev.py check`; it must end with `ALL GATES PASSED`. For renderer changes also `python tools/dev.py site e2e` when Playwright is installed.
-8. **Review** (`requesting-code-review`): open a draft pull request with the template filled in, the gate summary pasted, screenshots for visual changes. Address every finding (`receiving-code-review`).
+8. **Review** (`requesting-code-review`): open a draft pull request with the template filled in, the gate summary pasted, screenshots for visual changes. Address every finding (`receiving-code-review`). The sole maintainer records an explicit sign-off against the reviewed head and passing checks; this is not a formal self-approval or an independent review.
 9. **Finish** (`finishing-a-development-branch`): the pull request is merged by a person. Never merge, approve, tag or release yourself.
 
 Route eligible prose to `docs-agent`, checker/code to `frontier-builder` and blueprint HTML to `frontier-renderer` where the harness supports them; handoffs are not universal. Do not broaden tools/models or assume an absent Superpowers path. Protected session-start still routes to legacy documents: the human #8 dependency remains outstanding; report it and never edit the hook or silently treat it as migrated.

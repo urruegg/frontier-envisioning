@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
-| Date | 2026-11-09 |
+| Version | 0.2 |
+| Date | 2026-11-10 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained; approval not inferred |
 | Scope | Engineering practice guide; document revision, not product version |
@@ -26,6 +26,14 @@ How Frontier Envisioning is built, tested, versioned, released and deployed. The
 - Branch names: `feat/<issue-id>-<topic>`, `fix/...`, `chore/...`, `docs/...`, `test/...`.
 - Conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`, `build:`, `ci:`; the issue id in the body.
 - Pull requests use the template: a human-written summary, the linked issue, the gate summary, agent disclosure, screenshots for visual changes. Squash merge.
+- `@urruegg` is the sole human maintainer and intended owner of all paths,
+  including infrastructure/governance. The enterprise-only account is not a
+  second collaborator. The maintainer records review/sign-off against the
+  current head and passing gates; GitHub does not permit formal self-approval.
+  Agent review is advisory, not independent human approval. Follow the
+  [sole-maintainer model](github-setup.md#4-sole-maintainer-review-and-merge);
+  actual review rules/settings remain human-maintained and are never bypassed
+  or claimed enabled from a local document.
 
 ## 3. Definition of Ready and Done
 

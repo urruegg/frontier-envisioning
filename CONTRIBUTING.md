@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
-| Date | 2026-11-09 |
+| Version | 0.2 |
+| Date | 2026-11-10 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained; approval not inferred |
 | Scope | Contribution workflow; document revision, not product version |
@@ -17,7 +17,12 @@ Thank you for improving Frontier Envisioning. People and coding agents follow th
 2. **Spec and plan**: `docs/spec/YYYY-MM-DD-<topic>-design.md` and `docs/plan/YYYY-MM-DD-<topic>-plan.md`. Before readiness link the real issue, [idea](docs/idea/README.md), [spec](docs/spec/README.md), [plan](docs/plan/README.md), [sprint](docs/sprint/README.md), owner and testable acceptance criteria; related items may reuse applicable approved records. Record human design/readiness evidence and explicit plan approval before delegated implementation. Labels `status:ready`/`approved:*` stay human-only; decisions do not prove label changes. Offline drafts stay drafts until actual issue verification. [Legacy plans](docs/plans/README.md) remain historical.
 3. **Branch** `feat/<issue-id>-<topic>` (or `fix/`, `chore/`, `docs/`), **test first**, small commits with conventional messages (`feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`).
 4. **Verify**: `python tools/dev.py check` ends with `ALL GATES PASSED`; renderer changes also `python tools/dev.py site e2e`.
-5. **Pull request** with the template filled in and the gate summary pasted. A code owner reviews; a person merges (squash).
+5. **Pull request** with the template filled in and the gate summary pasted. The sole maintainer, `@urruegg`, reviews and records sign-off against the current head and passing checks, then makes the human merge decision.
+
+GitHub does not allow a PR author to formally approve their own PR. Maintainer
+sign-off and agent review are not independent approving reviews. Do not invite
+the enterprise-only account as a substitute reviewer or bypass required checks.
+See the [sole-maintainer model](docs/engineering/github-setup.md#4-sole-maintainer-review-and-merge).
 
 Route eligible prose to `docs-agent`, checker/code to `frontier-builder` and HTML to `frontier-renderer` where supported; custom handoffs are not universal. Use available Superpowers skills or the AGENTS method. Prose validation includes `python tools/dev.py docs --strict`; it checks local contracts, not live approvals.
 
