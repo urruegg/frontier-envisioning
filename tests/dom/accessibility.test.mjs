@@ -281,3 +281,54 @@ it("renders older data with no journeys and untabbed classic architecture withou
     fs.rmSync(directory, { recursive: true, force: true });
   }
 });
+
+for (const [colour, foreground] of [
+  ["#FFFFFF", "#000000"], ["#000000", "#FFFFFF"], ["#0000FF", "#FFFFFF"],
+  ["#777777", "#000000"]
+]) {
+  it(`derives readable foregrounds from validated public data (${colour}) without altering icon art`, async () => {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), "frontier-a4-colour-"));
+    let bp;
+    try {
+      const html = fs.readFileSync(process.env.BLUEPRINT_HTML || DEFAULT_HTML, "utf8");
+      const island = /(<script type="application\/json" id="bp-data">)([\s\S]*?)(<\/script>)/;
+      const data = JSON.parse(html.match(island)[2]);
+      data.meta.accent = colour;
+      for (const domain of data.domains) domain.color = colour;
+      for (const journey of data.identity.journeys) {
+        journey.colour = colour;
+        journey.glyph = colour; // Renderer labels must not trust an unsuitable art glyph.
+      }
+      for (const environment of data.identity.environments) {
+        if (environment.band) { environment.band = colour; environment.label = colour; }
+      }
+      const originalIcon = data.domains[0].agents[0].identity.icon;
+      data.meta.status_note = "A4 <>& \u2028\u2029";
+      const escaped = JSON.stringify(data).replace(/</g, "\\u003c").replace(/>/g, "\\u003e")
+        .replace(/&/g, "\\u0026").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+      const file = path.join(directory, "variant.html");
+      fs.writeFileSync(file, html.replace(island, (_, start, _json, end) => start + escaped + end));
+      bp = await openBlueprint(file);
+      assert.equal(bp.doc.documentElement.style.getPropertyValue("--accent-on"), foreground);
+      assert.ok(bp.doc.getElementById("banner").textContent.includes(data.meta.status_note));
+      await bp.go("#/blueprint/D1");
+      const tabs = [...bp.doc.querySelectorAll("#subnav .tab")];
+      assert.equal(tabs.length, data.domains.length);
+      for (const tab of tabs) assert.equal(tab.style.getPropertyValue("--d-on"), foreground);
+      await bp.go("#/identity");
+      for (const selector of [".sw .chip", ".band .bchip:not(.clean)", ".family .fhead"]) {
+        const nodes = [...bp.view().querySelectorAll(selector)];
+        assert.ok(nodes.length > 0, selector);
+        for (const node of nodes) {
+          assert.equal(node.style.color.toUpperCase(), foreground);
+        }
+      }
+      assert.ok([...bp.view().querySelectorAll("img.aicon")].some((image) =>
+        image.getAttribute("src") === originalIcon), "embedded icon bytes unchanged");
+      assert.deepEqual(bp.errors, []);
+    } finally {
+      if (bp) await bp.close();
+      fs.rmSync(directory, { recursive: true, force: true });
+    }
+  });
+}

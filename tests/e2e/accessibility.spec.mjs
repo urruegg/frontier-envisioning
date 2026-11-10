@@ -1,4 +1,4 @@
-// A1 RED baseline for #7. Use the real hosting CSP and locally installed axe;
+// #7 accessibility regressions. Use the real hosting CSP and locally installed axe;
 // best-practice-only findings and incomplete checks are not WCAG conformance failures.
 import { test, expect } from "@playwright/test";
 import axe from "axe-core";
@@ -39,7 +39,7 @@ async function scan(page, info, label) {
     window.axe.run(document, { runOnly: { type: "tag", values: tags } }),
   [...WCAG, "best-practice"]);
   await info.attach(label, {
-    body: Buffer.from(JSON.stringify({ violations: report.violations, incomplete: report.incomplete }, null, 2)),
+    body: Buffer.from(JSON.stringify(report, null, 2)),
     contentType: "application/json"
   });
   const applicable = report.violations.filter((rule) => rule.tags.some((tag) => WCAG.includes(tag)));
@@ -59,7 +59,7 @@ async function scan(page, info, label) {
 }
 
 for (const colorScheme of ["light", "dark"]) {
-  test(`accessibility all views, architecture, workflow, modal and site (${colorScheme})`, async ({ page }, info) => {
+  test(`blueprint AA all views, architecture, workflow and modal (${colorScheme})`, async ({ page }, info) => {
     await page.emulateMedia({ colorScheme });
     const problems = watchProblems(page);
     const summaries = [];
@@ -91,17 +91,152 @@ for (const colorScheme of ["light", "dark"]) {
     await expect(page.locator("#drawer")).toHaveAttribute("aria-hidden", "false");
     await expect(page.locator("#drawer-close")).toBeFocused();
     summaries.push(await scan(page, info, `${colorScheme}-evidence-modal`));
-    for (const path of ["/index.html", "/identity-catalogue.html"]) {
-      await open(page, path);
-      summaries.push(await scan(page, info, `${colorScheme}-${path.slice(1)}`));
-    }
     await info.attach(`${colorScheme}-scan-summary`, {
       body: Buffer.from(JSON.stringify({ summaries, problems }, null, 2)),
       contentType: "application/json"
     });
-    expect(summaries).toHaveLength(23);
+    expect(summaries).toHaveLength(21);
     expect(problems, "page errors and CSP/console errors").toEqual([]);
   });
+
+  test(`site and identity catalogue AA (${colorScheme})`, async ({ page }, info) => {
+    await page.emulateMedia({ colorScheme });
+    const problems = watchProblems(page);
+    const summaries = [];
+    for (const path of ["/index.html", "/identity-catalogue.html"]) {
+      await open(page, path);
+      summaries.push(await scan(page, info, `${colorScheme}-${path.slice(1)}`));
+    }
+    await info.attach(`${colorScheme}-site-scan-summary`, {
+      body: Buffer.from(JSON.stringify({ summaries, problems }, null, 2)), contentType: "application/json"
+    });
+    expect(summaries).toHaveLength(2);
+    expect(problems, "page errors and CSP/console errors").toEqual([]);
+  });
+
+  test(`blueprint target sizes for checkboxes, evidence and resources (${colorScheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    const problems = watchProblems(page);
+    for (const [route, selector] of [
+      ["org", 'input[type="checkbox"]'],
+      ["evidence", ".pill.ev"],
+      ["overview", ".flsrc a"],
+      ["architecture", ".idrules a"]
+    ]) {
+      await open(page, `/blueprint.html#/${route}`);
+      const targets = await page.locator(selector).evaluateAll((nodes) => nodes.map((node) => {
+        const rect = node.getBoundingClientRect();
+        return { text: node.textContent, width: rect.width, height: rect.height };
+      }));
+      expect(targets.length, `${route} has actual targets`).toBeGreaterThan(0);
+      for (const target of targets) {
+        expect.soft(target.width, `${route}: ${target.text} width`).toBeGreaterThanOrEqual(24);
+        expect.soft(target.height, `${route}: ${target.text} height`).toBeGreaterThanOrEqual(24);
+      }
+    }
+    expect(problems).toEqual([]);
+  });
+
+  test(`blueprint all 14 views reflow at 320px without clipping diagrams (${colorScheme})`, async ({ page }, info) => {
+    await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 320, height: 900 });
+    const problems = watchProblems(page);
+    await open(page, "/blueprint.html");
+    for (let i = 0; i < VIEWS.length; i++) {
+      await page.locator("#rail button").nth(i).click();
+      await expect(page.locator("#crumb b")).toHaveText(VIEWS[i]);
+      expect.soft(await page.evaluate(() => document.documentElement.scrollWidth),
+        `${VIEWS[i]}: document width`).toBeLessThanOrEqual(321);
+    }
+    await open(page, "/blueprint.html#/agents/D3-A05");
+    await expect(page.locator("svg.wfsvg .wfn")).toHaveCount(16);
+    expect(await page.locator(".wfcanvas").evaluate((node) => ({
+      scrolls: node.scrollWidth > node.clientWidth, overflow: getComputedStyle(node).overflowX
+    }))).toEqual({ scrolls: true, overflow: "auto" });
+    await info.attach(`a4-reflow-${colorScheme}`, { body: await page.screenshot(), contentType: "image/png" });
+    expect(problems).toEqual([]);
+  });
+}
+
+for (const colorScheme of ["light", "dark"]) {
+  for (const colour of ["#FFFFFF", "#000000", "#0000FF"]) {
+    test(`blueprint public colour outcomes ${colour} (${colorScheme})`, async ({ page }, info) => {
+      await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
+      const problems = watchProblems(page);
+      await page.route("**/blueprint.html", async (route) => {
+        const response = await route.fetch();
+        const html = await response.text();
+        const body = html.replace(/(<script type="application\/json" id="bp-data">)([\s\S]*?)(<\/script>)/,
+          (_, start, json, end) => {
+            const data = JSON.parse(json);
+            data.meta.accent = colour;
+            data.meta.status_note = "A4 <>& \u2028\u2029";
+            for (const domain of data.domains) {
+              domain.color = colour;
+              // Exercise generated initials, not embedded icon art (which is never recoloured).
+              for (const agent of [...domain.agents, domain.orchestrator].filter(Boolean)) {
+                if (agent.identity) { delete agent.identity.icon; delete agent.identity.icons; }
+              }
+            }
+            for (const journey of data.identity.journeys) { journey.colour = colour; journey.glyph = colour; }
+            for (const environment of data.identity.environments) {
+              if (environment.band) { environment.band = colour; environment.label = colour; }
+            }
+            const escaped = JSON.stringify(data).replace(/</g, "\\u003c").replace(/>/g, "\\u003e")
+              .replace(/&/g, "\\u0026").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+            return start + escaped + end;
+          });
+        await route.fulfill({ response, body });
+      });
+      await open(page, "/blueprint.html");
+      await expect(page.locator("#banner")).toContainText("A4 <>&");
+      for (let i = 0; i < VIEWS.length; i++) {
+        await page.locator("#rail button").nth(i).click();
+        await expect(page.locator("#crumb b")).toHaveText(VIEWS[i]);
+        await scan(page, info, `${colorScheme}-${colour.slice(1)}-${VIEWS[i]}`);
+        const fills = await page.locator(
+          ".logo,.pill.acc,.btn.primary,.tab .num,.tab[aria-selected=true],.tab[aria-pressed=true]," +
+          ".stage .sh,.stage .sh .n,.av2,.chn .no,.scale .on,.sw .chip,.bchip:not(.clean)," +
+          ".fhead,.aicon.ini,.uchead .n,.lzbadge2"
+        ).evaluateAll((nodes) => nodes.filter((node) => node.textContent.trim()).map((node) => ({
+          text: node.textContent, ink: getComputedStyle(node).color, background: getComputedStyle(node).backgroundColor
+        })));
+        expect(fills.length, "filled label outcomes, including selected number badges").toBeGreaterThan(0);
+        for (const pair of fills) {
+          expect.soft(contrast(pair.ink, pair.background), `${VIEWS[i]} ${pair.text}: filled HTML contrast`).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+      // axe leaves some SVG text incomplete. Check the actual filled shape as well.
+      for (const route of ["org", "usecases", "architecture"]) {
+        await open(page, `/blueprint.html#/${route}`);
+        const pairs = await page.locator(".orgsvg .ring + text,.matrix [role=button] text,.lzini,.stgt")
+          .evaluateAll((nodes) => nodes.map((node) => {
+            const shape = node.closest("svg.matrix") ? node.parentElement.querySelector("circle") : node.previousElementSibling;
+            return { text: node.textContent, ink: getComputedStyle(node).fill, background: getComputedStyle(shape).fill };
+          }));
+        expect(pairs.length, `${route}: actual SVG text and background`).toBeGreaterThan(0);
+        for (const pair of pairs) {
+          expect.soft(contrast(pair.ink, pair.background), `${route} ${pair.text}: filled SVG contrast`).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+      await info.attach(`a4-colours-${colorScheme}-${colour.slice(1)}`, {
+        body: await page.screenshot(), contentType: "image/png"
+      });
+      expect(problems, "variant preserves real CSP and data-island escaping").toEqual([]);
+    });
+  }
+}
+
+function contrast(first, second) {
+  const luminance = (colour) => {
+    const rgb = colour.match(/[\d.]+/g).slice(0, 3).map(Number).map((channel) => {
+      const value = channel / 255;
+      return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    });
+    return rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
+  };
+  const a = luminance(first), b = luminance(second);
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 }
 
 test("closed evidence drawer is outside the real Tab sequence after the pager", async ({ page }) => {
