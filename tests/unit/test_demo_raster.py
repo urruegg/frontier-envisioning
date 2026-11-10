@@ -16,6 +16,15 @@ from tests.unit._util import ROOT, load
 
 
 class RasterReplay(unittest.TestCase):
+    def test_reviewed_current_input_record_uses_canonical_lf_bytes(self):
+        data = (ROOT / "tests/fixtures/caldova-raster-1.6.1-inputs.json").read_bytes()
+        self.assertNotIn(b"\r", data)
+
+    def test_reviewed_current_input_record_pin_matches_canonical_checkout(self):
+        module = self.module()
+        data = (ROOT / "tests/fixtures/caldova-raster-1.6.1-inputs.json").read_bytes()
+        self.assertEqual(module.CURRENT_INPUT_PROFILE_SHA256, hashlib.sha256(data.replace(b"\r\n", b"\n")).hexdigest())
+
     def test_received_releases_reuse_only_the_verified_identity_profile(self):
         module = self.module()
         self.assertTrue(hasattr(module, "SUPPORTED_VERSIONS"), "explicit received-release compatibility is missing")
