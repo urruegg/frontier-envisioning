@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.7 |
+| Version | 0.8 |
 | Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | #15 integrated on main with passing local/cloud checks; final human acceptance recorded; sole `@urruegg` ownership correction directed; protected H1/H2 execution remains open |
+| Status | #15 integrated with passing local/cloud checks; final acceptance recorded; ownership corrected through human-merged #17; #18 locally verified, review/merge separate; protected routing remains open |
 | Scope | The bounded work package for the eight approved requirements; not a delivery-date commitment |
-| References | [Sprint catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
+| References | [Sprint catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../ideas/2026-11-09-docs-governance-and-accessibility.md), [Spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md), [Plan](../plans/2026-11-09-docs-governance-implementation.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
 
 Current delivery states and approval evidence are recorded below. Historical
 planning validation is explicitly separated from implementation evidence.
@@ -24,10 +24,48 @@ protected controls by agent, or claim assistive-technology acceptance from scans
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#10](https://github.com/urruegg/frontier-envisioning/issues/10) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Documentation](../plan/2026-11-09-documentation-foundation-plan.md) | `@urruegg` accountable; parent coordinates docs/builder workers | Human plan/readiness evidence recorded | D1-D5 implemented, reviewed and human-merged to main | [PR #12](https://github.com/urruegg/frontier-envisioning/pull/12), main merge `4a7d62f` |
-| [#9](https://github.com/urruegg/frontier-envisioning/issues/9) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Governance](../plan/2026-11-09-agent-governance-plan.md) | `@urruegg` accountable; parent coordinates governance worker | Human-controlled policy/routing publication remains separate | Integrated into main through #15; policy files remain Proposed, not proof of controls | [PR #13](https://github.com/urruegg/frontier-envisioning/pull/13), then [#15](https://github.com/urruegg/frontier-envisioning/pull/15), main `5d68b71` |
-| [#7](https://github.com/urruegg/frontier-envisioning/issues/7) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Accessibility](../plan/2026-11-09-accessibility-plan.md) | `@urruegg` accountable; parent coordinates renderer and targeted catalogue correction | Scenario-level manual evidence is distinct from sign-off | Integrated on main; local/cloud L1/L2/IaC pass, all 44 browser tests; final human sign-off recorded | [PR #15](https://github.com/urruegg/frontier-envisioning/pull/15); [A6 verification](../intake/2026-11-10-accessibility-verification.md#a6-linked-catalogue-ci-failure-corrected) |
-| [#8](https://github.com/urruegg/frontier-envisioning/issues/8) | [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md) | [Human handoff](../plan/2026-11-09-human-governance-plan.md) | `@urruegg`; human execution only | Sole-account ownership/routing execution and actual control evidence | Final sign-off recorded; enterprise invitation superseded; protected H1/H2 still human-only | [Human acceptance](https://github.com/urruegg/frontier-envisioning/issues/8#issuecomment-6768225688); CODEOWNERS/hooks/settings not changed by the agent |
+| [#10](https://github.com/urruegg/frontier-envisioning/issues/10) | [Idea](../ideas/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md) | [Documentation](../plans/2026-11-09-documentation-foundation-plan.md) | `@urruegg` accountable; parent coordinates docs/builder workers | Human plans/readiness evidence recorded | D1-D5 implemented, reviewed and human-merged to main | [PR #12](https://github.com/urruegg/frontier-envisioning/pull/12), main merge `4a7d62f` |
+| [#9](https://github.com/urruegg/frontier-envisioning/issues/9) | [Idea](../ideas/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md) | [Governance](../plans/2026-11-09-agent-governance-plan.md) | `@urruegg` accountable; parent coordinates governance worker | Human-controlled policy/routing publication remains separate | Integrated into main through #15; policy files remain Proposed, not proof of controls | [PR #13](https://github.com/urruegg/frontier-envisioning/pull/13), then [#15](https://github.com/urruegg/frontier-envisioning/pull/15), main `5d68b71` |
+| [#7](https://github.com/urruegg/frontier-envisioning/issues/7) | [Idea](../ideas/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md) | [Accessibility](../plans/2026-11-09-accessibility-plan.md) | `@urruegg` accountable; parent coordinates renderer and targeted catalogue correction | Scenario-level manual evidence is distinct from sign-off | Integrated on main; local/cloud L1/L2/IaC pass, all 44 browser tests; final human sign-off recorded | [PR #15](https://github.com/urruegg/frontier-envisioning/pull/15); [A6 verification](../intake/2026-11-10-accessibility-verification.md#a6-linked-catalogue-ci-failure-corrected) |
+| [#8](https://github.com/urruegg/frontier-envisioning/issues/8) | [Idea](../ideas/2026-11-09-docs-governance-and-accessibility.md) | [Spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md) | [Human handoff](../plans/2026-11-09-human-governance-plan.md) | `@urruegg`; human execution only | Sole-account ownership/routing execution and actual control evidence | Final sign-off recorded; enterprise invitation superseded; protected H1/H2 still human-only | [Human acceptance](https://github.com/urruegg/frontier-envisioning/issues/8#issuecomment-6768225688); CODEOWNERS/hooks/settings not changed by the agent |
+| [#18](https://github.com/urruegg/frontier-envisioning/issues/18) | [Idea amendment](../ideas/2026-11-09-docs-governance-and-accessibility.md#plural-layout-amendment-2026-11-10) | [Layout spec](../specs/2026-11-10-documentation-layout-design.md) | [Layout plan](../plans/2026-11-10-documentation-layout-plan.md) | `@urruegg` accountable; scoped AI-assisted cleanup | Maintainer's manual moves and explicit plural/index-removal decision | Local targeted/full gates, link audit and complete bundle pass; review/merge and cloud results separate | Red/green evidence below; [#18](https://github.com/urruegg/frontier-envisioning/issues/18) carries the PR/cloud handoff; protected hook handoff remains #8 |
+
+## Plural-layout cleanup (#18)
+
+The maintainer's manual moves are retained on `chore/18-plural-documentation-layout`.
+Before production changes, the new layout and exact bundle tests produced
+7 expected failures, 9 passes and 11 passing subtests. The failures demonstrated
+singular physical routing, the blanket historical-plan exemption, missing
+plural-kind resolution and the obsolete index in the complete bundle.
+Verification after implementation:
+
+- The four targeted layout/docs-validation/docs-contract/release-tools test files
+  pass: 76 tests and 310 subtests.
+- `python tools/dev.py docs --strict`: no metadata, catalogue, local-link or
+  traceability errors. A separate offline audit uses the same link parser across
+  all 130 owned, non-vendored Markdown surfaces: zero local-link errors.
+- `python tools/dev.py check --strict`: `ALL GATES PASSED`; 162 tests,
+  373 subtests, 41 DOM tests. The one skip is the existing release-reproduction
+  comparison for unreleased 1.6.1, not a bypass of an existing release.
+- `python tools/dev.py package` regenerates the install inventory from the
+  packaged README. `python tools/dev.py bundle` passes; the finished complete ZIP
+  has 13 entries, both product documents match current source bytes, its START
+  inventory omits the retired index, and all four distribution ZIP checksums
+  match `SHA256SUMS.txt`.
+- Protected controls, immutable release/intake inventory records and the
+  original raster/product-section fixtures remain unchanged. No renderer code
+  changes; L2 is not rerun locally for this documentation/tooling cleanup.
+
+These are local results, not a claim of cloud CI, approval or main integration.
+The [tracking issue](https://github.com/urruegg/frontier-envisioning/issues/18)
+links the proposed PR and subsequent cloud evidence.
+
+Current protected-context exception: `.github/hooks/scripts/session_start.py`
+still places both specs and plans in `docs/plans/`. Human #8 must direct new
+records to `docs/ideas/`, `docs/specs/`, `docs/plans/` and `docs/sprints/`,
+preserving all quality and human-only boundaries. The hook is not edited here.
+Historical inventories/receipts, commit-qualified source URLs and the original
+1.6.0 file table are provenance, not current routing consumers.
 
 ## Readiness
 
@@ -46,7 +84,7 @@ protected controls by agent, or claim assistive-technology acceptance from scans
       protected labels and no field change is claimed.
 
 Exact human quotes are preserved in the
-[idea's approval provenance](../idea/2026-11-09-docs-governance-and-accessibility.md#approval-provenance).
+[idea's approval provenance](../ideas/2026-11-09-docs-governance-and-accessibility.md#approval-provenance).
 The [plan-approval/preflight comment](https://github.com/urruegg/frontier-envisioning/issues/6#issuecomment-6740481819)
 recorded the earlier label blocker; the subsequent
 [readiness comment](https://github.com/urruegg/frontier-envisioning/issues/6#issuecomment-6742446199)
@@ -92,14 +130,14 @@ declared fully complete while protected operations remain unapplied.
 ## Sole-maintainer refinement and final sign-off (2026-11-10)
 
 The user's account clarification directly amends DG-06 and H1-H3 under the
-existing #8 idea/spec/plan package. All-path intended ownership is `@urruegg`;
+existing #8 ideas/specs/plan package. All-path intended ownership is `@urruegg`;
 the enterprise-only account is not a collaborator or independent reviewer.
 The maintainer records sign-off against the exact PR head and passing checks,
 then merges when actual server rules permit. GitHub formal self-approval is
 not available; agent review is advisory. No agent changes review settings,
 waives gates, applies protected labels or performs protected edits.
 
-The [human plan](../plan/2026-11-09-human-governance-plan.md#h1-sole-public-cloud-ownership-person-only)
+The [human plan](../plans/2026-11-09-human-governance-plan.md#h1-sole-public-cloud-ownership-person-only)
 contains the minimal human-applied `* @urruegg` target; the
 [operating model](../engineering/github-setup.md#4-sole-maintainer-review-and-merge)
 explains the GitHub author-review limitation and exact sign-off workflow.
@@ -148,7 +186,7 @@ The three tracking-document updates add no production or guardrail change.
 
 ## Implementation checkpoints before human merges
 
-- D1-D5 implemented and spec/code-reviewed in
+- D1-D5 implemented and specs/code-reviewed in
   [draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12),
   open and not merged, targeting main from `feat/10-documentation-foundation`.
   The PR records strict L1 passing: 136 tests, one expected unreleased-version

@@ -15,4 +15,4 @@ A Power BI cockpit over the plan-versus-actual data and a monthly digest.
 
 ## Source
 
-docs/prd-and-solution-design.md A.12
+[PRD A.12](../../docs/prd.md#a12-release-plan)

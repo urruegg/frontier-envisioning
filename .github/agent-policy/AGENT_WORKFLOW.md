@@ -7,21 +7,21 @@
 | Author | Copilot; AI-assisted drafting |
 | Status | Proposed; human acceptance pending |
 | Scope | Linked intake, approved bounded implementation and truthful delivery evidence |
-| References | [AGENTS](../../AGENTS.md), [Issue #9](https://github.com/urruegg/frontier-envisioning/issues/9), [Idea](../../docs/idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../../docs/spec/2026-11-09-docs-governance-and-accessibility-design.md), [G1 plan](../../docs/plan/2026-11-09-agent-governance-plan.md), [Master plan](../../docs/plan/2026-11-09-docs-governance-implementation.md), [Sprint](../../docs/sprint/SPRINT-001-docs-governance-and-accessibility.md), [Policy catalogue](README.md), [Human boundaries](NON_DELEGABLE_WORK.md), [Evidence measures](KPI_BASELINE.md) |
+| References | [AGENTS](../../AGENTS.md), [Issue #9](https://github.com/urruegg/frontier-envisioning/issues/9), [Idea](../../docs/ideas/2026-11-09-docs-governance-and-accessibility.md), [Spec](../../docs/specs/2026-11-09-docs-governance-and-accessibility-design.md), [G1 plan](../../docs/plans/2026-11-09-agent-governance-plan.md), [Master plan](../../docs/plans/2026-11-09-docs-governance-implementation.md), [Sprint](../../docs/sprints/SPRINT-001-docs-governance-and-accessibility.md), [Policy catalogue](README.md), [Human boundaries](NON_DELEGABLE_WORK.md), [Evidence measures](KPI_BASELINE.md) |
 
 ## From evidence to delivery
 
-1. Frame the problem and evidence in [docs/idea](../../docs/idea/README.md)
+1. Frame the problem and evidence in [docs/ideas](../../docs/ideas/README.md)
    and a real GitHub issue.
 2. Agree testable behaviour and constraints in
-   [docs/spec](../../docs/spec/README.md). Update the
+   [docs/specs](../../docs/specs/README.md). Update the
    [solution design](../../docs/solution-design.md) and a Proposed
    [ADR](../../docs/adr/README.md) when architecture changes.
 3. Record actual human design approval; document status is not proof.
 4. Write exact files, dependencies, tests and commands in
-   [docs/plan](../../docs/plan/README.md).
+   [docs/plans](../../docs/plans/README.md).
 5. Link issue, idea, spec and plan in a
-   [docs/sprint](../../docs/sprint/README.md) work-item row.
+   [docs/sprints](../../docs/sprints/README.md) work-item row.
 6. Wait for explicit human plan approval and required human readiness before
    delegating implementation.
 7. Work on a bounded branch/worktree. Test code/checker changes red-to-green;

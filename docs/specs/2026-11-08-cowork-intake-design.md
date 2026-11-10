@@ -44,7 +44,7 @@ Primary handover sources:
 - [Retained exporter intake proposal](../engineering/intake-plan.md).
 - [Export README](../../README.md).
 - [Engineering working agreement](../../AGENTS.md).
-- [Product requirements and design](../../docs/prd-and-solution-design.md).
+- [Product requirements](../../docs/prd.md) and [solution design](../../docs/solution-design.md).
 - [Existing HubWorks integration analysis](../../docs/analysis/hubworks-integration-analysis.md).
 
 ### 2.2 Read-only analysis evidence (historical)
@@ -426,7 +426,7 @@ registration, app settings and generated authentication/CSP configuration.
 Keep `SHOWCASE_ENABLED` unset/false until this lane is approved.
 
 Custom authentication requires Standard. If Entra custom auth is selected,
-enforce that plan/configuration combination and mandatory registration inputs.
+enforce that plans/configuration combination and mandatory registration inputs.
 Decide region, subscription, ownership, cost, permissions, callback URI, credential
 lifecycle and federated deployment identity before provisioning.
 
@@ -463,7 +463,7 @@ Before implementing M0:
 4. Define original-artifact provenance evidence or explicitly accepted limitations.
 5. Classify internal documents and release payloads.
 
-The documentation-only [M0 implementation plan](2026-11-08-cowork-m0-implementation-plan.md)
+The documentation-only [M0 implementation plan](../plans/2026-11-08-cowork-m0-implementation-plan.md)
 records exact files, targeted tests, expected outputs and human-operation
 boundaries. Its execution gates remain open. HubWorks and Azure plans remain
 separate. No ready/deployed/fully migrated claim is justified by the current

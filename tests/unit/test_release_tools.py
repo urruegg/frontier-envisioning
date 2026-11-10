@@ -134,7 +134,6 @@ class ReleaseDocuments(unittest.TestCase):
             documents = {
                 "docs/prd.md": b"requirements\r\n",
                 "docs/solution-design.md": b"architecture\n",
-                "docs/prd-and-solution-design.md": b"legacy links\n",
                 "docs/analysis/existing.md": b"existing analysis\n",
             }
             files = {
@@ -150,6 +149,7 @@ class ReleaseDocuments(unittest.TestCase):
                 root / "docs" / "engineering" / "policy.md": b"engineering policy",
                 root / "docs" / "sprint" / "S-001.md": b"sprint",
                 root / "docs" / "intake" / "audit.json": b'{"raw": "audit evidence"}',
+                root / "docs" / "prd-and-solution-design.md": b"retired index must not be bundled",
                 **{root / name: data for name, data in documents.items()},
             }
             for path, data in files.items():
@@ -186,6 +186,7 @@ class ReleaseDocuments(unittest.TestCase):
                 start = archive.read(prefix + "START-HERE.md").decode("utf-8")
                 for name in documents:
                     self.assertIn(name if not name.startswith("docs/analysis/") else "docs/analysis/", start)
+                self.assertNotIn("prd-and-solution-design.md", start)
                 for entry in archive.infolist():
                     self.assertEqual(entry.date_time, packager.FIXED_DATE)
                     self.assertEqual(entry.create_system, 3)

@@ -33,23 +33,23 @@ def put(root: Path, relative: str, text: str) -> Path:
 
 def package(root: Path) -> tuple[Path, str]:
     """A local, proposed work package; no inference of live approval."""
-    for folder in ("idea", "spec", "plan", "sprint"):
+    for folder in ("ideas", "specs", "plans", "sprints"):
         put(root, f"docs/{folder}/README.md", header())
-    for folder in ("idea", "spec", "plan"):
+    for folder in ("ideas", "specs", "plans"):
         put(root, f"docs/{folder}/x.md", header())
         put(root, f"docs/{folder}/README.md", header() + "\n[Child](x.md)\n")
     governing = (
-        f"[Issue]({ISSUE}), [Idea](../idea/x.md), "
-        "[Spec](../spec/x.md), [Plan](../plan/x.md)"
+        f"[Issue]({ISSUE}), [Idea](../ideas/x.md), "
+        "[Spec](../specs/x.md), [Plan](../plans/x.md)"
     )
     text = header(governing) + (
         "\n| Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |\n"
         "|---|---|---|---|---|---|---|---|\n"
-        f"| [#10]({ISSUE}) | [Idea](../idea/x.md) | [Spec](../spec/x.md) "
-        "| [Plan](../plan/x.md) | Maintainer | None | Proposed | Not implemented |\n"
+        f"| [#10]({ISSUE}) | [Idea](../ideas/x.md) | [Spec](../specs/x.md) "
+        "| [Plan](../plans/x.md) | Maintainer | None | Proposed | Not implemented |\n"
     )
-    path = put(root, "docs/sprint/S-001.md", text)
-    put(root, "docs/sprint/README.md", header() + "\n[Sprint](S-001.md)\n")
+    path = put(root, "docs/sprints/S-001.md", text)
+    put(root, "docs/sprints/README.md", header() + "\n[Sprint](S-001.md)\n")
     return path, text
 
 
@@ -133,13 +133,14 @@ class DocumentationValidation(unittest.TestCase):
             ])
 
     def test_eligibility_excludes_historical_and_product_contracts(self):
-        for path in ("docs/spec/new.md", "docs/engineering/guide.md", ".github/agent-policy/review.md",
+        for path in ("docs/specs/new.md", "docs/engineering/guide.md", ".github/agent-policy/review.md",
                      "README.md", "CONTRIBUTING.md", "SECURITY.md", "backlog/README.md", "infra/README.md",
                      "site/README.md", "src/renderer/README.md", "tests/README.md"):
             self.assertTrue(self.docs.eligible(Path(path)), path)
-        for path in ("plugin/README.md", "docs/intake/receipt.md", "docs/plans/old.md", "releases/README.md",
+        for path in ("plugin/README.md", "docs/intake/receipt.md",
+                     "docs/plans/2026-11-09-handover-1.6-plan.md", "releases/README.md",
                      ".agents/skills/x/SKILL.md", "backlog/issues/INT-01.md", ".github/PULL_REQUEST_TEMPLATE.md",
-                     ".github/agents/docs-agent.agent.md", "CHANGELOG.md", "AGENTS.md", "docs/spec/input.json"):
+                     ".github/agents/docs-agent.agent.md", "CHANGELOG.md", "AGENTS.md", "docs/specs/input.json"):
             self.assertFalse(self.docs.eligible(Path(path)), path)
 
     def test_reference_links_percent_encoding_and_non_markdown_files(self):
@@ -158,23 +159,23 @@ class DocumentationValidation(unittest.TestCase):
             root = Path(tmp)
             path, text = package(root)
             self.assertEqual(self.docs.sprint_errors(root, path, text), [])
-            self.assertTrue(self.docs.sprint_errors(root, path, text.replace("[Plan](../plan/x.md)", "Missing")))
+            self.assertTrue(self.docs.sprint_errors(root, path, text.replace("[Plan](../plans/x.md)", "Missing")))
             self.assertTrue(self.docs.sprint_errors(root, path, text.replace("| Maintainer |", "||")))
             self.assertEqual(self.docs.check_documents(root, list(root.rglob("*.md"))), [])
-            put(root, "docs/sprint/README.md", header())
+            put(root, "docs/sprints/README.md", header())
             self.assertIn("uncatalogued child S-001.md", "\n".join(self.docs.check_documents(root, list(root.rglob("*.md")))))
 
     def test_sprint_metadata_and_rows_share_whole_document_reference_definitions(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             path, text = package(root)
-            definitions = {"issue": ISSUE, "idea": "../idea/x.md", "spec": "../spec/x.md", "plan": "../plan/x.md"}
+            definitions = {"issue": ISSUE, "idea": "../ideas/x.md", "spec": "../specs/x.md", "plan": "../plans/x.md"}
             for kind, target in definitions.items():
                 label = kind.title()
                 text = text.replace(f"[{label}]({target})", f"[{label}][{kind}]")
             text = text.replace(f"[#10]({ISSUE})", "[#10][ISSUE]")
             text += "\n" + "\n".join(f"[{key}]: {value}" for key, value in definitions.items()) + "\n"
-            put(root, "docs/sprint/S-001.md", text)
+            put(root, "docs/sprints/S-001.md", text)
             self.assertEqual(self.docs.link_errors(root, path, text), [])
             self.assertEqual(self.docs.sprint_errors(root, path, text), [])
             self.assertEqual(self.docs.check_documents(root, list(root.rglob("*.md"))), [])
@@ -362,8 +363,8 @@ class DocumentationValidation(unittest.TestCase):
                 text.rsplit("\n| [#10]", 1)[0] + "\n",
                 text.replace("| Maintainer | None | Proposed |", "| Maintainer |"),
                 text.replace("| Maintainer | None | Proposed |", "| Maintainer | None ||"),
-                text.replace("| [Plan](../plan/x.md) | Maintainer", "| Missing | Maintainer"),
-                text.replace("| [Spec](../spec/x.md) | [Plan](../plan/x.md)", "| [Plan](../plan/x.md) | [Spec](../spec/x.md)"),
+                text.replace("| [Plan](../plans/x.md) | Maintainer", "| Missing | Maintainer"),
+                text.replace("| [Spec](../specs/x.md) | [Plan](../plans/x.md)", "| [Plan](../plans/x.md) | [Spec](../specs/x.md)"),
                 text.replace(ISSUE, "https://github.com/elsewhere/project/issues/10"),
                 text.replace(ISSUE, "https://github.com/urruegg/frontier-envisioning/issues/not-an-id"),
             ):
@@ -384,12 +385,12 @@ class DocumentationValidation(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             path, text = package(root)
-            (root / "docs/plan/x.md").unlink()
+            (root / "docs/plans/x.md").unlink()
             self.assertIn("local link missing", "\n".join(self.docs.sprint_errors(root, path, text)))
-            for relative in ("docs/idea/README.md", "docs/sprint/S-001.md"):
+            for relative in ("docs/ideas/README.md", "docs/sprints/S-001.md"):
                 put(root, relative, header() + "\n[Bad](<missing.md)\n")
             errors = self.docs.check_documents(root, list(root.rglob("*.md")))
-            for relative in ("docs/idea/README.md", "docs/sprint/S-001.md"):
+            for relative in ("docs/ideas/README.md", "docs/sprints/S-001.md"):
                 self.assertTrue(any(error.startswith(relative + ":") and "unclosed angle-bracket" in error for error in errors))
             self.assertIn("local link missing: x.md", "\n".join(errors))
 
@@ -397,10 +398,10 @@ class DocumentationValidation(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             package(root)
-            put(root, "docs/idea/sub/extra.md", header())
-            put(root, "docs/idea/README.md", header() + "\n[Wrong](sub/extra.md)\n[Bad](missing.md)\n")
+            put(root, "docs/ideas/sub/extra.md", header())
+            put(root, "docs/ideas/README.md", header() + "\n[Wrong](sub/extra.md)\n[Bad](missing.md)\n")
             errors = self.docs.check_documents(root, [])
-            self.assertIn("docs/idea: uncatalogued child x.md", errors)
+            self.assertIn("docs/ideas: uncatalogued child x.md", errors)
             self.assertTrue(any("local link missing: missing.md" in error for error in errors))
             self.assertFalse(any("uncatalogued child extra.md" in error for error in errors))
 

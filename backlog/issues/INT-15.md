@@ -15,4 +15,4 @@ The Cowork skill validators (structure, quality score, routing conflicts, securi
 
 ## Source
 
-docs/prd-and-solution-design.md B.9
+[Solution design B.9](../../docs/solution-design.md#b9-quality-and-testing)

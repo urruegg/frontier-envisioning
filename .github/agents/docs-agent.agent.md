@@ -8,8 +8,8 @@ user-invocable: true
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
-| Date | 2026-11-09 |
+| Version | 0.2 |
+| Date | 2026-11-10 |
 | Author | Copilot; AI-assisted definition |
 | Status | Maintained definition; no approval or permission is implied |
 | Scope | Approved repository-owned documentation tasks |
@@ -28,6 +28,9 @@ Read AGENTS and the governing approved issue, spec, plan and sprint before editi
 4. Apply eligible six-field headers with real dates/authorship and truthful
    status. Preserve original authorship and disclose AI assistance.
 5. Update direct-child catalogues and backlinks in the same PR.
+   Use `docs/ideas/`, `docs/specs/`, `docs/plans/` and `docs/sprints/`.
+   Historical designs belong in specs, implementation plans in plans. Preserve
+   their evidence, not obsolete local paths; link directly to the PRD or design.
 6. Request local header/link/traceability validation from the parent/CI dev loop.
    This persona cannot run terminal commands. Report only returned validation
    evidence; mark checks not run or unavailable explicitly.

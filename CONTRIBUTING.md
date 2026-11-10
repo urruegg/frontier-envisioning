@@ -7,14 +7,14 @@
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained; approval not inferred |
 | Scope | Contribution workflow; document revision, not product version |
-| References | [Documentation](docs/README.md), [Working agreement](AGENTS.md), [Engineering handbook](docs/engineering/handbook.md), [Work packages](docs/plan/README.md) |
+| References | [Documentation](docs/README.md), [Working agreement](AGENTS.md), [Engineering handbook](docs/engineering/handbook.md), [Work packages](docs/plans/README.md) |
 
 Thank you for improving Frontier Envisioning. People and coding agents follow the same agreement: [AGENTS.md](AGENTS.md). The details are in the [engineering handbook](docs/engineering/handbook.md).
 
 ## In short
 
 1. **Start from a real issue** on approved private `urruegg/frontier-envisioning`. Draft the idea and sprint early. New ideas: use the *Feature or change* form; open questions: the *Decision* form.
-2. **Spec and plan**: `docs/spec/YYYY-MM-DD-<topic>-design.md` and `docs/plan/YYYY-MM-DD-<topic>-plan.md`. Before readiness link the real issue, [idea](docs/idea/README.md), [spec](docs/spec/README.md), [plan](docs/plan/README.md), [sprint](docs/sprint/README.md), owner and testable acceptance criteria; related items may reuse applicable approved records. Record human design/readiness evidence and explicit plan approval before delegated implementation. Labels `status:ready`/`approved:*` stay human-only; decisions do not prove label changes. Offline drafts stay drafts until actual issue verification. [Legacy plans](docs/plans/README.md) remain historical.
+2. **Spec and plan**: `docs/specs/YYYY-MM-DD-<topic>-design.md` and `docs/plans/YYYY-MM-DD-<topic>-plan.md`. Before readiness link the real issue, [idea](docs/ideas/README.md), [spec](docs/specs/README.md), [plan](docs/plans/README.md), [sprint](docs/sprints/README.md), owner and testable acceptance criteria; related items may reuse applicable approved records. Record human design/readiness evidence and explicit plan approval before delegated implementation. Labels `status:ready`/`approved:*` stay human-only; decisions do not prove label changes. Offline drafts stay drafts until actual issue verification. [Legacy plans](docs/plans/README.md) remain historical.
 3. **Branch** `feat/<issue-id>-<topic>` (or `fix/`, `chore/`, `docs/`), **test first**, small commits with conventional messages (`feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`).
 4. **Verify**: `python tools/dev.py check` ends with `ALL GATES PASSED`; renderer changes also `python tools/dev.py site e2e`.
 5. **Pull request** with the template filled in and the gate summary pasted. The sole maintainer, `@urruegg`, reviews and records sign-off against the current head and passing checks, then makes the human merge decision.

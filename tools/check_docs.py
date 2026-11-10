@@ -6,8 +6,9 @@
 Supports fenced/inline code, ATX/setext headings, inline links/images with balanced
 parentheses, angle destinations, quoted titles and case-insensitive references.
 This is a deliberately bounded Markdown checker, not a CommonMark renderer.
-Historical intake/plans, packaged/vendor contracts and tracker/PR prose are not
-eligible. External URLs are never fetched; issue shape is not live existence,
+Historical intake, packaged/vendor contracts and tracker/PR prose are not
+eligible. Named historical work records retain their format but their links
+are checked. External URLs are never fetched; issue shape is not live existence,
 readiness, permission or approval.
 """
 from __future__ import annotations
@@ -26,7 +27,17 @@ from fe_lib import ROOT, tracked_files  # noqa: E402
 FIELDS = ("Version", "Date", "Author", "Status", "Scope", "References")
 GUIDES = {"README.md", "CONTRIBUTING.md", "SECURITY.md", "backlog/README.md",
           "infra/README.md", "site/README.md", "src/renderer/README.md", "tests/README.md"}
-FOLDERS = ("idea", "spec", "plan", "sprint")
+FOLDERS = ("ideas", "specs", "plans", "sprints")
+RETIRED_FOLDERS = ("idea", "spec", "plan", "sprint")
+WORK_FOLDERS = {"idea": "ideas", "spec": "specs", "plan": "plans"}
+HISTORICAL_RECORDS = {
+    "docs/specs/2026-11-08-cowork-intake-design.md",
+    "docs/specs/2026-11-09-handover-1.6-design.md",
+    "docs/specs/2026-11-09-workflow-legend-design.md",
+    "docs/plans/2026-11-08-cowork-m0-implementation-plan.md",
+    "docs/plans/2026-11-09-handover-1.6-plan.md",
+    "docs/plans/2026-11-09-workflow-legend-plan.md",
+}
 WORK_KINDS = {"issue", "idea", "spec", "plan"}
 SPRINT_COLUMNS = ("Issue", "Idea", "Spec", "Plan", "Owner", "Dependencies", "State", "PR/evidence")
 ISSUE = re.compile(r"^https://github\.com/urruegg/frontier-envisioning/issues/[1-9]\d*$")
@@ -36,7 +47,7 @@ REFERENCE_DEFINITION = re.compile(r"^ {0,3}\[([^\]\n]+)\]:[ \t]*(.*)$", re.M)
 def eligible(relative: Path) -> bool:
     value = relative.as_posix()
     return not relative.is_absolute() and ".." not in relative.parts and relative.suffix == ".md" and (
-        (value.startswith("docs/") and not value.startswith(("docs/intake/", "docs/plans/")))
+        (value.startswith("docs/") and not value.startswith("docs/intake/") and value not in HISTORICAL_RECORDS)
         or value.startswith(".github/agent-policy/") or value in GUIDES
     )
 
@@ -429,10 +440,10 @@ def work_kinds(root: Path, source: Path, text: str,
                 kinds.add("issue")
             elif not url.scheme and not url.netloc:
                 path = _local_path(root, source, url)
-                for folder in ("idea", "spec", "plan"):
+                for kind, folder in WORK_FOLDERS.items():
                     if path.is_relative_to((root / "docs" / folder).resolve()) and path.is_file() \
                             and path.suffix == ".md" and path.name != "README.md":
-                        kinds.add(folder)
+                        kinds.add(kind)
         except (ValueError, OSError, UnicodeError):
             # link_errors above owns the diagnostic; do not silently accept the kind.
             continue
@@ -440,7 +451,7 @@ def work_kinds(root: Path, source: Path, text: str,
 
 
 def sprint_errors(root: Path, path: Path, text: str) -> list[str]:
-    if not path.is_relative_to(root / "docs" / "sprint") or path.name == "README.md":
+    if not path.is_relative_to(root / "docs" / "sprints") or path.name == "README.md":
         return []
     values, _ = _metadata(text)
     definitions = _reference_definitions(text)
@@ -483,6 +494,11 @@ def check_documents(root: Path, paths: list[Path]) -> list[str]:
     errors = []
     texts: dict[Path, str] = {}
     candidates = set(paths)
+    for folder in RETIRED_FOLDERS:
+        if (root / "docs" / folder).exists():
+            errors.append(f"docs/{folder}: retired documentation directory exists")
+    if (root / "docs" / "prd-and-solution-design.md").exists():
+        errors.append("docs: retired combined product-document index exists")
     for folder in FOLDERS:
         directory = root / "docs" / folder
         if not directory.is_dir():
@@ -498,7 +514,7 @@ def check_documents(root: Path, paths: list[Path]) -> list[str]:
             errors.append(f"{path.name}: document outside repository")
             continue
         relative = path.relative_to(root)
-        if not eligible(relative):
+        if not eligible(relative) and relative.as_posix() not in HISTORICAL_RECORDS:
             continue
         try:
             text = path.read_text(encoding="utf-8")
@@ -506,7 +522,8 @@ def check_documents(root: Path, paths: list[Path]) -> list[str]:
             errors.append(f"{relative.as_posix()}: cannot read UTF-8 document ({type(error).__name__})")
             continue
         texts[path] = text
-        for error in metadata_errors(text) + link_errors(root, path, text) + sprint_errors(root, path, text):
+        metadata = metadata_errors(text) if eligible(relative) else []
+        for error in metadata + link_errors(root, path, text) + sprint_errors(root, path, text):
             errors.append(f"{relative.as_posix()}: {error}")
     for folder in FOLDERS:
         directory = root / "docs" / folder

@@ -7,7 +7,7 @@
 | Author | Copilot SDK in VS Code; human handoff preparation; AI-assisted maintenance |
 | Status | Final human sign-off recorded on #8; sole-public-cloud-account refinement directed by the user; protected execution remains human-only |
 | Scope | DG-06, protected intake routing and manual accessibility acceptance |
-| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/8), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md) |
+| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/8), [Idea](../ideas/2026-11-09-docs-governance-and-accessibility.md), [Spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprints/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md) |
 
 > **For agentic workers:** Do not execute H1-H4. Prepare evidence and hand
 > this plan to a person. Delegated implementation authority excludes these
@@ -40,7 +40,7 @@ scenario-level AT evidence that was not provided.
 
 For the scoped documentation refinement under the existing #8 work package:
 
-1. Update active account/review guidance and the linked spec/sprint.
+1. Update active account/review guidance and the linked specs/sprint.
 2. Keep historical intake/release evidence and bootstrap test fixtures intact.
 3. Validate documentation contracts and the required repository gate; open a
    documentation-only PR with actual results and the human-applied target below.
@@ -81,8 +81,8 @@ only the old route phrase in its `ctx` construction:
 
 ```python
 "Work from a real issue and linked idea/spec/plan/sprint package; "
-"new records use docs/idea/, docs/spec/, docs/plan/ and docs/sprint/; "
-"legacy docs/plans/ remains historical; test first; "
+"new records use docs/ideas/, docs/specs/, docs/plans/ and docs/sprints/; "
+"historical specs/plans retain their evidence; test first; "
 ```
 
 Keep all existing quality-gate, human-only and Superpowers context. Do not
@@ -90,7 +90,7 @@ relax `guard.py`, change event schemas, add agent exceptions or grant bypass.
 
 - [ ] Add/update the human-owned routing test in
       `tests/unit/test_guard_hook.py` so the session context includes each
-      singular directory and still includes `AGENTS.md`, the quality command
+      plural directory and still includes `AGENTS.md`, the quality command
       and the human-only boundary.
 
 Merge the imports into the existing import block and add this test class:
@@ -110,7 +110,7 @@ class IntakeContextRouting(unittest.TestCase):
         with contextlib.redirect_stdout(output):
             self.assertEqual(session.main(), 0)
         context = json.loads(output.getvalue())["additionalContext"]
-        for expected in ("docs/idea/", "docs/spec/", "docs/plan/", "docs/sprint/",
+        for expected in ("docs/ideas/", "docs/specs/", "docs/plans/", "docs/sprints/",
                          "AGENTS.md", "python tools/dev.py check", "Human-only"):
             self.assertIn(expected, context)
 ```

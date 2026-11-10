@@ -7,7 +7,7 @@
 | Author | Copilot; AI-assisted A5 documentation and evidence maintenance |
 | Status | Targeted catalogue correction passes local L1/L2; current PR #15 cloud checks and human acceptance tracked separately |
 | Scope | New implementation evidence and handoff for #7; not the original audit, approval or a release record |
-| References | [Issue #7](https://github.com/urruegg/frontier-envisioning/issues/7), [Approved spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [A5 plan](../plan/2026-11-09-accessibility-plan.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Testing strategy](../engineering/testing-strategy.md), [Original audit](2026-11-09-accessibility-audit.json) |
+| References | [Issue #7](https://github.com/urruegg/frontier-envisioning/issues/7), [Approved spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md), [A5 plan](../plans/2026-11-09-accessibility-plan.md), [Sprint](../sprints/SPRINT-001-docs-governance-and-accessibility.md), [Testing strategy](../engineering/testing-strategy.md), [Original audit](2026-11-09-accessibility-audit.json) |
 
 ## Boundary and provenance
 
@@ -15,7 +15,7 @@ Recorded on the actual machine date, 2026-11-10. This is a new handoff,
 not a revision of the 38-scan design-stage audit or its original approval.
 Design, plan and readiness approval on real
 [#6](https://github.com/urruegg/frontier-envisioning/issues/6) remain recorded
-in the [idea](../idea/2026-11-09-docs-governance-and-accessibility.md#approval-provenance).
+in the [idea](../ideas/2026-11-09-docs-governance-and-accessibility.md#approval-provenance).
 They do not approve an expansion into the excluded identity generator.
 
 This documentation work starts from `fix/7-blueprint-accessibility` at
@@ -64,7 +64,7 @@ At that checkpoint the identity generator was outside the renderer plan. A scope
 could not be answered because the user-input facility was unavailable.
 No expanded scope had been approved then. A person needed to decide a versioned
 identity-output phase and its guarded-output verification before remediation.
-The [approved spec's dated finding](../spec/2026-11-09-docs-governance-and-accessibility-design.md#implementation-finding-2026-11-10)
+The [approved spec's dated finding](../specs/2026-11-09-docs-governance-and-accessibility-design.md#implementation-finding-2026-11-10)
 records this without rewriting the original approval. The subsequent A6
 authorisation and correction below supersede this delivery blocker, not its
 historical failed measurements.
@@ -177,8 +177,8 @@ The user explicitly requested root-cause analysis and resolution of
 [PR #15 job 129801070832](https://github.com/urruegg/frontier-envisioning/actions/runs/42807578160/job/129801070832?pr=15).
 This authorised the targeted catalogue generator/current-version correction;
 it did not authorise a test waiver, historical rewrite or protected action.
-The [A6 spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md#targeted-ci-correction-authorised-2026-11-10)
-and [plan](../plan/2026-11-09-accessibility-plan.md#task-a6-targeted-catalogue-ci-correction-2026-11-10)
+The [A6 spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md#targeted-ci-correction-authorised-2026-11-10)
+and [plan](../plans/2026-11-09-accessibility-plan.md#task-a6-targeted-catalogue-ci-correction-2026-11-10)
 record the bounded change.
 
 Root causes and fixes:

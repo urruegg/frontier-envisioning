@@ -16,7 +16,7 @@ deployment actions were performed.
 
 Sources: the supplied local 1.6.0 engineering folder and original OneDrive
 task output. [Received source inventory](source-inventory-1.6.0.json).
-[Design](../plans/2026-11-09-handover-1.6-design.md) and
+[Design](../specs/2026-11-09-handover-1.6-design.md) and
 [implementation plan](../plans/2026-11-09-handover-1.6-plan.md).
 
 ## Product changes received

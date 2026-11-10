@@ -43,7 +43,6 @@ is built from the release tag v{v} by the release workflow.
 | `CHANGELOG.md` | What changed in each release |
 | `docs/prd.md` | Product requirements, release plan and product decisions |
 | `docs/solution-design.md` | Architecture, components, flows and verification |
-| `docs/prd-and-solution-design.md` | Legacy companion links only |
 | `docs/analysis/` | Existing analysis documents |
 | `demo/` | The Caldova blueprint, the agent identity kit and its catalogue (all fictitious) |
 """
@@ -73,7 +72,6 @@ def main(argv=None) -> int:
         ((ROOT / "CHANGELOG.md").read_bytes(), "CHANGELOG.md"),
         ((ROOT / "docs" / "prd.md").read_bytes(), "docs/prd.md"),
         ((ROOT / "docs" / "solution-design.md").read_bytes(), "docs/solution-design.md"),
-        ((ROOT / "docs" / "prd-and-solution-design.md").read_bytes(), "docs/prd-and-solution-design.md"),
         (demo_html.read_bytes(), f"demo/{DEMO_HTML_NAME}"),
         (catalogue.read_bytes(), "demo/Caldova - agent identity catalogue.html"),
     ]

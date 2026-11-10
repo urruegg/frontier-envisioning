@@ -6,7 +6,7 @@ description: Prepare and verify a Frontier Envisioning release - version bump, c
 
 ## Prepare (agent or person, in a pull request)
 
-Read `AGENTS.md` and the linked real issue/idea/spec/plan/sprint, with explicit human plan approval and readiness evidence. New records use singular `docs/idea/`, `docs/spec/`, `docs/plan/`, `docs/sprint/`; preserve historical `docs/plans/` links. Verify live issue/approval evidence separately from local docs checks. Human decisions do not prove protected label fields changed.
+Read `AGENTS.md` and the linked real issue/idea/spec/plan/sprint, with explicit human plan approval and readiness evidence. New records use plural `docs/ideas/`, `docs/specs/`, `docs/plans/`, `docs/sprints/`; preserve historical `docs/plans/` links. Verify live issue/approval evidence separately from local docs checks. Human decisions do not prove protected label fields changed.
 
 1. `python tools/dev.py bump X.Y.Z --date YYYY-MM-DD` (plugin.json, manifest.json, seven SKILL.md, build_blueprint.PLUGIN_VERSION, plugin README, archive date, CHANGELOG section).
 2. Write the CHANGELOG section (user-facing, by area), update `docs/prd.md` (A.9 acceptance criteria and A.12 release plan), `docs/solution-design.md#b9-quality-and-testing` (actual quality results) and the plugin README. Keep released records immutable.

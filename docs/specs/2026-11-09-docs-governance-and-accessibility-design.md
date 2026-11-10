@@ -7,17 +7,17 @@
 | Author | Copilot SDK in VS Code; AI-assisted design and maintenance |
 | Status | Implementation integrated on main through #15; final human sign-off recorded on #8; sole-account refinement directed by the user; protected execution remains human-only |
 | Scope | The eight approved repository improvements, delivered in bounded workstreams |
-| References | [Spec catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
+| References | [Spec catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../ideas/2026-11-09-docs-governance-and-accessibility.md), [Plan](../plans/2026-11-09-docs-governance-implementation.md), [Sprint](../sprints/SPRINT-001-docs-governance-and-accessibility.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
 
 The design-stage source evidence below is retained. Exact subsequent human
-plan/readiness quotes and #6 comments are recorded in the
-[idea's approval provenance](../idea/2026-11-09-docs-governance-and-accessibility.md#approval-provenance).
+plans/readiness quotes and #6 comments are recorded in the
+[idea's approval provenance](../ideas/2026-11-09-docs-governance-and-accessibility.md#approval-provenance).
 PR #11 was merged on 2026-11-09 at main `b0b4776`; D1-D5 are
 implemented/reviewed in [draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12),
 not merged. G1-G3 are delivered in
 [draft PR #13](https://github.com/urruegg/frontier-envisioning/pull/13), also
 not merged; policies remain Proposed.
-[SPRINT-001](../sprint/SPRINT-001-docs-governance-and-accessibility.md)
+[SPRINT-001](../sprints/SPRINT-001-docs-governance-and-accessibility.md)
 records renderer delivery and remaining acceptance/human work. Approval does not accept Proposed policies,
 grant protected permissions or establish label-field changes.
 
@@ -45,7 +45,7 @@ The HTML audit used renderer commit
 | DG-01 | Add `.github/agents/docs-agent.agent.md` | Repository-owned documentation persona; `read/search/edit/todo`; no model override, terminal/admin/deployment authority or invented approvals |
 | DG-02 | Split repository requirements and architecture | `docs/prd.md` owns Part A; `docs/solution-design.md` owns Part B and inventory; original IDs, historical claims and known legacy anchors retained; bundle includes both |
 | DG-03 | Adapt Copilot instructions | Concise authority map, factual evidence, correct private GitHub host, Frontier invariants and existing Superpowers fallback; no HR/host-cutover assumptions |
-| DG-04 | Establish linked intake | Singular `docs/idea`, `docs/spec`, `docs/plan`, `docs/sprint`; direct-child catalogues; every ready implementation item links a real issue and governing records |
+| DG-04 | Establish linked intake | Plural `docs/ideas`, `docs/specs`, `docs/plans`, `docs/sprints` per the 10 November #18 amendment; direct-child catalogues; every ready implementation item links a real issue and governing records |
 | DG-05 | Add Frontier agent policy | Proposed policy catalogue, workflow, non-delegable boundaries, proportional aggregate KPIs and human-only emergency procedure; no weakened guardrails |
 | DG-06 | Refine sole-account ownership | Human-only #8; `@urruegg` owns every path, including infrastructure; no enterprise-only collaborator invitation. Record maintainer sign-off without claiming formal self-approval |
 | DG-07 | Standardise eligible headers and references | Six-field metadata and deterministic checks with explicit historical/licence/generated/template/machine/product exemptions; no bulk modification of guarded output inputs |
@@ -53,9 +53,12 @@ The HTML audit used renderer commit
 
 ## Documentation architecture
 
-New work uses the requested singular directories. Existing `docs/plans/`
-remains a historical catalogue; no bulk move breaks earlier PR links.
-Product ADRs remain distinguished from engineering ADRs.
+The [10 November layout amendment](2026-11-10-documentation-layout-design.md)
+supersedes the original singular-folder and compatibility-index decisions.
+New and historical work uses the plural directories: designs in `docs/specs/`,
+implementation plans in `docs/plans/`. Local links are repaired; original
+commit-qualified evidence remains unchanged. Product ADRs remain distinguished
+from engineering ADRs.
 
 The documentation agent maintains eligible prose, catalogues, status and
 references. Existing planner, builder, renderer and reviewer roles retain
@@ -74,7 +77,7 @@ honour this approved header convention.
 
 Header eligibility initially covers active owned docs, ordinary root/area
 guides and new policy documents. Preserve licences/notices, historical intake
-and legacy plans, tracker/PR formats, vendor files, central CHANGELOG and
+and the six named historical specs/plans, tracker/PR formats, vendor files, central CHANGELOG and
 machine/product contracts. The [audit](../intake/2026-11-09-markdown-header-audit.csv)
 classifies all 134 original tracked Markdown files; not all are migration targets.
 
@@ -86,7 +89,7 @@ Plan owns files, failing tests, commands and dependencies. Sprint is the deliver
 index, not an approval or a substitute for those documents.
 
 Every implementation item, including documentation, belongs to a sprint and
-has issue/idea/spec/plan links. Related issues may reuse applicable approved
+has issue/ideas/specs/plan links. Related issues may reuse applicable approved
 governing records; unrelated changes do not share a package merely to avoid
 the contract. Offline drafts remain drafts until real issues are verified.
 
@@ -101,7 +104,7 @@ controls, not a new inferred tracker state machine.
 ## Document split and compatibility
 
 Retain all FR/NFR/AC/D/TD/ADR IDs and A/B section labels during migration.
-The PRD owns release plan/product decisions and historical Part A acceptance.
+The PRD owns release plans/product decisions and historical Part A acceptance.
 Solution design owns components, flows, security, verification approach,
 technical decisions/sources and the historical file inventory.
 
@@ -143,7 +146,7 @@ self-approval of authored PRs or approval of Copilot PRs assigned by that user.
 Do not manufacture independent approval using another account or an agent.
 Actual required-review settings are verified separately and never bypassed.
 The [sole-maintainer operating model](../engineering/github-setup.md#4-sole-maintainer-review-and-merge)
-and [human H1-H4 plan](../plan/2026-11-09-human-governance-plan.md)
+and [human H1-H4 plan](../plans/2026-11-09-human-governance-plan.md)
 define the intended process and protected change handoff. No CODEOWNERS,
 permissions, hook or settings edit is delegated by this refinement.
 

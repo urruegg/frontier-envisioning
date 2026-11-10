@@ -7,7 +7,7 @@
 | Author | Urs Rüegg (original product document); Copilot (AI-assisted split and accessibility maintenance) |
 | Status | Maintained requirements; no new product or release approval implied |
 | Scope | Shared product context, unreleased 1.6.1 requirements and original Part A |
-| References | [Solution design](solution-design.md), [Compatibility index](prd-and-solution-design.md), [Docs](README.md), [D2 plan](plan/2026-11-09-documentation-foundation-plan.md) |
+| References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md) |
 
 This document revision is independent of the plugin version. It is the
 authoritative requirements document; [solution-design.md](solution-design.md)
