@@ -2,12 +2,16 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-09 |
-| Author | Copilot SDK in VS Code |
-| Status | Proposed sprint; design approved, plan approval and implementation pending |
+| Author | Copilot SDK in VS Code; AI-assisted maintenance |
+| Status | Design, implementation plans and readiness approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); delivery evidence separate |
 | Scope | The bounded work package for the eight approved requirements; not a delivery-date commitment |
-| References | [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Current PRD/design](../prd-and-solution-design.md) |
+| References | [Sprint catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
+
+The work-item states, readiness checkboxes and validation evidence below retain
+the pre-implementation planning baseline. Current approval is linked above;
+current delivery evidence is reported separately by the parent coordinator.
 
 ## Goal and boundaries
 

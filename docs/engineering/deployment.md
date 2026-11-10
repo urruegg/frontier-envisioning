@@ -1,5 +1,14 @@
 # Deployment
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Maintained; approval or deployment permission not inferred |
+| Scope | Deployment guide; document revision, not product version |
+| References | [Documentation](../README.md), [Showcase decision](../adr/0020-showcase-hosting.md), [Infrastructure](../../infra/README.md), [Site](../../site/README.md) |
+
 Two deployable units:
 
 | Unit | Built by | Delivered to |

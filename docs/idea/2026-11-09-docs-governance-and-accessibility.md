@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-09 |
-| Author | Copilot SDK in VS Code; user-requested work |
-| Status | Idea accepted through design approval; implementation not approved |
+| Author | Copilot SDK in VS Code; user-requested work; AI-assisted maintenance |
+| Status | Idea accepted; design, implementation plans and readiness approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); delivery evidence separate |
 | Scope | Repository documentation, engineering intake, agent governance and HTML accessibility |
-| References | [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md) |
+| References | [Idea catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md) |
 
 ## Problem and outcome
 
@@ -46,6 +46,10 @@ prove structure, and people retain decisions and permissions.
   agents, historical rewriting and blanket packaged-document header changes.
 
 ## Approval provenance
+
+The quotation below retains the original design-stage approval record. Current
+plan/readiness approval is linked in the metadata; this quotation alone did not
+authorise implementation.
 
 On 9 November 2026 the user wrote:
 

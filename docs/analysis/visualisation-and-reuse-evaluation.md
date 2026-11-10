@@ -2,6 +2,17 @@
 
 | Field | Value |
 |---|---|
+| Version | 1.1 |
+| Date | 2026-11-09 |
+| Author | Urs Rüegg, Sr Solution Engineer, Microsoft Innovation Hub Switzerland; Copilot AI-assisted maintenance |
+| Status | For discussion; approval not inferred |
+| Scope | Evaluation metadata and routing; document revision, not product version; original evidence retained below |
+| References | [Documentation](../README.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
+
+## Original evaluation context (8 November 2026)
+
+| Field | Value |
+|---|---|
 | Document | Evaluation: plugins for visualising the target architecture, landing zone and Agent Factory; CAT components to reuse; the agent orchestration workflow with the GitHub harness |
 | Version | 1.0 — for discussion |
 | Date | 8 November 2026 |

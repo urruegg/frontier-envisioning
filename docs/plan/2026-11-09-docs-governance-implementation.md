@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-09 |
-| Author | Copilot SDK in VS Code |
-| Status | Proposed plan; design approved, implementation not approved |
+| Author | Copilot SDK in VS Code; AI-assisted maintenance |
+| Status | Design, implementation plans and readiness approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); delivery evidence separate |
 | Scope | Coordinated delegated implementation of the eight approved requirements |
-| References | [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md) |
+| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md) |
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > `subagent-driven-development` after separate human plan approval. Execute the

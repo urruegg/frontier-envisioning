@@ -1,5 +1,14 @@
 # Testing strategy
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Maintained; approval not inferred |
+| Scope | Test levels and evidence guide; document revision, not product version |
+| References | [Documentation](../README.md), [Tests](../../tests/README.md), [Engineering handbook](handbook.md), [Product quality and testing](../solution-design.md#b9-quality-and-testing) |
+
 ## Levels
 
 | Level | Tool | Where | What it proves | Gate |

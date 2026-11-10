@@ -1,5 +1,14 @@
 # ADR-0019: Versioning and releases
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Proposed; ENG-D4 remains a separate decision |
+| Scope | Versioning and release decision; document revision, not product version |
+| References | [ADR catalogue](README.md), [Engineering handbook](../engineering/handbook.md), [Product release plan](../prd.md#a12-release-plan) |
+
 **Status:** Proposed (8 November 2026), decision ENG-D4
 
 ## Context

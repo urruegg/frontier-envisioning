@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-09 |
-| Author | Copilot SDK in VS Code |
-| Status | Proposed plan; implementation requires separate approval |
+| Author | Copilot SDK in VS Code; AI-assisted maintenance |
+| Status | Plan and readiness approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); delivery evidence separate |
 | Scope | DG-01, DG-02, DG-04 and DG-07; no protected or packaged-output edits |
-| References | [Issue](https://github.com/urruegg/frontier-envisioning/issues/10), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md) |
+| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/10), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md) |
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > `subagent-driven-development` after plan approval. A fresh worker owns one

@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-09 |
-| Author | Copilot SDK in VS Code; human handoff preparation |
-| Status | Proposed human-only procedure; no protected action performed |
+| Author | Copilot SDK in VS Code; human handoff preparation; AI-assisted maintenance |
+| Status | Human-only handoff plan approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); no protected action performed or delegated |
 | Scope | DG-06, protected intake routing and manual accessibility acceptance |
-| References | [Issue](https://github.com/urruegg/frontier-envisioning/issues/8), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md) |
+| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/8), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md) |
 
 > **For agentic workers:** Do not execute H1-H4. Prepare evidence and hand
 > this plan to a person. Delegated implementation authority excludes these

@@ -1,5 +1,14 @@
 # ADR-0024: Agent workflow drawn like the Copilot Studio workflow designer, derived from the plan until authored
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Proposed |
+| Scope | Agent workflow view decision; document revision, not product version |
+| References | [ADR catalogue](README.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
+
 **Status:** Proposed (8 November 2026)
 
 ## Context

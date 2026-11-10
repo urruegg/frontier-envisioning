@@ -26,6 +26,13 @@ body:
     attributes:
       label: Build report, error text or screenshot
       description: Remove customer content before you paste.
+  - type: textarea
+    id: work-package
+    attributes:
+      label: Governing work package
+      description: Links to the real issue, idea, approved spec, approved plan and sprint records. Draft intake may leave missing stages explicitly unapproved; readiness requires all real, complete links.
+    validations:
+      required: true
   - type: checkboxes
     id: neutral
     attributes:

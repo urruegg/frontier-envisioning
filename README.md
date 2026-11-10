@@ -1,5 +1,14 @@
 # Frontier Envisioning
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Urs Rüegg; Copilot AI-assisted maintenance |
+| Status | Maintained; approval not inferred |
+| Scope | Repository overview and developer entry points; document revision, not product version |
+| References | [Documentation](docs/README.md), [Product requirements](docs/prd.md), [Solution design](docs/solution-design.md), [Contributing](CONTRIBUTING.md) |
+
 **Innovation Hub Frontier solution envisioning and architecture design, as a Copilot Cowork plugin.**
 
 Frontier Envisioning helps Microsoft Innovation Hub solution engineers prepare and run Frontier envisioning and architecture design workshops. It gathers the customer context from Work IQ and workshop transcripts, builds the interactive **Frontier Company Blueprint** along the Hub journey (vision, design, workshop), writes the PRD, solution design, ADRs and IT readiness checklist, creates the agent identity kit and models the business value and what the agents cost.

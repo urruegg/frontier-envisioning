@@ -1,5 +1,14 @@
 # ADR-0020: Showcase hosting
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Proposed; ENG-D3 remains a separate decision |
+| Scope | Showcase hosting decision; document revision, not product version |
+| References | [ADR catalogue](README.md), [Deployment](../engineering/deployment.md), [Solution design](../solution-design.md) |
+
 **Status:** Proposed (8 November 2026), decision ENG-D3
 
 ## Context

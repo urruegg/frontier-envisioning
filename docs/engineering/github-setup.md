@@ -1,5 +1,14 @@
 # Creating the GitHub repository
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Maintained; approval or administrative permission not inferred |
+| Scope | Repository setup guide; document revision, not product version |
+| References | [Documentation](../README.md), [Working agreement](../../AGENTS.md), [Workstation setup](workstation-setup.md), [Engineering handbook](handbook.md) |
+
 ## 1. Prerequisites
 
 - Approved home: [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning), private. The user confirmed Microsoft approval on 9 November 2026. This does not authorize public visibility or automatic server administration.

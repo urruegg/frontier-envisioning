@@ -41,7 +41,10 @@ is built from the release tag v{v} by the release workflow.
 | `install/frontier-envisioning-plugin-{v}.zip` | The plugin package (Cowork chat install or organisation catalogue) |
 | `README.md`, `MIT.md`, `THIRD-PARTY-NOTICES.md` | Setup guide, licence (MIT) and the notice for Microsoft product icons |
 | `CHANGELOG.md` | What changed in each release |
-| `docs/` | PRD and solution design; analyses |
+| `docs/prd.md` | Product requirements, release plan and product decisions |
+| `docs/solution-design.md` | Architecture, components, flows and verification |
+| `docs/prd-and-solution-design.md` | Legacy companion links only |
+| `docs/analysis/` | Existing analysis documents |
 | `demo/` | The Caldova blueprint, the agent identity kit and its catalogue (all fictitious) |
 """
 
@@ -68,6 +71,8 @@ def main(argv=None) -> int:
         ((PLUGIN / "MIT.md").read_bytes(), "MIT.md"),
         ((PLUGIN / "THIRD-PARTY-NOTICES.md").read_bytes(), "THIRD-PARTY-NOTICES.md"),
         ((ROOT / "CHANGELOG.md").read_bytes(), "CHANGELOG.md"),
+        ((ROOT / "docs" / "prd.md").read_bytes(), "docs/prd.md"),
+        ((ROOT / "docs" / "solution-design.md").read_bytes(), "docs/solution-design.md"),
         ((ROOT / "docs" / "prd-and-solution-design.md").read_bytes(), "docs/prd-and-solution-design.md"),
         (demo_html.read_bytes(), f"demo/{DEMO_HTML_NAME}"),
         (catalogue.read_bytes(), "demo/Caldova - agent identity catalogue.html"),

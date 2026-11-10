@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-09 |
-| Author | Copilot SDK in VS Code |
-| Status | Proposed plans; no implementation authorised |
+| Author | Copilot SDK in VS Code; AI-assisted maintenance |
+| Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Exact files, test-first steps, dependencies and delegation for the approved design |
 | References | [Docs](../README.md), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6) |
 
@@ -17,5 +17,7 @@
 | [Accessibility](2026-11-09-accessibility-plan.md) | Renderer worker | [#7](https://github.com/urruegg/frontier-envisioning/issues/7) |
 | [Human governance handoff](2026-11-09-human-governance-plan.md) | Person only | [#8](https://github.com/urruegg/frontier-envisioning/issues/8) |
 
-Design approval has been recorded. Plan approval is separate. Worker instructions
-in these documents are future execution contracts, not permission to start now.
+The user approved the design, implementation plans and readiness on
+[#6](https://github.com/urruegg/frontier-envisioning/issues/6). Worker instructions
+remain bounded by their named task and owner. This does not activate policies,
+authorise protected actions or establish delivery completion.

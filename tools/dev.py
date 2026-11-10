@@ -10,6 +10,7 @@ Commands
   setup           install the development dependencies (pip, npm, Playwright Chromium)
   template        assemble src/renderer into the plugin's blueprint template
   lint            compile all Python, repository rules, ruff and eslint (when installed)
+  docs            validate active documentation metadata, local links, catalogues and sprint records
   scan            customer-neutrality scan of the repository (and of dist/ and build/ archives when present)
   test            unit tests (pytest when installed, else unittest); 'test-all' adds the slow pipeline tests
   selftest        the plugin's end-to-end self-test against the Caldova examples
@@ -22,7 +23,7 @@ Commands
   e2e             browser tests (Playwright) against the served site
   bundle          the complete release bundle into dist/
   bump X.Y.Z      set a new version everywhere (see tools/bump_version.py)
-  precommit       gate L0: template drift, lint, neutrality
+  precommit       gate L0: template drift, lint, docs, neutrality
   check           gate L1: L0 + test + selftest + package + demo + verify-release + dom + archive scan
   ci              what the L1 workflow runs: check --strict
 
@@ -142,6 +143,12 @@ def cmd_scan():
     targets = [str(p) for p in sorted(DIST.glob("*.zip"))] + ([str(BUILD)] if BUILD.exists() else [])
     if targets and tool("neutrality", ["scan", "--zips", *targets]):
         raise GateFailure("customer names found in built artefacts")
+
+
+@step("documentation metadata, links and traceability")
+def cmd_docs():
+    if tool("check_docs", ["--strict"] if STRICT else []):
+        raise GateFailure("documentation contract")
 
 
 @step("unit tests")
@@ -290,11 +297,11 @@ def main(argv=None) -> int:
     if argv[0] == "bump":
         return tool("bump_version", argv[1:])
     simple = {"doctor": cmd_doctor, "setup": cmd_setup, "template": cmd_template, "serve": cmd_serve}
-    gated = {"lint": cmd_lint, "scan": cmd_scan, "test": cmd_test, "test-all": lambda: cmd_test(True),
+    gated = {"lint": cmd_lint, "docs": cmd_docs, "scan": cmd_scan, "test": cmd_test, "test-all": lambda: cmd_test(True),
              "selftest": cmd_selftest, "package": cmd_package, "demo": cmd_demo, "verify-release": cmd_verify_release,
              "dom": cmd_dom, "site": cmd_site, "e2e": cmd_e2e, "bundle": cmd_bundle,
-             "precommit": lambda: [cmd_template_check(), cmd_lint(), cmd_scan()],
-             "check": lambda: [cmd_template_check(), cmd_lint(), cmd_scan(), cmd_test(include_slow=True), cmd_selftest(), cmd_package(),
+             "precommit": lambda: [cmd_template_check(), cmd_lint(), cmd_docs(), cmd_scan()],
+             "check": lambda: [cmd_template_check(), cmd_lint(), cmd_docs(), cmd_scan(), cmd_test(include_slow=True), cmd_selftest(), cmd_package(),
                                cmd_demo(), cmd_verify_release(), cmd_dom(), cmd_scan()]}
     if argv[0] == "ci":
         STRICT = True

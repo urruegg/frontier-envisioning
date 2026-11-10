@@ -1,5 +1,14 @@
 # ADR-0021: AI-assisted engineering with GitHub Copilot and Superpowers
 
+| Field | Value |
+|---|---|
+| Version | 0.1 |
+| Date | 2026-11-09 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Status | Proposed; ENG-D2 remains a separate decision |
+| Scope | AI-assisted engineering decision; document revision, not product version |
+| References | [ADR catalogue](README.md), [Copilot and Superpowers](../engineering/copilot-and-superpowers.md), [Working agreement](../../AGENTS.md) |
+
 **Status:** Proposed (8 November 2026), decision ENG-D2 for the cloud agent
 
 ## Context

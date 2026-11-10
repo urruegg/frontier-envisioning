@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-09 |
-| Author | Copilot SDK in VS Code |
-| Status | Proposed plan; implementation and manual acceptance pending |
+| Author | Copilot SDK in VS Code; AI-assisted maintenance |
+| Status | Plan and readiness approved by the user on [#6](https://github.com/urruegg/frontier-envisioning/issues/6); delivery and manual acceptance evidence separate |
 | Scope | DG-08: measured renderer barriers and repeatable WCAG 2.2 AA-oriented checks |
-| References | [Issue](https://github.com/urruegg/frontier-envisioning/issues/7), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md), [Baseline](../intake/2026-11-09-accessibility-audit.json) |
+| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/7), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md), [Baseline](../intake/2026-11-09-accessibility-audit.json) |
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > `subagent-driven-development` after plan approval. Give each A-task to a
