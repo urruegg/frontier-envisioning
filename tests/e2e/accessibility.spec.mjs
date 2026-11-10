@@ -285,20 +285,146 @@ for (const reducedMotion of ["no-preference", "reduce"]) {
   });
 }
 
-test("journey tabs keep the blueprint route and activate/focus ArrowRight, Home and End destinations", async ({ page }) => {
-  const problems = watchProblems(page);
-  for (const key of ["ArrowRight", "Home", "End"]) {
-    // Reset each scenario so a broken ArrowRight cannot mask Home/End.
-    await open(page, "/blueprint.html#/blueprint");
-    const tabs = page.locator("#subnav [role=tab]");
-    expect(await tabs.count()).toBeGreaterThan(1);
-    await (key === "Home" ? tabs.last() : tabs.first()).focus();
-    await page.keyboard.press(key);
-    expect.soft(page.url(), `${key}: route`).toMatch(/#\/blueprint\//);
-    const destination = key === "ArrowRight" ? tabs.nth(1) : key === "Home" ? tabs.first() : tabs.last();
-    await expect.soft(destination, `${key}: focus`).toBeFocused();
-    await expect.soft(destination, `${key}: activation`).toHaveAttribute("aria-selected", "true");
+async function tabState(page, selector, panelId, index) {
+  const tabs = page.locator(`${selector} [role=tab]`);
+  const count = await tabs.count();
+  expect(count).toBeGreaterThan(1);
+  for (let i = 0; i < count; i++) {
+    await expect(tabs.nth(i)).toHaveAttribute("aria-controls", panelId);
+    await expect(tabs.nth(i)).toHaveAttribute("aria-selected", String(i === index));
+    await expect(tabs.nth(i)).toHaveAttribute("tabindex", i === index ? "0" : "-1");
   }
+  const selected = tabs.nth(index);
+  const panel = page.locator(`#${panelId}`);
+  await expect(panel).toHaveAttribute("role", "tabpanel");
+  await expect(panel).toHaveAttribute("aria-labelledby", await selected.getAttribute("id"));
+  await expect(panel).toHaveAccessibleName(/\S/);
+  await expect(selected).toBeFocused();
+}
+
+for (const route of ["blueprint", "journeys", "agents", "discovery"]) {
+  test(`journey tabs keep the ${route} route, roving focus and labelled panel`, async ({ page }) => {
+    const problems = watchProblems(page);
+    await open(page, route === "agents" ? "/blueprint.html#/agents/D3-A05" : `/blueprint.html#/${route}/D1`);
+    const tabs = page.locator("#subnav [role=tab]");
+    const count = await tabs.count();
+    const start = route === "agents" ? 2 : 0;
+    const expectedUrl = (index) => route === "agents"
+      ? new RegExp(`#/agents/D${index + 1}-`)
+      : new RegExp(`#/${route}/D${index + 1}$`);
+    await tabs.nth(start).click();
+    await tabState(page, "#subnav", "journey-panel", start);
+    await expect(page).toHaveURL(expectedUrl(start));
+    for (const [key, index] of [["ArrowRight", (start + 1) % count], ["Home", 0], ["ArrowLeft", count - 1], ["ArrowRight", 0], ["End", count - 1]]) {
+      await page.keyboard.press(key);
+      await tabState(page, "#subnav", "journey-panel", index);
+      await expect(page).toHaveURL(expectedUrl(index));
+    }
+    // Only the active journey participates in the real Tab sequence.
+    await page.keyboard.press("Tab");
+    expect(await page.evaluate(() => !!document.activeElement.closest("#subnav"))).toBe(false);
+    await page.keyboard.press("Shift+Tab");
+    await expect(tabs.last()).toBeFocused();
+    expect(problems).toEqual([]);
+  });
+}
+
+for (const family of ["architecture", "factory"]) {
+  test(`${family} tabs keep the page, activate Arrow/Home/End and label selected content`, async ({ page }, info) => {
+    const problems = watchProblems(page);
+    await open(page, family === "architecture" ? "/blueprint.html#/architecture" : "/blueprint.html#/journeys/D1");
+    if (family === "factory") {
+      // Select the actual Factory journey, not whichever journey the default opens.
+      await page.locator("#subnav [role=tab]").filter({ hasText: /factory/i }).click();
+    }
+    const selector = family === "architecture" ? ".atabs" : ".fsteps";
+    const panelId = family === "architecture" ? "architecture-panel" : "factory-step-panel";
+    const tabs = page.locator(`${selector} [role=tab]`);
+    const count = await tabs.count();
+    const url = page.url();
+    await tabs.first().click();
+    await tabState(page, selector, panelId, 0);
+    const ids = await tabs.evaluateAll((nodes) => nodes.map((node) => node.id));
+    for (const [key, index] of [["ArrowRight", 1], ["Home", 0], ["ArrowLeft", count - 1], ["ArrowRight", 0], ["End", count - 1]]) {
+      await page.keyboard.press(key);
+      await tabState(page, selector, panelId, index);
+      await expect(page).toHaveURL(url);
+      expect(await tabs.evaluateAll((nodes) => nodes.map((node) => node.id))).toEqual(ids);
+    }
+    // Enter/Space remain native button activation, not document shortcuts.
+    for (const key of ["Enter", "Space"]) {
+      await tabs.first().focus();
+      await page.keyboard.press(key);
+      await tabState(page, selector, panelId, 0);
+    }
+    await info.attach(`a3-${family}-selected-panel`, { body: await page.screenshot(), contentType: "image/png" });
+    expect(problems).toEqual([]);
+  });
+}
+
+test("tab navigation preserves modifiers, input guards, drawer priority and global view shortcuts", async ({ page }) => {
+  const problems = watchProblems(page);
+  await open(page, "/blueprint.html#/blueprint/D1");
+  const first = page.locator("#subnav [role=tab]").first();
+  await first.click();
+  for (const modifier of ["Alt", "Control", "Meta"]) {
+    await page.keyboard.press(`${modifier}+ArrowRight`);
+    await tabState(page, "#subnav", "journey-panel", 0);
+    await expect(page).toHaveURL(/#\/blueprint\/D1$/);
+  }
+  await page.locator("#view .leadcard").click();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator("#drawer-close")).toBeFocused();
+  await expect(page).toHaveURL(/#\/blueprint\/D1$/);
+  await page.keyboard.press("Escape");
+  await page.locator("#view").focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page).toHaveURL(/#\/journeys\/D1$/);
+  await page.keyboard.press("ArrowLeft");
+  await expect(page).toHaveURL(/#\/blueprint\/D1$/);
+  await open(page, "/blueprint.html#/readiness");
+  const input = page.locator("details.rgroup[open] .assnote").first();
+  await input.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page).toHaveURL(/#\/readiness$/);
+  await expect(input).toBeFocused();
+  expect(problems).toEqual([]);
+});
+
+test("organisation and ADR filters expose pressed state and interactive SVG groups retain keyboard nodes", async ({ page }, info) => {
+  const problems = watchProblems(page);
+  await open(page, "/blueprint.html#/org");
+  const org = page.locator("svg.orgsvg");
+  await expect(org).toHaveAttribute("role", "group");
+  await expect(org).toHaveAccessibleName(/Hybrid organisation model/);
+  expect(await org.getByRole("button").count()).toBeGreaterThan(1);
+  const filters = page.locator("#view .filters button");
+  await expect(filters.first()).toHaveAttribute("aria-pressed", "true");
+  const inactiveColour = await filters.nth(1).evaluate((node) => getComputedStyle(node).backgroundColor);
+  await filters.nth(1).click();
+  await expect(filters.nth(1)).toHaveAttribute("aria-pressed", "true");
+  await expect(filters.first()).toHaveAttribute("aria-pressed", "false");
+  expect(await filters.nth(1).evaluate((node) => getComputedStyle(node).backgroundColor)).not.toBe(inactiveColour);
+  await filters.nth(1).click();
+  await org.getByRole("button").first().focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#drawer")).toHaveAttribute("aria-hidden", "false");
+  await page.keyboard.press("Escape");
+  await info.attach("a3-org-filter-and-svg", { body: await page.screenshot(), contentType: "image/png" });
+  await open(page, "/blueprint.html#/usecases");
+  const matrix = page.locator("svg.matrix");
+  await expect(matrix).toHaveAttribute("role", "group");
+  await expect(matrix).toHaveAccessibleName(/\S/);
+  expect(await matrix.getByRole("button").count()).toBeGreaterThan(1);
+  await matrix.getByRole("button").first().focus();
+  await page.keyboard.press("Space");
+  await expect(page.locator("#ucdetail")).toBeVisible();
+  await open(page, "/blueprint.html#/architecture");
+  await page.locator(".atabs button").filter({ hasText: "Decisions" }).click();
+  await expect(filters.first()).toHaveAttribute("aria-pressed", "true");
+  await filters.nth(1).click();
+  await expect(filters.nth(1)).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('button:not([role=tab])[aria-selected]')).toHaveCount(0);
   expect(problems).toEqual([]);
 });
 

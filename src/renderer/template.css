@@ -59,8 +59,8 @@ header.top{display:flex;align-items:center;gap:18px;padding:18px 0 14px;border-b
 .subnav .lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-inline-end:4px}
 .tab{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-weight:700;font-size:12.5px}
 .tab .num{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px;flex:none}
-.tab[aria-selected="true"]{background:var(--d);border-color:var(--d);color:#fff}
-.tab[aria-selected="true"] .num{background:rgba(255,255,255,.25) !important}
+.tab[aria-selected="true"],.tab[aria-pressed="true"]{background:var(--d);border-color:var(--d);color:#fff}
+.tab[aria-selected="true"] .num,.tab[aria-pressed="true"] .num{background:rgba(255,255,255,.25) !important}
 .tab:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 
 /* generic */

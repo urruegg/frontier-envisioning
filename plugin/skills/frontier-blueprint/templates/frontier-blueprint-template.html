@@ -68,8 +68,8 @@ header.top{display:flex;align-items:center;gap:18px;padding:18px 0 14px;border-b
 .subnav .lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-inline-end:4px}
 .tab{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-weight:700;font-size:12.5px}
 .tab .num{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px;flex:none}
-.tab[aria-selected="true"]{background:var(--d);border-color:var(--d);color:#fff}
-.tab[aria-selected="true"] .num{background:rgba(255,255,255,.25) !important}
+.tab[aria-selected="true"],.tab[aria-pressed="true"]{background:var(--d);border-color:var(--d);color:#fff}
+.tab[aria-selected="true"] .num,.tab[aria-pressed="true"] .num{background:rgba(255,255,255,.25) !important}
 .tab:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 
 /* generic */
@@ -1326,8 +1326,9 @@ function renderSubnav(){
   if (DOMAIN_VIEWS.indexOf(state.view) < 0 || D.length < 1) return;
   t.appendChild(h("span",{class:"lbl"}, M.domain_label || "Journey"));
   D.forEach(function(d, i){
-    t.appendChild(h("button",{type:"button",role:"tab",class:"tab",style:"--d:" + d.color,"aria-selected": i === state.d ? "true" : "false",
-      onclick:function(){ state.d = i; if (state.view === "agents") state.agent = null; render(); }},
+    t.appendChild(h("button",{type:"button",id:"journey-tab-" + i,role:"tab",class:"tab",style:"--d:" + d.color,
+      "aria-controls":"journey-panel","aria-selected": i === state.d ? "true" : "false",tabindex:i === state.d ? "0" : "-1",
+      onclick:function(){ activateTab("journey-tab-" + i,function(){ state.d = i; if (state.view === "agents") state.agent = null; }); }},
       h("span",{class:"num",style:"background:" + d.color}, String(i + 1)), d.name));
   });
 }
@@ -1404,12 +1405,35 @@ function containDrawerTab(event){
 }
 document.getElementById("drawer-close").addEventListener("click", closeDrawer);
 scrim.addEventListener("click", closeDrawer);
+function activateTab(id, update){
+  update();
+  render();
+  document.getElementById(id).focus();
+}
+function navigateTabs(event){
+  var tab = event.target && event.target.closest ? event.target.closest('[role="tab"]') : null;
+  var list = tab && tab.closest('[role="tablist"]');
+  if (!list) return false;
+  var tabs = Array.from(list.querySelectorAll('[role="tab"]')).filter(function(node){
+    return node.closest('[role="tablist"]') === list;
+  });
+  var index = tabs.indexOf(tab), next = index;
+  if (event.key === "ArrowRight") next = (index + 1) % tabs.length;
+  else if (event.key === "ArrowLeft") next = (index + tabs.length - 1) % tabs.length;
+  else if (event.key === "Home") next = 0;
+  else if (event.key === "End") next = tabs.length - 1;
+  else return false;
+  event.preventDefault(); event.stopPropagation();
+  tabs[next].click();
+  return true;
+}
 document.addEventListener("keydown", function(e){
   if (containDrawerTab(e)) return;
   if (e.key === "Escape" && drawer.classList.contains("open")) { e.preventDefault(); closeDrawer(); return; }
   var tg = e.target && e.target.tagName;
   if (tg === "INPUT" || tg === "TEXTAREA" || tg === "SELECT" || drawer.classList.contains("open")) return;
   if (e.altKey || e.ctrlKey || e.metaKey) return;
+  if (navigateTabs(e)) return;
   var i = ORDER.indexOf(state.view);
   if (e.key === "ArrowRight" && ORDER[i+1]) go(ORDER[i+1]);
   if (e.key === "ArrowLeft" && ORDER[i-1]) go(ORDER[i-1]);
@@ -2302,7 +2326,7 @@ function orgSvg(){
     return rev ? "M" + p1[0].toFixed(1) + " " + p1[1].toFixed(1) + " A" + r + " " + r + " 0 " + large + " 0 " + p0[0].toFixed(1) + " " + p0[1].toFixed(1)
                : "M" + p0[0].toFixed(1) + " " + p0[1].toFixed(1) + " A" + r + " " + r + " 0 " + large + " 1 " + p1[0].toFixed(1) + " " + p1[1].toFixed(1);
   }
-  var svg = s("svg",{viewBox:"0 0 " + W + " " + W, class:"orgsvg", role:"img", "aria-label":"Hybrid organisation model: human leaders in the centre, lead agents in the inner ring, specialist agents in the outer ring, grouped by " + (M.domain_label_plural || "journeys")});
+  var svg = s("svg",{viewBox:"0 0 " + W + " " + W, class:"orgsvg", role:"group", "aria-label":"Hybrid organisation model: human leaders in the centre, lead agents in the inner ring, specialist agents in the outer ring, grouped by " + (M.domain_label_plural || "journeys")});
   var gEdges = s("g"), gNodes = s("g"), gLabels = s("g"), gRings = s("g");
   svg.appendChild(gRings); svg.appendChild(gEdges); svg.appendChild(gNodes); svg.appendChild(gLabels);
   gRings.appendChild(s("circle",{cx:C, cy:C, r:R1, fill:"none", stroke:"var(--line-soft)", "stroke-width":1.5}));
@@ -2440,8 +2464,8 @@ function renderOrg(){
       return h("button",{type:"button","aria-pressed": state.orgStage === x[0] ? "true" : "false", onclick:function(){ state.orgStage = x[0]; render(); }}, x[1]);
     }));
   var chips = h("div",{class:"filters",style:"margin-top:8px"},
-    h("button",{type:"button",class:"tab",style:"--d:var(--ink)","aria-selected": !state.orgDomain ? "true" : "false", onclick:function(){ state.orgDomain = null; render(); }}, h("span",{class:"num",style:"background:var(--grey)"},"\u2217"), "All"),
-    D.map(function(d){ return h("button",{type:"button",class:"tab",style:"--d:" + d.color,"aria-selected": state.orgDomain === d.id ? "true" : "false", onclick:function(){ state.orgDomain = state.orgDomain === d.id ? null : d.id; render(); }}, h("span",{class:"num",style:"background:" + d.color}, String(D.indexOf(d) + 1)), d.short_name || d.name); }));
+    h("button",{type:"button",class:"tab",style:"--d:var(--ink)","aria-pressed": !state.orgDomain ? "true" : "false", onclick:function(){ state.orgDomain = null; render(); }}, h("span",{class:"num",style:"background:var(--grey)"},"\u2217"), "All"),
+    D.map(function(d){ return h("button",{type:"button",class:"tab",style:"--d:" + d.color,"aria-pressed": state.orgDomain === d.id ? "true" : "false", onclick:function(){ state.orgDomain = state.orgDomain === d.id ? null : d.id; render(); }}, h("span",{class:"num",style:"background:" + d.color}, String(D.indexOf(d) + 1)), d.short_name || d.name); }));
   var cb = function(key, label){
     var id = "chk-" + key;
     return h("label",{class:"chk",for:id}, h("input",{type:"checkbox",id:id, checked: state[key] ? true : null, onchange:function(e){ state[key] = e.target.checked; render(); }}), label);
@@ -2748,9 +2772,11 @@ function factorySteps(){
   var fa = String(st.agent || "").split(" \u00b7 ").map(function(n){ return agentByName(n.replace(/\s*\(.*\)$/, "")); }).filter(Boolean);
   var LOOP = {plan:"Plan gates", dev:"DEV loop", gate:"Human-in-the-loop gate", ops:"OPS loop"};
   return [h("div",{class:"fsteps",role:"tablist","aria-label":"Idea-to-agent steps"}, S.map(function(x, i){
-      return h("button",{type:"button",role:"tab",class:"fstep lp-" + x.loop,"aria-selected": i === state.fstep ? "true" : "false",onclick:function(){ state.fstep = i; render(); }}, h("span",{class:"n"}, x.id), h("span",null, x.name));
+      return h("button",{type:"button",id:"factory-tab-" + i,role:"tab",class:"fstep lp-" + x.loop,
+        "aria-controls":"factory-step-panel","aria-selected": i === state.fstep ? "true" : "false",tabindex:i === state.fstep ? "0" : "-1",
+        onclick:function(){ activateTab("factory-tab-" + i,function(){ state.fstep = i; }); }}, h("span",{class:"n"}, x.id), h("span",null, x.name));
     })),
-    h("div",{class:"fdetail lp-" + st.loop},
+    h("div",{class:"fdetail lp-" + st.loop,id:"factory-step-panel",role:"tabpanel","aria-labelledby":"factory-tab-" + state.fstep},
       h("div",{class:"fdh"}, h("b",null, st.id + " \u00b7 " + st.name), h("span",{class:"pill"}, LOOP[st.loop] || st.loop || "")),
       h("p",null, st.what || ""),
       h("div",{class:"grid2"},
@@ -2956,7 +2982,7 @@ function renderDecisions(A){
   var shown = list.filter(function(x){ return f === "all" || adrStatus(x) === f; });
   var out = [h("h3",{class:"sub"},"Architecture decision records"),
     h("p",{class:"note"},"Each decision with its context, consequences and alternatives. Decisions marked Hub canon are the Innovation Hub's standard proposals; the workshop agrees, adjusts or rejects them."),
-    h("div",{class:"filters"}, [["all","All \u00b7 " + list.length]].concat(Object.keys(counts).map(function(k){ return [k, k.charAt(0).toUpperCase() + k.slice(1) + " \u00b7 " + counts[k]]; })).map(function(x){ return h("button",{type:"button",class:"tab","aria-selected": f === x[0] ? "true" : "false",onclick:function(){ state.adrFilter = x[0]; render(); }}, x[1]); })),
+    h("div",{class:"filters"}, [["all","All \u00b7 " + list.length]].concat(Object.keys(counts).map(function(k){ return [k, k.charAt(0).toUpperCase() + k.slice(1) + " \u00b7 " + counts[k]]; })).map(function(x){ return h("button",{type:"button",class:"tab","aria-pressed": f === x[0] ? "true" : "false",onclick:function(){ state.adrFilter = x[0]; render(); }}, x[1]); })),
     h("div",{class:"adrs"}, shown.map(function(x){
       var st = adrStatus(x), dec = x.decision && !/^(proposed|agreed|accepted)$/i.test(String(x.decision)) ? x.decision : null;
       return h("article",{class:"adr" + (state.adr === x.id ? " sel" : ""),id:"adr-" + x.id},
@@ -2984,10 +3010,14 @@ function renderArchitecture(){
   if (tabs.length < 2 && !LZ) return renderArchitectureClassic();
   if (!tabs.some(function(t){ return t[0] === state.archTab; })) state.archTab = tabs[0][0];
   var out = [h("h2",{class:"sec"}, A.title || "Target architecture"), A.intro ? h("p",{class:"lead"}, A.intro, evPills(A.src)) : null,
-    h("div",{class:"atabs",role:"tablist","aria-label":"Target architecture views"}, tabs.map(function(t){ return h("button",{type:"button",role:"tab",class:"atab","aria-selected": t[0] === state.archTab ? "true" : "false",onclick:function(){ state.archTab = t[0]; render(); }}, t[1]); }))];
-  if (state.archTab === "lz") return out.concat(renderLandingZone());
-  if (state.archTab === "decisions") return out.concat(renderDecisions(A));
-  return out.concat(renderArchitectureClassic(state.archTab));
+    h("div",{class:"atabs",role:"tablist","aria-label":"Target architecture views"}, tabs.map(function(t){ return h("button",{
+      type:"button",id:"architecture-tab-" + t[0],role:"tab",class:"atab","aria-controls":"architecture-panel",
+      "aria-selected": t[0] === state.archTab ? "true" : "false",tabindex:t[0] === state.archTab ? "0" : "-1",
+      onclick:function(){ activateTab("architecture-tab-" + t[0],function(){ state.archTab = t[0]; }); }}, t[1]); }))];
+  var content = state.archTab === "lz" ? renderLandingZone()
+    : state.archTab === "decisions" ? renderDecisions(A)
+    : renderArchitectureClassic(state.archTab);
+  return out.concat([h("section",{id:"architecture-panel",role:"tabpanel","aria-labelledby":"architecture-tab-" + state.archTab}, content)]);
 }
 
 /* ---------------- use case: Innovation Hub use-case template ---------------- */
@@ -3531,7 +3561,7 @@ function matrixSvg(){
   var W = 560, H = 440, L = 56, T = 24, R = 18, B = 50, iw = W - L - R, ih = H - T - B;
   function X(f){ return L + (f - 0.5) / 5 * iw; }
   function Y(v){ return T + ih - (v - 0.5) / 5 * ih; }
-  var svg = s("svg",{viewBox:"0 0 " + W + " " + H, class:"matrix", role:"img", "aria-label":"Use case portfolio by value and feasibility"});
+  var svg = s("svg",{viewBox:"0 0 " + W + " " + H, class:"matrix", role:"group", "aria-label":"Use case portfolio by value and feasibility"});
   svg.appendChild(s("rect",{x:X(3), y:T, width:L + iw - X(3), height:Y(3) - T, fill:"var(--ok-soft)"}));
   svg.appendChild(s("rect",{x:L, y:T, width:X(3) - L, height:Y(3) - T, fill:"var(--accent-soft)"}));
   svg.appendChild(s("rect",{x:X(3), y:Y(3), width:L + iw - X(3), height:T + ih - Y(3), fill:"var(--warn-soft)"}));
@@ -3767,7 +3797,9 @@ function render(scrollTop){
   var out;
   try { out = RENDER[state.view](); }
   catch (e) { out = [h("div",{class:"empty"}, h("b",null,"This view could not be drawn."), h("p",null, String(e && e.message || e)))]; if (window.console) console.error(e); }
-  v.replaceChildren(); add(v, out); v.appendChild(pager());
+  var selectedJourney = document.querySelector('#subnav [role="tab"][aria-selected="true"]');
+  var content = selectedJourney ? h("section",{id:"journey-panel",role:"tabpanel","aria-labelledby":selectedJourney.id}, out) : out;
+  v.replaceChildren(); add(v, content); v.appendChild(pager());
   writeHash();
   if (scrollTop) { try { window.scrollTo(0, 0); v.focus({preventScroll:true}); } catch (e) {} }
 }
