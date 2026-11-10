@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
-| Date | 2026-11-09 |
+| Version | 0.2 |
+| Date | 2026-11-10 |
 | Author | Copilot; AI-assisted drafting |
 | Status | Proposed; human acceptance pending |
 | Scope | Linked intake, approved bounded implementation and truthful delivery evidence |
@@ -29,6 +29,14 @@
 8. Regenerate product outputs through tools, run applicable gates, disclose
    agent involvement and open a scoped draft PR with real evidence.
 9. People review and merge; releases and deployments are separate human decisions.
+
+For this single-user repository, the human maintainer is `@urruegg`, not the
+enterprise-only account. Record their review/sign-off against the current
+head and passing checks. GitHub does not allow a PR author to formally approve
+their own PR; neither an agent review nor the same person's second account
+supplies independent human approval. If actual server requirements block the intended model, stop
+for a human governance decision; do not bypass or alter them.
+See the [sole-maintainer model](../../docs/engineering/github-setup.md#4-sole-maintainer-review-and-merge).
 
 Every implementation item, including documentation, belongs to a real linked
 governing package and sprint. Related items may reuse applicable approved

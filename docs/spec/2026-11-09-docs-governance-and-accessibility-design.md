@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
+| Version | 0.5 |
 | Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted design and maintenance |
-| Status | Human design, plans and readiness approved; D1-D5 in draft PR #12, G1-G3 in draft PR #13 (policies Proposed); A1-A4 implemented, A5 docs handed off, A4/A5 acceptance blocked; human #8 pending |
+| Status | Implementation integrated on main through #15; final human sign-off recorded on #8; sole-account refinement directed by the user; protected execution remains human-only |
 | Scope | The eight approved repository improvements, delivered in bounded workstreams |
 | References | [Spec catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
 
@@ -47,7 +47,7 @@ The HTML audit used renderer commit
 | DG-03 | Adapt Copilot instructions | Concise authority map, factual evidence, correct private GitHub host, Frontier invariants and existing Superpowers fallback; no HR/host-cutover assumptions |
 | DG-04 | Establish linked intake | Singular `docs/idea`, `docs/spec`, `docs/plan`, `docs/sprint`; direct-child catalogues; every ready implementation item links a real issue and governing records |
 | DG-05 | Add Frontier agent policy | Proposed policy catalogue, workflow, non-delegable boundaries, proportional aggregate KPIs and human-only emergency procedure; no weakened guardrails |
-| DG-06 | Refine ownership and collaboration | Human-only #8; default `@urruegg`, appropriate shared ownership, actual write-access eligibility/invitation, existing infrastructure owner retained unless explicitly transferred |
+| DG-06 | Refine sole-account ownership | Human-only #8; `@urruegg` owns every path, including infrastructure; no enterprise-only collaborator invitation. Record maintainer sign-off without claiming formal self-approval |
 | DG-07 | Standardise eligible headers and references | Six-field metadata and deterministic checks with explicit historical/licence/generated/template/machine/product exemptions; no bulk modification of guarded output inputs |
 | DG-08 | Improve measured accessibility | Source-based focus/ARIA/contrast/target/reflow remediation, development-only axe integration and real keyboard checks; manual acceptance and best-practice/incomplete findings reported separately |
 
@@ -129,11 +129,23 @@ drift, prohibited data/secret incidents and non-delegable violations use zero
 targets. Relative lead-time/rework targets wait for aggregate baselines.
 Do not rank people, minimise escalations or weaken tests to improve a metric.
 
-CODEOWNERS does not grant access or require approval from every named owner.
-Last matching pattern wins. `/infra/` currently belongs to
-`@urruegg_microsoft`; the approved design preserves that owner unless a human
-explicitly transfers it. A future `/data/` pattern does not create a data folder.
-The second contributor's actual write-access eligibility/invitation is human-only.
+CODEOWNERS does not grant access or create an eligible independent reviewer.
+Last matching pattern wins. The user's 10 November account correction
+supersedes the original two-account proposal: `@urruegg` is the sole public-cloud
+maintainer and intended owner of every path, including infrastructure and
+governance. The same person's enterprise-only `@urruegg_microsoft` account is
+not a second collaborator to invite or use for reviews here. The repository
+remains private; no host or visibility change is requested.
+
+The maintainer records sign-off against the actual reviewed head and passing
+checks, then makes the human merge decision. GitHub does not permit formal
+self-approval of authored PRs or approval of Copilot PRs assigned by that user.
+Do not manufacture independent approval using another account or an agent.
+Actual required-review settings are verified separately and never bypassed.
+The [sole-maintainer operating model](../engineering/github-setup.md#4-sole-maintainer-review-and-merge)
+and [human H1-H4 plan](../plan/2026-11-09-human-governance-plan.md)
+define the intended process and protected change handoff. No CODEOWNERS,
+permissions, hook or settings edit is delegated by this refinement.
 
 ## Accessibility architecture and evidence
 

@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
-| Date | 2026-11-09 |
+| Version | 0.2 |
+| Date | 2026-11-10 |
 | Author | Urs Rüegg; Copilot AI-assisted maintenance |
 | Status | Maintained; approval not inferred |
 | Scope | Repository overview and developer entry points; document revision, not product version |
@@ -20,6 +20,7 @@ The identity kit supplies branding, not Entra identity provisioning. HubWorks is
 | Current product baseline | **1.6.0** (8 November 2026), imported from Copilot Cowork; 1.4.0 records retained |
 | Development patch | **1.6.1**: bounded sticky navigation fixes the workflow legend overlap; not yet released |
 | Repository home | [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning), private; use approved work material only |
+| Sole maintainer | [@urruegg](https://github.com/urruegg), the public-cloud account; enterprise-only `@urruegg_microsoft` is not a second collaborator |
 | Plugin licence | MIT (Microsoft product icons: see [THIRD-PARTY-NOTICES.md](plugin/THIRD-PARTY-NOTICES.md)) |
 | Demo data | the fictitious Caldova Industrial AG only |
 | Status | Intake: see [docs/engineering/intake-plan.md](docs/engineering/intake-plan.md) and milestone *M0 · Intake baseline* |
@@ -46,6 +47,11 @@ python tools/dev.py check      # gate L1: everything CI runs (a few minutes)
 How we work is in [AGENTS.md](AGENTS.md) (for people and coding agents), [CONTRIBUTING.md](CONTRIBUTING.md) and the [engineering handbook](docs/engineering/handbook.md). GitHub Copilot is configured for this repository (instructions, custom agents, skills, hooks); the engineering method is Superpowers: see [Copilot and Superpowers](docs/engineering/copilot-and-superpowers.md).
 
 The private repository above is the approved source/issue/PR host. [PRD](docs/prd.md) owns requirements and release decisions; [solution design](docs/solution-design.md) owns architecture and verification; [ADRs](docs/adr/README.md) record engineering rationale. New implementation uses linked [idea](docs/idea/README.md), [spec](docs/spec/README.md), [plan](docs/plan/README.md) and [sprint](docs/sprint/README.md) records with real human design/readiness evidence and explicit plan approval. Draft a sprint early; link a real issue, owner and testable acceptance before readiness. Labels remain human-only and are not inferred from approval. Local checks do not verify live issues/approvals.
+
+The [sole-maintainer review model](docs/engineering/github-setup.md#4-sole-maintainer-review-and-merge)
+uses passing gates and recorded human sign-off, not an impossible formal
+self-approval. Hosting on GitHub's public-cloud platform does not change this
+repository's private visibility.
 
 Where supported, eligible prose goes to `docs-agent`, checker/code to `frontier-builder`, HTML to `frontier-renderer`. Handoffs are harness-dependent; available Superpowers skills or the AGENTS method provide the workflow. The [policy catalogue](.github/agent-policy/README.md) remains Proposed, not an access control. Protected session-start routing still names legacy paths pending human [#8](https://github.com/urruegg/frontier-envisioning/issues/8); preserve historical links and report the limitation.
 

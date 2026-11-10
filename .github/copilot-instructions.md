@@ -5,6 +5,7 @@ This repository builds **Frontier Envisioning**, a Copilot Cowork plugin (MIT) f
 ## Authority and workflow
 
 - The approved private source, issue and PR host is `urruegg/frontier-envisioning`; no host cutover is implied.
+- Sole human maintainer/intended code owner: `@urruegg` for all paths. `@urruegg_microsoft` is enterprise-only, not a second collaborator here. Record maintainer sign-off separately from a formal GitHub review: authors cannot approve their own PRs. Never simulate independent approval or change review settings to unblock yourself.
 - `docs/prd.md` owns requirements, A.12 releases and A.13 product decisions; `docs/solution-design.md` owns architecture, flows and B.9 verification; `docs/adr/` owns engineering rationale.
 - Linked, human-approved work packages govern implementation. New records use `docs/idea/`, `docs/spec/`, `docs/plan/` and `docs/sprint/`; preserve legacy `docs/plans/` and historical links.
 - Record real human design, plan and readiness evidence before delegated implementation. Status/files are not approval or access control; approval decisions do not prove label-field changes.

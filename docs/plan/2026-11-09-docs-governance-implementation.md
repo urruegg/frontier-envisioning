@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.6 |
+| Version | 0.7 |
 | Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | A6 catalogue correction passes local L1/L2; PR #15 cloud/main integration and human #8 acceptance tracked separately; policies Proposed |
+| Status | #15 human-merged to main with passing local/cloud gates; final human sign-off recorded on #8; sole-account correction and protected execution tracked separately |
 | Scope | Coordinated delegated implementation of the eight approved requirements |
 | References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md) |
 
@@ -145,7 +145,7 @@ reviewed commits; no agent merges the final PR.
 | DG-03 instructions | G1-G2 | Authority/path/guardrail contract tests |
 | DG-04 linked intake | D4-D5, G1-G2 | Catalogues, metadata, issue-shape/local links and real readiness verification |
 | DG-05 policy | G1-G3 | Proposed state, no delegation of protected rights, evidence/KPI contract |
-| DG-06 ownership/access | H1-H3 | Human invitation/eligibility, CODEOWNERS and routing evidence |
+| DG-06 ownership/access | H1-H3 | Sole `@urruegg` owner-access verification, human-applied CODEOWNERS/routing evidence; no enterprise invitation or formal self-approval |
 | DG-07 headers | D4-D5 | Eligible-file checks; exemptions and historic/product hashes unchanged |
 | DG-08 accessibility | A1-A5, H4 | WCAG-tagged checks, keyboard/reflow/contrast/targets, explicit manual/report limitations |
 
@@ -183,7 +183,12 @@ The catalogue AA blocker was resolved by targeted A6 following the user's
 explicit request to solve PR #15's linked failure. Generator text styles and
 finite current-version verification changed; original historical profiles,
 PNGs and release records did not. The unchanged AA tests now pass locally.
-Current cloud/main integration and human #8/manual acceptance remain pending.
+PR #15 is now human-merged to main `5d68b71`; local and post-merge cloud
+L1/L2/IaC passed. The final governance/manual-accessibility sign-off is recorded
+on #8. Scenario-level evidence and protected operations are not invented from
+that decision. The user's later account correction supersedes the proposed
+second collaborator: use only `@urruegg` and the
+[sole-maintainer review model](../engineering/github-setup.md#4-sole-maintainer-review-and-merge).
 The initial A5 documentation-contract failure was corrected in `2703703`
 while preserving historical hashes/results and real revision dates.
 The initial verified stack had 145 tests/311 subtests and two catalogue L2
