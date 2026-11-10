@@ -7,7 +7,7 @@
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | #15 human-merged to main with passing local/cloud gates; final human sign-off recorded on #8; sole-account correction and protected execution tracked separately |
 | Scope | Coordinated delegated implementation of the eight approved requirements |
-| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md) |
+| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Idea](../ideas/2026-11-09-docs-governance-and-accessibility.md), [Spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprints/SPRINT-001-docs-governance-and-accessibility.md) |
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > `subagent-driven-development` after separate human plan approval. Execute the
@@ -46,7 +46,7 @@ Human-merged PR #11 established the execution base at main `b0b4776` on
 2026-11-09. [Plan approval](https://github.com/urruegg/frontier-envisioning/issues/6#issuecomment-6740481819)
 and subsequent [readiness approval](https://github.com/urruegg/frontier-envisioning/issues/6#issuecomment-6742446199)
 are recorded on #6; exact quotes are preserved in the
-[idea](../idea/2026-11-09-docs-governance-and-accessibility.md#approval-provenance).
+[idea](../ideas/2026-11-09-docs-governance-and-accessibility.md#approval-provenance).
 No agent applied protected labels; label-field changes are not inferred.
 Planning records and imported audit evidence alone are not implementation.
 The first renderer change uses the current unreleased version, or a new patch
@@ -127,7 +127,7 @@ earlier research agent or a fixed worker pool. A task finishes with owned paths,
 red/green evidence, commit, unresolved findings and generated-file status.
 
 After each task, the parent checks results and runs the relevant validation,
-then performs two review checkpoints: spec/acceptance compliance and code/
+then performs two review checkpoints: specs/acceptance compliance and code/
 documentation correctness. Use a bounded read-only `frontier-reviewer` for
 substantial delegated diffs; combine both checkpoints in one review dispatch
 when the evidence fits. Do not duplicate the worker's exploration.
@@ -195,6 +195,6 @@ The initial verified stack had 145 tests/311 subtests and two catalogue L2
 failures. A6 local strict L1 now passes 156 tests/375 subtests, one expected
 unreleased skip, 34 plugin checks and 41 DOM tests; strict L2 passes all
 44 tests. No failure is waived. See the dated handoff for distinct checkpoints.
-See [SPRINT-001](../sprint/SPRINT-001-docs-governance-and-accessibility.md) for
+See [SPRINT-001](../sprints/SPRINT-001-docs-governance-and-accessibility.md) for
 delivery evidence. No policy activation, label-field change, protected edit,
 release or deployment is claimed.

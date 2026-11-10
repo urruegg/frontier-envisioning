@@ -7,7 +7,7 @@
 | Author | Copilot; AI-assisted drafting |
 | Status | Proposed; human acceptance pending |
 | Scope | Provisional aggregate engineering workflow measures and sprint-close evidence review |
-| References | [AGENTS](../../AGENTS.md), [Issue #9](https://github.com/urruegg/frontier-envisioning/issues/9), [Idea](../../docs/idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../../docs/spec/2026-11-09-docs-governance-and-accessibility-design.md), [G1 plan](../../docs/plan/2026-11-09-agent-governance-plan.md), [Master plan](../../docs/plan/2026-11-09-docs-governance-implementation.md), [Sprint](../../docs/sprint/SPRINT-001-docs-governance-and-accessibility.md), [Policy catalogue](README.md), [Workflow](AGENT_WORKFLOW.md), [Human boundaries](NON_DELEGABLE_WORK.md) |
+| References | [AGENTS](../../AGENTS.md), [Issue #9](https://github.com/urruegg/frontier-envisioning/issues/9), [Idea](../../docs/ideas/2026-11-09-docs-governance-and-accessibility.md), [Spec](../../docs/specs/2026-11-09-docs-governance-and-accessibility-design.md), [G1 plan](../../docs/plans/2026-11-09-agent-governance-plan.md), [Master plan](../../docs/plans/2026-11-09-docs-governance-implementation.md), [Sprint](../../docs/sprints/SPRINT-001-docs-governance-and-accessibility.md), [Policy catalogue](README.md), [Workflow](AGENT_WORKFLOW.md), [Human boundaries](NON_DELEGABLE_WORK.md) |
 
 ## Purpose and status
 
@@ -19,7 +19,7 @@ not established. Do not invent dates, rates or systems.
 | Measure | Initial target | Evidence |
 |---|---|---|
 | Applicable completion claims with real evidence | 100% | PR command results and acceptance records |
-| Completed implementation items with linked governing records | 100% | Issue/sprint/local links plus actual issue verification |
+| Completed implementation items with linked governing records | 100% | Issue/sprints/local links plus actual issue verification |
 | Applicable required gate evidence | 100% | Actual local/cloud check results |
 | Generated-output drift | 0 | Build drift checks |
 | Prohibited customer data or secret incidents | 0 | Neutrality/security control evidence |

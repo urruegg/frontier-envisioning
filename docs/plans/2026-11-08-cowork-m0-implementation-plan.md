@@ -34,7 +34,7 @@ strict L1 now pass. Remote/tenant acceptance remains a separate human action.
 `--no-png` remains development-only; future versions need their own renderer
 profile rather than silently reusing the 1.4.0 fixture.
 
-Read the [approved intake specification](2026-11-08-cowork-intake-design.md).
+Read the [approved intake specification](../specs/2026-11-08-cowork-intake-design.md).
 Local import, source execution and isolated dependency restoration were approved.
 Committing, pushing and external operations still require separate approval.
 The original checklist below is retained as the plan; actual completion and

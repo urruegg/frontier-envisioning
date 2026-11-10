@@ -7,7 +7,19 @@
 | Author | Copilot SDK in VS Code; user-requested work; AI-assisted maintenance |
 | Status | Delivered through human-merged #15; final sign-off recorded on #8; sole-account refinement requested; protected operations not inferred complete |
 | Scope | Repository documentation, engineering intake, agent governance and HTML accessibility |
-| References | [Idea catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Plan](../plan/2026-11-09-docs-governance-implementation.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md) |
+| References | [Idea catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md), [Plan](../plans/2026-11-09-docs-governance-implementation.md), [Sprint](../sprints/SPRINT-001-docs-governance-and-accessibility.md) |
+
+## Plural-layout amendment (2026-11-10)
+
+The maintainer moved the documentation into plural ideas/specs/plans/sprints
+folders, with historical designs in specs and implementation plans in plans,
+and explicitly requested removal of the combined product-document index and
+remaining singular plan directory. [#18](https://github.com/urruegg/frontier-envisioning/issues/18)
+tracks this scoped amendment, its [spec](../specs/2026-11-10-documentation-layout-design.md)
+and [plan](../plans/2026-11-10-documentation-layout-plan.md). The existing
+[sprint](../sprints/SPRINT-001-docs-governance-and-accessibility.md) records
+delivery separately. No protected routing change or new product behaviour is
+authorised by the cleanup.
 
 ## Problem and outcome
 
@@ -55,7 +67,7 @@ prove structure, and people retain decisions and permissions.
 ## Approval provenance
 
 The quotation below retains the original design-stage approval record. Current
-plan/readiness approval is linked in the metadata; this quotation alone did not
+plans/readiness approval is linked in the metadata; this quotation alone did not
 authorise implementation.
 
 On 9 November 2026 the user wrote:
@@ -87,11 +99,11 @@ Plan/readiness approval does not accept Proposed policies, grant access or
 authorise protected operations.
 
 Current delivery and outstanding acceptance are indexed in
-[SPRINT-001](../sprint/SPRINT-001-docs-governance-and-accessibility.md):
+[SPRINT-001](../sprints/SPRINT-001-docs-governance-and-accessibility.md):
 D1-D5 implemented/reviewed in draft PR #12; G1-G3 delivered in draft PR #13
 with policies still Proposed; A1-A4 implemented and A5 documentation handed
 off. Both PRs remain open drafts. The
-[implementation finding](../spec/2026-11-09-docs-governance-and-accessibility-design.md#implementation-finding-2026-11-10)
+[implementation finding](../specs/2026-11-09-docs-governance-and-accessibility-design.md#implementation-finding-2026-11-10)
 records catalogue AA contrast, full L2 red and the required new human scope
 decision without changing original approval. A4/A5 acceptance and human #8
 remain pending.

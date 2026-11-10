@@ -16,4 +16,4 @@ Read the Copilot Studio licensing reports, the Microsoft 365 credit reports and 
 
 ## Source
 
-docs/prd-and-solution-design.md A.12
+[PRD A.12](../../docs/prd.md#a12-release-plan)

@@ -393,5 +393,5 @@ Keep all input/asset guards and the complete artifact hash comparison enabled.
 Detailed run logs remain under ignored `build/intake/`. The Playwright server
 was owned by the bounded test runner, not left running as a preview service.
 
-See the [intake design](../plans/2026-11-08-cowork-intake-design.md) and
+See the [intake design](../specs/2026-11-08-cowork-intake-design.md) and
 [M0 implementation plan](../plans/2026-11-08-cowork-m0-implementation-plan.md).

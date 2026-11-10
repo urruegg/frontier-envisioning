@@ -2,22 +2,25 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
-| Date | 2026-11-09 |
+| Version | 0.4 |
+| Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
-| Status | Plan/readiness human-approved; D1-D5 implemented and spec/code-reviewed in draft PR #12, not merged |
+| Status | Original plan/readiness human-approved; D1-D5 human-merged through #12; naming/index/exemption behaviour amended by #18 |
 | Scope | DG-01, DG-02, DG-04 and DG-07; no protected or packaged-output edits |
-| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/10), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md) |
+| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/10), [Idea](../ideas/2026-11-09-docs-governance-and-accessibility.md), [Spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprints/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md) |
 
-Delivery: [draft PR #12](https://github.com/urruegg/frontier-envisioning/pull/12)
-targets main from `feat/10-documentation-foundation`; D1-D5 are implemented
-and reviewed, not merged. Actual evidence is in the PR and linked sprint.
-The task instructions below remain the approved execution contract, not a
-claim that every planned checkbox or human acceptance is complete.
+Delivery: [PR #12](https://github.com/urruegg/frontier-envisioning/pull/12)
+was human-merged. Actual evidence is in the PR and linked sprint.
+The [#18 layout amendment](../specs/2026-11-10-documentation-layout-design.md)
+supersedes D2's compatibility index, D3's legacy bundle entry and D4's whole
+historical-plan-folder exemption. Examples below record the original approved
+implementation, not instructions to recreate those retired behaviours.
+Remaining references to the original combined filename are historical source
+and migration examples; active consumers link to the two authoritative documents.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > `subagent-driven-development` after plan approval. A fresh worker owns one
-> D-task; use checkbox steps and spec/correctness review before the next task.
+> D-task; use checkbox steps and specs/correctness review before the next task.
 
 **Goal:** Add a constrained docs agent, split the repository product documents,
 and validate the linked documentation work package through existing tooling.
@@ -102,7 +105,7 @@ user-invocable: true
 | References | [AGENTS](../../AGENTS.md), [Docs](../../docs/README.md) |
 
 Maintain current, concise, correctly placed and cross-linked documentation.
-Read AGENTS and the approved issue/spec/plan/sprint before editing.
+Read AGENTS and the approved issue/specs/plans/sprint before editing.
 
 1. Identify authoritative content, audience, owner and document status.
 2. Change only the approved prose and catalogue paths.
@@ -399,13 +402,13 @@ class DocumentationValidation(unittest.TestCase):
             path = root / "docs" / "sprint" / "S-001.md"
             governing = (
                 "[Issue](https://github.com/urruegg/frontier-envisioning/issues/10), "
-                "[Idea](../idea/x.md), [Spec](../spec/x.md), [Plan](../plan/x.md)"
+                "[Idea](../ideas/x.md), [Spec](../specs/x.md), [Plan](../plans/x.md)"
             )
             table = (
                 "\n| Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |\n"
                 "|---|---|---|---|---|---|---|---|\n"
                 "| [#10](https://github.com/urruegg/frontier-envisioning/issues/10) "
-                "| [Idea](../idea/x.md) | [Spec](../spec/x.md) | [Plan](../plan/x.md) "
+                "| [Idea](../ideas/x.md) | [Spec](../specs/x.md) | [Plan](../plans/x.md) "
                 "| Maintainer | None | Proposed | Not implemented |\n"
             )
             text = self.header(governing) + table
@@ -414,7 +417,7 @@ class DocumentationValidation(unittest.TestCase):
                 self.header() + "\n[Sprint](S-001.md)\n", encoding="utf-8"
             )
             self.assertEqual(self.docs.sprint_errors(root, path, text), [])
-            self.assertTrue(self.docs.sprint_errors(root, path, text.replace("[Plan](../plan/x.md)", "Missing")))
+            self.assertTrue(self.docs.sprint_errors(root, path, text.replace("[Plan](../plans/x.md)", "Missing")))
             self.assertTrue(self.docs.sprint_errors(root, path, text.replace("| Maintainer |", "||")))
             self.assertEqual(self.docs.check_documents(root, list(root.rglob("*.md"))), [])
             (path.parent / "README.md").write_text(self.header(), encoding="utf-8")
@@ -807,14 +810,14 @@ The form collects links; it does not invent artifacts, grant approval or force
 a fully written plan before an initial idea can be filed. Readiness and real
 external issue verification remain human/parent controls.
 
-Add this checkbox immediately after the existing spec/plan checkbox in the PR
+Add this checkbox immediately after the existing specs/plan checkbox in the PR
 template, preserving all original headings, comments and checklist ordering:
 
 ```markdown
 - [ ] Linked work package: real issue, idea, approved spec, approved plan and sprint records are linked in this PR
 ```
 
-Update the original spec/plan path hint to the new singular directories.
+Update the original spec/plan path hint to the new plural directories.
 The local checker validates recorded artifacts; it does not discover every
 GitHub item or prove every PR's association. The parent and human PR review
 verify that the actual work is the linked ready item. Do not claim a new

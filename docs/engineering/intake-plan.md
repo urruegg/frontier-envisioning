@@ -7,7 +7,7 @@
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Retained exporter proposal; historical assertions are not current approval |
 | Scope | Intake record metadata and routing; document revision, not product version; original proposal and evidence retained below |
-| References | [Documentation](../README.md), [M0 plan](../plans/2026-11-08-cowork-m0-implementation-plan.md), [Intake evidence](../intake/m0-evidence.md), [Current work packages](../plan/README.md) |
+| References | [Documentation](../README.md), [M0 plan](../plans/2026-11-08-cowork-m0-implementation-plan.md), [Intake evidence](../intake/m0-evidence.md), [Current work packages](../plans/README.md) |
 
 This is the retained exporter proposal and its historical validation assertions. For current execution, use the [approved M0 plan](../plans/2026-11-08-cowork-m0-implementation-plan.md) and [actual intake evidence](../intake/m0-evidence.md). Release approval is now separate from showcase `prod`; `RELEASE_ENABLED` remains disabled until all recorded blockers and policy checks are resolved. Do not execute the old first-week tag/publish checklist as an intake shortcut.
 

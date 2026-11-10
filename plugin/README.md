@@ -133,7 +133,7 @@ The Microsoft product icons in the blueprint template are Microsoft trademarks a
 
 ## For developers
 
-The repository starting point (`frontier-envisioning-github-repo-1.6.1.zip`, to import into GitHub) holds the plugin, the blueprint renderer sources (`src/renderer/`), the tools, the tests and `docs/prd-and-solution-design.md` (PRD and solution design of this plugin). One task runner covers the quality gates: `check` runs the template drift check, lint, the customer-neutrality scan, the unit tests, the self-test (every script end to end against the Caldova examples), the package build, the Caldova demo, the release reproduction and the browser DOM tests; `package` builds this zip and writes `install/plugin-install.json`.
+The repository starting point (`frontier-envisioning-github-repo-1.6.1.zip`, to import into GitHub) holds the plugin, the blueprint renderer sources (`src/renderer/`), the tools, the tests and the separate `docs/prd.md` (product requirements) and `docs/solution-design.md` (solution design of this plugin). One task runner covers the quality gates: `check` runs the template drift check, lint, the customer-neutrality scan, the unit tests, the self-test (every script end to end against the Caldova examples), the package build, the Caldova demo, the release reproduction and the browser DOM tests; `package` builds this zip and writes `install/plugin-install.json`.
 
 ```
 python tools/dev.py check

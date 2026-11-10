@@ -4,6 +4,7 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
 
 ## 1.6.1 — 2026-11-09
 
+- **Documentation routing (2026-11-10, #18).** Repository records use plural ideas/specs/plans/sprints folders. The packaged README and complete bundle point directly to the separate PRD and solution design; the redundant compatibility index is removed. Historical release records and product sections are unchanged.
 - **Workflow legend stays usable while scrolling.** The agent-selection list is sticky only within the upper agent summary and trigger canvas. It no longer covers the full-width workflow header or node-type legend; pointer clicks, keyboard activation and agent switching remain available at desktop and responsive widths.
 - Added bounded-layout DOM coverage and real-browser pointer/occlusion regressions at 1440px and 1024px. This patch is in development; historical release records are unchanged.
 - **Accessibility implementation (2026-11-10, #7).** The evidence/role drawer contains focus, restores the exact trigger and prior background inert states, and handles content replacement, rapid reopening and reduced motion. Labelled roving tabs, pressed-state filters and grouped interactive SVGs preserve keyboard navigation and deep links.

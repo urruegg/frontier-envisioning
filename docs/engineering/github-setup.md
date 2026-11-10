@@ -58,7 +58,7 @@ as an independent formal approval.
 
 The intended workflow is:
 
-1. Keep changes in a PR linked to its issue/spec/plan/sprint, with scope,
+1. Keep changes in a PR linked to its issue/specs/plans/sprint, with scope,
    agent disclosure, actual gate results and screenshots where relevant.
 2. Obtain advisory code review and address findings; this supplements, not
    replaces, the maintainer's own review.

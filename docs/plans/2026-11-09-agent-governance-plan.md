@@ -7,7 +7,7 @@
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Plan/readiness human-approved; G1-G3 delivered in open draft PR #13; policies Proposed; human activation pending |
 | Scope | DG-03/DG-05 and the non-protected prose portion of DG-04 |
-| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/9), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md), [Human dependency](2026-11-09-human-governance-plan.md) |
+| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/9), [Idea](../ideas/2026-11-09-docs-governance-and-accessibility.md), [Spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprints/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md), [Human dependency](2026-11-09-human-governance-plan.md) |
 
 Delivery as of 2026-11-10: G1-G3 are delivered in open
 [draft PR #13](https://github.com/urruegg/frontier-envisioning/pull/13),
@@ -18,7 +18,7 @@ neither is merged. Policies remain Proposed and human #8 routing/activation
 remains outstanding. The parent reports cloud L1/L2/IaC passed for both PRs,
 with CodeQL neutral; this does not establish human activation.
 Approval provenance and label-field limitations are recorded in the linked
-idea/master/sprint; future task instructions below are not completion claims.
+ideas/master/sprint; future task instructions below are not completion claims.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > `subagent-driven-development` only after plan approval. Give a fresh worker
@@ -103,7 +103,7 @@ issue links, approvals or measurements remain missing, not inferred.
 ## Execution and evidence
 
 Use fresh workers per independent task, one writer per shared surface and
-spec/correctness review checkpoints. Stop for unexpected overlapping changes,
+specs/correctness review checkpoints. Stop for unexpected overlapping changes,
 unexplained failures, scope expansion or non-delegable work.
 
 Use the approved private GitHub source/issue/PR host. No Azure Boards state
@@ -151,7 +151,7 @@ Relative baselines are not established. Do not invent dates, rates or systems.
 | Measure | Initial target | Evidence |
 |---|---|---|
 | Applicable completion claims with real evidence | 100% | PR command results and acceptance records |
-| Completed implementation items with linked governing records | 100% | Issue/sprint/local links plus actual issue verification |
+| Completed implementation items with linked governing records | 100% | Issue/sprints/local links plus actual issue verification |
 | Applicable required gate evidence | 100% | Actual local/cloud check results |
 | Generated-output drift | 0 | Build drift checks |
 | Prohibited customer data or secret incidents | 0 | Neutrality/security control evidence |
@@ -251,8 +251,8 @@ Keep the current task-runner command summary, adding `docs` after D4 exists.
 Link the policy catalogue rather than duplicating every policy body.
 
 - [ ] Replace active `docs/prd-and-solution-design.md` references with the
-      appropriate companion file/anchor, and replace active spec/plan routing
-      with singular folders. Keep technical B.9 links pointing to solution
+      appropriate companion file/anchor, and replace active specs/plan routing
+      with plural folders. Keep technical B.9 links pointing to solution
       design and A.12/A.13 links pointing to PRD.
 - [ ] Keep the intake skill's role/description and plugin-independent status.
       Require a draft sprint at intake, real governing links before readiness,
@@ -293,6 +293,6 @@ discussion of alternatives or claim all Azure references are invalid.
 - [ ] Verify a diff of `.github/hooks`, `.github/CODEOWNERS`, `plugin`,
       `releases`, licences and server settings has no agent changes.
 - [ ] Link the completed prose PR and explicit remaining #8 actions in the
-      sprint/issue. Policy acceptance and hook activation remain human steps.
-- [ ] Return the scoped result for spec/correctness review. Do not merge,
+      sprints/issue. Policy acceptance and hook activation remain human steps.
+- [ ] Return the scoped result for specs/correctness review. Do not merge,
       apply approval labels, invite accounts or start implementation elsewhere.

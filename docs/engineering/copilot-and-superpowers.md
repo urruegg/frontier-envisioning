@@ -7,7 +7,7 @@
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained; approval not inferred |
 | Scope | Copilot and Superpowers engineering guide; document revision, not product version |
-| References | [Documentation](../README.md), [Working agreement](../../AGENTS.md), [Engineering handbook](handbook.md), [Work packages](../plan/README.md) |
+| References | [Documentation](../README.md), [Working agreement](../../AGENTS.md), [Engineering handbook](handbook.md), [Work packages](../plans/README.md) |
 
 This repository is built with GitHub Copilot as the coding agent and **Superpowers** (obra/superpowers, MIT) as the engineering method: brainstorm, plan, test first, debug systematically, verify before completion, review, finish the branch. The repository adds its own instructions, agents, skills and deterministic guardrails so that agents work through pull requests and people keep the decisions.
 
@@ -69,9 +69,9 @@ Use available skills, not a hard-coded assumed installation path. If unavailable
 
 | Step | Superpowers skill | Repository practice | Gate | Who |
 |---|---|---|---|---|
-| Intake/ready | | Draft idea/sprint early; verified issue, idea/spec/plan, owner and acceptance before readiness; human decision evidence, labels human-only | | planner/docs agent, person decides |
-| Spec | `brainstorming` | `docs/spec/...-design.md`; `approved:design` for big changes | | planner agent, person approves |
-| Plan | `writing-plans` | `docs/plan/...-plan.md`; code/checker failing tests, prose validation; explicit human plan approval before delegation | | planner agent, person approves |
+| Intake/ready | | Draft ideas/sprint early; verified issue, ideas/specs/plan, owner and acceptance before readiness; human decision evidence, labels human-only | | planner/docs agent, person decides |
+| Spec | `brainstorming` | `docs/specs/...-design.md`; `approved:design` for big changes | | planner agent, person approves |
+| Plan | `writing-plans` | `docs/plans/...-plan.md`; code/checker failing tests, prose validation; explicit human plan approval before delegation | | planner agent, person approves |
 | Branch | `using-git-worktrees` | `feat/<issue>-<topic>` | | builder agent |
 | Build | `test-driven-development`, `subagent-driven-development` or `executing-plans` | stdlib plugin, generated files via tools; prose to docs-agent, code/checker to builder, HTML to renderer | L0 on commit | scoped agent |
 | Debug | `systematic-debugging` | regression test for every bug | | agent |
@@ -80,9 +80,9 @@ Use available skills, not a hard-coded assumed installation path. If unavailable
 | Finish | `finishing-a-development-branch` | squash merge by a person | | person |
 | Release | | release pull request, tag, approval, publish | L3 | release-manager agent prepares, person releases |
 
-New work links the real issue, [idea](../idea/README.md),
-[spec](../spec/README.md), [plan](../plan/README.md) and
-[sprint](../sprint/README.md). [Legacy plans](../plans/README.md) remain historical.
+New work links the real issue, [idea](../ideas/README.md),
+[spec](../specs/README.md), [plan](../plans/README.md) and
+[sprint](../sprints/README.md). [Legacy plans](../plans/README.md) remain historical.
 `docs/prd.md` owns requirements, A.12 releases and A.13 decisions;
 `docs/solution-design.md` owns architecture, flows and B.9 verification;
 `docs/adr/` owns engineering rationale. Linked approved work packages govern
@@ -106,7 +106,7 @@ not an assumed runtime loader. Documents/harness selection do not prove delivery
 ## 6. Prompts that work
 
 - "Use the frontier-planner agent: plan issue INT-11. Ask me before choosing between the options."
-- "Implement docs/plan/2026-11-12-closeout-pack-plan.md test-first; stop after each task and show the test output."
+- "Implement docs/plans/2026-11-12-closeout-pack-plan.md test-first; stop after each task and show the test output."
 - "Add a DOM test that fails today: the FinOps page must show the purchase options for the Caldova MVP agents."
 - "Review this branch with the frontier-reviewer agent and list Critical and Important findings only."
 - "Prepare the 1.5.0 release pull request; do not tag."
@@ -124,7 +124,7 @@ The hook never crashes into a denial: on an internal error it allows the call an
 
 **Outstanding routing dependency:** protected session-start still points at
 legacy product/intake paths. Human [#8](https://github.com/urruegg/frontier-envisioning/issues/8)
-must update it; G2 neither edits it nor claims it already matches singular
+must update it; G2 neither edits it nor claims it already matches plural
 routing. Proposed policies remain unaccepted; current stricter controls apply.
 
 ## 8. Limits

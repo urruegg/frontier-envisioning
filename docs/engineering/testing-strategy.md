@@ -65,7 +65,7 @@ catalogue assertion skip or hosted-copy workaround is authorised.
 Those are the recorded pre-correction results, not a claim that the tests are
 flaky. The user's subsequent request to solve PR #15's linked failure
 authorises the targeted generator/current-version correction in
-[A6](../plan/2026-11-09-accessibility-plan.md#task-a6-targeted-catalogue-ci-correction-2026-11-10).
+[A6](../plans/2026-11-09-accessibility-plan.md#task-a6-targeted-catalogue-ci-correction-2026-11-10).
 Historical profile and release records remain excluded.
 
 The correction must leave the AA assertions enabled. Unit tests cover rendered

@@ -204,9 +204,6 @@ class ProductDocumentSplit(unittest.TestCase):
 
     def test_one_actual_h1_and_truthful_document_metadata(self) -> None:
         texts = dict(self.documents)
-        texts["prd-and-solution-design.md"] = (
-            ROOT / "docs" / "prd-and-solution-design.md"
-        ).read_text(encoding="utf-8")
         for name, text in texts.items():
             with self.subTest(document=name):
                 self.assertTrue(text.startswith("# "))
@@ -357,14 +354,8 @@ class ProductDocumentSplit(unittest.TestCase):
                             [self.slug(h.lstrip("# ")) for h in self.headings(self.documents[target])],
                         )
 
-    def test_legacy_index_explicitly_maps_every_original_heading(self) -> None:
-        old = (ROOT / "docs" / "prd-and-solution-design.md").read_text(encoding="utf-8")
-        self.assertIn('id="a12-release-plan"', old)
-        self.assertIn('id="b9-quality-and-testing"', old)
-        self.assertLess(len(old.splitlines()), 200, "legacy path is an index, not a third copy")
-        self.assertNotIn("| FR-0001 |", old)
-        self.assertNotRegex(old, r"(?i)<meta[^>]+refresh|window\.location")
-        self.assertIn("not an automatic redirect", old)
+    def test_original_heading_targets_survive_without_a_compatibility_index(self) -> None:
+        self.assertFalse((ROOT / "docs" / "prd-and-solution-design.md").exists())
         target = "prd.md"
         for index, original in enumerate(self.baseline["headings"]):
             heading = original.lstrip("# ")
@@ -373,11 +364,6 @@ class ProductDocumentSplit(unittest.TestCase):
             anchor = self.slug(heading)
             destination = "product-context-and-provenance" if index < 2 else anchor
             with self.subTest(legacy_anchor=anchor):
-                self.assertEqual(old.count(f'<a id="{anchor}"></a>'), 1)
-                self.assertIn(
-                    f'<a id="{anchor}"></a>\n[{heading}]({target}#{destination})',
-                    old,
-                )
                 self.assertIn(
                     destination,
                     [self.slug(h.lstrip("# ")) for h in self.headings(self.documents[target])],
@@ -385,11 +371,11 @@ class ProductDocumentSplit(unittest.TestCase):
 
     def test_docs_catalogue_links_authoritative_documents_and_keeps_planning(self) -> None:
         catalogue = (ROOT / "docs" / "README.md").read_text(encoding="utf-8")
-        for name in ("prd.md", "solution-design.md", "prd-and-solution-design.md"):
+        for name in ("prd.md", "solution-design.md"):
             self.assertIn(f"]({name})", catalogue)
         for target in (
-            "idea/README.md", "spec/README.md", "plan/README.md", "plans/README.md",
-            "sprint/SPRINT-001-docs-governance-and-accessibility.md",
+            "ideas/README.md", "specs/README.md", "plans/README.md",
+            "sprints/SPRINT-001-docs-governance-and-accessibility.md",
         ):
             self.assertIn(f"]({target})", catalogue)
 
@@ -671,7 +657,7 @@ Closes #
 """
         expected = original.replace(
             "- [ ] Spec and plan: `docs/plans/...` (or: small change agreed in the issue)\n",
-            "- [ ] Spec and plan: `docs/spec/...` and `docs/plan/...` (or: small change agreed in the issue)\n"
+            "- [ ] Spec and plan: `docs/specs/...` and `docs/plans/...` (or: small change agreed in the issue)\n"
             "- [ ] Linked work package: real issue, idea, approved spec, approved plan and sprint records are linked in this PR\n",
         )
         self.assertEqual(text, expected)

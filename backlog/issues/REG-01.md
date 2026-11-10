@@ -14,4 +14,4 @@ Export validated agents to the Agent 365 registry (release 2.0).
 
 ## Source
 
-docs/prd-and-solution-design.md A.12 (2.0)
+[PRD A.12](../../docs/prd.md#a12-release-plan) (2.0)

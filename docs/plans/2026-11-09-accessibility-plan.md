@@ -7,7 +7,7 @@
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Plan/readiness human-approved on #6; A1-A4 implemented, A5 docs handed off; A4/A5 acceptance blocked by catalogue AA; final parent verification and human acceptance pending |
 | Scope | DG-08: measured renderer barriers and repeatable WCAG 2.2 AA-oriented checks |
-| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/7), [Idea](../idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../spec/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprint/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md), [Baseline](../intake/2026-11-09-accessibility-audit.json) |
+| References | [Plan catalogue](README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/7), [Idea](../ideas/2026-11-09-docs-governance-and-accessibility.md), [Spec](../specs/2026-11-09-docs-governance-and-accessibility-design.md), [Sprint](../sprints/SPRINT-001-docs-governance-and-accessibility.md), [Master](2026-11-09-docs-governance-implementation.md), [Baseline](../intake/2026-11-09-accessibility-audit.json) |
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > `subagent-driven-development` after plan approval. Give each A-task to a
@@ -730,7 +730,7 @@ and reduced motion. Best-practice/incomplete reports remain attached and honest.
 
 **Modify:** split PRD/solution design, `docs/engineering/testing-strategy.md`,
 `plugin/skills/frontier-blueprint/references/authoring-guide.md`,
-CHANGELOG under the actual development version, sprint/issue evidence.
+CHANGELOG under the actual development version, sprints/issue evidence.
 **Generate:** template/install index through existing commands.
 
 - [ ] Wait for the docs split and the governance writer before touching shared

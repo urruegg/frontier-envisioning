@@ -14,4 +14,4 @@ Close the loop between the value case and FinOps model and what the agents reall
 
 ## Source
 
-docs/prd-and-solution-design.md A.12 (release 1.7)
+[PRD A.12](../../docs/prd.md#a12-release-plan) (release 1.7)

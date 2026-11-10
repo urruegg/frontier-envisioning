@@ -15,4 +15,4 @@ Align the FinOps model with FOCUS 1.5 (agent as principal, consumption currency)
 
 ## Source
 
-docs/prd-and-solution-design.md A.12
+[PRD A.12](../../docs/prd.md#a12-release-plan)

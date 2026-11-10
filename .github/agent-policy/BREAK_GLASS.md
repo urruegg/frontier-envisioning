@@ -7,7 +7,7 @@
 | Author | Copilot; AI-assisted drafting |
 | Status | Proposed; human acceptance pending |
 | Scope | Human-only incident recording, narrow attended changes, restoration and validation |
-| References | [AGENTS](../../AGENTS.md), [Issue #9](https://github.com/urruegg/frontier-envisioning/issues/9), [Idea](../../docs/idea/2026-11-09-docs-governance-and-accessibility.md), [Spec](../../docs/spec/2026-11-09-docs-governance-and-accessibility-design.md), [G1 plan](../../docs/plan/2026-11-09-agent-governance-plan.md), [Master plan](../../docs/plan/2026-11-09-docs-governance-implementation.md), [Sprint](../../docs/sprint/SPRINT-001-docs-governance-and-accessibility.md), [Policy catalogue](README.md), [Human boundaries](NON_DELEGABLE_WORK.md), [Workflow](AGENT_WORKFLOW.md) |
+| References | [AGENTS](../../AGENTS.md), [Issue #9](https://github.com/urruegg/frontier-envisioning/issues/9), [Idea](../../docs/ideas/2026-11-09-docs-governance-and-accessibility.md), [Spec](../../docs/specs/2026-11-09-docs-governance-and-accessibility-design.md), [G1 plan](../../docs/plans/2026-11-09-agent-governance-plan.md), [Master plan](../../docs/plans/2026-11-09-docs-governance-implementation.md), [Sprint](../../docs/sprints/SPRINT-001-docs-governance-and-accessibility.md), [Policy catalogue](README.md), [Human boundaries](NON_DELEGABLE_WORK.md), [Workflow](AGENT_WORKFLOW.md) |
 
 ## Human incident procedure only
 
