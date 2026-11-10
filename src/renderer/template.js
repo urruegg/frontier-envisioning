@@ -1533,7 +1533,7 @@ function orgSvg(){
       var p = P(R2, ang);
       if (o && state.orgStage >= 2) gEdges.appendChild(s("line",{x1:lp[0], y1:lp[1], x2:p[0], y2:p[1], class:"edge" + (dim ? " dim" : ""), stroke:d.color}));
       var rs = ringStyle(a);
-      var g = s("g",{class:"node" + (dim ? " dim" : ""), opacity: rs.faded ? .35 : null});
+      var g = s("g",{class:"node" + (dim ? " dim" : "") + (rs.faded ? " faded" : "")});
       if (a.mvp) g.appendChild(s("circle",{cx:p[0], cy:p[1], r:27, fill:"none", stroke:"var(--accent)", "stroke-width":3}));
       g.appendChild(s("circle",{class:"ring", cx:p[0], cy:p[1], r:21, fill:"var(--panel)", stroke:d.color, "stroke-width":2.5, "stroke-dasharray":rs.dash}));
       g.appendChild(s("text",{x:p[0], y:p[1] + 4.5, "text-anchor":"middle", style:"font-size:12.5px;font-weight:700;fill:var(--ink)"}, initials(orgLabel(a))));
@@ -1554,7 +1554,7 @@ function orgSvg(){
     });
     if (o && state.orgStage >= 2){
       var rs2 = ringStyle(o);
-      var g2 = s("g",{class:"node" + (dim ? " dim" : ""), opacity: rs2.faded ? .35 : null});
+      var g2 = s("g",{class:"node" + (dim ? " dim" : "") + (rs2.faded ? " faded" : "")});
       if (o.mvp) g2.appendChild(s("circle",{cx:lp[0], cy:lp[1], r:38, fill:"none", stroke:"var(--accent)", "stroke-width":3}));
       if (rs2.dash) g2.appendChild(s("circle",{cx:lp[0], cy:lp[1], r:33, fill:"none", stroke:d.color, "stroke-width":2, "stroke-dasharray":"5 4"}));
       g2.appendChild(s("circle",{class:"ring", cx:lp[0], cy:lp[1], r:28, fill:d.color, stroke:"var(--panel)", "stroke-width":2}));
@@ -2740,7 +2740,7 @@ function matrixSvg(){
     var u = p.u, cx = p.x, cy = p.y;
     var d = domById(u.domain) || {color:ACCENT};
     var st = String(note("val|uc|" + u.id).status || u.status || "").toLowerCase();
-    var g = s("g",{class:"bub", tabindex:"0", role:"button", "aria-label":u.id + " " + u.name + ", value " + u.value + ", feasibility " + u.feasibility, opacity: st === "rejected" ? .35 : null});
+    var g = s("g",{class:"bub" + (st === "rejected" ? " faded" : ""), tabindex:"0", role:"button", "aria-label":u.id + " " + u.name + ", value " + u.value + ", feasibility " + u.feasibility});
     g.appendChild(s("circle",{cx:cx, cy:cy, r:p.r, fill:d.color, stroke: u.mvp ? "var(--ink)" : "var(--panel)", "stroke-width": u.mvp ? 3 : 2}));
     var uv = valueOf(u);
     if (uv && uv.status !== "validated") g.appendChild(s("circle",{cx:cx, cy:cy, r:p.r + 4.5, fill:"none", stroke:"var(--ink)", "stroke-width":1.4, "stroke-dasharray":"3 3", opacity:.75}));

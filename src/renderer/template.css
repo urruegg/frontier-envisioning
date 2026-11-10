@@ -210,10 +210,13 @@ table.t tbody th{font-weight:700;width:22%}
 .orgsvg .dlabel{font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
 .orgsvg .node{cursor:pointer}
 .orgsvg .node:focus{outline:none}
-.orgsvg .node:focus-visible .ring,.orgsvg .node:hover .ring{stroke-width:4}
-.orgsvg .dim{opacity:.18}
+.orgsvg .node:focus-visible .ring,.orgsvg .node:hover .ring{stroke-width:4;stroke-opacity:1}
+/* Filtering and lifecycle cues affect decorative strokes, never operable text or its fill. */
+.orgsvg .dim > path,.orgsvg .dim > circle{stroke-opacity:.18}
+.orgsvg .node.faded > circle{stroke-opacity:.35}
 .orgsvg .edge{stroke-width:1.2;opacity:.45;fill:none}
 .orgsvg .acct{stroke:var(--grey);stroke-dasharray:4 4;stroke-width:1.2;fill:none;opacity:.7}
+.orgsvg .edge.dim,.orgsvg .acct.dim{opacity:.18}
 .orgsvg .center-lbl{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;fill:var(--muted)}
 .orgside .panel{margin-block-end:10px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex-wrap:wrap}
@@ -317,7 +320,8 @@ dl.kv dd{margin:0;font-size:12.5px}
 .matrix .q{font-size:12px;font-weight:700;fill:var(--muted);letter-spacing:.06em}
 .matrix .bub{cursor:pointer}
 .matrix .bub:focus{outline:none}
-.matrix .bub:focus-visible circle,.matrix .bub:hover circle{stroke-width:4}
+.matrix .bub.faded > circle{stroke-opacity:.35}
+.matrix .bub:focus-visible circle,.matrix .bub:hover circle{stroke-width:4;stroke-opacity:1}
 
 /* discovery */
 .qgroup{margin-block-end:14px}

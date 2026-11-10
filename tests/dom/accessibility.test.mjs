@@ -73,6 +73,24 @@ describe("accessibility structure", () => {
     assert.equal(bp.view().querySelector(".filters button").getAttribute("aria-pressed"), "true");
   });
 
+  it("keeps all filtered organisation labels opaque and all SVG buttons keyboard reachable", async () => {
+    await bp.go("#/org");
+    const count = bp.view().querySelectorAll(".orgsvg [role=button]").length;
+    await bp.click(bp.view().querySelectorAll(".filters button")[1]);
+    assert.equal(bp.view().querySelectorAll(".orgsvg [role=button]").length, count);
+    for (const node of bp.view().querySelectorAll(".orgsvg [role=button]")) {
+      assert.equal(node.tabIndex, 0);
+    }
+    for (const text of bp.view().querySelectorAll(".orgsvg text")) {
+      for (let ancestor = text; ancestor; ancestor = ancestor.parentElement) {
+        assert.equal(Number(bp.window.getComputedStyle(ancestor).opacity || 1), 1,
+          `${txt(text)}: text and every ancestor stay opaque`);
+      }
+    }
+    // Toggle back so this shared fixture does not leave a journey filter selected.
+    await bp.click(bp.view().querySelector(".filters button"));
+  });
+
   it("exposes matrix SVG controls independently rather than flattening them into an image", async () => {
     await bp.go("#/usecases");
     const svg = bp.view().querySelector("svg.matrix");
@@ -279,6 +297,37 @@ it("renders older data with no journeys and untabbed classic architecture withou
   } finally {
     if (bp) await bp.close();
     fs.rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+it("keeps rejected workshop agent and portfolio nodes opaque without losing saved notes or navigation", async () => {
+  const bp = await openBlueprint();
+  try {
+    for (const [route, kind, selector] of [
+      ["agents/D1-LEAD", "agent", ".orgsvg .node"],
+      ["usecases", "uc", ".matrix .bub"]
+    ]) {
+      await bp.go(`#/${route}`);
+      if (kind === "uc") await bp.click(bp.view().querySelector(".matrix .bub"));
+      const reject = bp.view().querySelector('.valbox input[value="rejected"]');
+      assert.ok(reject);
+      reject.checked = true;
+      reject.dispatchEvent(new bp.window.Event("change", { bubbles: true }));
+      const saved = Object.entries(bp.notes()).find(([key]) => key.startsWith(`val|${kind}|`));
+      assert.ok(saved, `${kind}: workshop verdict saved`);
+      assert.equal(saved[1].status, "rejected");
+      await bp.go(kind === "agent" ? "#/org" : "#/overview");
+      if (kind === "uc") await bp.go("#/usecases");
+      const nodes = [...bp.view().querySelectorAll(selector)];
+      assert.ok(nodes.length > 0);
+      for (const node of nodes) {
+        assert.equal(node.tabIndex, 0);
+        assert.equal(Number(node.getAttribute("opacity") || 1), 1, "operable node must not fade its text");
+      }
+    }
+    assert.deepEqual(bp.errors, []);
+  } finally {
+    await bp.close();
   }
 });
 

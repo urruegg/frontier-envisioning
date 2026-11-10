@@ -1,5 +1,6 @@
 // #7 accessibility regressions. Use the real hosting CSP and locally installed axe;
 // best-practice-only findings and incomplete checks are not WCAG conformance failures.
+// axe has incomplete SVG coverage; these samples are not a full manual certification.
 import { test, expect } from "@playwright/test";
 import axe from "axe-core";
 
@@ -70,6 +71,10 @@ for (const colorScheme of ["light", "dark"]) {
       summaries.push(await scan(page, info, `${colorScheme}-view-${VIEWS[i]}`));
     }
 
+    await open(page, "/blueprint.html#/org");
+    await page.locator(".orgside .filters button").nth(1).click();
+    summaries.push(await scan(page, info, `${colorScheme}-org-filtered-journey`));
+
     await page.locator("#rail button").filter({ hasText: "Target architecture" }).click();
     await expect(page.locator(".atabs button")).toHaveText(ARCHITECTURE);
     for (let i = 0; i < ARCHITECTURE.length; i++) {
@@ -95,7 +100,7 @@ for (const colorScheme of ["light", "dark"]) {
       body: Buffer.from(JSON.stringify({ summaries, problems }, null, 2)),
       contentType: "application/json"
     });
-    expect(summaries).toHaveLength(21);
+    expect(summaries).toHaveLength(22);
     expect(problems, "page errors and CSP/console errors").toEqual([]);
   });
 
@@ -206,18 +211,10 @@ for (const colorScheme of ["light", "dark"]) {
           expect.soft(contrast(pair.ink, pair.background), `${VIEWS[i]} ${pair.text}: filled HTML contrast`).toBeGreaterThanOrEqual(4.5);
         }
       }
-      // axe leaves some SVG text incomplete. Check the actual filled shape as well.
+      // Check the actual filled shape AND the opacity chain, not raw RGB alone.
       for (const route of ["org", "usecases", "architecture"]) {
         await open(page, `/blueprint.html#/${route}`);
-        const pairs = await page.locator(".orgsvg .ring + text,.matrix [role=button] text,.lzini,.stgt")
-          .evaluateAll((nodes) => nodes.map((node) => {
-            const shape = node.closest("svg.matrix") ? node.parentElement.querySelector("circle") : node.previousElementSibling;
-            return { text: node.textContent, ink: getComputedStyle(node).fill, background: getComputedStyle(shape).fill };
-          }));
-        expect(pairs.length, `${route}: actual SVG text and background`).toBeGreaterThan(0);
-        for (const pair of pairs) {
-          expect.soft(contrast(pair.ink, pair.background), `${route} ${pair.text}: filled SVG contrast`).toBeGreaterThanOrEqual(4.5);
-        }
+        await expectSvgTextContrast(page, ".orgsvg .ring + text,.matrix [role=button] text,.lzini,.stgt");
       }
       await info.attach(`a4-colours-${colorScheme}-${colour.slice(1)}`, {
         body: await page.screenshot(), contentType: "image/png"
@@ -225,6 +222,110 @@ for (const colorScheme of ["light", "dark"]) {
       expect(problems, "variant preserves real CSP and data-island escaping").toEqual([]);
     });
   }
+}
+
+async function expectSvgTextContrast(page, selector) {
+  const pairs = await page.locator(selector).evaluateAll((nodes) => nodes.map((node) => {
+    const previous = node.previousElementSibling;
+    const shape = node.closest("svg.matrix") ? node.parentElement.querySelector("circle")
+      : previous && ["circle", "rect"].includes(previous.tagName) ? previous : null;
+    const opacityChain = [];
+    for (let ancestor = node; ancestor; ancestor = ancestor.parentElement) {
+      opacityChain.push(Number(getComputedStyle(ancestor).opacity));
+    }
+    return {
+      text: node.textContent, ink: getComputedStyle(node).fill,
+      background: shape ? getComputedStyle(shape).fill : getComputedStyle(node.closest("svg")).backgroundColor,
+      opacityChain, fillOpacity: Number(getComputedStyle(node).fillOpacity),
+      backgroundOpacity: shape ? Number(getComputedStyle(shape).opacity) * Number(getComputedStyle(shape).fillOpacity) : 1
+    };
+  }));
+  expect(pairs.length, `${selector}: actual SVG text samples`).toBeGreaterThan(0);
+  const faded = pairs.filter((pair) => pair.opacityChain.some((opacity) => opacity !== 1)
+    || pair.fillOpacity !== 1 || pair.backgroundOpacity !== 1);
+  expect.soft(faded.length, `opaque ink/background/ancestors: ${JSON.stringify(faded.slice(0, 3))}`).toBe(0);
+  for (const pair of pairs) {
+    // Raw colour contrast is valid only when neither ink nor its background is faded.
+    expect.soft(contrast(pair.ink, pair.background), `${pair.text}: SVG contrast`).toBeGreaterThanOrEqual(4.5);
+  }
+}
+
+for (const colorScheme of ["light", "dark"]) {
+  test(`blueprint operable diagram contrast through journey and lifecycle filters (${colorScheme})`, async ({ page }, info) => {
+    await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
+    const problems = watchProblems(page);
+    // Authored lifecycle/status values, including planned and retired lead/specialist nodes.
+    await page.route("**/blueprint.html", async (route) => {
+      const response = await route.fetch();
+      const body = (await response.text()).replace(
+        /(<script type="application\/json" id="bp-data">)([\s\S]*?)(<\/script>)/,
+        (_, start, json, end) => {
+          const data = JSON.parse(json);
+          const domain = data.domains[0];
+          domain.orchestrator.lifecycle = "Retired";
+          domain.agents[0].lifecycle = "Planned";
+          domain.agents[1].lifecycle = "Retired";
+          domain.agents[2].status = "rejected";
+          domain.use_cases[0].status = "rejected";
+          return start + JSON.stringify(data).replace(/</g, "\\u003c") + end;
+        });
+      await route.fulfill({ response, body });
+    });
+    await open(page, "/blueprint.html#/org");
+    const org = page.locator(".orgsvg");
+    const count = await org.getByRole("button").count();
+    expect(count).toBeGreaterThan(20);
+    await expect(org.locator(".node.faded")).toHaveCount(3);
+    expect(await org.locator('.ring[stroke-dasharray="5 4"]').count()).toBeGreaterThan(0);
+    await expectSvgTextContrast(page, ".orgsvg text");
+    const filters = page.locator(".orgside .filters button");
+    for (let i = 1; i < await filters.count(); i++) {
+      await filters.nth(i).click();
+      await expect(filters.nth(i)).toHaveAttribute("aria-pressed", "true");
+      await expect(org.getByRole("button")).toHaveCount(count);
+      expect(await org.getByRole("button").evaluateAll((nodes) => nodes.every((node) => node.tabIndex === 0))).toBe(true);
+      await expectSvgTextContrast(page, ".orgsvg text");
+    }
+    await scan(page, info, `${colorScheme}-org-filtered-retired-rejected-planned`);
+    await info.attach(`a4-operable-org-${colorScheme}`, { body: await page.screenshot(), contentType: "image/png" });
+    // A filtered-out retired lead still opens by Enter and regains focus on Escape.
+    const lead = org.getByRole("button", { name: /lead agent for/ }).first();
+    await lead.focus();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(lead).toBeFocused();
+    expect(await lead.locator(".ring").evaluate((node) => getComputedStyle(node).strokeOpacity)).toBe("1");
+    await page.keyboard.press("Enter");
+    await expect(page.locator("#drawer")).toHaveAttribute("aria-hidden", "false");
+    await page.keyboard.press("Escape");
+    await expect(lead).toBeFocused();
+    // The dimmed journey arc still filters by Space; Tab reaches a retired specialist.
+    await org.getByRole("button", { name: /^Filter on/ }).first().focus();
+    await page.keyboard.press("Space");
+    await expect(filters.nth(1)).toHaveAttribute("aria-pressed", "true");
+    await org.getByRole("button", { name: /specialist agent in/ }).first().focus();
+    await page.keyboard.press("Tab");
+    await expect(org.getByRole("button", { name: /specialist agent in/ }).nth(1)).toBeFocused();
+    await page.keyboard.press("Space");
+    await expect(page.locator("#drawer")).toHaveAttribute("aria-hidden", "false");
+    await page.keyboard.press("Escape");
+
+    await open(page, "/blueprint.html#/usecases");
+    const bubbles = page.locator(".matrix [role=button]");
+    await expect(bubbles).toHaveCount(16);
+    await expect(bubbles.first()).toHaveClass(/faded/);
+    await expectSvgTextContrast(page, ".matrix [role=button] text");
+    await scan(page, info, `${colorScheme}-portfolio-rejected`);
+    await info.attach(`a4-operable-portfolio-${colorScheme}`, { body: await page.screenshot(), contentType: "image/png" });
+    await bubbles.first().focus();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(bubbles.first()).toBeFocused();
+    expect(await bubbles.first().locator("circle").first().evaluate((node) => getComputedStyle(node).strokeOpacity)).toBe("1");
+    await page.keyboard.press("Space");
+    await expect(page.locator("#ucdetail")).toBeVisible();
+    expect(problems).toEqual([]);
+  });
 }
 
 function contrast(first, second) {
