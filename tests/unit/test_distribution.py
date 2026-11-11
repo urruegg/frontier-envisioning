@@ -112,6 +112,10 @@ class DistributionPrivacy(unittest.TestCase):
                 dist / "frontier-envisioning-plugin-1.6.1.zip": zip_bytes({"README.md": b"@sample_microsoft"}),
                 demo / bundle.DEMO_HTML_NAME: b"demo",
                 demo / "identity" / "caldova-agent-identity" / "catalog.html": b"catalogue",
+                demo / "identity" / "kit.zip": zip_bytes({"README.md": b"identity"}),
+                demo / "build-report.json": b'{"profile":"core","status":"built","variant":"full"}',
+                **{demo / "ontology" / name: b"ontology output\n"
+                   for name in ("ontology.ttl", "ontology.md", "data-agents.md", "data-products.md")},
                 plugin / "README.md": b"guide", plugin / "MIT.md": b"licence",
                 plugin / "THIRD-PARTY-NOTICES.md": b"notices",
                 root / "CHANGELOG.md": b"history", root / "docs" / "prd.md": b"requirements",
@@ -126,8 +130,9 @@ class DistributionPrivacy(unittest.TestCase):
                     mock.patch.object(bundle, "DEMO_DIR", demo), \
                     mock.patch.object(bundle, "plugin_version", return_value="1.6.1"), \
                     mock.patch.object(bundle, "load_module", return_value=packager), \
-                    contextlib.redirect_stdout(io.StringIO()):
+                    contextlib.redirect_stdout(io.StringIO()) as messages:
                 self.assertEqual(bundle.main(["--dist", str(dist)]), 1)
+            self.assertIn("enterprise account", messages.getvalue())
             self.assertEqual(output.read_bytes(), b"previous output")
             self.assertFalse((dist / "SHA256SUMS.txt").exists())
 
