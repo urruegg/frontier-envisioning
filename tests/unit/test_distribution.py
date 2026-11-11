@@ -28,6 +28,19 @@ def zip_bytes(files: dict[str, bytes]) -> bytes:
 
 
 class DistributionPrivacy(unittest.TestCase):
+    def test_packaged_text_sources_use_canonical_lf_before_hashing(self):
+        plugin = ROOT / "plugin"
+        paths = list(packager.files_under(plugin / "skills"))
+        paths += [plugin / name for name in (
+            "README.md", "MIT.md", "THIRD-PARTY-NOTICES.md",
+            "package/manifest.json", "install/plugin-install.json", "install/prepare_install.py",
+        )]
+        text_suffixes = {".py", ".md", ".json", ".html", ".svg", ".txt", ".csv", ".yaml", ".yml"}
+        for path in paths:
+            if path.suffix.lower() in text_suffixes:
+                with self.subTest(path=path.relative_to(plugin).as_posix()):
+                    self.assertEqual(path.read_bytes().count(b"\r\n"), 0, "package hashes must use the committed LF source bytes")
+
     def errors(self, entries: list[tuple[bytes, str]]) -> list[str]:
         checker = getattr(packager, "distribution_errors", None)
         self.assertTrue(callable(checker), "distribution content guard is missing")

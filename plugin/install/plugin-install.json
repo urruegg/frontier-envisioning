@@ -142,7 +142,7 @@
     "references/guardrails.md": "356cb4bd0632755a8c37d01775f7d916680acb2039e10e17c535f2e66088d272",
     "scripts/apply_finops.py": "17ebf7ca35f7f2f30414114d6d8c84cc44b762a104b8dc5c2716a32a93306817",
     "scripts/finops_calc.py": "d7eb09ac7c5c64a5144b0e7178a96390b6685a6bc1a898b79b47fb83652e23d5",
-    "scripts/finops_preview.py": "be9f643f9a08fb2d69c2b4de8791d9a916b2a01672d7dc04e1035b9b20b446c2",
+    "scripts/finops_preview.py": "ae3fed05f7cf6cd74fd83a5b80348064014b85739b094e633998f4f8ad0ff520",
     "scripts/fv_expr.py": "fb7c40ead407d88d3680f1cdb1ab8647de7884df2ad6fc0f53379270550109fb",
     "scripts/seed_finops.py": "5b8f610d8d58933957b20257a1410a927ea9a967b8bb2f04846c68db97099675"
    },
@@ -156,7 +156,7 @@
    "files": {
     "SKILL.md": "33378dfaa433b29044cb5fe92b0bd7b77b390774cdb0e587cb10c389974b8047",
     "examples/caldova-ontology.json": "287fbf6bc1b5b202af64ddeed5a3070560415a02ddc843311a1df34fb1b8eb6f",
-    "references/ontology-method.md": "52301883d23474e3aa1c7832dcb29c3dae7ae2d87a58449e021d0d59847a8a9b",
+    "references/ontology-method.md": "866f8de486395746064c9a377f07cd773bc416197e32d663f842be06c717beec",
     "scripts/apply_ontology.py": "b05affc6ee70055b82c6220e4bd64eb475a292b8baf67f32113b4dc9023d33e2",
     "scripts/build_ontology.py": "caae6552c7d2d860b582d806ed986888f22a017ac3bd34951aac74cc9af3c3e0",
     "scripts/merge_ontology_feedback.py": "cef7fb774ab5fc7b2f13c0df53218fced4aebea7ff19cf0fb784b152d65025c6",
