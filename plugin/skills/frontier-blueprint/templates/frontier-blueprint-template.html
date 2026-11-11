@@ -347,7 +347,8 @@ dl.kv dd{margin:0;font-size:12.5px}
 
 /* use cases */
 .ucwrap{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:16px;align-items:start}
-.matrix{width:100%;height:auto;background:var(--panel);border:1px solid var(--line-soft);border-radius:8px}
+.matrixwrap{min-width:0;max-width:100%;overflow-x:auto}
+.matrix{display:block;width:100%;min-width:560px;height:auto;background:var(--panel);border:1px solid var(--line-soft);border-radius:8px}
 .matrix text{font-family:var(--sans);fill:var(--ink-2)}
 .matrix .q{font-size:12px;font-weight:700;fill:var(--muted);letter-spacing:.06em}
 .matrix .bub{cursor:pointer}
@@ -488,7 +489,8 @@ footer.note{margin-block-start:26px;border-block-start:1px solid var(--line-soft
 .asst td{vertical-align:top}
 .assbox{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
 .assbox .opts{display:flex;gap:4px;flex-wrap:wrap}
-.assbox .opt{font-size:11.5px}
+.assbox .opt{display:inline-flex;align-items:center;gap:4px;min-width:24px;min-height:24px;font-size:11.5px;cursor:pointer}
+.assbox input[type=radio]{width:24px;height:24px;min-width:24px;min-height:24px;flex-shrink:0;margin:0}
 .assbox input[type=number],.assbox input[type=text]{font:inherit;font-size:12px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
 .assbox input.assval{width:120px}
 .assbox input.assnote{flex:1 1 150px;min-width:120px}
@@ -678,7 +680,8 @@ table.rt .assbox{margin-top:0}
 .tl2{display:flex;flex-direction:column;gap:6px;border-inline-start:3px solid var(--accent);padding-inline-start:12px}
 .tli{display:flex;flex-direction:column;font-size:12.5px}
 @media print{.assbox,.lzlens,.atabs{display:none}}
-.ucags{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}.ucag{all:unset;cursor:pointer;display:inline-flex;border-radius:6px}.ucag:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.ucags .aicon{width:22px;height:22px}
+.ucags{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}.ucag{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-width:24px;min-height:24px;border-radius:6px}.ucag:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.ucags .aicon{width:22px;height:22px}
+.t .agentlink{display:inline-flex;align-items:center;min-width:24px;min-height:24px}
 /* digital feedback loop (Overview, 1.5.0) */
 :root{ --fl-sig:#0E7490; --fl-act:#15803D; --fl-out:#B45309; --fl-core:#1B2A41; --fl-chip:#243A5E; --fl-appr:#FDF0D9; --fl-appr-t:#7A4300; }
 @media (prefers-color-scheme: dark){ :root{ --fl-sig:#22D3EE; --fl-act:#4ADE80; --fl-out:#FBBF24; --fl-core:#CBD5E1; --fl-chip:#2E4A75; --fl-appr:#3A2A12; --fl-appr-t:#F6C26B; } }
@@ -3382,31 +3385,53 @@ function verdict(a){ var n = note("val|ass|" + a.id); return n.status || n.value
 function assPill(a){
   var n = verdict(a), st = String((n && n.status) || a.status || "open").toLowerCase();
   var m = {validated:["val","Confirmed"], confirmed:["val","Confirmed"], adjusted:["adj","Adjusted"], rejected:["int","Rejected"], open:["open","Open"]}[st] || ["open","Open"];
-  return h("span",{class:"pill " + m[0]}, m[1] + (n ? " \u00b7 in the workshop" : ""));
+  return h("span",{class:"pill " + m[0],"data-assumption-status":"val|ass|" + a.id}, m[1] + (n ? " \u00b7 in the workshop" : ""));
+}
+function syncAssumptionPeers(a, source){
+  var k = "val|ass|" + a.id, saved = note(k);
+  document.querySelectorAll(".assbox[data-assumption-key]").forEach(function(box){
+    if (box === source || box.getAttribute("data-assumption-key") !== k) return;
+    box.querySelectorAll('input[type="radio"]').forEach(function(input){ input.checked = input.value === saved.status; });
+    var value = box.querySelector(".assval"), text = box.querySelector(".assnote"), status = box.querySelector(".status");
+    /* Update only controls already permitted by the presentation gate. Never
+       create a numeric input or recover a withheld amount while echoing notes. */
+    if (value && !assumptionWithheld(a)) value.value = num(saved.value) ? String(saved.value) : "";
+    if (text) text.value = saved.note || "";
+    if (status) status.textContent = "Saved";
+  });
+  var next = assPill(a);
+  document.querySelectorAll("[data-assumption-status]").forEach(function(pill){
+    if (pill.getAttribute("data-assumption-status") !== k) return;
+    pill.className = next.className; pill.textContent = next.textContent;
+  });
 }
 function srcType(a){
   var t = {customer:"Customer-stated", measured:"Measured", benchmark:"Benchmark (prior)", hypothesis:"Hypothesis"}[a.source_type] || a.source_type || "Hypothesis";
   return t + (a.confidence ? " \u00b7 " + a.confidence + " confidence" : "");
 }
-function assBox(a){
-  var k = "val|ass|" + a.id, n = note(k), name = "a-" + String(a.id).replace(/\W/g,"_");
+function assBox(a, instance){
+  /* DOM groups belong to a rendering instance; feedback still belongs to the
+     stable assumption ID shared by the detail, portfolio and FinOps views. */
+  var k = "val|ass|" + a.id, n = note(k), name = "a-" + String(a.id).replace(/\W/g,"_") + "-" + String(instance).replace(/\W/g,"_");
   var st = h("span",{class:"status",role:"status"});
   var opts = [["validated","Confirm"],["adjusted","Adjust"],["rejected","Reject"],["open","Open"]];
-  return h("div",{class:"assbox"},
+  function save(patch){ setNote(k,patch); st.textContent = "Saved"; syncAssumptionPeers(a,box); }
+  var box = h("div",{class:"assbox","data-assumption-key":k},
     h("div",{class:"opts",role:"radiogroup","aria-label":"Workshop verdict for " + a.id}, opts.map(function(o){
       var rid = name + "-" + o[0];
-      return h("label",{class:"opt",for:rid}, h("input",{type:"radio",id:rid,name:name,value:o[0],checked: n.status === o[0] ? true : null,onchange:function(){ setNote(k,{status:o[0]}); st.textContent = "Saved"; }}), o[1]);
+      return h("label",{class:"opt",for:rid}, h("input",{type:"radio",id:rid,name:name,value:o[0],checked: n.status === o[0] ? true : null,onchange:function(){ save({status:o[0]}); }}), o[1]);
     })),
     assumptionWithheld(a) ? withheldAssumptionValue() : h("input",{type:"number",step:"any",class:"assval","aria-label":"Agreed value for " + a.id + (a.unit ? " in " + a.unit : ""),placeholder:"Agreed value" + (a.unit === "share" ? " (0-1)" : ""),value: num(n.value) ? String(n.value) : null,
-      oninput:function(e){ var v = e.target.value; setNote(k,{value: v === "" ? null : +v}); st.textContent = "Saved"; }}),
-    h("input",{type:"text",class:"assnote","aria-label":"Note for " + a.id,placeholder:"Who said it, source",value: n.note || null,oninput:function(e){ setNote(k,{note:e.target.value}); st.textContent = "Saved"; }}),
+      oninput:function(e){ var v = e.target.value; save({value: v === "" ? null : +v}); }}),
+    h("input",{type:"text",class:"assnote","aria-label":"Note for " + a.id,placeholder:"Who said it, source",value: n.note || null,oninput:function(e){ save({note:e.target.value}); }}),
     st);
+  return box;
 }
-function assTable(list, effect){
+function assTable(list, effect, instance){
   if (!list.length) return null;
   return h("div",{class:"tscroll"}, h("table",{class:"t asst"},
     h("thead",null, h("tr",null, ["Assumption","Base (low \u2013 high)","Source","Owner and question"].concat(effect ? ["Effect on NPV"] : []).concat(["Workshop"]).map(function(c){ return h("th",{scope:"col"}, c); }))),
-    h("tbody",null, list.map(function(a){
+    h("tbody",null, list.map(function(a,i){
       var shown = presentedAssumption(a);
       return h("tr",null,
         h("td",null, h("b",null, a.id + (shown.rank && (previewAcknowledged || !portfolioPreview()) ? " \u00b7 #" + shown.rank : "")), h("div",null, shown.statement || ""), arr(shown.use_cases).length ? h("div",{class:"note"}, shown.use_cases.join(" \u00b7 ")) : null, shown.note ? h("div",{class:"note"}, shown.note) : null),
@@ -3414,18 +3439,18 @@ function assTable(list, effect){
         h("td",null, srcType(shown), " ", evPills(shown.src)),
         h("td",null, shown.owner ? h("b",null, shown.owner) : null, shown.question ? h("div",{class:"note"}, shown.question) : null),
         effect ? h("td",{class:"nowrap"}, num(shown.swing_npv) && (previewAcknowledged || !portfolioPreview()) ? chf(shown.swing_npv, true) : TBC) : null,
-        h("td",null, assPill(a), assBox(a)));
+        h("td",null, assPill(a), assBox(a,(instance || "assumptions") + "-" + i)));
     }))));
 }
-function assList(list){
-  return h("div",{class:"asslist"}, list.map(function(a){
+function assList(list, instance){
+  return h("div",{class:"asslist"}, list.map(function(a,i){
     var shown = presentedAssumption(a);
     return h("div",{class:"assrow"},
       h("div",null, h("b",null, a.id), " ", shown.statement || "", " ", assPill(a), evPills(shown.src)),
       h("div",{class:"note"}, assumptionWithheld(a) ? withheldAssumptionValue() : ["Base ", h("b",null, fmtA(shown.base, shown.unit)), " (", fmtA(shown.low, shown.unit), " \u2013 ", fmtA(shown.high, shown.unit), ")"],
         " \u00b7 ", srcType(shown), shown.owner ? " \u00b7 owner: " + shown.owner : ""),
       shown.question ? h("div",{class:"note"}, "\u201c" + shown.question + "\u201d") : null,
-      assBox(a));
+      assBox(a,(instance || "case") + "-" + i));
   }));
 }
 function beText(be){
@@ -3456,7 +3481,7 @@ function ucValue(u){
       })))),
     v.agents_missing_cost ? h("p",{class:"note"}, "Cost not modelled yet for: " + arr(v.agents_missing_cost).join(", ")) : null,
     h("div",{class:"small-lbl"},"Assumptions to clarify in the workshop"),
-    assList(arr(v.assumptions).map(function(id){ return ASSM[id]; }).filter(Boolean)));
+    assList(arr(v.assumptions).map(function(id){ return ASSM[id]; }).filter(Boolean),"usecase-" + u.id));
 }
 function matrixLegend(){
   return h("p",{class:"note mxlegend"}, h("span",{class:"lg-size"}), "Bubble size = value per year (base case)", h("span",{class:"lg-dash"}), "dashed ring = value still a hypothesis \u00b7 dark ring = MVP candidate \u00b7 use cases without a value case keep the standard size");
@@ -3491,8 +3516,8 @@ function valueSection(){
     arr(VC.inputs_needed).length ? h("p",{class:"note"}, "Inputs still to collect: " + VC.inputs_needed.map(function(x){ return x.use_case + " (" + arr(x.assumptions).join(", ") + ")"; }).join("; ")) : null,
     h("h3",{class:"sub"},"Assumptions to clarify in the workshop"),
     h("p",{class:"note"}, (portfolioPreview() ? (previewAcknowledged ? "Provisional Preview-derived ranking and NPV effects, not recommendations. " : "Portfolio financial totals, ranking and NPV effects include Preview-derived cases and are withheld until acknowledgement; public case values are not a substitute portfolio total. ") : "Ranked by their effect on the NPV. ") + "Confirm, adjust (enter the agreed value) or reject each one with its owner. Verdicts are saved in this browser and exported from Discovery."),
-    assTable(top, true),
-    rest.length ? h("details",{class:"acc"}, h("summary",null, h("span",{class:"n"}, String(rest.length)), "More value assumptions"), h("div",{class:"bd"}, assTable(rest, true))) : null,
+    assTable(top, true,"value-top"),
+    rest.length ? h("details",{class:"acc"}, h("summary",null, h("span",{class:"n"}, String(rest.length)), "More value assumptions"), h("div",{class:"bd"}, assTable(rest, true,"value-more"))) : null,
     arr(VC.discipline).length ? h("details",{class:"acc"}, h("summary",null, h("span",{class:"n"},"\u2713"), "Value discipline and sources"), h("div",{class:"bd"}, ul(VC.discipline),
       h("ul",{class:"clean idrules"}, arr(VC.sources).map(function(x){ return h("li",null, /^https:\/\//.test(x.url || "") ? h("a",{href:x.url,target:"_blank",rel:"noopener"}, x.title || x.url) : (x.title || "")); })))) : null];
 }
@@ -3570,7 +3595,7 @@ function renderFinops(){
         h("tbody",null, F.tags.map(function(t){ return h("tr",null, ["agent-id","agent-name","schema","solution","journey","environment","cost-centre"].map(function(c){ return h("td",null, String(t[c] || "")); })); }))))] : null,
     arr(F.assumptions).length ? [h("h3",{class:"sub"},"Cost assumptions to clarify in the workshop"),
       h("p",{class:"note"}, "Confirm, adjust or reject with the owner; verdicts are exported with the workshop notes and merged into the next version of the cost model."),
-      assTable(F.assumptions, false)] : null,
+      assTable(F.assumptions, false,"finops")] : null,
     h("h3",{class:"sub"},"Rates and sources"),
     arr(F.rates).length ? h("div",{class:"tscroll"}, h("table",{class:"t"}, h("thead",null, h("tr",null, ["Rate","Value","Source"].map(function(c){ return h("th",{scope:"col"}, c); }))),
       h("tbody",null, F.rates.map(function(r){ return h("tr",null, h("td",null, r.label || ""), h("td",null, r.value || ""), h("td",null, r.source || "")); })))) : null,
@@ -3874,7 +3899,8 @@ function renderUseCases(){
         h("td",null, d.name || ""), h("td",null, ucAgentIcons(u)), h("td",null, String(u.value || TBC)), h("td",null, String(u.feasibility || TBC)), h("td",null, u.horizon || TBC), h("td",null, statusPill(note("val|uc|" + u.id).status || u.status)));
     }))));
   return [h("h2",{class:"sec"},"Use case portfolio"), h("p",{class:"lead"}, BP.use_case_intro || "Every candidate placed by value and feasibility. Bubble colour = journey, dark ring = MVP candidate. Select a bubble or a row for the detail and to record the workshop verdict."),
-    h("div",{class:"ucwrap"}, matrixSvg(), table), VC ? matrixLegend() : null,
+    h("div",{class:"ucwrap"}, h("div",{class:"matrixwrap",tabindex:"0",role:"region","aria-label":"Locally scrollable use-case matrix",
+      onkeydown:function(e){ if (/^Arrow/.test(e.key)) e.stopPropagation(); }}, matrixSvg()), table), VC ? matrixLegend() : null,
     (function(){ var su = UCS.filter(function(x){ return x.id === state.uc; })[0]; return su ? ucDetail(su) : h("p",{class:"note"},"Select a use case in the matrix or the table to open it in the use-case template: general, value and feasibility, with its agents and the assumptions to clarify."); })(),
     VC ? valueSection() : null];
 }
