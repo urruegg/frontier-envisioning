@@ -117,25 +117,36 @@ def table(cols, rows) -> list[str]:
     return out + [""]
 
 
-def collect(bp: dict, ids: list[str]):
+_SCOPE_FROM_AGENTS = object()
+
+
+def collect(bp: dict, ids: list[str] | None):
     agents, doms = [], {}
     for d in as_list(bp.get("domains")):
         team = ([d["orchestrator"]] if isinstance(d.get("orchestrator"), dict) else []) + as_list(d.get("agents"))
         for a in team:
-            if (ids and a.get("id") in ids) or (not ids and a.get("mvp")):
+            if (ids is not None and a.get("id") in ids) or (ids is None and a.get("mvp")):
                 agents.append((a, d))
                 doms[d.get("id")] = d
     return agents, list(doms.values())
 
 
-def build_prd(bp, agents, doms, author, today) -> str:
-    """Render the shared PRD model, preserving canonical requirement IDs."""
+def build_prd(bp, agents, doms, author, today, *, scope_ids=_SCOPE_FROM_AGENTS) -> str:
+    """Render the shared PRD model, preserving canonical requirement IDs.
+
+    scope_ids=None uses the default MVP model; a list (including []) is exact.
+    Omitting this keyword preserves the existing API's supplied-agent scope.
+    """
     M = bp.get("meta", {})
-    P = prd_derive(bp, [a.get("id") for a, _ in agents])
+    if scope_ids is _SCOPE_FROM_AGENTS:
+        scope_ids = [a.get("id") for a, _ in agents]
+    P = prd_derive(bp, scope_ids)
     A = bp.get("prd") if isinstance(bp.get("prd"), dict) else {}
     L = [f"# Product Requirements \u2014 {M.get('customer', 'Customer')} agentic platform (MVP)", ""]
     L += table(["Field", "Value"], [["Version", A.get("version") or "Draft 0.1"], ["Date", today], ["Author", A.get("owner") or author],
-                                    ["Status", {"agreed": "Scope agreed in the workshop"}.get(str(A.get("status", "")).lower(), "Draft for review")],
+                                    ["Status", {"hypothesis": "Hypothesis", "draft": "Draft for review",
+                                                "agreed": "Scope agreed in the workshop", "adjusted": "Adjusted in the workshop",
+                                                "rejected": "Rejected in the workshop"}.get(str(A.get("status", "")).lower(), "Draft for review")],
                                     ["Basis", P["basis"]], ["Scope", ", ".join(str(x["name"]) for x in P["scope"]) or TC]])
     L += ["## 1. Purpose", "",
           "This document states what the agentic platform must do, once, so that no individual agent has to restate it, and what each MVP agent must do on top. "
@@ -415,7 +426,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--blueprint", required=True)
     ap.add_argument("--out-dir", required=True)
-    ap.add_argument("--mvp", nargs="*", default=[], help="agent ids in scope (default: agents flagged mvp)")
+    ap.add_argument("--mvp", nargs="*", default=None, help="agent ids in scope (omitted: agents flagged mvp; an empty list selects none)")
     ap.add_argument("--author", default="Microsoft Innovation Hub")
     a = ap.parse_args(argv)
     try:
@@ -430,7 +441,7 @@ def main(argv=None) -> int:
     today = _dt.date.today().isoformat()
     out = Path(a.out_dir)
     (out / "adr").mkdir(parents=True, exist_ok=True)
-    (out / "prd.md").write_text(build_prd(bp, agents, doms, a.author, today), encoding="utf-8")
+    (out / "prd.md").write_text(build_prd(bp, agents, doms, a.author, today, scope_ids=a.mvp), encoding="utf-8")
     (out / "solution-design.md").write_text(build_sd(bp, agents, doms, a.author, today), encoding="utf-8")
     adrs = []
     for i, x in enumerate(as_list((bp.get("architecture") or {}).get("decisions")), start=1):

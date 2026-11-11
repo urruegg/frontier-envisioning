@@ -130,7 +130,7 @@ def _unique_id(base, key, used):
     return candidate
 
 
-def _bind_sources(reg, items, derived, rep):
+def _bind_sources(bp, reg, items, derived, rep):
     """Persist first-build legacy IDs, never reassigning an ID after a source edit.
 
     The normalised JSON is the continuing workshop record. source_ids retains
@@ -154,14 +154,56 @@ def _bind_sources(reg, items, derived, rep):
     reserved = set(bindings.values()) | {r["id"] for r in items}
     sources = {r["source_key"]: r for r in derived}
     current = set(sources)
-    for r in items:
+    domains = {d.get("id"): d for d in as_list(bp.get("domains")) if isinstance(d, dict)}
+    use_cases = {u.get("id"): (u, d) for d in domains.values()
+                 for u in as_list(d.get("use_cases")) if isinstance(u, dict)}
+    use_cases.update({u.get("id"): (u, domains.get(u.get("domain"), {}))
+                      for u in as_list(bp.get("use_cases")) if isinstance(u, dict)})
+    readiness = bp.get("it_readiness") if isinstance(bp.get("it_readiness"), dict) else {}
+    ready_items = {it.get("id"): (it, g, readiness) for g in as_list(readiness.get("groups")) if isinstance(g, dict)
+                   for it in as_list(g.get("items")) if isinstance(it, dict)}
+    private_ids = {e.get("id") for e in as_list(bp.get("evidence"))
+                   if isinstance(e, dict) and str(e.get("visibility", "")).lower() == "internal"}
+    for r in items + derived:
+        retained_refs = as_list(r.get("content_src", r.get("src")))
+        if retained_refs and all(s in private_ids for s in retained_refs):
+            r["internal"] = True
         source = sources.get(r.get("source_key"))
         if source is not None:
-            # Recover visibility for promoted records predating content_src.
-            # A verdict is not permission to publish the underlying content.
-            r.setdefault("content_src", list(source["content_src"]))
-            if source.get("internal") is True:
+            # Source citations are correctable, not a first-build snapshot.
+            # Keep workshop src separate and never reset a privacy restriction.
+            r["content_src"] = list(source["content_src"])
+        lineage = [r] + ([source] if source is not None else [])
+        for uid in as_list(r.get("use_cases")):
+            lineage.extend(use_cases.get(uid, ()))
+        lineage.extend(domains[did] for did in as_list(r.get("journeys")) if did in domains)
+        lineage.extend(ready_items.get(r.get("ref"), ()))
+        # Container ancestry survives a retired title binding. Restrict retained
+        # content using the current parent, without moving its verdict to a new risk.
+        for node in lineage:
+            refs = as_list(node.get("content_src", node.get("src")))
+            if node.get("internal") is True or (refs and all(s in private_ids for s in refs)):
                 r["internal"] = True
+        if source is not None and r.get("internal") is True:
+            # Restrict the matching source as well: otherwise customer scrub
+            # removes the owned row, then the final derivation recreates it.
+            source["internal"] = True
+            for uid in as_list(source.get("use_cases")):
+                parent = use_cases.get(uid)
+                if parent is None:
+                    continue
+                u = parent[0]
+                field = "risk_points" if as_list(u.get("risk_points")) else "risks"
+                points = as_list(u.get(field))
+                for i, point in enumerate(points):
+                    if _source_key("use case", uid, _text(point)) == r.get("source_key"):
+                        if isinstance(point, dict):
+                            point["internal"] = True
+                        else:
+                            points[i] = {"text": _text(point), "internal": True}
+                        u[field] = points
+            if source.get("origin") == "IT readiness" and source.get("ref") in ready_items:
+                ready_items[source["ref"]][0]["internal"] = True
         if r.get("source_key") and r["source_key"] not in current and rep is not None:
             rep.warn(f"risk {r['id']}: source changed or removed; workshop content retained separately")
     for r in derived:
@@ -236,7 +278,7 @@ def fill_risks(bp: dict, rep=None) -> dict:
         r["score"] = r["likelihood"] * r["impact"]
         r["level"] = level(r["score"])
     derived = derive_risks(bp, rep)
-    _bind_sources(reg, items, derived, rep)
+    _bind_sources(bp, reg, items, derived, rep)
     titles = {str(x.get("title", "")).strip().lower() for x in items if not x.get("source_key")}
     owned = {x.get("source_key") for x in items if x.get("source_key")}
     for r in derived:

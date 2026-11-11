@@ -47,8 +47,8 @@
     "scripts/build_with_identity.py": "867dbc7fd35842741de44700ed0bb70aa46726e66c9899c71fd6c6a080bc78ea",
     "scripts/canon.py": "025d8adad751805c6bd02d317c56332468176f323437a0824302f6b0b54880c9",
     "scripts/merge_feedback.py": "79c7d0f14b881a4947fd254ad57de10a7bf2089ae376ad018d74da2ea53b6f90",
-    "scripts/prd_model.py": "b007c9dbeed3f364d8818b8fa676308acca5743e6ac23c22b21f023b435a9f07",
-    "scripts/risks.py": "7609ca7223bc386c0ba8b4016a25b8531314bcb994beee60fa37a1fc00c1b100",
+    "scripts/prd_model.py": "a8105006d4a9ffd7698537716d98539cc9d9dc05a08c6b8256e07ab98abd5d97",
+    "scripts/risks.py": "8fc35d6c21eb5fe5a0d6cda11386431231c286409b16fc1c5a7e6bb83c77015a",
     "scripts/seed_blueprint.py": "6cf1dc28a62c52736b87baf6fb81023f2215ac42ee1ccb2e33e10ac4821ab46b",
     "scripts/workflow.py": "354b70925f3db24f6a5a2ff03d32d612dab56c3d68a90d1ee82ade35e02605bc",
     "templates/blueprint-defaults.json": "d4276a5ed090db2ba53b333bd3900a1beba8a44e45b2916f7838225ba61f7c97",
@@ -63,8 +63,8 @@
     "SKILL.md": "9152f90415de6ea2507cd0572be59f583beda95813d2513aefcf97c2497a3e00",
     "references/design-rules.md": "d95ffb55cb40c5dfaee1d10bbcf765dda0d8e20ef102b7e54421aef5eb762132",
     "references/frontier-reference-architecture.md": "e74967bfa982f542b4716a8a2de4963536d1757a48b1a09db69645e46b11eb44",
-    "scripts/prd_model.py": "b007c9dbeed3f364d8818b8fa676308acca5743e6ac23c22b21f023b435a9f07",
-    "scripts/scaffold_design_docs.py": "608159c824b0ef891707fd161338840a2f9cac66fdf75e3bf98fd9230ee9a7da"
+    "scripts/prd_model.py": "a8105006d4a9ffd7698537716d98539cc9d9dc05a08c6b8256e07ab98abd5d97",
+    "scripts/scaffold_design_docs.py": "a7fc807c4b157039f1632c4c455e502aab13bbc419225ae6c4fe7466d1fcb5b2"
    }
   },
   {

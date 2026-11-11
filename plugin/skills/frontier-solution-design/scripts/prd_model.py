@@ -97,7 +97,7 @@ def _use_cases(bp):
 
 def _uses(u, agents) -> bool:
     names = {str(a.get("name", "")).lower() for a, _ in agents} | {str(a.get("id", "")).lower() for a, _ in agents}
-    return bool(u.get("mvp")) or any(str(x).lower() in names for x in as_list(u.get("agents")))
+    return any(str(x).lower() in names for x in as_list(u.get("agents")))
 
 
 def derive(bp: dict, ids=None) -> dict:
@@ -149,7 +149,8 @@ def derive(bp: dict, ids=None) -> dict:
     selected = {a.get("id") for a, _ in agents}
     per_agent = [a for a in per_agent if a["agent"] in selected]
     acs = [a for a in acs if a["agent"] in selected]
-    ucs = [(u, d) for u, d in _use_cases(bp) if _uses(u, agents)]
+    ucs = [(u, d) for u, d in _use_cases(bp) if _uses(u, agents) or (ids is None and u.get("mvp"))]
+    did = {d.get("id") for d in doms}
     problems = []
     for u, d in ucs:
         pr = [p for p in as_list(u.get("problem")) if p]
@@ -167,26 +168,34 @@ def derive(bp: dict, ids=None) -> dict:
     for u, _ in ucs:
         deps += [str(x) for x in as_list(u.get("dependencies"))]
     for m in as_list(bp.get("mvp_options")):
-        if isinstance(m, dict) and m.get("needs"):
+        if (isinstance(m, dict) and m.get("needs")
+                and (ids is None or (_uses(m, agents) if m.get("agents") else m.get("domain") in did))):
             deps.append(str(m["needs"]))
     reg = bp.get("risks") if isinstance(bp.get("risks"), dict) else {}
     aid = {a.get("id") for a, _ in agents}
     uid = {u.get("id") for u, _ in ucs}
-    did = {d.get("id") for d in doms}
     risks = []
     for r in as_list(reg.get("items")):
         if not isinstance(r, dict) or str(r.get("status", "open")).lower() in ("closed", "rejected"):
             continue
         linked = (set(as_list(r.get("agents"))) & aid) or (set(as_list(r.get("use_cases"))) & uid) or (set(as_list(r.get("journeys"))) & did)
         sc = int(_num(r.get("likelihood"), 3) * _num(r.get("impact"), 3))
-        if linked or sc >= 12 or r.get("canon"):
+        include = linked or sc >= 12 or r.get("canon")
+        if ids is not None:
+            # Specific links constrain explicit scope; a high score cannot
+            # import another agent or journey. Unlinked canon risks are platform-wide.
+            agent_refs, uc_refs, journey_refs = (set(as_list(r.get(k))) for k in ("agents", "use_cases", "journeys"))
+            scoped = bool(agent_refs & aid) if agent_refs else bool(uc_refs & uid) if uc_refs else bool(journey_refs & did)
+            unlinked = not (agent_refs or uc_refs or journey_refs)
+            include = bool(agents) and (scoped or (unlinked and r.get("canon")))
+        if include:
             risks.append({"id": r.get("id"), "title": r.get("title"), "score": sc, "mitigation": r.get("mitigation") or TC})
     risks.sort(key=lambda x: -x["score"])
     for u, _ in ucs:
         for x in as_list(u.get("risks")):
             if isinstance(x, str) and not any(x == r["title"] for r in risks):
                 risks.append({"id": None, "title": x, "score": None, "mitigation": TC})
-    if not risks:
+    if not risks and (ids is None or agents):
         risks = [{"id": None, "title": "Prompt injection through outside content (mitigated by FR-0010 and declared write actions)", "score": None, "mitigation": "FR-0010"},
                  {"id": None, "title": "Preview capabilities change or are withdrawn (each preview item carries a status and an owner)", "score": None, "mitigation": TC}]
     decisions, i = [], 1

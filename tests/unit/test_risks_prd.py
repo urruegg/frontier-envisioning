@@ -609,6 +609,231 @@ class DisclosureRoundTrips(unittest.TestCase):
         bp["prd"] = {"internal": True, "problem": "Kept only in internal models"}
         self.assertIs(prd.fill_prd(bp).get("internal"), True)
 
+    def test_current_source_citation_correction_restricts_promoted_content(self):
+        bp = sample()
+        marker = "P1CURRENTCITATIONPRIVATE91"
+        bp["evidence"].append({"id": "I-CORRECTED", "visibility": "internal", "title": "Corrected source"})
+        uc = next(u for d in bp["domains"] for u in d.get("use_cases", []) if u["id"] == "UC05")
+        uc["risk_points"].append({"text": marker, "likelihood": 4, "impact": 5, "src": ["E06"]})
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            internal = self.build_saved(bp, folder, "internal")
+            promoted, summary = self.merge_model(internal, {"risk:R-UC05-3": {"status": "accepted", "note": "Keep verdict"}})
+            self.assertEqual(summary["risks_updated"], 1)
+            source = next(p for d in promoted["domains"] for u in d.get("use_cases", []) if u["id"] == "UC05"
+                          for p in u["risk_points"] if isinstance(p, dict) and p.get("text") == marker)
+            source["src"] = ["I-CORRECTED"]
+            before = copy.deepcopy(promoted)
+            customer = self.assert_customer_outputs_hide(promoted, folder, marker)
+            self.assertFalse(any(r["id"] == "R-UC05-3" for r in customer["risks"]["items"]))
+            self.assertEqual(promoted, before, "customer export does not alter the internal workshop record")
+            refreshed = copy.deepcopy(promoted)
+            risks.fill_risks(refreshed)
+            row = next(r for r in refreshed["risks"]["items"] if r["id"] == "R-UC05-3")
+            self.assertEqual(row["content_src"], ["I-CORRECTED"])
+            self.assertEqual((row["title"], row["status"], row["derived"]), (marker, "accepted", False))
+            self.assertEqual(row["workshop_notes"][0]["note"], "Keep verdict")
+
+    def test_retired_risk_lineage_inherits_current_use_case_privacy(self):
+        for private_mode in ("flag", "citations"):
+            with self.subTest(private_mode=private_mode), tempfile.TemporaryDirectory() as tmp:
+                bp = sample()
+                marker = f"P1RETIREDLINEAGEPRIVATE92{private_mode}"
+                bp["evidence"].append({"id": "I-LINEAGE", "visibility": "internal", "title": "Private use case"})
+                uc = next(u for d in bp["domains"] for u in d.get("use_cases", []) if u["id"] == "UC05")
+                uc["risk_points"].append({"text": marker, "likelihood": 4, "impact": 5, "src": ["E06"]})
+                folder = Path(tmp)
+                internal = self.build_saved(bp, folder, "internal")
+                promoted, summary = self.merge_model(internal, {"risk:R-UC05-3": {"status": "accepted", "note": "Historical verdict"}})
+                self.assertEqual(summary["risks_updated"], 1)
+                uc = next(u for d in promoted["domains"] for u in d.get("use_cases", []) if u["id"] == "UC05")
+                if private_mode == "flag":
+                    uc["internal"] = True
+                else:
+                    uc["src"] = ["I-LINEAGE"]
+                source = next(p for p in uc["risk_points"] if isinstance(p, dict) and p.get("text") == marker)
+                source["text"] = f"Replacement of {marker}"
+                customer = self.assert_customer_outputs_hide(promoted, folder, marker)
+                self.assertFalse(any(r["id"] == "R-UC05-3" for r in customer["risks"]["items"]))
+                refreshed = copy.deepcopy(promoted)
+                risks.fill_risks(refreshed)
+                old = next(r for r in refreshed["risks"]["items"] if r["id"] == "R-UC05-3")
+                self.assertTrue(old.get("internal"), "retired content still inherits its current parent visibility")
+                self.assertEqual((old["title"], old["status"], old["derived"]), (marker, "accepted", False))
+                new = next(r for r in refreshed["risks"]["items"] if r["title"] == source["text"])
+                self.assertNotEqual(new["id"], old["id"])
+                self.assertEqual(new["status"], "open", "historical verdict is not transferred to edited content")
+
+    def test_source_correction_does_not_declassify_retained_private_content(self):
+        bp = sample()
+        marker = "P1RETAINEDPRIVATEHISTORY93"
+        bp["evidence"].append({"id": "I-HISTORY", "visibility": "internal", "title": "Retained private evidence"})
+        uc = next(u for d in bp["domains"] for u in d.get("use_cases", []) if u["id"] == "UC05")
+        uc["risk_points"].append({"text": marker, "likelihood": 4, "impact": 5, "src": ["I-HISTORY"]})
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            internal = self.build_saved(bp, folder, "internal")
+            promoted, _ = self.merge_model(internal, {"risk:R-UC05-3": {"status": "accepted"}})
+            risk = next(r for r in promoted["risks"]["items"] if r["id"] == "R-UC05-3")
+            self.assertEqual(risk["content_src"], ["I-HISTORY"])
+            risk.pop("internal", None)  # Legacy record still has its content provenance.
+            uc = next(u for d in promoted["domains"] for u in d.get("use_cases", []) if u["id"] == "UC05")
+            source = next(p for p in uc["risk_points"] if p.get("text") == marker)
+            source["src"] = ["E06"]
+            source.pop("internal", None)
+            self.assert_customer_outputs_hide(promoted, folder, marker)
+
+
+class ExplicitPrdScope(unittest.TestCase):
+    def test_cross_journey_selection_excludes_other_use_case_and_dependencies(self):
+        bp = sample()
+        risks.fill_risks(bp)
+        full = prd.derive(bp)
+        for aid, did, uid, excluded_uid, excluded_dependency in (
+            ("D2-A01", "D2", "UC05", "UC09", "Field Service write actions"),
+            ("D3-A05", "D3", "UC09", "UC05", "Ariba requisition API"),
+        ):
+            with self.subTest(agent=aid):
+                model = prd.derive(bp, [aid])
+                self.assertEqual([u["id"] for u in model["use_cases"]], [uid])
+                self.assertTrue(all(p["use_case"] == uid for p in model["problems"]))
+                self.assertNotIn(excluded_dependency, model["dependencies"])
+                other_option = next(m["needs"] for m in bp["mvp_options"] if m["domain"] != did)
+                self.assertNotIn(other_option, model["dependencies"])
+                self.assertTrue(all(k["journey"] == did for k in model["kpis"]))
+                self.assertTrue(all(p["journey"] == did for p in model["personas"]))
+                self.assertFalse(any(str(r["id"]).startswith(f"R-{excluded_uid}-") for r in model["risks"]))
+                self.assertEqual(model["agents"][0], next(a for a in full["agents"] if a["agent"] == aid))
+                self.assertEqual(model["acceptance"], [a for a in full["acceptance"] if a["agent"] == aid])
+                agents = prd.mvp_agents(bp, [aid])
+                text = scaffold.build_prd(bp, agents, [agents[0][1]], "Hub", "2026-11-12")
+                dependencies = text.split("## 10. Dependencies", 1)[1].split("## 11. Risks", 1)[0]
+                self.assertNotIn(excluded_dependency, dependencies)
+                self.assertNotIn(other_option, dependencies)
+
+    def test_explicit_empty_selection_has_no_customer_scope(self):
+        bp = sample()
+        risks.fill_risks(bp)
+        self.assertEqual(prd.derive(bp)["mvp_agents"], ["D2-A01", "D3-A05"])
+        empty = prd.derive(bp, [])
+        for field in ("mvp_agents", "scope", "agents", "use_cases", "problems", "acceptance", "kpis",
+                      "personas", "dependencies", "risks", "decisions"):
+            with self.subTest(field=field):
+                self.assertEqual(empty[field], [])
+        self.assertEqual(len(empty["platform"]), 10)
+        self.assertEqual(len(empty["nfr"]), 12)
+
+    def test_specific_risk_links_do_not_leak_via_shared_journey_or_severity(self):
+        bp = mini()
+        second = copy.deepcopy(bp["domains"][0]["agents"][0])
+        second.update(id="D1-A02", name="Other Agent")
+        bp["domains"][0]["agents"].append(second)
+        bp["risks"] = {"items": [
+            {"id": "R-OTHER", "title": "Other agent only", "agents": ["D1-A02"], "journeys": ["D1"], "likelihood": 5, "impact": 5},
+            {"id": "R-PLATFORM", "title": "Platform applies to all agents", "canon": True},
+            {"id": "R-UNSCOPED", "title": "Unknown applicability", "likelihood": 5, "impact": 5},
+        ]}
+        risks.fill_risks(bp)
+        model = prd.derive(bp, ["D1-A01"])
+        self.assertNotIn("R-OTHER", [r["id"] for r in model["risks"]])
+        self.assertNotIn("R-UNSCOPED", [r["id"] for r in model["risks"]])
+        self.assertIn("R-PLATFORM", [r["id"] for r in model["risks"]])
+
+    def test_scaffold_status_matches_every_supported_model_verdict(self):
+        for status in ("hypothesis", "draft", "agreed", "adjusted", "rejected"):
+            with self.subTest(status=status):
+                bp = mini()
+                bp["prd"] = {"status": status}
+                model = prd.fill_prd(bp)
+                text = scaffold.build_prd(bp, prd.mvp_agents(bp), [bp["domains"][0]], "Hub", "2026-11-12")
+                row = next(line for line in text.splitlines() if line.startswith("| Status |"))
+                self.assertIn(model["status"], row.lower())
+                if status in ("hypothesis", "adjusted", "rejected"):
+                    self.assertNotIn("draft", row.lower())
+
+
+class ScaffoldScopeBoundary(unittest.TestCase):
+    build_saved = DisclosureRoundTrips.build_saved
+    DEPENDENCY = "P1DEFAULTDEPENDENCY94"
+    RISK = "P1DEFAULTRISK95"
+
+    def fixture(self):
+        bp = sample()
+        uc = next(u for d in bp["domains"] for u in d.get("use_cases", []) if u["id"] == "UC05")
+        uc.pop("agents", None)
+        self.assertTrue(uc["mvp"])
+        uc["dependencies"].append(self.DEPENDENCY)
+        bp["risks"]["items"].append({"id": "R-DEFAULT-SCOPE", "title": self.RISK, "likelihood": 5, "impact": 5})
+        return bp
+
+    def test_direct_default_scaffold_matches_default_page_markers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            bp = self.build_saved(self.fixture(), Path(tmp), "bp")
+            self.assertIn(self.DEPENDENCY, bp["prd"]["dependencies"])
+            self.assertIn(self.RISK, [r["title"] for r in bp["prd"]["risks"]])
+            agents = prd.mvp_agents(bp)
+            doms = list({d["id"]: d for _, d in agents}.values())
+            text = scaffold.build_prd(bp, agents, doms, "Hub", "2026-11-12", scope_ids=None)
+            for marker in (self.DEPENDENCY, self.RISK):
+                self.assertTrue(marker in text, f"default scaffold omitted {marker}")
+
+    def test_direct_scope_parameter_distinguishes_explicit_and_empty(self):
+        bp = self.fixture()
+        risks.fill_risks(bp)
+        agents = prd.mvp_agents(bp)
+        doms = list({d["id"]: d for _, d in agents}.values())
+        for ids in (["D2-A01", "D3-A05"], ["D3-A05"], []):
+            with self.subTest(ids=ids):
+                text = scaffold.build_prd(bp, agents, doms, "Hub", "2026-11-12", scope_ids=ids)
+                self.assertFalse(self.DEPENDENCY in text)
+                self.assertFalse(self.RISK in text)
+                expected = prd.derive(bp, ids)
+                for agent in expected["agents"]:
+                    for req in agent["requirements"]:
+                        self.assertIn(req["id"], text)
+
+    def test_direct_existing_selected_agent_api_remains_compatible(self):
+        bp = self.fixture()
+        risks.fill_risks(bp)
+        agents = prd.mvp_agents(bp, ["D3-A05"])
+        text = scaffold.build_prd(bp, agents, [agents[0][1]], "Hub", "2026-11-12")
+        self.assertFalse(self.DEPENDENCY in text)
+        self.assertFalse(self.RISK in text)
+        for req in prd.derive(bp, ["D3-A05"])["agents"][0]["requirements"]:
+            self.assertIn(req["id"], text)
+
+    def test_cli_preserves_omitted_explicit_subset_and_empty_scope(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            bp = self.build_saved(self.fixture(), folder, "bp")
+            full = prd.derive(bp)
+            for name, ids in (("omitted", None), ("explicit", ["D2-A01", "D3-A05"]),
+                              ("subset", ["D3-A05"]), ("empty", [])):
+                with self.subTest(mode=name):
+                    out = folder / name
+                    args = ["--blueprint", str(folder / "bp.json"), "--out-dir", str(out)]
+                    if ids is not None:
+                        args += ["--mvp", *ids]
+                    capture = io.StringIO()
+                    with contextlib.redirect_stdout(capture), contextlib.redirect_stderr(io.StringIO()):
+                        code = scaffold.main(args)
+                    if ids == []:
+                        self.assertEqual(code, 1, "an explicit empty scope must not become default MVP")
+                        self.assertFalse(out.exists())
+                        continue
+                    self.assertEqual(code, 0)
+                    summary = json.loads(capture.getvalue())
+                    self.assertEqual(summary["mvp_agents"], full["mvp_agents"] if ids is None else ids)
+                    text = (out / "prd.md").read_text(encoding="utf-8")
+                    for marker in (self.DEPENDENCY, self.RISK):
+                        self.assertEqual(marker in text, ids is None, f"{name}: wrong scope for {marker}")
+                    expected = prd.derive(bp, ids)
+                    for agent in expected["agents"]:
+                        canonical = next(a for a in full["agents"] if a["agent"] == agent["agent"])
+                        self.assertEqual(agent["requirements"], canonical["requirements"])
+                        for req in agent["requirements"]:
+                            self.assertIn(req["id"], text)
+
 
 if __name__ == "__main__":
     unittest.main()
