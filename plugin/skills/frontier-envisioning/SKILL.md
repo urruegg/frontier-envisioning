@@ -1,17 +1,14 @@
 ---
 name: frontier-envisioning
 description: |
-  Runs a Microsoft Innovation Hub Frontier envisioning engagement end to end: gathers
-  context from Work IQ and transcripts, builds the hypothesis Frontier Company Blueprint
-  (17 views in Vision, Design, Build and Workshops: HAIRO, journeys, PRD, Agent Factory
-  Plan, risks and evidenced attendees), updates it after the workshop, prepares IT readiness,
-  solution design and agent identity kit.
-  Use when asked to "prepare the Frontier envisioning for <customer>", "run the
-  envisioning prep end to end", "Frontier Company Blueprint for <customer> from scratch"
-  or "what is next in the <customer> envisioning". Do NOT use for a single step: use
-  frontier-context-discovery for context only, use frontier-blueprint for the blueprint
-  HTML only, use frontier-solution-design for the PRD or architecture only,
-  use frontier-agent-identity for agent names, colours and icons only.
+  Runs a Frontier envisioning engagement end to end: cited discovery, blueprint, workshop,
+  value, identity and design. Offers process ontology when requested; FinOps is optional
+  Preview, never automatic. Use for "prepare the Frontier envisioning for <customer>",
+  "run the envisioning prep end to end" or "what is next in the <customer> envisioning".
+  Do NOT use for a single step: route context to frontier-context-discovery, HTML to
+  frontier-blueprint, PRD/architecture to frontier-solution-design, names/icons to
+  frontier-agent-identity, value to frontier-value-case, ontology to frontier-process,
+  or cost questions to frontier-finops for its Preview notice and confirmation first.
 license: MIT
 metadata:
   category: productivity
@@ -25,14 +22,19 @@ metadata:
 
 # Frontier solution envisioning (end to end)
 
-The Innovation Hub method for helping a customer see itself as a Frontier company: **human-led, agent-operated**. It chains three skills over the life of an engagement and keeps every artefact tied to evidence:
+The Innovation Hub method for helping a customer see itself as a Frontier company: **human-led, agent-operated**. It coordinates the skills over an engagement and keeps every artefact tied to evidence:
 
 1. **Discover** with **frontier-context-discovery**: Work IQ (meetings, transcripts, mail, chats, files) and public sources become a cited context pack.
-2. **Hypothesise** with **frontier-blueprint**: seventeen views in four parts. Vision: Overview with Microsoft's digital feedback loop, Org model, Blueprint, Journeys (including Agent Factory), Use cases and PRD. Design: Agents, Agent identity, Target architecture and IT readiness. Build: Roadmap, Plan and FinOps. Workshops: Attendees, Discovery, Risks and Evidence.
+2. **Hypothesise** with **frontier-blueprint** in four parts. Vision: Overview with Microsoft's digital feedback loop, Org model, Blueprint, Journeys (including Agent Factory), Use cases and PRD. Design: Agents, Agent identity, Target architecture and IT readiness, plus Ontology when requested. Build: Roadmap and Plan; FinOps only as acknowledged Preview. Workshops: Attendees, Discovery, Risks and Evidence.
 3. **Validate** in the workshop: the blueprint is presented and corrected live; notes and verdicts are exported and merged.
 4. **Design** with **frontier-solution-design**: scaffold the agreed MVP PRD from the same canonical Python model as the page, then solution design and ADRs grounded in Microsoft's Frontier architecture guidance.
 
 The full method, phases, gates and timings are in [references/method.md](references/method.md); the organisation model in [references/hairo-model.md](references/hairo-model.md).
+
+Eight skills are bundled: seven non-FinOps GA product wrappers and optional
+Preview FinOps. GA is the maintainer's designation, not result confidence,
+provider GA, release/deployment or public/IP clearance. Fabric ontology/agent/
+operations Preview and unverified mappings remain explicit.
 
 ## Quick Start
 
@@ -41,7 +43,9 @@ User: "Prepare the Frontier envisioning for Caldova, workshop on 12 November"
 1. Locate the engagement folder (none) -> phase Discover
 2. frontier-context-discovery: ListCalendarView + GetMeetingTranscript + SearchM365 -> customer-context.json
 3. frontier-blueprint: seed, write the hypothesis, build with the identity kit -> Caldova Frontier Company Blueprint.html + agent identity package (proposal)
-3b. frontier-value-case and frontier-finops: value case and cost model for the MVP agents -> business value in Use cases, FinOps page (gates V1, F1)
+3b. frontier-value-case: value case from ordinary evidence/assumptions, without FinOps (gate V1); missing cost/budget evidence stays open
+3c. If requested, frontier-process: process ontology and local design/import files (Fabric Preview caveats retained)
+3d. Only if cost work is requested: show frontier-finops' full Preview notice and obtain actual current-scenario confirmation before any seed/calc/apply, recommendation or figure; otherwise skip
 4. Prepare: customer version, agenda, ten key questions
 5. Save the engagement folder; reply with phase, gates and next actions in a short table
 ```
@@ -56,7 +60,8 @@ User: "Prepare the Frontier envisioning for Caldova, workshop on 12 November"
 ## When NOT to Use
 
 - Business value of the agents only: use frontier-value-case instead.
-- Agent costs, credits or guardrails only: use frontier-finops instead.
+- Agent costs, credits or guardrails only: load frontier-finops to explain Preview and obtain confirmation before cost work.
+- Process ontology only: use frontier-process instead.
 - Only gathering or refreshing context: use frontier-context-discovery instead
 - Only building, updating or customer-proofing the blueprint HTML: use frontier-blueprint instead
 - Only the PRD, solution design or ADRs: use frontier-solution-design instead
@@ -86,7 +91,30 @@ Create tasks for the remaining phases so the user sees progress.
 Load **frontier-context-discovery** and follow it: meetings and transcripts, mail, chats, files, public sources, then `customer-context.json` and the evidence log. Gate A: no validation errors; at least one transcript or the gap stated.
 
 ### Step 3: Hypothesise
-Load **frontier-blueprint**: seed, write the hypothesis, build the blueprint together with the agent identity kit (a proposal until Gate E). When the evidence holds volumes and handling times, add the value case (**frontier-value-case**, gate V1) and the cost model (**frontier-finops**, gate F1) and rebuild with `--value --finops`; their top assumptions go on the workshop agenda. Gate B: the build reports no errors; every MVP candidate has its canvas and seven declarations; internal evidence is marked.
+Load **frontier-blueprint**: seed, write the hypothesis, build with the identity
+kit (a proposal until Gate E). When evidence holds volumes and handling times,
+add **frontier-value-case** (V1) with `--value value.json`, without FinOps.
+Offer **frontier-process** when process/ontology work is requested; add
+`--ontology ontology.json` and retain its mapping and Fabric Preview gaps.
+
+FinOps is not required for value, identity, blueprint, design or process. For
+requested cost work, follow [frontier-finops](../frontier-finops/SKILL.md):
+show its full notice and obtain actual confirmation for this scenario before
+any operation, cost recommendation or figure. Only then add
+`--finops finops.json --acknowledge-finops-preview` to the wrapper. Each new
+top-level invocation or changed scope/model/rates/grounding needs renewed
+acknowledgement; the wrapper forwards it only within one action chain.
+Installation, an old JSON acknowledgement, notes, a calculation request, an
+old GA claim or a previous run is not consent.
+
+On decline, skip FinOps and state the cost/budget gap. With the optional module
+absent, continue the core without requesting it; a requested-but-missing module
+is an explicit error, not success. Preserve old embedded Preview originals.
+For a declined core path, use clean core inputs and ordinary non-FinOps value
+assumptions, not a cached Preview-derived value model. There is no automatic
+cleansing or `--no-finops` flag; do not strip provenance or relabel old costs GA.
+Gate B still requires a clean build, MVP canvases/seven declarations and marked
+internal evidence, not an automatically passed budget check.
 
 ### Step 4: Prepare the workshop
 1. Build the customer version (`--audience customer`) if the file will be shown or shared outside Microsoft.
@@ -111,8 +139,16 @@ Selecting fewer agents must retain canonical requirement IDs. Computed factory
 readiness and WIP limits display planning state; they do not approve execution.
 Plan CSV is a mapped handover format, not a live connector or native import certification.
 
-### Step 6a: Value and cost validated (gates V2, F2)
-Merge the workshop's assumption verdicts (`merge_value_feedback.py` in **frontier-value-case**) and rebuild. Gate V2: the five most sensitive assumptions confirmed or adjusted by their owners. Gate F2: guardrails designed with owners (**frontier-finops**) and handed to **frontier-solution-design** as FinOps NFRs and a purchase-model ADR.
+### Step 6a: Value review and optional Preview cost handoff (V2, F2)
+Merge ordinary value verdicts and rebuild without FinOps. V2 requires the five
+most sensitive assumptions confirmed or adjusted by their real owners; missing
+costs are not zero or validated ROI. If FinOps is requested, repeat its awareness
+gate before feedback, recalculation or application. F2 is a guardrail-design
+gate with named owners, not budget or purchase approval. Carry the Preview
+notice, limitations, sources, rates/model versions and assumptions into any
+cost-derived ROI/NPV, PRD/design, comparison and export. The budget owner retains
+accountability. A fresh browser viewer acknowledgement is independent of CLI
+acknowledgement and does not authorise scripts or purchases.
 
 ### Step 6b: Agent identity approval (before the agents are built)
 Load **frontier-agent-identity**: the blueprint already carries a proposal kit; collect the customer's own brand, review the names with the user (and the workshop's identity feedback), then rebuild the kit and the blueprint together. Gate E: validator 0 errors, unit tests passed, decisions N-1 to N-6 listed with owners.

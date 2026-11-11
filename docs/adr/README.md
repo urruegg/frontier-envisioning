@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-11 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained catalogue; decision approval not inferred |
@@ -22,5 +22,7 @@ Product and plugin decisions ADR-0001 to ADR-0016 are recorded in the [solution 
 | [0023](0023-digital-feedback-loop.md) | Digital feedback loop on the Overview: SVG animation, official Microsoft names only (product, 1.5.0) | Proposed |
 | [0024](0024-agent-workflow-view.md) | Agent workflow in the Copilot Studio workflow designer style, derived from the plan until authored (product, 1.6.0) | Proposed |
 | [0025](0025-four-part-journey-structure.md) | Four-part journey, shared PRD model, Plan board, risks and evidenced attendees (selective 1.7.1 intake) | Proposed |
+| [0026](0026-process-ontology-fabric-iq.md) | Optional process ontology wrapper and local OWL/Turtle handover (1.9.1 development intake) | Proposed |
+| [0027](0027-cdm-grounding-and-data-products.md) | Proposed CDM mappings, medallion semantic layer and governed data products; not FinOps | Proposed |
 
 Template: Context, Decision, Consequences, Alternatives considered, Status.

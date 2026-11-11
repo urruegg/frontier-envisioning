@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.2 |
+| Version | 1.3 |
 | Date | 2026-11-11 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance and selective intake) |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake and 1.9.1 prose) |
 | Status | Maintained requirements; no new product or release approval implied |
-| Scope | Shared product context, unreleased 1.7.1 intake, preserved 1.6.1 requirements and original Part A |
-| References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [Intake plan](plans/2026-11-10-handover-1.7-intake-plan.md) |
+| Scope | Shared product context, unreleased 1.9.1 requirements, historical 1.7.1/1.6.1 intake and original Part A |
+| References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md) |
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Current source references are
 anonymised without changing attribution or private historical evidence. Plugin
@@ -23,6 +23,98 @@ The split preserves historical results and claims, including the original
 1.6.0 acceptance and release plan. It does not rerun or extend those claims,
 approve a release, change pricing or alter plugin behaviour. The 1.6.1 note
 below remains unreleased.
+
+## 1.9.1 development intake
+
+**11 November 2026 (+01:00): selective received 1.9.0 integration as 1.9.1,
+unreleased; not a release.** This new block owns current development requirements,
+release notes and product decisions. The following 1.7.1 block, original Part A,
+A.12/A.13 and the earlier acceptance/results are preserved historical records,
+not the current view/maturity inventory or new acceptance evidence. Document
+revision 1.3 is independent of plugin version 1.9.1; no new product or release
+approval is implied.
+
+The real parent is [#25](https://github.com/urruegg/frontier-envisioning/issues/25),
+with [#28 process](https://github.com/urruegg/frontier-envisioning/issues/28),
+[#26 FinOps](https://github.com/urruegg/frontier-envisioning/issues/26) and
+[#27 renderer](https://github.com/urruegg/frontier-envisioning/issues/27).
+The [idea and actual approval](ideas/2026-11-11-handover-1.9-preview-finops.md),
+[approved design](specs/2026-11-11-handover-1.9-preview-finops-design.md),
+[approved written plan](plans/2026-11-11-handover-1.9-preview-finops-plan.md),
+[SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md) and
+[receipt](intake/handover-1.9.0.md) govern execution. `@urruegg` remains the sole
+human maintainer; design/plan approval is not a label, formal PR approval,
+release/deployment or external/IP clearance.
+
+### Development requirements
+
+The rows correspond in order to the approved design's S4-01–S4-14.
+Customer-MVP generated requirement IDs remain a separate namespace.
+
+| ID | Requirement | Priority | Verify |
+|---|---|---|---|
+| FR-0128 | Preserve the exact 279-file received 1.9.0 receipt, original manifests and protected/fixture evidence unchanged; distinguish received claims from independently returned verification (S4-01) | M | T |
+| FR-0129 | Optional frontier-process validates schema, keys/types, relationships/inheritance, sources, five-source agent limits, mappings and feedback; produces deterministic normalized JSON, Turtle, ontology design, data-agent and product documents; invalid/strict-warning builds fail before publishable writes; checked and to-verify mappings remain distinct (S4-02) | M | T, manual tenant |
+| FR-0130 | Customer projection protects internal-derived ontology descriptions, bindings, instructions, products, rules, metrics, operations and promoted feedback through rebuilds and exports, not merely source-ID removal (S4-03) | M | T |
+| FR-0131 | Default engagement, value, identity, blueprint, design and process do not automatically invoke or require FinOps; process itself is optional when requested (S4-04) | M | T, manual behaviour |
+| FR-0132 | Before any FinOps seed/calc/apply, cost recommendation or figure, show the full exact Preview notice and obtain actual current-scenario confirmation; operational CLIs require --acknowledge-finops-preview and keyword-only APIs default acknowledge_finops_preview=False, rejecting unacknowledged operations before cost writes (S4-05) | M | T, manual behaviour |
+| FR-0133 | Renew acknowledgement for each top-level invocation or changed scope/model/rates/grounding; wrapper forwarding covers one action chain only. Installation, old JSON/notes, previous runs, requests to calculate and GA claims are not consent; metadata records technical caller/current-invocation, not independent human approval; arithmetic helpers grant no model permission (S4-06) | M | T, manual behaviour |
+| FR-0134 | Preview/non-GA grounding/model limitations, assumptions and scenario/model/rate/source provenance follow costs, ROI/NPV, unit economics, comparisons, PRD/design, replies and exports. Legacy/imported FinOps remains Preview; stale cache/model/rates require fresh calculation before apply; prices and terms need independent verification (S4-07) | M | T, review |
+| FR-0135 | On decline or absent unrequested FinOps, continue core with honest cost/budget gaps and real accountable owners, never zero costs, validated ROI or automatic readiness. Requested-but-missing FinOps is an explicit error. Preserve old originals; declined core uses clean core/ordinary non-FinOps inputs, not cached Preview value, without invented cleansing flags or provenance stripping (S4-08) | M | T, manual behaviour |
+| FR-0136 | One package registers eight skills: seven non-FinOps GA product wrappers and bundled optional Preview FinOps requiring awareness. Install/update reporting uses owned metadata, updates legacy instructions and does not acknowledge or execute FinOps; no invented Microsoft manifest fields (S4-09) | M | T, offline install |
+| FR-0137 | GA is the maintainer's product designation, not result confidence, provider GA, release/deployment or public/IP clearance. Preserve Fabric ontology/agent/operations Preview, dated canon, unverified mappings and MOS3 manifest devPreview protocol (S4-10) | M | T, review |
+| FR-0138 | Optional Ontology views/downloads/feedback retain focus, keyboard, contrast, targets, reflow and CSP. Fresh browser acknowledgement is independent of scripts, document-local, not localStorage, resets on reload and keeps the warning; flat/nested costs and linked assumptions/derived PRD figures are gated, ordinary own value remains, private components/rankings/outcomes are withheld not zero, and internal_notes must not be recovered; viewer acknowledgement is not encryption/access control (S4-11) | M | T, manual AT |
+| FR-0139 | Default core and explicit acknowledged Preview demos use isolated outputs and real hashed CSP fixtures; normal demo/site does not invoke FinOps. Technical developer acknowledgement is not human pricing/budget approval (S4-12) | M | T |
+| FR-0140 | Preserve original assets/profiles/hashes; use the finite verified 1.9.1 raster path and pre-write recursive privacy guard. Default complete bundle has fifteen allowlisted entries including four ontology documents, excludes explicit Preview demo/cost JSON and internal analysis/intake; measure final skill-file count and rebuild digests rather than copying stale counts (S4-13) | M | T, handoff review |
+| FR-0141 | Require final strict L1/L2, bounded spec/quality and advisory review, and offline eight-skill install preparation for D5; qualify evidence by commit/scope and keep manual Cowork validators/behaviour, Fabric import/agent tests, AT certification and human distribution decisions separate (S4-14) | M | T, manual acceptance |
+
+### Development acceptance targets
+
+These are **Pending integrated verification**, including where bounded local
+evidence already exists. Rows correspond in order to S4-01–S4-14, not to received
+Passed labels or a live Cowork validation.
+
+| ID | Acceptance criterion | Status |
+|---|---|---|
+| AC-031 | Exact receipt digest and unchanged original/protected evidence are checked against the frozen baseline (S4-01) | Pending integrated verification |
+| AC-032 | Process schema/output/feedback tests and deterministic five-output checks pass with explicit mapping/binding gaps (S4-02) | Pending integrated verification |
+| AC-033 | Internal sentinel and rebuild/export cases prove customer-safe ontology and related content projection (S4-03) | Pending integrated verification |
+| AC-034 | Default orchestration and value/identity/design/process examples perform no FinOps operations (S4-04) | Pending integrated verification |
+| AC-035 | Seed/calc/apply and Preview-dependent value/feedback reject missing acknowledgement before cost writes; prose shows the exact notice and real flag (S4-05) | Pending integrated verification |
+| AC-036 | Fresh invocation/scenario pressure cases reject stale/JSON/global consent; wrapper forwards only within one chain and metadata never claims human approval (S4-06) | Pending integrated verification |
+| AC-037 | Legacy/imported, cache-mismatch and downstream ROI/NPV/unit/assumption/PRD/export cases preserve Preview limitations and provenance (S4-07) | Pending integrated verification |
+| AC-038 | Decline/absent-module cases continue clean ordinary core work, requested missing FinOps errors, and budget/readiness gaps remain assigned rather than passed (S4-08) | Pending integrated verification |
+| AC-039 | Offline preparation verifies eight copy plans, seven GA and one optional acknowledged Preview, including truthful legacy-update reporting (S4-09) | Pending integrated verification |
+| AC-040 | Maturity/product contracts retain Fabric Preview, to-verify mappings, dated sources, private distribution and unchanged devPreview packaging protocol (S4-10) | Pending integrated verification |
+| AC-041 | Ontology route/download/feedback/focus/CSP/accessibility and document-local Preview gates pass for flat/nested and private/ordinary value cases (S4-11) | Pending integrated verification |
+| AC-042 | Core and isolated explicit Preview demos/site fixtures build and run with real CSP; normal demo/site remains core-only (S4-12) | Pending integrated verification |
+| AC-043 | Twice-built default artifacts, finite raster inputs, fifteen-entry bundle, exclusions, recursive privacy checks, digests and final current file count match (S4-13) | Pending integrated verification |
+| AC-044 | Final strict L1/L2, advisory review and offline installer evidence are returned for the reviewed head, with manual Cowork/Fabric/AT and human decisions listed honestly (S4-14) | Pending integrated verification |
+
+### Current boundaries and development release/decision notes
+
+Before any cost operation or figure, show:
+
+> Frontier FinOps is Preview. Its grounding and cost model are not GA and need refinement. Results are provisional planning estimates, not validated pricing, budget approval or purchase/commitment advice. Verify rates and assumptions independently before decisions.
+
+Loading to explain limitations is allowed. Actual current-scenario confirmation
+is required before operations; a script flag is not an independent human
+approval. Declined legacy paths preserve the original and use clean ordinary
+inputs: D2 does not automatically remove old fields. Browser acknowledgement
+is separate and cannot protect embedded bytes as access control.
+
+[ADR-0026](adr/0026-process-ontology-fabric-iq.md) (optional process ontology) and
+[ADR-0027](adr/0027-cdm-grounding-and-data-products.md) (CDM/data products, **not**
+FinOps) remain **Proposed**. The map catalogue's eleven unverified F&O entries
+and integrated model's six mappings to verify/Employee binding gap are different
+scopes. Native Fabric import and tenant data-agent tests remain manual.
+
+No 1.9.1 release, tag, deployment, actual Cowork install or external clearance
+is approved here. D0–D3 returned implementation evidence is recorded in the
+[current design verification](solution-design.md#191-development-intake) and
+sprint. D4 prose and D5 final rebuild, integrated validation, offline install
+and maintainer review remain separate. These notes deliberately sit outside
+the unchanged historical A.12/A.13 records.
 
 ## 1.7.1 development intake
 

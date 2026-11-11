@@ -14,16 +14,34 @@ Help a customer see, in its own terms, how a journey, a function or the whole co
 |---|---|---|---|
 | 0 Frame | frontier-envisioning | Scope, sponsor, workshop date, NDA status | Scope agreed with the account team |
 | 1 Discover | frontier-context-discovery | `customer-context.json`, evidence log | A: no validation errors; at least one transcript or the gap stated |
-| 2 Hypothesise | frontier-blueprint | Blueprint JSON and HTML v0.x (internal): Vision with use cases and PRD; Design with agents, landing zone, ADRs and readiness; Build with Plan/FinOps; Workshops with attendees, risks and evidence | B: build clean; MVP candidates have canvas and seven declarations |
+| 2 Hypothesise | frontier-blueprint | Blueprint JSON and HTML v0.x (internal): Vision with use cases and PRD; Design with agents, landing zone, ADRs and readiness; Build with Plan; Workshops with attendees, risks and evidence | B: build clean; MVP candidates have canvas and seven declarations |
 | 3 Prepare | frontier-blueprint, frontier-envisioning | Customer version, agenda, top questions | Customer version strips internal evidence |
 | 4 Workshop | (live) | Notes and verdicts exported from the HTML; transcript | Feedback exported before the room empties |
 | 5 Consolidate | frontier-context-discovery, frontier-blueprint | Blueprint v1.0 validated, workshop summary | C: MVPs confirmed by the customer; owners named |
 | 6 Design | frontier-solution-design | PRD from the page's shared canonical model, solution design, ADRs (optionally a repository) | D: Definition of Ready met or gaps assigned; metadata is not permission |
-| 3b Value and cost | frontier-value-case, frontier-finops | Value case (value tree, assumption register, NPV, ROI, payback) and cost model per agent (credits, licences, Azure, people, purchase options) shown in the blueprint | V1 value hypothesis complete; F1 cost model complete (rates no older than 90 days) |
-| 6a Value validated | frontier-value-case, frontier-finops | Workshop verdicts merged; guardrails and purchase model for the design | V2 top-5 assumptions confirmed by owners; F2 guardrails with owners; V3 baseline before go-live |
+| 3b Value | frontier-value-case | Value tree and ordinary assumptions without FinOps; only supported NPV/ROI/payback, with missing cost evidence stated | V1 value hypothesis complete, not budget approval |
+| 3c Process, when requested | frontier-process | Local ontology, Turtle, design, data-agent and product files; optional Ontology page | Data-owner/mapping gaps and Fabric Preview caveats explicit; tenant import manual |
+| 3d Costs, only on request and confirmation | frontier-finops (optional Preview) | Provisional model/comparisons after the full notice and actual current-scenario acknowledgement | F1 model completeness/rate freshness, not validated pricing |
+| 6a Value review; optional cost handoff | frontier-value-case; frontier-finops only after renewed confirmation | Verdicts merged; Preview limitations/provenance follow any derived value, guardrail or purchase comparison | V2 top-5 assumptions confirmed by real owners; optional F2 guardrails with owners; V3 baseline before go-live |
 | 6b Identity | frontier-agent-identity | Approve the agent identity kit (a first proposal is built with every blueprint): naming convention, colours, icons, catalogue, stamp and validate scripts | E: validator 0 errors; tests pass; naming decisions listed with owners |
 | 6c Architecture design | frontier-blueprint, frontier-solution-design | IT readiness checklist (P-, R-, W-, Q-, D-), landing zone per journey, ADRs agreed, engineering control plane decided | R: readiness checks for the prototype stage passed; D-01 decided; MVP agents ready for build |
 | 7 Handover | frontier-envisioning | Handover package per MVP agent (Definition of Ready), prototype plan in the Agent Factory | Owners and dates agreed |
+
+Default engagement uses no FinOps. For requested costs, follow the full
+[FinOps awareness gate](../../frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure)
+before seed/calc/apply, recommendation or figure. Each top-level invocation
+requires `--acknowledge-finops-preview`; new scope/model/rates/grounding requires
+renewed confirmation. The wrapper forwards it in one chain only. Technical
+metadata, installation, old JSON/notes, GA claims and previous runs are not
+human acknowledgement. Browser viewing needs its own fresh, document-local
+acknowledgement; reload resets it, no localStorage consent, warning persists.
+
+On decline or absent unrequested FinOps, continue core with an honest cost/
+budget gap; requested-but-missing FinOps is an explicit error. Keep old Preview
+originals unchanged and use clean core/ordinary non-FinOps inputs, not cached
+Preview-derived value. No automatic cleansing is promised. Never treat missing
+costs as zero, validated ROI or passed readiness. The budget owner remains
+accountable; comparisons are not purchase advice.
 
 ## 3. Timeline (typical)
 
@@ -77,10 +95,13 @@ Agent names follow the identity kit's rule `<PO> <Domain> [Scope] [DEV|TEST]` (f
 | Solution envisioning | Part 1 Vision | Use cases (problem, value, feasibility), PRD (MVP scope and Markdown download) |
 | Architecture design | Part 2 Design | Target architecture (landing zone, layers, flows, ADRs), IT readiness |
 | Agent design | Part 2 Design | Agents (canvas/workflow/declarations), Agent identity |
-| Rapid prototype and build | Part 3 Build | Roadmap, Plan (factory lanes/stages, filters, CSV handover), FinOps |
+| Rapid prototype and build | Part 3 Build | Roadmap, Plan (factory lanes/stages, filters, CSV handover); optional acknowledged Preview FinOps |
 | Every workshop | Part 4 Workshops | Attendees (evidenced contributions), Discovery, Risks, Evidence |
 
-The blueprint has seventeen views; labels/purposes can be overridden per part.
+The view set depends on optional data: core with Ontology and without FinOps
+can have seventeen views; adding Preview FinOps can give eighteen. These are
+not the old seventeen-view set. Process is optional when requested; labels/
+purposes can be overridden per part.
 PRD page and scaffold use identical Python models, retaining authored fields
 and canonical IDs for selected subsets. Export `prd:scope` and `risk:<id>`
 verdicts with the workshop feedback, then merge/rebuild from the normalised

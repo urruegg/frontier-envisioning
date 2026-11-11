@@ -25,9 +25,14 @@ metadata:
 Turns the validated blueprint into the documents a build team needs: a **PRD** (what the platform and each MVP agent must do), a **solution design** (how it is built on Microsoft's Frontier layers) and **ADRs** (why, and what was rejected). The structure follows the Innovation Hub's design-repository pattern: platform requirements once, use-case requirements on top, workflow-first, systems of record authoritative, every write declared.
 
 In the four-part blueprint, the PRD is visible in Vision before Design; Plan and
-FinOps are in Build, while Risks and evidenced Attendees are in Workshops.
+optional Preview FinOps are in Build, while Risks and evidenced Attendees are in Workshops.
 `scripts/prd_model.py` is identical to frontier-blueprint's copy, so the page,
 Markdown download and scaffold share canonical requirement IDs.
+
+This GA product wrapper works without FinOps; GA is a maintainer designation,
+not result confidence, provider GA, release/deployment or external/IP clearance.
+Optional process design uses **frontier-process** with Fabric ontology/agent/
+operations Preview and unchecked mappings still explicit.
 
 ## Quick Start
 
@@ -59,9 +64,26 @@ User: "Write the PRD and solution design for the Caldova MVP"
 ### Step 1: Inputs
 1. The normalized blueprint (`blueprint.normalized.json`) of the latest version, ideally `meta.status = validated`; the workshop transcript and feedback; the context pack.
 2. The MVP scope: agents flagged `mvp`, or the agent ids the user names. Confirm only if two blueprints or versions compete.
+3. Use clean core/ordinary non-FinOps inputs by default. If old embedded costs or
+   value are Preview-derived, preserve the original unchanged. On decline, use
+   a clean core record rather than a cached Preview value model; omitting a CLI
+   option does not remove legacy fields. Do not strip provenance or relabel GA.
+   Missing budget evidence stays open with the real budget owner.
+4. For requested cost operations/figures, show the full notice and obtain actual
+   current-scenario confirmation via [frontier-finops](../frontier-finops/SKILL.md)
+   before proceeding. New invocation/scope/model/rates/grounding needs renewed
+   acknowledgement. Upstream FinOps cost commands and the blueprint wrapper use
+   `--acknowledge-finops-preview` as technical caller evidence, not independent
+   human approval; it is not a scaffold CLI option. Skip on decline/absent
+   unrequested FinOps; requested-but-missing FinOps is an explicit error.
 
 ### Step 2: Scaffold
 `python scripts/scaffold_design_docs.py --blueprint blueprint.normalized.json --out-dir working/frontier/<slug>/design [--mvp <agent ids>] --author "<user name>, Microsoft Innovation Hub"`
+
+The scaffold accepts only `--blueprint`, `--out-dir`, `--mvp` and `--author`;
+do not append `--acknowledge-finops-preview`. It remains a core design scaffold,
+not an automatic financial handoff or a complete FinOps cost-table generator.
+
 It writes `prd.md`, `solution-design.md`, `adr/ADR-000n-*.md` and, when the blueprint has an IT readiness page, `it-readiness.md`, filled from the blueprint (canvas, declarations, personas, KPIs, layers, flows, the landing zone with its CAF areas and WAF and Responsible AI principles, the Agent Factory lifecycle, Definition of Ready and evaluation pyramid, decisions including the Innovation Hub canon ADRs, open decisions, readiness items, checks, questions and decisions, and each MVP agent's workflow as a Copilot Studio workflow table in the process design: trigger, nodes, branches, outcome) with platform FRs and NFRs, and marks every gap `[To complete]`.
 
 The shared PRD model includes business value, dependencies, register risks,
@@ -93,7 +115,20 @@ record used in the workshop, retaining risk source bindings and retired IDs.
 
 ## Guardrails
 
-- Take the FinOps NFRs (cost ceiling per run, monthly credit limit, alert thresholds, kill switch) and the purchase-model ADR from **frontier-finops**, and the value KPIs and baseline plan from **frontier-value-case**; never invent costs or value.
+- Take ordinary value KPIs/baseline evidence from **frontier-value-case** without
+  requiring FinOps. Only after the Preview awareness gate, use provisional
+  FinOps NFRs and purchase comparisons with real owners. Any manual addition of
+  acknowledged Preview-derived economics to the design requires actual
+  current-scenario awareness; scaffold generation does not supply that
+  acknowledgement or a complete financial handoff. Carry the full notice,
+  non-GA grounding/model limitations, assumptions and scenario/model/rate/source
+  provenance into cost-derived ROI/NPV, PRD/design, ADRs, replies and exports.
+  Independently verify prices/terms; never infer budget approval or zero costs.
+- The browser's fresh document-local acknowledgement is independent of scripts,
+  resets on reload, never uses localStorage consent and keeps the warning.
+  Flat/nested results and linked assumptions remain gated; ordinary own value
+  stays available. Private components/rankings/outcomes are withheld, not zero;
+  do not recover `internal_notes`. Viewer acknowledgement is not access control.
 
 - Always use the agent names from the identity kit when one exists (`agent-identity.json`: display name per environment, schema and solution names), so the PRD, the ADRs and the build use the same names.
 - Never fabricate: requirements come from the blueprint, the workshop or Microsoft guidance; open points stay open with an owner. No invented numbers, systems or commitments.

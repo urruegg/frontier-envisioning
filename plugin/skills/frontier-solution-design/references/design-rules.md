@@ -34,6 +34,15 @@ Write envelope, refusal set, escalation path, grounding sources, data classifica
 
 Run records, field-level outcomes, exception queue, evaluation test sets in CI/CD, consumption alerts (an exhausted capacity must never block a date-bound process silently), Purview audit for data-protection events.
 
+Design is independent of FinOps. Missing budget evidence stays open with its
+real owner, not zero or an automatic readiness pass. Only for requested Preview
+costs, follow the [full notice and actual scenario confirmation](../../frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure)
+before operations/recommendations/figures. Preserve the warning, non-GA
+grounding/model limitations, assumptions and scenario/model/rate/source
+provenance in cost-derived requirements, ROI/NPV, comparisons and exports.
+Legacy/imported costs remain Preview; a technical flag, old JSON or workshop
+status is not budget approval. Independently verify prices and terms.
+
 ## 6. Identifiers and naming
 
 | Prefix | Meaning |

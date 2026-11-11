@@ -4,17 +4,24 @@ This file is for every coding agent working in this repository (GitHub Copilot i
 
 ## 1. What this repository is
 
-**Frontier Envisioning** is a Copilot Cowork plugin (MIT) used by Microsoft Innovation Hub solution engineers for Frontier solution envisioning and architecture design. Seven skills:
+**Frontier Envisioning** is a Copilot Cowork plugin (MIT) used by Microsoft Innovation Hub solution engineers for Frontier solution envisioning and architecture design. Eight registered skills: seven non-FinOps GA product wrappers and bundled optional Preview FinOps:
 
 | Skill | Purpose |
 |---|---|
 | `frontier-envisioning` | Orchestrates the method from frame to handover |
 | `frontier-context-discovery` | Customer context from Work IQ and workshop transcripts, evidence register |
-| `frontier-blueprint` | The interactive Frontier Company Blueprint HTML (14 views along the Hub journey) |
+| `frontier-blueprint` | Interactive Frontier Company Blueprint along the Hub journey, with requested optional views |
 | `frontier-solution-design` | PRD, solution design, ADRs, IT readiness checklist |
 | `frontier-agent-identity` | Agent identity kit: names, colours, icons, cards, validators, pipelines |
 | `frontier-value-case` | Business value case in CHF: value tree, assumption register, NPV, ROI |
-| `frontier-finops` | What the agents cost: credits, licences, Azure, people, purchase options |
+| `frontier-process` | Optional process/ontology design when requested: proposed CDM mappings, data products and local Fabric handover files |
+| `frontier-finops` | Optional Preview costs: explicit current-scenario awareness required before any cost operation or figure |
+
+Core engagement/value/identity/blueprint/design/process work does not require
+FinOps. GA is the maintainer's product designation, not result confidence,
+provider GA, release/deployment or external/IP clearance. Fabric ontology/agent/
+operations Preview, unverified mappings and MOS3 manifest `devPreview` remain
+separate. Installation does not acknowledge FinOps use.
 
 The plugin runs inside Copilot Cowork. This repository adds the engineering around it: source control, tests, builds, releases, a hosted showcase and AI-assisted engineering with guardrails.
 

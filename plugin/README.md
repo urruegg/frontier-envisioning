@@ -4,17 +4,25 @@
 
 Envision any customer as a Frontier company — **human-led, agent-operated**. The plugin gathers what you already know about a customer from your meetings, workshop transcripts, mail, Teams chats and files (Work IQ), turns it into an interactive **Frontier Company Blueprint** across Vision, Design, Build and Workshops, captures workshop verdicts, writes the PRD, solution design and architecture decisions for the first agents to build, and gives every agent a **brand identity**: names per environment, colours from the customer's own brand and icons in the Microsoft 365 sizes.
 
-The received handover is 1.7.0; this selective integration is
-**1.7.1, not a release**. The released source baseline remains 1.6.0. Current accessibility,
-privacy and attribution corrections are retained; integrated review and final
-distribution acceptance are pending. Installation below is a procedure, not
-evidence that this candidate has been installed or published.
+The received handover is 1.9.0; this selective integration is
+**1.9.1, not a release**. The released source baseline remains 1.6.0.
+Accessibility, privacy and attribution corrections are retained; final
+integrated/distribution acceptance is pending. Installation below is a
+procedure, not evidence of actual Cowork installation or publication.
+
+The package registers **eight skills: seven non-FinOps GA product wrappers and
+bundled optional Preview FinOps**. Process/ontology is optional when requested.
+Core engagement, value, identity, blueprint, design and process do not require
+FinOps. GA is the maintainer's designation, not result confidence, provider GA,
+release/deployment or public/IP clearance. Fabric ontology/agent/operations
+Preview, unverified mappings and dated sources remain explicit. Microsoft MOS3
+manifest `devPreview` is a separate, unchanged development packaging protocol.
 
 ---
 
 ## Distribution boundary
 
-The current distribution is prepared for Microsoft-internal use; the engineering
+The current engineering distribution is private and prepared for Microsoft-internal use; the engineering
 repository remains private. The plugin and complete bundle exclude private
 repository analyses and intake records. Their build checks reject
 enterprise-suffix identifiers, personal profile paths, common credential
@@ -39,7 +47,7 @@ product-icon terms. Confirm content/IP clearance before sharing externally.
 
    > **Install the Frontier PlugIn**
 
-4. **Approve** when Cowork asks to save the skills to your OneDrive (`Documents/Cowork/skills`). Cowork checks the package and confirms the seven skills it installed.
+4. **Approve** when Cowork asks to save the skills to your OneDrive (`Documents/Cowork/skills`). Check all eight skill copy counts against the verified plan: seven GA and one optional Preview. Installation updates old FinOps instructions but does not acknowledge or run cost work.
 5. **Start a new chat** and try one of these:
 
    > Build the Frontier blueprint demo for Caldova
@@ -48,12 +56,13 @@ product-icon terms. Confirm content/IP clearance before sharing externally.
    >
    > Prepare the Frontier envisioning for *your customer*, workshop on *date*
 
-That's all. New chats pick the skills up once OneDrive has synced (usually a minute or two).
+New chats pick up the skills after OneDrive sync. The optional FinOps awareness
+gate below is separate from installation approval.
 
 | To… | Do this |
 |---|---|
 | Update to a newer version | Same steps with the newer zip: attach it and say **Install the Frontier PlugIn** |
-| Remove the plugin | Say **Delete the frontier skills**, or delete the seven `frontier-…` folders in OneDrive `Documents/Cowork/skills` |
+| Remove the plugin | Say **Delete the frontier skills**, or delete the eight `frontier-…` folders in OneDrive `Documents/Cowork/skills` |
 | Roll it out to everyone in your organisation | Give the same zip to your Microsoft 365 admin: it is also a Microsoft 365 app package (see "Organisation roll-out" below) |
 
 ---
@@ -72,8 +81,9 @@ That's all. New chats pick the skills up once OneDrive has synced (usually a min
 | "Write the PRD and solution design for the *customer* MVP" | PRD, solution design and architecture decision records |
 | "Create the agent identity kit for *customer*" | `<Customer> - agent identity package v1.0.zip`: naming convention with DEV/TEST names, one colour per journey from the customer's brand, icons per agent and environment, identity cards, catalogue, and the scripts and pipeline templates for the customer's repository |
 | "Build the identity kit demo for Caldova" | The demo identity kit for Caldova's 33 agents, the Agent Factory included (fictitious brand) |
-| "Build the value case for *customer*" | Business value in CHF per use case (value tree, NPV, ROI, payback, break-even), shown in the use cases and the matrix, with the assumptions to clarify in the workshop |
-| "What will the *customer* agents cost per month?" | The FinOps page: cost per agent (Copilot Credits, licences, Azure, people), purchase options, credit-cost sensitivity and guardrails |
+| "Build the value case for *customer*" | Ordinary non-FinOps value evidence and assumptions, with supported ranges/NPV/ROI only and missing cost/budget evidence stated |
+| "Build the process ontology for *customer*" | Optional local ontology/Turtle, proposed CDM mappings, data-agent and product documents plus the Ontology page; tenant import remains manual |
+| "What will the *customer* agents cost per month?" | The full FinOps Preview notice and a request for actual current-scenario confirmation first; only then provisional costs/comparisons and guardrails |
 | "Update the value case with the workshop feedback" (attach the exported feedback file) | The workshop's verdicts on the assumptions applied, recalculated, with a change log |
 | "Show the agent identity in the blueprint" | The Agent identity page: naming rule, journey colours, DEV/TEST bands, agent family, MVP identity sheet and all names per environment |
 | "Prepare the IT readiness and architecture design workshop for *customer*" | The IT readiness page and `it-readiness.md`: preparation items with owners, readiness checks, builder workstation, questions and decisions for IT; the landing zone and the ADRs to decide |
@@ -85,14 +95,22 @@ That's all. New chats pick the skills up once OneDrive has synced (usually a min
 | "Rate the workshop risks" | Risk register and 5 × 5 heat map; ratings, status and notes export with the PRD scope verdict for merge/rebuild |
 | "What is next in the *customer* envisioning?" | Where the engagement stands and the next two actions |
 
-**The blueprint** is one HTML file that works offline. Open it in Edge or Chrome (the OneDrive preview does not run it) and use the arrow keys to move through seventeen views along the Innovation Hub journey:
+**The blueprint** is one offline HTML file. Open it in Edge or Chrome (OneDrive
+preview does not run it). The view set follows requested optional data:
 
 - **Part 1 Vision:** Overview with the **digital feedback loop** through Microsoft IQ (Work IQ, Fabric IQ, Foundry IQ, Web IQ) · Org model · Blueprint · Journeys, including the **Agent Factory** · Use cases (problem, business value, feasibility) · **PRD**
-- **Part 2 Design:** Agents (canvas, workflow, seven declarations, role profile) · Agent identity · Target architecture (landing zone, layers, flows, ADRs) · **IT readiness**
-- **Part 3 Build:** Roadmap · **Plan** (journey lanes, seven factory stages, four phases, WIP limits, owner/readiness/next step) · FinOps
+- **Part 2 Design:** Agents (canvas, workflow, seven declarations, role profile) · Agent identity · Target architecture (landing zone, layers, flows, ADRs) · **IT readiness** · optional **Ontology**
+- **Part 3 Build:** Roadmap · **Plan** (journey lanes, seven factory stages, four phases, WIP limits, owner/readiness/next step) · optional **FinOps (Preview)**
 - **Part 4 Workshops:** **Attendees** (sessions, focus and source-backed contributions with transcript times) · Discovery · **Risks** · Evidence
 
 Agent identity icons and Microsoft product icons make each part easy to read. Notes and verdicts stay in your browser until you export them from Discovery; give the exported file back to Cowork to merge.
+
+Core with Ontology can have seventeen views; explicit Preview can have eighteen.
+These are not the previous seventeen-view set. The process canon records a
+11 November 2026 source check date, not independent current availability or
+native Fabric import verification. The catalogue's eleven unverified F&O entries
+and integrated model's six mappings to verify/Employee binding gap are different
+scopes; standard mapping is a proposal, not automatic Dynamics 365 verification.
 
 Keep the normalised blueprint for the next workshop: its risk source bindings
 and retired-ID history prevent silent reassignment after source edits.
@@ -101,6 +119,43 @@ design scope retains canonical requirement IDs rather than renumbering them.
 Plan CSV needs destination mapping; it is not live Azure Boards/GitHub Projects
 integration or native compatibility certification. WIP/readiness, scope verdicts
 and metadata do not authorise a build, deployment or distribution.
+
+## Optional FinOps Preview — awareness first
+
+Loading FinOps to explain limitations is allowed. Before any cost seed/calc/
+apply, recommendation or figure, show this exact notice and obtain actual
+confirmation for the current scenario:
+
+> Frontier FinOps is Preview. Its grounding and cost model are not GA and need refinement. Results are provisional planning estimates, not validated pricing, budget approval or purchase/commitment advice. Verify rates and assumptions independently before decisions.
+
+Installation, an old JSON acknowledgement/notes, a GA claim, a request to
+calculate or an earlier run is not confirmation. Each top-level CLI needs
+`--acknowledge-finops-preview`; operational Python APIs default keyword-only
+`acknowledge_finops_preview=False`. A wrapper forwards acknowledgement within
+one action chain only. Renew for new invocation/scope/model/rates/grounding.
+Metadata records technical caller/current-invocation, not independent human
+approval. Pure arithmetic helpers do not authorise operating a model.
+
+On decline or absent unrequested FinOps, continue core and state the budget gap
+with its real owner; never assume zero costs, validated ROI or passed readiness.
+Requested-but-missing FinOps is an explicit error. Preserve legacy embedded
+Preview originals; declined core uses clean core/ordinary non-FinOps inputs,
+not cached Preview value. No automatic cleansing/`--no-finops` is promised.
+Do not strip provenance or relabel old costs GA. Cache/model/rates mismatch
+needs fresh calculation before apply; legacy/imported FinOps is always Preview.
+
+Carry the notice, non-GA grounding/model limitations, assumptions and scenario/
+model/rate/source provenance into actual costs, ROI/NPV/unit economics,
+comparisons, PRD/design, replies and exports. Independently verify prices and
+terms; a comparison is not commitment advice.
+
+Browser viewing needs fresh explicit acknowledgement for that document,
+independent of script acknowledgement. Reload resets it; no localStorage
+consent and the warning persists. Flat/nested results and linked assumptions
+are gated, while ordinary own non-FinOps value stays available. Private
+components/rankings/outcomes are withheld, not zero; never recover
+`internal_notes`. Viewer acknowledgement is not encryption or access control.
+See the [FinOps skill](skills/frontier-finops/SKILL.md) for exact CLI examples.
 
 ---
 
@@ -122,7 +177,8 @@ frontier-envisioning-plugin-1.9.1.zip
     ├── frontier-solution-design/     PRD, solution design and ADRs
     ├── frontier-agent-identity/      agent names, colours and icons: identity kit, renderer, validate and stamp scripts
     ├── frontier-value-case/          business value in CHF: value tree, assumption register, NPV, ROI, workshop merge
-    └── frontier-finops/              agent costs in CHF: credits, licences, Azure, people, purchase options, guardrails
+    ├── frontier-process/             optional process ontology, proposed CDM mappings and local data-product/agent kit
+    └── frontier-finops/              optional Preview costs; actual awareness before operations or figures
 ```
 
 ---
@@ -134,18 +190,27 @@ Follow these steps when a user uploads this zip and asks to install it ("Install
 1. **Extract** the uploaded zip from `input/` into `working/frontier-plugin/`, keeping the folder structure (Python `zipfile`; do not repack it).
 2. **Check** the package and get the plan:
    `python working/frontier-plugin/install/prepare_install.py --root working/frontier-plugin`
-   It verifies every file against `install/plugin-install.json` and prints JSON with `verified`, `problems` and, per skill, `source`, `destination`, `files` and `status` (new, update or reinstall). If `verified` is false, stop: tell the user which problem was found and ask them to upload the original zip again.
+   It verifies every file against `install/plugin-install.json` and prints JSON with `verified`, `problems` and, per skill, `source`, `destination`, `files`, `status` (new, update or reinstall) and owned `maturity`, `optional`, `requires_preview_ack` metadata. Require eight entries: seven GA, one optional acknowledgement-required Preview. These are repository install fields, not invented Microsoft manifest fields. If `verified` is false, stop and request the original zip again.
 3. **Install** each skill in the plan into the user's skills folder, one call per skill:
    `CopyArtifact(surface="user", source="working/frontier-plugin/skills/<name>", destination="skills/<name>", recursive=true, overwrite=true)`
    The first call shows the user an approval card. If the user declines, stop and say that nothing was installed.
 4. **Confirm the copy**: each result's `copied` count must equal the plan's `files` for that skill. "source folder not visible yet" means the extracted files are still uploading: wait a few seconds and repeat the same call. A short count means the publish is incomplete: repeat the same call (it is idempotent with `overwrite=true`).
-5. **Report** in two or three lines: the plugin name and version, the seven skills (new or updated), that new chats pick them up once OneDrive has synced (OneDrive folder `Documents/Cowork/skills`), and three prompts to start with: "Build the Frontier blueprint demo for Caldova", "Build the identity kit demo for Caldova" and "Prepare the Frontier envisioning for <customer>".
+5. **Report** the plugin/version, all eight skills' new/update/reinstall status,
+   seven GA/one optional Preview availability, and that installation is not
+   FinOps acknowledgement or cost execution. New chats pick them up after
+   OneDrive sync. Offer the three core prompts above; FinOps is not automatic.
 
 ---
 
 ## Organisation roll-out
 
-The same zip has the Microsoft 365 app-package structure (`manifest.json` with seven agent skills, colour and outline icons). Organisation catalogue publication remains an admin operation requiring tenant validation and approval; this intake does not certify it. Some catalogues also require builder metadata (`packageMetadata.json` with builder name, environment id, creator id and owners); the admin adds it for their tenant. Validate the package first: in Cowork, attach the zip and say "validate my plugin package".
+The same zip has the Microsoft 365 app-package structure (eight registered
+agent skills, colour and outline icons). MOS3 `devPreview` remains unchanged.
+Organisation catalogue publication is an admin operation requiring tenant
+validation and approval; this intake does not certify it. Tenant-specific
+builder metadata, if required, is the admin's responsibility, not a field to
+invent here. Cowork package/skill validators and behavioural prompts remain
+manual checks; an offline plan is not actual Cowork installation.
 
 ---
 
@@ -177,5 +242,21 @@ The repository starting point (`frontier-envisioning-github-repo-1.9.1.zip`, to 
 python tools/dev.py check
 python tools/dev.py package
 ```
+
+Default `python tools/dev.py demo` uses core value/identity and the curated
+process example without FinOps. Explicit developer Preview testing uses:
+
+```text
+python tools/build_demo.py --out build/demo-finops-preview --with-finops-preview --acknowledge-finops-preview
+```
+
+The flag is technical test acknowledgement, not human pricing approval.
+Normal `build/site` stays core-only; browser fixtures isolate core/Preview HTML
+under `build/site-e2e` with real hashed CSP. The default complete bundle has
+fifteen allowlisted entries including four ontology documents; explicit Preview
+demo/cost JSON and private analysis/intake are excluded. Final runtime source
+file count and twice-built digests must be measured after documentation changes,
+not copied from an earlier count. Keep the engineering repository private;
+these checks do not grant external/public/IP clearance.
 
 Scripts use the Python standard library only, read their inputs as data and never call the network.

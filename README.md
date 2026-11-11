@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
+| Version | 0.4 |
 | Date | 2026-11-11 |
 | Author | Urs Rüegg; Copilot AI-assisted maintenance |
 | Status | Maintained; approval not inferred |
@@ -18,19 +18,42 @@ The identity kit supplies branding, not Entra identity provisioning. HubWorks is
 | | |
 |---|---|
 | Current product baseline | **1.6.0** (8 November 2026), imported from Copilot Cowork; 1.4.0 records retained |
-| Received handover | **1.7.0**: [source/manifest receipt](docs/intake/handover-1.7.0.md); incoming release claims are not independently verified |
-| Integrated development version | **1.7.1 — UNRELEASED**: selective four-part/seventeen-view intake; retains 1.6.1/A6 accessibility, privacy and provenance corrections; final acceptance pending |
+| Received handover | **1.9.0**: [source/manifest receipt](docs/intake/handover-1.9.0.md); incoming release/publication claims are not independently verified; [1.7 receipt](docs/intake/handover-1.7.0.md) retained |
+| Integrated development version | **1.9.1 — UNRELEASED**: selective process/ontology intake, seven GA product wrappers and optional acknowledged Preview FinOps; final integrated acceptance pending |
 | Repository home | [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning), private; use approved work material only |
 | Sole maintainer | [@urruegg](https://github.com/urruegg), the public-cloud account; no second collaborator is implied |
 | Plugin licence | MIT (Microsoft product icons: see [THIRD-PARTY-NOTICES.md](plugin/THIRD-PARTY-NOTICES.md)) |
 | Demo data | the fictitious Caldova Industrial AG only |
-| Status | [#22](https://github.com/urruegg/frontier-envisioning/issues/22): design and plan approved; implementation in progress in [SPRINT-003](docs/sprints/SPRINT-003-handover-1.7-intake.md). [M0 intake](docs/engineering/intake-plan.md) remains historical baseline evidence |
+| Status | [#25](https://github.com/urruegg/frontier-envisioning/issues/25): design and written plan approved; D1–D3 returned SPEC PASS / QUALITY CLEAR; D4 prose and D5 final validation/handoff tracked in [SPRINT-004](docs/sprints/SPRINT-004-handover-1.9-preview-finops.md). [M0 intake](docs/engineering/intake-plan.md) remains historical evidence |
 
 ## Use the plugin
 
-1. Obtain an approved `frontier-envisioning-plugin-<version>.zip` (keep it zipped). The current 1.7.1 intake is not a published release.
+1. Obtain an approved `frontier-envisioning-plugin-<version>.zip` (keep it zipped). The current 1.9.1 intake is not a published release.
 2. Attach it in a new Copilot Cowork chat and type **Install the Frontier PlugIn**.
 3. Approve each step. The user guide is [plugin/README.md](plugin/README.md).
+
+The package registers **eight skills**: seven non-FinOps GA product wrappers
+(including optional `frontier-process` when requested) and bundled optional
+Preview `frontier-finops`. Core engagement/value/identity/blueprint/design/
+process work does not require FinOps. GA is the maintainer's designation, not
+result confidence, provider GA, release/deployment or public/IP clearance.
+Fabric ontology/agent/operations Preview, unchecked mappings and dated canon
+remain explicit; MOS3 manifest `devPreview` is unchanged.
+
+FinOps may load to explain limitations, but before any cost operation,
+recommendation or figure it must show:
+
+> Frontier FinOps is Preview. Its grounding and cost model are not GA and need refinement. Results are provisional planning estimates, not validated pricing, budget approval or purchase/commitment advice. Verify rates and assumptions independently before decisions.
+
+Obtain actual current-scenario confirmation first; installation, old JSON or
+earlier runs are not consent. Each top-level CLI needs
+`--acknowledge-finops-preview`; wrapper forwarding covers one action chain only.
+Renew for a new invocation/scope/model/rates/grounding. Browser acknowledgement
+is separate, document-local and reset on reload, not localStorage or access
+control. Decline/absent unrequested FinOps continues core with honest budget
+gaps; requested missing FinOps errors. Preserve legacy Preview originals and
+use clean ordinary core inputs on decline, not cached Preview value; no automatic
+cleansing is promised. See the [FinOps procedure](plugin/skills/frontier-finops/SKILL.md).
 
 ## Develop
 
@@ -44,6 +67,21 @@ python tools/dev.py doctor     # what is installed
 python tools/dev.py docs --strict  # local metadata, links and work-package contracts
 python tools/dev.py check      # gate L1: everything CI runs (a few minutes)
 ```
+
+Default `python tools/dev.py demo` uses core value/identity plus the curated
+process example, without FinOps. The explicit developer Preview profile is
+isolated and needs technical acknowledgement:
+
+```bash
+python tools/build_demo.py --out build/demo-finops-preview --with-finops-preview --acknowledge-finops-preview
+```
+
+That flag is not human pricing/budget approval. Normal `build/site` is core-only;
+test fixtures isolate core/Preview HTML under `build/site-e2e` with real hashed
+CSP. The default complete bundle has fifteen allowlisted entries, including
+four ontology documents, excluding explicit Preview demo/cost JSON and private
+analysis/intake. Final runtime skill-file counts and digests are measured at
+D5 after prose changes, not copied from an older handoff.
 
 How we work is in [AGENTS.md](AGENTS.md) (for people and coding agents), [CONTRIBUTING.md](CONTRIBUTING.md) and the [engineering handbook](docs/engineering/handbook.md). GitHub Copilot is configured for this repository (instructions, custom agents, skills, hooks); the engineering method is Superpowers: see [Copilot and Superpowers](docs/engineering/copilot-and-superpowers.md).
 
@@ -60,7 +98,7 @@ Where supported, eligible prose goes to `docs-agent`, checker/code to `frontier-
 
 | Path | What it holds |
 |---|---|
-| [`plugin/`](plugin) | The Copilot Cowork plugin, the packaged unit: seven skills, manifest, install check, user guide, licence and notices |
+| [`plugin/`](plugin) | The Copilot Cowork plugin: eight skills (seven GA, one optional Preview), manifest, install check, user guide, licence and notices |
 | [`src/renderer/`](src/renderer) | Sources of the blueprint HTML (assembled into the plugin's template) |
 | [`tools/`](tools) | `dev.py` task runner; build, package, demo, site, release, checks, bootstrap |
 | [`tests/`](tests) | Unit and pipeline tests (Python), DOM tests (happy-dom), browser tests (Playwright) |
@@ -81,10 +119,12 @@ Where supported, eligible prose goes to `docs-agent`, checker/code to `frontier-
 
 ## Local intake status
 
-The received 1.7.0 features are being integrated selectively as unreleased
-1.7.1: Vision now includes Use cases and PRD; Design covers agents, identity,
-architecture and readiness; Build adds Plan beside Roadmap and FinOps; Workshops
-groups Attendees, Discovery, Risks and Evidence. The shared Python PRD model
+The received 1.9.0 process features are selectively integrated as unreleased
+1.9.1. The four-part blueprint keeps Vision, Design, Build and Workshops;
+Ontology is optional in Design and FinOps is optional Preview in Build.
+The [current design evidence](docs/solution-design.md#191-development-intake)
+qualifies local process, gating, browser/CSP and finite raster checks by commit.
+The shared Python PRD model
 keeps page/scaffold IDs aligned for selected subsets. The risk register retains
 normalised source bindings and retired-ID history; discarding that record
 cannot guarantee old ID-only feedback identity. Attendee contributions cite
@@ -94,11 +134,14 @@ Plan CSV is handover data, not a live connector or native import certification.
 WIP/readiness and document metadata are not permission. Customer exports remove
 internal-derived content before final model generation, but are not external/IP
 clearance. The private source host and Microsoft-internal distribution boundary
-remain unchanged. See the [current PRD intake](docs/prd.md#171-development-intake)
-and [design intake](docs/solution-design.md#171-development-intake).
-P1 review passed; P3 reports 58 DOM and 50 browser tests, with read-only review,
-final strict L1 and finished distribution/install-plan acceptance still pending.
-No actual Cowork install, publication or deployment is claimed.
+remain unchanged. See the [current PRD intake](docs/prd.md#191-development-intake)
+and [design intake](docs/solution-design.md#191-development-intake).
+The parent pre-D4 strict L1 at `c64a815` passed; it is not post-doc validation.
+Final L1/L2, rebuilt distribution/offline installation preparation, advisory
+review and maintainer handoff remain D5 work. Manual Cowork validators/behaviour,
+Fabric tenant import/data-agent checks and AT certification are not proven by
+the read-only pressure simulation or automated tests. No actual Cowork install,
+publication, deployment or external clearance is claimed.
 
 The 1.6.1 development patch addresses [issue #4](https://github.com/urruegg/frontier-envisioning/issues/4). The sticky agent list is bounded by the upper summary; the workflow remains full width below it. Historical product records remain unchanged.
 

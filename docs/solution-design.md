@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.2 |
+| Version | 1.3 |
 | Date | 2026-11-11 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance and selective intake) |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake and 1.9.1 prose) |
 | Status | Maintained design; no new product or release approval implied |
-| Scope | Unreleased 1.7.1 intake design, preserved Part B/accessibility design, technical sources and historical 1.6.0 file inventory |
-| References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [Intake plan](plans/2026-11-10-handover-1.7-intake-plan.md) |
+| Scope | Unreleased 1.9.1 architecture/verification, historical 1.7.1 design, preserved Part B and original 1.6.0 inventory |
+| References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md) |
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Both builders reuse the package
 module's bounded, recursive byte/ZIP validator before writing inventory,
@@ -27,6 +27,137 @@ results or approvals. The appendix retains the original 1.6.0 inventory
 (including its former combined-document path); it is not a current file list.
 The [unreleased 1.6.1 requirement](prd.md#161-patch-workflow-legend-accessibility)
 remains separate from these historical claims.
+
+## 1.9.1 development intake
+
+**11 November 2026 (+01:00): 1.9.1 is unreleased, not a release.** This block
+owns current architecture and qualified technical verification. Document revision
+1.3 is independent of plugin version. The next 1.7.1 block, original Part B,
+B.9 historical results and 1.6.0 inventory remain unchanged historical evidence,
+not the current view set, distribution inventory or fresh acceptance.
+[PRD intake](prd.md#191-development-intake) owns the new requirements, acceptance,
+development release notes and product decisions outside historical A.12/A.13.
+
+Authority: [parent #25](https://github.com/urruegg/frontier-envisioning/issues/25),
+[#28 process](https://github.com/urruegg/frontier-envisioning/issues/28),
+[#26 FinOps](https://github.com/urruegg/frontier-envisioning/issues/26),
+[#27 renderer](https://github.com/urruegg/frontier-envisioning/issues/27),
+[idea/approval](ideas/2026-11-11-handover-1.9-preview-finops.md),
+[design](specs/2026-11-11-handover-1.9-preview-finops-design.md),
+[written plan](plans/2026-11-11-handover-1.9-preview-finops-plan.md),
+[SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md) and
+[receipt](intake/handover-1.9.0.md). Design and plan approval do not accept these
+Proposed ADRs or approve a release.
+
+### Architecture and optional boundaries
+
+One plugin registers eight skills: seven non-FinOps GA product wrappers,
+including optional `frontier-process`, and bundled optional Preview
+`frontier-finops`. GA is the maintainer's product designation, not a confidence
+score, provider GA, tenant deployment, release or public/IP clearance.
+MOS3 manifest `devPreview` stays unchanged; no Microsoft manifest fields are
+invented. Preserve dated Fabric ontology/agent/operations Preview and unchecked
+mappings. [ADR-0026](adr/0026-process-ontology-fabric-iq.md) and
+[ADR-0027](adr/0027-cdm-grounding-and-data-products.md) remain Proposed; the latter
+is CDM/data products, not a FinOps decision.
+
+`frontier-process` seeds and validates local models, emits normalized JSON,
+Turtle, ontology design, data-agent and product documents, and applies requested
+ontology data to the blueprint. Errors or strict warnings fail before publishable
+writes. Customer projection covers internal-derived descriptions, bindings,
+instructions, products, rules, metrics, operations and promoted feedback before
+final exports. Shared PRD/risk identity and privacy invariants remain intact.
+The map catalogue's eleven unverified F&O entries differ from the integrated
+model's six mappings to verify and Employee binding gap. CDM/Dataverse origins
+do not make all Dynamics 365 mappings verified. Native Fabric import, current
+availability and data-agent/operations behaviour require manual tenant checks;
+local files and Turtle byte parity do not prove them.
+
+The default core lazily avoids FinOps imports/invocations. Value-only, identity,
+blueprint, design and process need no FinOps module. Requested-but-missing
+FinOps is an explicit error; decline or unrequested absence continues core with
+honest budget gaps and accountable owners. Keep legacy embedded Preview
+originals unchanged; declined work uses clean core/ordinary non-FinOps inputs,
+not cached Preview value. D2 does not automatically strip old fields; no
+`--no-finops` or cleansing flag exists. Do not remove provenance or relabel GA.
+
+Before any cost seed/calc/apply, recommendation or figure, show:
+
+> Frontier FinOps is Preview. Its grounding and cost model are not GA and need refinement. Results are provisional planning estimates, not validated pricing, budget approval or purchase/commitment advice. Verify rates and assumptions independently before decisions.
+
+Loading to explain limitations is permitted. Actual current-scenario confirmation
+precedes each top-level `--acknowledge-finops-preview` invocation; operational
+APIs default keyword-only `acknowledge_finops_preview=False`. The wrapper forwards
+acknowledgement only inside one action chain. New scope/model/rates/grounding or
+invocation requires renewed confirmation. Installation, old JSON/notes, a GA
+claim, a calculation request or previous run is not consent. Technical caller/
+current-invocation metadata is not independent human approval. Pure arithmetic
+helpers are not permission to operate a model.
+
+Model/rate/source fingerprints and scenario provenance accompany Preview
+outputs; cache/model/rates mismatch requires fresh calculation before apply.
+Limitations follow actual costs, ROI/NPV/unit costs, assumptions, comparisons,
+PRD/design and exports, including legacy/imported FinOps. Missing costs are not
+zero, validated ROI or an automatic budget/readiness pass. Independently verify
+prices, terms and assumptions; the budget owner remains accountable.
+
+### Browser and developer profiles
+
+Browser acknowledgement is fresh, independent of script acknowledgement and
+document-local, not localStorage. Reload resets it and the warning persists.
+Flat/nested results, linked assumptions and cost-derived PRD/value summaries
+are gated. Ordinary own non-FinOps value stays available. Private components,
+rankings and outcomes are withheld, not zero; never recover `internal_notes`.
+This presentation gate is not encryption or access control over embedded data.
+
+Optional Ontology is in Design; FinOps is optional Preview in Build. Core with
+Ontology can have seventeen views, not the old seventeen-view set; explicit
+Preview can exercise eighteen. Route identity matters, not just totals.
+Default `python tools/dev.py demo` and normal `build/site` stay core-only.
+The explicit developer profile is:
+
+```text
+python tools/build_demo.py --out build/demo-finops-preview --with-finops-preview --acknowledge-finops-preview
+```
+
+This technical test flag is not human pricing approval. Parent reports that
+DOM fixtures use `BLUEPRINT_PREVIEW_HTML`; browser preparation isolates
+`build/site-e2e` with core/Preview HTML and real hashed CSP, using
+`FRONTIER_SITE_DIR` for the child root. No deployment or CSP disabling is implied.
+The default complete bundle allowlist is fifteen entries, including four
+ontology documents; explicit Preview demo/cost JSON and internal analysis/intake
+remain excluded. Final skill-file count is measured after D4, not a stale
+73/84-file claim.
+
+### Returned development verification, not final acceptance
+
+The following is parent-returned evidence, not execution by the prose worker.
+It is bounded by the stated source/commit and is not new B.9 historical evidence.
+
+| Checkpoint | Qualified evidence |
+|---|---|
+| D0 `e7e4db5` | Exact 279-file receipt digest `904538ec9930aad2d3aa5e8067023f4a7230d46a5696faef7836896b444a01e9`; 241 protected/fixture hashes unchanged at last verification |
+| D1 `f5e08f2` | SPEC PASS / QUALITY CLEAR; 111 tests, 398 subtests; 27 entities, 33 relationships, 126 properties, nine sources, four data agents/four semantic models; 18 data plus one knowledge product; five outputs deterministic under four hash seeds; strict pre-write/privacy tested |
+| D2 `d763833` | SPEC PASS / QUALITY CLEAR; 81 D2 tests/508 subtests, combined 197/906; fresh acknowledgement, lazy core, cache/provenance, private-component/selection matrix and named-variable fingerprint coverage |
+| D3 `c64a815` | SPEC PASS / QUALITY CLEAR; 75 DOM/61 browser tests reported on frozen source; independent review added 16 DOM/two hosted checks plus 31 old DOM/three Turtle variations for byte parity/determinism; real CSP/axe, no new WCAG waiver |
+| Parent pre-D4 strict L1 at `c64a815` | `python tools/dev.py check --strict` ended `ALL GATES PASSED`: 394 tests, one expected unreleased-manifest skip, 1337 subtests, 48 self-tests, 75 DOM; six existing ESLint warnings, zero errors; not the post-doc check |
+| Parent runner `ecdfdc8` / `e61bc6a` | Isolated core/Preview fixtures with real CSP; 39 tools/site tests and four subtests pass; actual HTTP 200/CSP verified and helper stopped |
+| Parent finite raster evidence | 205 verified identity inputs/223 PNGs; original assets/profile unchanged; actual A6 ZIP `e40b132d2e1d396ad7ee681d09931b3e35cd5728081cb01235b17396059cfdf9` in both profiles; current finite 1.9.1 pin `d91044f03bb34f6559eddc8debf035a5d3aa697d7800d723a700528b23004453` |
+
+Four light/dark 1440/320 screenshots are reported in the Playwright report.
+The 61-browser result is not exhaustive Preview AA evidence: acknowledged PRD/
+use-case detail lacked direct axe coverage and portfolio coverage was desktop
+only. Parent reports a disjoint tests-only 32-state matrix in progress across
+light/dark, 1440/320, four views and before/after acknowledgement; its final
+counts/results belong to D5, not this pre-D4 checkpoint.
+These are not manual Fabric import, AT certification or live Cowork proof.
+Before D4, the parent's four-scenario read-only reference/pressure simulation
+found contradictory/missing instructions and safely flagged the gaps; it did
+not execute unsafe operations or validate live Cowork. Post-edit rerun, strict
+docs/checkrepo/maturity/product contracts, final L1/L2, advisory review and D5
+twice-built digests/offline installer/private guard remain pending.
+Candidate handoff evidence is not final distribution acceptance. No merge,
+tag/release, deployment, public visibility or IP clearance is claimed.
 
 ## 1.7.1 development intake
 

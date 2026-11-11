@@ -1,17 +1,14 @@
 ---
 name: frontier-process
 description: |
-  Optional: builds the customer's process ontology for Microsoft Fabric IQ from the Frontier
-  blueprint: entity types grounded in the Microsoft Common Data Model, relationships, rules and
-  metrics on a medallion layer in OneLake, data products, one Fabric data agent per journey and
-  operations agents for live signals. Writes ontology.ttl for the Fabric import, the design and
-  data product documents, the data agent kit and the blueprint's Ontology page. Use when asked to
-  "build the process ontology for <customer>", "model the business objects in Fabric IQ", "map
-  the ontology to the Common Data Model", "define the data products" or "add the ontology to the
-  blueprint".
-  Do NOT use for questions on Power BI reports or data (use the powerbi skill or the Fabric IQ plugin),
-  for the blueprint itself (use frontier-blueprint) or for the PRD and solution design
-  (use frontier-solution-design).
+  Optional GA product wrapper for process ontology design: business objects, proposed CDM
+  mappings, OneLake layers, data products and agent grounding. Writes local Turtle and design
+  files plus the blueprint Ontology page; Fabric ontology/agent/operations remain Preview.
+  Use for "build the process ontology for <customer>", "map the ontology to the Common Data
+  Model", "define the data products" or "add the ontology to the blueprint".
+  Do NOT use for Power BI data questions (powerbi or Fabric IQ plugin), blueprint HTML alone
+  (frontier-blueprint), PRD/design documents (frontier-solution-design), or cost modelling
+  (frontier-finops, optional Preview with confirmation first).
 license: MIT
 metadata:
   category: productivity
@@ -25,9 +22,25 @@ metadata:
 
 # Frontier process ontology (Fabric IQ)
 
-The optional data capability of the Frontier method. The blueprint says how the company runs human-led and agent-operated; this skill names the business objects those journeys run on (customers, orders, assets, work orders, invoices ...) as an **ontology in Microsoft Fabric IQ**, grounds each one in a **Microsoft standard entity** (Common Data Model, Dataverse, finance and operations), binds it to a **medallion layer in OneLake** (silver conformed to the Common Data Model), publishes **data products** per the Cloud Adoption Framework standard, and grounds **Fabric data agents** (questions in business terms) and **operations agents** (live monitoring with approval in Teams) in that one vocabulary. Everything is a hypothesis until the data owners confirm it.
+The optional data-design capability of the Frontier method. It proposes business
+objects, Microsoft standard-entity mappings, medallion bindings, data products
+and agent grounding from the blueprint. It prepares local files, not published
+data products or tenant items. Everything is a hypothesis until data owners
+confirm it. GA is the maintainer's wrapper designation, not result confidence,
+provider GA, release/deployment or external/IP clearance.
 
-Terms used here are Microsoft's: ontology (preview), entity type, property, key, relationship type, business rule, metric, data binding, namespace, data agent, operations agent, ontology agent, OneLake, mirroring, shortcut, eventhouse; Common Data Model, standard entity, Link to Fabric, medallion (bronze, silver, gold), Direct Lake, Fabric domain, Purview governance domain, data product, endorsement. Sources and known issues are in `templates/fabric-iq-canon.json` (checked 11 November 2026; preview features change, re-check before a workshop); the standard entity per entity type is in `templates/cdm-map.json`.
+Terms and source IDs are in [references/ontology-method.md](references/ontology-method.md).
+The canon `templates/fabric-iq-canon.json` records a source check date of
+11 November 2026, not a new independent availability check. Re-check dated Learn
+sources and known issues before a workshop. Proposed standard mappings are in
+`templates/cdm-map.json`; Dynamics 365/Dataverse origins do not verify every table.
+
+Process work does not require FinOps. Continue without it when absent or declined,
+stating any real cost/budget gap. For requested costs, first show the full notice
+and obtain actual current-scenario confirmation via
+[frontier-finops](../frontier-finops/SKILL.md); no cost operation or figure before
+that gate. Do not reuse embedded legacy Preview costs as GA. Use clean core inputs
+on decline, preserving original/provenance; missing requested FinOps is an error.
 
 ## Quick Start
 
@@ -55,7 +68,7 @@ User: "Build the process ontology for the Caldova blueprint"
 - Asking questions about a Power BI report or semantic model: use the powerbi skill or the Fabric IQ plugin in Cowork
 - Building or updating the blueprint itself: use frontier-blueprint instead (this skill adds one page to it)
 - PRD, solution design and ADRs: use frontier-solution-design instead
-- Business value and costs: use frontier-value-case for the value case; use frontier-finops for the costs
+- Business value: frontier-value-case; requested costs: frontier-finops for its full Preview notice and confirmation first
 - Agent names, colours and icons: use frontier-agent-identity instead
 - Customer context from meetings, mail, chats and transcripts: use frontier-context-discovery instead
 - Running the whole engagement: use frontier-envisioning instead (it calls this skill as an optional step)
@@ -80,11 +93,17 @@ Follow [references/ontology-method.md](references/ontology-method.md):
 5. Data agents: up to five sources each, the journey's agents as consumers, five realistic example questions; publish to Microsoft 365 Copilot only after the data protection review (OD-ONT-4).
 6. Operations agents: natural-language rules and actions, approved by a named role in Teams.
 7. Common Data Model: the seed takes each entity type's standard entity, table and columns from `templates/cdm-map.json`; keep the business name and confirm the mapping with the data owner. Entries marked "to verify" are checked in the table definition browser; with no standard entity, keep a custom extension (OD-ONT-5).
-8. Semantic layer: silver tables `<namespace>_silver.<entity>` conformed to the Common Data Model (the ontology binds here), live events in `<namespace>_events`, a gold semantic model per journey in Direct Lake that owns the measures, one Fabric domain per journey (Purview: functional unit) and one for shared objects (Purview: data domain).
+8. Semantic layer: propose silver tables `<namespace>_silver.<entity>` conformed to the agreed canonical model, live events in `<namespace>_events` and a gold semantic model per journey owning measures. Propose Fabric/Purview domains with the data owner; none is created here.
 9. Data products: one per data agent product, with an accountable owner, business purpose, intended uses, access process and quality status; agent actions always need an additional review (R-ONT-7, OD-ONT-6).
 
 ### Step 4: Build and check
 `python scripts/build_ontology.py --ontology ontology.json --blueprint blueprint.normalized.json --out-dir <folder>`. Fix every error (names, keys, types, unknown ends, more than five sources). Read the warnings: unbound entity types, unknown agents or journeys, standard entities or columns that don't fit, entity types bound to a semantic model that a data agent uses (known issue R-ONT-2). It writes `ontology.ttl`, `ontology.md`, `data-products.md`, `data-agents.md` and `ontology.normalized.json`.
+
+Use `--strict` when warnings must block handoff. Invalid models or strict warnings
+fail before publishable writes; do not overwrite good artifacts or suppress
+mapping gaps. Customer projections must exclude internal-derived descriptions,
+bindings, instructions, products, rules, metrics and operations proposals, not
+just source IDs.
 
 ### Step 5: Blueprint page and publish
 1. Rebuild the blueprint with `--ontology ontology.json` (frontier-blueprint's `build_with_identity.py`): the Ontology page appears in Part 2 Design, the Fabric prerequisites in IT readiness and the ontology risks in the register.
@@ -100,7 +119,9 @@ Follow [references/ontology-method.md](references/ontology-method.md):
 - Grounding: how many entity types rest on a standard entity, which are custom, which mappings to verify; data products ready to publish and their gaps.
 - Gaps: entity types without binding, data products still to model, metrics without a measure.
 - The decisions to take (OD-ONT-1 to OD-ONT-6) and the preview caveats that matter for this customer.
-- How to use it: import `ontology.ttl` into a new, empty ontology (preview) item; keys, bindings, rules and metrics are set in Fabric (the ontology agent proposes bindings, a person applies them).
+- Manual next step: verify native import into an empty Fabric ontology (Preview)
+  item, then keys/bindings/rules/metrics and data-agent behaviour in the tenant.
+  Local exports and byte-parity tests do not prove that import or availability.
 
 ## Guardrails
 
@@ -135,4 +156,9 @@ Follow [references/ontology-method.md](references/ontology-method.md):
 - `templates/fabric-iq-canon.json`: Fabric IQ stack, paths, data architecture (medallion, domains, semantic models), data product standard, build steps, readiness, risks, decisions, Microsoft sources
 - `templates/cdm-map.json`: the Microsoft standard entity, table, key and columns per pattern entity type
 - `references/ontology-method.md`: how to model, ground in the Common Data Model, layer, publish data products, bind and ground agents
-- `examples/caldova-ontology.json`: the fictitious Caldova example (27 entity types, 24 on a standard entity, 18 data products, four data agents)
+- `examples/caldova-ontology.json`: fictitious Caldova; integrated D1 evidence
+  reports 27 entities, 33 relationships, 126 properties, nine sources, four data
+  agents and four semantic models; 18 data products plus one knowledge product
+  (19 unique products). Six integrated mappings remain to verify and Employee
+  has a binding gap. These differ from the catalogue's eleven unverified F&O
+  entries; neither scope is tenant verification.

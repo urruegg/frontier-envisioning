@@ -2,6 +2,29 @@
 
 Microsoft gives every building block for an agent cost model but no tool joins them: credits are reported in the Power Platform and Microsoft 365 admin centres, Azure meters in Cost Management, licences per user in Microsoft 365 billing, each with its own agent identifier. The model joins them per agent, in CHF, and keys them to the agent identity.
 
+## Preview boundary
+
+> Frontier FinOps is Preview. Its grounding and cost model are not GA and need refinement. Results are provisional planning estimates, not validated pricing, budget approval or purchase/commitment advice. Verify rates and assumptions independently before decisions.
+
+The rates, coverage rules and examples below describe the provisional model,
+not independently validated current pricing. Follow the [skill awareness
+gate](../SKILL.md#awareness-gate--before-any-cost-operation-or-figure) before
+operations, recommendations or figures. Each top-level seed/calc/apply or
+Preview-dependent value/feedback command needs `--acknowledge-finops-preview`
+after real current-scenario confirmation. Operational APIs default keyword-only
+`acknowledge_finops_preview=False`; arithmetic helpers grant no permission.
+Wrapper forwarding is one chain only. Renew for any new invocation/scope/model/
+rates/grounding. Caller metadata, old JSON/notes, installation or a GA claim is
+not human approval; imported/legacy FinOps is always Preview.
+
+Costs, derived ROI/NPV, unit economics, assumptions, PRD/design and exports retain
+the notice and scenario/model/rate/source provenance. Browser acknowledgement
+is separate, transient and document-local: reload resets it; no localStorage
+consent and the warning persists. Flat/nested results and linked assumptions
+are gated; unrelated ordinary value remains. Private components, rankings and
+outcomes are withheld, not zero; never recover `internal_notes`. This is not
+encryption or access control.
+
 ## Cost lines per agent and month
 
 | Line | Formula | Fixed or variable |
@@ -22,7 +45,10 @@ Microsoft gives every building block for an agent cost model but no tool joins t
 2. Swiss list prices (rates file): Microsoft 365 Copilot CHF 24.30, Copilot Business CHF 17.00, Microsoft 365 E7 CHF 85.92, Agent 365 CHF 12.10 per user and month, capacity pack CHF 162 per 25,000 credits; excluding VAT.
 3. USD list prices x the documented billing exchange rate. The rates file's 0.81 CHF per USD is the ratio implied by Swiss list prices; a single rate across products is an approximation (products differ), MCA converts monthly and EA uses the agreement currency.
 
-Every rate carries a source and a date; older than 90 days means "verify" on every output.
+Every rate carries a source and a date. Stale (older than 90 days) or unverified
+inputs may remain only as explicitly flagged draft gaps where allowed.
+Labelling them "verify" does not pass F1, validate pricing or satisfy a
+budget/purchase approval gate; obtain and record current verification first.
 
 ## Purchase options
 
@@ -33,7 +59,9 @@ Every rate carries a source and a date; older than 90 days means "verify" on eve
 | Copilot Credit P3 | best of nine tiers (300,000 credits 5% ... 300 million 20%) plus pay-as-you-go above the tier; one year, no refunds; below the smallest tier the unused commitment is lost |
 | Microsoft Agent P3 | best of three tiers (USD 20,000 5%, 100,000 10%, 500,000 15%) over credits plus eligible Foundry usage |
 
-The comparison basis is credits plus Agent-P3-eligible Azure usage. The cheapest option is a hypothesis: commit only after a usage baseline.
+The comparison basis is credits plus Agent-P3-eligible Azure usage. A lowest
+modelled option is provisional, not commitment advice. Independently verify
+prices, terms and assumptions; the real budget owner decides.
 
 ## Unit economics and scenarios
 
@@ -41,9 +69,12 @@ Cost per session and per successful outcome (FinOps for AI), compared with the h
 
 ## Gates
 
-- **F1** cost model complete: every MVP agent has usage drivers and rates no older than 90 days.
+- **F1** cost model complete: every MVP agent has usage drivers and current
+  verified rates no older than 90 days. Stale/unverified draft gaps do not pass;
+  F1 itself is not validated pricing or budget/purchase approval.
 - **F2** guardrails designed, each with an owner (references/guardrails.md).
-- **F3** (operate, planned for release 1.4) actuals flowing and the variance within the agreed threshold.
+- **F3** is the historical proposed operate-loop gate: actuals flowing and variance
+  within an agreed threshold. The old release-1.4 target is not delivery evidence.
 
 ## Data contract (abridged)
 
@@ -63,7 +94,13 @@ Cost per session and per successful outcome (FinOps for AI), compared with the h
  "guardrails": {"headroom": 0.25, "alerts": [0.5, 0.8, 1.0]}}
 ```
 
-Variables may refer to value-case assumptions (volumes); `finops_calc.py --value value.json` joins both registers.
+Variables may refer to value assumptions (volumes).
+After renewed confirmation,
+`python scripts/finops_calc.py --finops finops.json --value value.json --acknowledge-finops-preview`
+joins both registers. Cached/model/rates mismatch requires fresh calculation
+before apply; see [standalone apply](../SKILL.md#standalone-apply-after-renewed-confirmation).
+On decline, preserve originals and return to clean core/ordinary non-FinOps
+inputs, not cached Preview value; no automatic legacy-field removal is promised.
 
 ## Sources
 

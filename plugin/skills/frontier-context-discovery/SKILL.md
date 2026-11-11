@@ -24,6 +24,15 @@ metadata:
 
 Turns everything the account team and the Innovation Hub already know about a customer into one **context pack** (`customer-context.json`) and a readable **evidence log**. Every fact carries a citation to a source (meeting transcript with timestamp, email, chat, document or public page) and a visibility flag, so the blueprint built from it can separate the customer's own words from Microsoft hypotheses and from Microsoft-internal material.
 
+This is a GA product wrapper, not a confidence or provider-availability label,
+release or external/IP clearance. Discovery does not require FinOps. Collect
+ordinary cost facts with their source; do not calculate or repeat legacy Preview
+figures as GA. For requested cost modelling, load
+[frontier-finops](../frontier-finops/SKILL.md) to show its full Preview notice and
+obtain actual current-scenario confirmation before operations or figures.
+Decline/absent unrequested FinOps leaves an honest gap and discovery continues;
+a requested missing module is an explicit error.
+
 ## Quick Start
 
 ```
@@ -43,7 +52,7 @@ User: "Gather the customer context for Caldova, workshop on 12 November"
 
 ## When NOT to Use
 
-- Calculating what the agents cost: use frontier-finops instead (this skill only collects the cost facts).
+- Calculating what the agents cost: frontier-finops, after its Preview awareness gate (this skill only collects ordinary cost facts).
 - Calculating the value case: use frontier-value-case instead (this skill only collects the value inputs).
 - Building or updating the blueprint HTML: use **frontier-blueprint** (it reads this context pack)
 - Writing the PRD, solution design or ADRs: use **frontier-solution-design**
