@@ -30,36 +30,8 @@ import re
 import sys
 from pathlib import Path
 
-TC = "[To complete]"
-DECL = [("write_envelope", "Write envelope"), ("refusal_set", "Refusal set"), ("escalation_path", "Escalation path"),
-        ("grounding_sources", "Grounding sources"), ("data_classification", "Data classification"),
-        ("people_decisions", "People-decision surface"), ("measurement", "Measurement")]
-PLATFORM_FR = [
-    ("Every agent identifies itself as an agent at the start of any interaction and never presents itself as a person.", "Conversation review"),
-    ("Every agent operates within a declared write envelope (targets, fields, conditions); an undeclared write is not possible, not merely disallowed.", "Envelope document and negative test"),
-    ("Every agent has a declared refusal set and records each refusal with its reason.", "Refusal test suite"),
-    ("Every agent has a named escalation path to a human owner, reachable in Teams.", "Escalation test"),
-    ("No agent makes or communicates a decision about a person (hiring, pay, performance, promotion, exit); agents prepare, people decide.", "Behaviour review at design and release"),
-    ("Every process is implemented workflow-first; an agent is invoked only at steps that need reasoning a rule cannot express.", "Design review"),
-    ("The audit record is written by deterministic workflow steps, never left to the agent's discretion.", "Audit export review; forced-failure test"),
-    ("Every run surfaces its outcome, including everything it could not complete, to a named human owner. Silent partial success is a defect.", "Run-completion review"),
-    ("Writes to systems of record pass through declared actions that enforce read-before-write, an allow-list and idempotency server-side.", "Negative test: out-of-envelope call is rejected"),
-    ("Content from outside the platform (emails, documents, web pages, supplier or customer text) is treated as data, never as instruction.", "Prompt-injection test set"),
-]
-NFR = [
-    ("Security", "Every identity holds least privilege; agent identities, workflow/service identities and system-of-record credentials are distinct and separately scoped (Microsoft Entra Agent ID)."),
-    ("Security", "No long-lived secret where workload identity federation is available; unavoidable secrets live in Azure Key Vault with rotation."),
-    ("Security", "Conditional Access and Agent 365 policies apply to every agent identity; every agent is registered with an owner."),
-    ("Privacy", "No personal data in prompts, logs or telemetry beyond the references needed to act; retention is defined per artefact class."),
-    ("Privacy", "Processing and storage respect the customer's data residency requirements (Swiss / EU regions where available) and revFADP / GDPR."),
-    ("Governance", "A DLP policy covering the full connector inventory is applied to every environment before the first artefact is built."),
-    ("Governance", "Each agent carries a risk tier, an autonomy level and the seven declarations; release requires a named human approval."),
-    ("Reliability", "Integration calls retry with backoff inside the workflow or access layer, not in agent logic; writes are idempotent under retry."),
-    ("Operability", "Run status, outcome distribution, exception rate, evaluation scores and Copilot Credit consumption are observable without reading logs."),
-    ("Maintainability", "No environment-specific value is hard-coded; promotion uses managed solutions through a pipeline (DEV, TEST, PROD)."),
-    ("Availability", "Capacity and consumption are monitored and alerted in every environment so that runs are never blocked silently."),
-    ("Cost", "Reasoning is invoked only where needed; deterministic steps handle well-formed inputs; evaluation is budgeted as recurring spend."),
-]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from prd_model import DECL, TC, derive as prd_derive  # noqa: E402
 
 
 PRODUCTS = {"m365copilot": "Microsoft 365 Copilot", "agentbuilder": "Agent Builder", "copilotstudio": "Microsoft Copilot Studio",
@@ -157,124 +129,70 @@ def collect(bp: dict, ids: list[str]):
 
 
 def build_prd(bp, agents, doms, author, today) -> str:
+    """Render the shared PRD model, preserving canonical requirement IDs."""
     M = bp.get("meta", {})
-    F = bp.get("frontier", {})
+    P = prd_derive(bp, [a.get("id") for a, _ in agents])
+    A = bp.get("prd") if isinstance(bp.get("prd"), dict) else {}
     L = [f"# Product Requirements \u2014 {M.get('customer', 'Customer')} agentic platform (MVP)", ""]
-    L += table(["Field", "Value"], [["Version", "Draft 0.1"], ["Date", today], ["Author", author],
-                                    ["Status", "Draft for review"], ["Basis", f"Frontier Company Blueprint v{M.get('version', '0.1')} ({M.get('status', 'hypothesis')})"],
-                                    ["Scope", ", ".join(a.get("name") for a, _ in agents) or TC]])
+    L += table(["Field", "Value"], [["Version", A.get("version") or "Draft 0.1"], ["Date", today], ["Author", A.get("owner") or author],
+                                    ["Status", {"agreed": "Scope agreed in the workshop"}.get(str(A.get("status", "")).lower(), "Draft for review")],
+                                    ["Basis", P["basis"]], ["Scope", ", ".join(str(x["name"]) for x in P["scope"]) or TC]])
     L += ["## 1. Purpose", "",
           "This document states what the agentic platform must do, once, so that no individual agent has to restate it, and what each MVP agent must do on top. "
-          "A use-case requirement may add to the platform requirements; it may never weaken them.", ""]
-    L += ["## 2. Product vision", "", f"> {(bp.get('mission') or {}).get('statement') or TC}", "",
-          "Three commitments shape every requirement:", "",
-          "- **Systems of record stay authoritative.** The platform makes them easier to keep correct; it never becomes an alternative to them.",
-          "- **Agents act within declared envelopes.** What an agent may write is decided in advance, written down and enforced where the agent cannot reach it.",
-          "- **People decide.** Agents prepare the evidence; named people approve at the seam.", ""]
+          "A use-case requirement may add to the platform requirements; it may never weaken them. "
+          "It continues the PRD page of the blueprint (Part 1 Vision) with the same requirement ids.", ""]
+    if A.get("problem") or P["problems"]:
+        L += ["### 1.1 Problem", ""]
+        L += [f"- {x}" for x in as_list(A.get("problem"))]
+        for pr in P["problems"]:
+            L += [f"- {pr['name']} ({prov}): {text}" for prov, text in pr["items"]]
+        L += [""]
+    L += ["## 2. Product vision", "", f"> {P['vision'] or TC}", "", "Three commitments shape every requirement:", ""]
+    L += [f"- **{c[0]}** {c[1]}" for c in P["commitments"]] + [""]
+    if as_list(A.get("goals")):
+        L += ["### Goals", ""] + [f"- {g}" for g in as_list(A.get("goals"))] + [""]
+    if as_list(A.get("non_goals")):
+        L += ["### Non-goals", ""] + [f"- {g}" for g in as_list(A.get("non_goals"))] + [""]
     L += ["### 2.1 Maturity position", ""]
-    L += table(["Dimension", "Today", "Target"], [
-        ["Frontier phase (Work Trend Index)", f"Phase {F.get('current_phase', 1)}", f"Phase {F.get('target_phase', 3)}"],
-        ["Process automation level", f"Level {F.get('automation_current', 2)}", f"Level {F.get('automation_target', 3)}"]])
+    L += table(["Dimension", "Today", "Target"], P["maturity"])
     L += ["### 2.2 MVP scope", ""]
     L += table(["Agent", "Journey", "Autonomy", "Horizon", "What it proves"],
-               [[a.get("name"), d.get("name"), a.get("autonomy"), a.get("horizon"), a.get("proves") or TC] for a, d in agents])
-    L += ["**Exit test.** " + TC + " (for example: the second MVP costs materially less to build than the first because it reuses the platform).", ""]
+               [[x["name"], x["journey_name"], x["autonomy"], x["horizon"], x["proves"]] for x in P["scope"]])
+    L += ["**Exit test.** " + (A.get("exit_test") or (TC + " (for example: the second MVP costs materially less to build than the first because it reuses the platform).")), ""]
     L += ["## 3. Scope", "", "### 3.1 In scope", ""]
-    L += [f"- {a.get('name')}: {a.get('capability') or TC}" for a, _ in agents]
-    L += ["- The shared platform: identities, environments, DLP, workflow pattern, audit, observability", "", "### 3.2 Out of scope", "", f"- {TC}", ""]
-    L += ["## 4. Users and personas", ""]
-    rows = []
-    for d in doms:
-        for p in as_list(d.get("personas")):
-            rows.append([p.get("role"), d.get("name"), p.get("goal"), p.get("pain"), p.get("decides")])
-    L += table(["Persona", "Journey", "Goal", "Pain today", "Decides"], rows or [[TC, "", "", "", ""]])
+    L += [f"- {x['name']}: {x['capability']}" for x in P["scope"]]
+    L += ["- The shared platform: identities, environments, DLP, workflow pattern, audit, observability", "", "### 3.2 Out of scope", ""]
+    L += [f"- {x}" for x in as_list(A.get("out_of_scope"))] or [f"- {TC}"]
+    L += ["", "## 4. Users and personas", ""]
+    L += table(["Persona", "Journey", "Goal", "Pain today", "Decides"],
+               [[x["role"], x["journey_name"], x["goal"], x["pain"], x["decides"]] for x in P["personas"]] or [[TC, "", "", "", ""]])
     L += ["## 5. Functional requirements", "", "### 5.1 Platform (every agent)", ""]
-    n = 1
-    rows = []
-    for text, verify in PLATFORM_FR:
-        rows.append([f"FR-{n:04d}", text, "Must", verify])
-        n += 1
-    L += table(["ID", "Requirement", "Priority", "Verified by"], rows)
-    ac = 1
-    acs = []
-    for idx, (a, d) in enumerate(agents, start=2):
-        c = a.get("canvas") or {}
-        L += [f"### 5.{idx} {a.get('name')} ({d.get('name')})", "", f"{a.get('capability') or TC}", ""]
-        rows = []
-        for t in as_list(c.get("trigger") or a.get("trigger")):
-            rows.append([f"FR-{n:04d}", f"The agent run starts when: {t}", "Must", "Trigger test"])
-            n += 1
-        for step in as_list(c.get("plan")):
-            rows.append([f"FR-{n:04d}", step, "Must", "Functional test"])
-            n += 1
-        for ap_ in as_list(c.get("approval")):
-            rows.append([f"FR-{n:04d}", f"Approval seam: {ap_}", "Must", "Workflow test (state persisted at the gate)"])
-            n += 1
-        if c.get("outcome") or a.get("outcome"):
-            rows.append([f"FR-{n:04d}", f"Outcome: {c.get('outcome') or a.get('outcome')}", "Must", "Acceptance test"])
-            n += 1
-        L += table(["ID", "Requirement", "Priority", "Verified by"], rows or [[f"FR-{n:04d}", TC, "Must", ""]])
-        decl = a.get("declarations") or {}
+    L += table(["ID", "Requirement", "Priority", "Verified by"], [[r["id"], r["text"], r["priority"], r["verify"]] for r in P["platform"]])
+    for idx, ag in enumerate(P["agents"], start=2):
+        L += [f"### 5.{idx} {ag['name']} ({ag['journey_name']})", "", f"{ag['capability']}", ""]
+        L += table(["ID", "Requirement", "Priority", "Verified by"], [[r["id"], r["text"], r["priority"], r["verify"]] for r in ag["requirements"]])
         L += ["**The seven declarations**", ""]
-        L += table(["Declaration", "Value"], [[lbl, decl.get(k) or TC] for k, lbl in DECL])
-        for k, lbl in (("refusal_set", "refuses and records the reason when"), ("write_envelope", "never writes outside its envelope:"), ("measurement", "is measured by")):
-            if decl.get(k):
-                acs.append([f"AC-{ac:03d}", a.get("name"), f"The agent {lbl} {decl[k]}"])
-                ac += 1
+        L += table(["Declaration", "Value"], ag["declarations"])
     L += ["## 6. Non-functional requirements", ""]
-    L += table(["ID", "Category", "Requirement"], [[f"NFR-{i + 1:04d}", c, t] for i, (c, t) in enumerate(NFR)])
+    L += table(["ID", "Category", "Requirement"], [[x["id"], x["category"], x["text"]] for x in P["nfr"]])
     L += ["## 7. Acceptance criteria", ""]
-    L += table(["ID", "Agent", "Criterion"], acs or [["AC-001", TC, TC]])
+    L += table(["ID", "Agent", "Criterion"], [[x["id"], x["agent_name"], x["text"]] for x in P["acceptance"]] or [["AC-001", TC, TC]])
     L += ["## 8. KPIs and measurement", ""]
-    rows = []
-    for d in doms:
-        for k in as_list(d.get("kpis")):
-            rows.append([k.get("kpi"), d.get("name"), k.get("definition"), k.get("baseline"), k.get("target")])
-    L += table(["KPI", "Journey", "Definition", "Baseline", "Target"], rows or [[TC, "", "", "", ""]])
+    L += table(["KPI", "Journey", "Definition", "Baseline", "Target"],
+               [[k["kpi"], k["journey_name"], k["definition"], k["baseline"], k["target"]] for k in P["kpis"]] or [[TC, "", "", "", ""]])
     L += ["## 9. Roles and accountability", ""]
-    rows = [[a.get("name"), a.get("owner") or TC, "Agent boss: owns mandate, instructions and KPIs"] for a, _ in agents]
-    rows += [["Platform", "Customer IT / platform owner", "Environments, identities, DLP, ALM"],
-             ["Agent lifecycle", "Intelligence Resources (IT + HR)", "Registry, onboarding, upskilling, retirement"],
-             ["Security and privacy", "CISO / DPO", "Risk tier, data protection, release approval"]]
-    L += table(["Scope", "Accountable", "Responsibility"], rows)
+    L += table(["Scope", "Accountable", "Responsibility"], P["roles"])
     L += ["## 10. Dependencies", ""]
-    deps = []
-    for d in doms:
-        for u in as_list(d.get("use_cases")):
-            if u.get("mvp") or any(str(x).lower() in [a.get("name", "").lower() for a, _ in agents] for x in as_list(u.get("agents"))):
-                deps += as_list(u.get("dependencies"))
-    for m in as_list(bp.get("mvp_options")):
-        if m.get("needs"):
-            deps.append(m["needs"])
-    L += [f"- {x}" for x in dict.fromkeys(deps)] or [f"- {TC}"]
+    L += [f"- {x}" for x in P["dependencies"]] or [f"- {TC}"]
     L += ["", "## 11. Risks", ""]
-    risks = []
-    for d in doms:
-        for u in as_list(d.get("use_cases")):
-            risks += as_list(u.get("risks"))
-    risks += ["Prompt injection through outside content (mitigated by FR-0010 and declared write actions)",
-              "Preview capabilities change or are withdrawn (each preview item carries a status and an owner)"]
-    L += [f"- {x}" for x in dict.fromkeys(risks)] + [""]
+    L += [f"- {(r['id'] + ' ') if r.get('id') else ''}{r['title']}"
+          + (f" (score {r['score']:g}; mitigation: {r['mitigation']})" if r.get("score") else "") for r in P["risks"]] + [""]
     L += ["## 12. Open decisions", ""]
-    rows = []
-    i = 1
-    for d in doms:
-        for cat, qs in (d.get("discovery") or {}).items():
-            for q in as_list(qs):
-                if isinstance(q, dict) and str(q.get("status", "open")).lower() != "answered":
-                    rows.append([f"D-{i:02d}", f"{q.get('q')} ({d.get('name')} \u00b7 {cat})", TC])
-                    i += 1
-    L += table(["ID", "Decision needed", "Owner"], rows or [["D-01", TC, TC]])
-    L += ["## 13. Definition of Ready", "",
-          "- All seven declarations are written for every MVP agent and reviewed by its agent boss",
-          "- Data access confirmed: read path, declared write actions, service identity, test data under NDA",
-          "- Environments (DEV, TEST, PROD) and the DLP policy exist before the first artefact",
-          "- Licensing and Copilot Credit budget approved; capacity alerts configured",
-          "- Works council, data protection and security reviews scheduled where required", ""]
+    L += table(["ID", "Decision needed", "Owner"], [[x["id"], x["question"], x["owner"]] for x in P["decisions"]] or [["D-01", TC, TC]])
+    L += ["## 13. Definition of Ready", ""] + [f"- {x}" for x in P["definition_of_ready"]] + [""]
     L += ["## 14. Release plan", ""]
-    L += table(["Phase", "Scope", "Exit criterion"], [["MVP", "One journey stage, one region, read-only or narrow reversible write", TC],
-                                                     ["Pilot", "Declared writes after approval, real users", TC],
-                                                     ["Scale", "More regions and journeys on the same platform", TC]])
+    rp = [r for r in as_list(A.get("release_plan")) if isinstance(r, list) and len(r) >= 3] or P["release_plan_default"]
+    L += table(["Phase", "Scope", "Exit criterion"], rp)
     L += ["---", f"_Generated from the blueprint by the Frontier Envisioning plugin on {today}. Sections marked {TC} need the workshop evidence or the customer's input._"]
     return "\n".join(L) + "\n"
 

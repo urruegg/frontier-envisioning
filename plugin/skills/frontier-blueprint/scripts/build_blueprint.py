@@ -36,6 +36,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from canon import PILLARS, add_canon, fill_feedback_loop, load_defaults  # noqa: E402
 from workflow import fill_workflows  # noqa: E402
+from risks import fill_risks  # noqa: E402
+from prd_model import AUTHORED as PRD_AUTHORED, fill_prd  # noqa: E402
 
 PLACEHOLDER = '"__BLUEPRINT_DATA__"'
 HEX = re.compile(r"^#[0-9A-Fa-f]{6}$")
@@ -281,6 +283,27 @@ def clean_feedback_loop(bp: dict, rep: "Report") -> None:
                  "use Microsoft IQ, Work IQ, Fabric IQ, Foundry IQ or Web IQ")
 
 
+def clean_attendees(bp: dict, rep: "Report") -> None:
+    """Contributions are text or {text, src, at, focus}, backed by evidence."""
+    attendees = bp.get("attendees")
+    if attendees is None:
+        return
+    if not isinstance(attendees, dict):
+        rep.warn("attendees must be an object with people")
+        return
+    for i, person in enumerate(as_list(attendees.get("people"))):
+        if not isinstance(person, dict):
+            continue
+        who = person.get("name") or person.get("role") or f"people[{i}]"
+        contrib = [c for c in as_list(person.get("contributions")) if c]
+        bare = [c for c in contrib if not (isinstance(c, dict) and src_ids(c.get("src")))]
+        if bare and not src_ids(person.get("src")):
+            rep.warn(f"attendee {who}: {len(bare)} contribution(s) without evidence; cite the transcript or notes (src)")
+        for c in contrib:
+            if isinstance(c, dict) and not str(c.get("text") or "").strip():
+                rep.warn(f"attendee {who}: a contribution has no text")
+
+
 def normalise(bp: dict, rep: Report) -> dict:
     meta = bp.setdefault("meta", {})
     if not str(meta.get("customer", "")).strip():
@@ -468,12 +491,13 @@ def normalise(bp: dict, rep: Report) -> dict:
             for sid in src_ids(value):
                 if sid not in eids:
                     rep.warn(f"{path} cites {sid}, which is not in the evidence register")
-        if isinstance(value, str) and URL.search(value) and key not in ("source",) and not (key == "url" and path.startswith(("$.identity.rules", "$.value_case.sources", "$.finops.sources", "$.factory.resources", "$.factory.sources", "$.architecture.landing_zone.sources", "$.feedback_loop.sources", "$.logos_note"))):
+        if isinstance(value, str) and URL.search(value) and key not in ("source",) and not (key == "url" and path.startswith(("$.identity.rules", "$.value_case.sources", "$.finops.sources", "$.factory.resources", "$.factory.sources", "$.architecture.landing_zone.sources", "$.feedback_loop.sources", "$.logos_note"))) and path != "$.logos_note":
             rep.warn(f"{path} contains a URL; links are not rendered (keep sources in the evidence register)")
     clean_identity_block(bp, rep)
     clean_value_finops(bp, rep)
     clean_canon_blocks(bp, rep)
     clean_feedback_loop(bp, rep)
+    clean_attendees(bp, rep)
     walk(bp, check_src)
     return bp
 
@@ -485,6 +509,14 @@ def customer_version(bp: dict, rep: Report) -> dict:
     if internal_ids:
         rep.removed.append(f"internal evidence: {', '.join(sorted(internal_ids))}")
 
+    def hidden(obj):
+        if not isinstance(obj, dict):
+            return False
+        # A workshop verdict may add a public src without making the content
+        # it discusses public. content_src retains that independent provenance.
+        refs = src_ids(obj.get("content_src", obj.get("src")))
+        return obj.get("internal") is True or bool(refs and all(s in internal_ids for s in refs))
+
     def scrub(obj, path="$"):
         if isinstance(obj, dict):
             for k in list(obj.keys()):
@@ -492,24 +524,32 @@ def customer_version(bp: dict, rep: Report) -> dict:
                     del obj[k]
                     rep.removed.append(f"{path}.internal_notes")
                     continue
-                if k == "src":
+                if k in ("src", "content_src"):
                     kept = [s for s in src_ids(obj[k]) if s not in internal_ids]
                     if kept:
                         obj[k] = kept
                     else:
                         del obj[k]
                     continue
+                if hidden(obj[k]):
+                    del obj[k]
+                    rep.removed.append(f"{path}.{k} (internal-only content)")
+                    continue
                 scrub(obj[k], f"{path}.{k}")
         elif isinstance(obj, list):
             keep = []
             for i, v in enumerate(obj):
-                if isinstance(v, dict) and v.get("internal") is True:
-                    rep.removed.append(f"{path}[{i}] (flagged internal)")
+                if hidden(v):
+                    rep.removed.append(f"{path}[{i}] (internal-only content)")
                     continue
                 scrub(v, f"{path}[{i}]")
                 keep.append(v)
             obj[:] = keep
     scrub(out)
+    # Evaluate block visibility before projecting retained fields. Discard
+    # cached PRD copies afterwards; derive them again from scrubbed sources.
+    if isinstance(out.get("prd"), dict):
+        out["prd"] = {k: v for k, v in out["prd"].items() if k in PRD_AUTHORED}
     meta = out.setdefault("meta", {})
     terms = [t for t in as_list(meta.pop("internal_terms", None)) if str(t).strip()]
     meta["audience"] = "customer"
@@ -539,7 +579,15 @@ def stats(bp: dict) -> dict:
             "feedback_loop_areas": len(as_list((bp.get("feedback_loop") or {}).get("quadrants"))) if isinstance(bp.get("feedback_loop"), dict) else 0,
             "workflows": sum(1 for d in doms for a in as_list(d.get("agents")) + ([d["orchestrator"]] if isinstance(d.get("orchestrator"), dict) else [])
                              if isinstance(a, dict) and isinstance(a.get("canvas"), dict) and isinstance(a["canvas"].get("workflow"), dict)),
-            "product_icons": len(bp.get("logos") or {}) if isinstance(bp.get("logos"), dict) else 0}
+            "product_icons": len(bp.get("logos") or {}) if isinstance(bp.get("logos"), dict) else 0,
+            "risks": len(as_list((bp.get("risks") or {}).get("items"))) if isinstance(bp.get("risks"), dict) else 0,
+            "prd_requirements": (len(as_list((bp.get("prd") or {}).get("platform")))
+                                 + sum(len(as_list(x.get("requirements"))) for x in as_list((bp.get("prd") or {}).get("agents")) if isinstance(x, dict)))
+            if isinstance(bp.get("prd"), dict) else 0,
+            "contributions_with_evidence": sum(1 for p in as_list((bp.get("attendees") or {}).get("people")) if isinstance(p, dict)
+                                               for c in as_list(p.get("contributions"))
+                                               if c and ((isinstance(c, dict) and src_ids(c.get("src"))) or src_ids(p.get("src"))))
+            if isinstance(bp.get("attendees"), dict) else 0}
 
 
 def render(bp: dict, template: str) -> str:
@@ -565,7 +613,7 @@ def main(argv=None) -> int:
     ap.add_argument("--save-normalized", help="write the normalised JSON (stable ids) here")
     ap.add_argument("--strict", action="store_true", help="treat warnings as errors")
     ap.add_argument("--report", help="write the build report JSON here")
-    ap.add_argument("--canon", action="store_true", help="add missing Innovation Hub canon: Agent Factory journey, landing zone, canon ADRs, IT readiness, digital feedback loop")
+    ap.add_argument("--canon", action="store_true", help="add missing Innovation Hub canon: Agent Factory journey and plan board, landing zone, canon ADRs, IT readiness, digital feedback loop, canon risks")
     ap.add_argument("--defaults", default=str(DEFAULTS), help="canon defaults (templates/blueprint-defaults.json)")
     ap.add_argument("--no-product-icons", action="store_true", help="do not embed Microsoft and GitHub product icons")
     a = ap.parse_args(argv)
@@ -590,13 +638,19 @@ def main(argv=None) -> int:
         except (OSError, ValueError) as e:
             rep.warn(f"feedback loop not completed from the journeys: {e}")
     fill_workflows(bp, rep)
-    if not a.no_product_icons:
-        embed_product_icons(bp, rep, ICONS)
     audience = a.audience or str(bp.get("meta", {}).get("audience", "internal")).lower()
     if audience == "customer":
+        # Resolve bound content privacy while the original source still exists.
+        # Scrubbing it first loses new flags and legacy provenance recovery.
+        fill_risks(bp, rep)
         bp = customer_version(bp, rep)
     else:
         bp.setdefault("meta", {})["audience"] = "internal"
+    # Final models are derived from the scrubbed sources.
+    fill_risks(bp, rep)
+    fill_prd(bp, rep)
+    if not a.no_product_icons:
+        embed_product_icons(bp, rep, ICONS)
     if a.strict and rep.warnings:
         rep.errors += [f"(strict) {w}" for w in rep.warnings]
 

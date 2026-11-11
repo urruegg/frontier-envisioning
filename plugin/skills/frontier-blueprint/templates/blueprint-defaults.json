@@ -1425,7 +1425,18 @@
     "title": "Agent evaluation in Copilot Studio (Microsoft Learn)",
     "url": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/agents-experience/analytics-agent-evaluation-intro"
    }
-  ]
+  ],
+  "board": {
+   "title": "Plan: the Agent Factory board",
+   "intro": "Every agent of the blueprint on one DevOps board, from idea to design, build and deploy. A card moves when its Agent Factory checks are met (workshop verdict, canvas, declarations, identity, value, cost, IT readiness, owner), so the board changes live during the workshop.",
+   "phases": [
+    {"id": "idea", "name": "Idea", "stages": ["hypothesis", "validated"], "what": "From hypothesis to a validated use case and agent"},
+    {"id": "design", "name": "Design", "stages": ["designed", "ready"], "what": "Canvas, declarations, identity, value and cost until the Definition of Ready"},
+    {"id": "build", "name": "Build", "stages": ["build"], "what": "Built and evaluated with the GitHub Copilot harness in DEV and TEST"},
+    {"id": "deploy", "name": "Deploy and operate", "stages": ["release", "operate"], "what": "Released through the pipeline, then measured and improved"}
+   ],
+   "wip": {"designed": 6, "ready": 4, "build": 3, "release": 3}
+  }
  },
  "landing_zone": {
   "title": "Agent landing zone: one pattern for every agent",
@@ -2776,5 +2787,28 @@
     "Agent identities, Agent 365 registration and monitoring in place"
    ]
   ]
- }
+ },
+ "risk_canon": [
+  {"id": "R-C01", "title": "Over-automation: agents placed where a rule or a person should decide", "category": "rai",
+   "likelihood": 3, "impact": 4, "owner": "Agent boss of each agent",
+   "mitigation": "Workflow-first design review; autonomy one level lower at the start; a named person approves at every seam", "status": "open", "canon": true},
+  {"id": "R-C02", "title": "Prompt injection through mail, documents, supplier or web content", "category": "security",
+   "likelihood": 3, "impact": 4, "owner": "CISO",
+   "mitigation": "Outside content is data, never instruction; declared write actions with an allow-list; a prompt-injection test set in the evaluation pyramid", "status": "open", "canon": true},
+  {"id": "R-C03", "title": "Data in the systems of record is incomplete, or access is not approved in time", "category": "data",
+   "likelihood": 3, "impact": 4, "owner": "Data owner per journey",
+   "mitigation": "Read-only first; data and access items on the IT readiness page; test data under NDA before the prototype", "status": "open", "canon": true},
+  {"id": "R-C04", "title": "People keep their old way of working and bypass the agents", "category": "adoption",
+   "likelihood": 3, "impact": 3, "owner": "Journey leader",
+   "mitigation": "An agent boss and champions per journey; measured outcomes in the digital feedback loop; training before go-live", "status": "open", "canon": true},
+  {"id": "R-C05", "title": "Copilot Credit consumption above the plan", "category": "cost",
+   "likelihood": 3, "impact": 3, "owner": "FinOps owner",
+   "mitigation": "Budgets and alerts per environment; pay-as-you-go until a usage baseline exists; monthly plan versus actual", "status": "open", "canon": true},
+  {"id": "R-C06", "title": "Agents built outside the Agent Factory without owner, identity or registry entry", "category": "security",
+   "likelihood": 2, "impact": 4, "owner": "Platform owner",
+   "mitigation": "Microsoft Agent 365 registry and the agent identity kit; Definition of Ready before build; DLP policies in every environment", "status": "open", "canon": true},
+  {"id": "R-C07", "title": "Preview capabilities change or are withdrawn", "category": "technology",
+   "likelihood": 3, "impact": 2, "owner": "Microsoft account team",
+   "mitigation": "Dated availability with its source; every preview item has an owner and a fallback; verify before decisions", "status": "open", "canon": true}
+ ]
 }

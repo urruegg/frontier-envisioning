@@ -1560,8 +1560,8 @@
      "timeframe_note": "Catalogue and channel matrix exist; the Ariba action needs a test system.",
      "risk_score": 4,
      "risk_points": [
-      "Ariba requisition API access in TEST",
-      "Channel matrix kept current"
+      {"text": "Ariba requisition API access in TEST", "likelihood": 3, "impact": 4, "owner": "SAP Ariba platform owner"},
+      {"text": "Channel matrix kept current", "likelihood": 3, "impact": 2, "owner": "Head of Procurement Excellence"}
      ],
      "safeguards": "The employee confirms the requisition; approvals stay in SAP Ariba."
     },
@@ -2254,9 +2254,10 @@
      "timeframe_note": "Prototype in DEV first, then a pilot with one service region.",
      "risk_score": 3,
      "risk_points": [
-      "Works-council approval for voice processing",
-      "Speech quality on noisy sites",
-      "Field Service write actions need a security review"
+      {"text": "Works-council approval for voice processing", "likelihood": 4, "impact": 5, "owner": "Head of HR",
+       "mitigation": "Brief the works council before the pilot; aggregated telemetry only; the technician confirms every report"},
+      {"text": "Speech quality on noisy sites", "likelihood": 3, "impact": 3, "owner": "Head of Service Operations"},
+      {"text": "Field Service write actions need a security review", "likelihood": 3, "impact": 4, "owner": "CISO"}
      ],
      "safeguards": "The technician confirms every report; no write without confirmation; aggregated telemetry only."
     },
@@ -4021,6 +4022,15 @@
    "source": "Microsoft guidance (Work Trend Index, Cloud Adoption Framework, Azure Architecture Center)",
    "visibility": "customer",
    "summary": "Journey patterns, autonomy levels and the layered target architecture proposed by Microsoft for validation."
+  },
+  {
+   "id": "E08",
+   "type": "transcript",
+   "title": "Envisioning workshop: transcript and whiteboards (fictitious)",
+   "date": "2026-11-12",
+   "source": "Teams meeting transcript and whiteboard photos",
+   "visibility": "customer",
+   "summary": "Workshop at the Microsoft Innovation Hub Zurich: journeys, MVP choice, landing zone and the Agent Factory."
   }
  ],
  "factory": {
@@ -4504,7 +4514,18 @@
     "url": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/agents-experience/analytics-agent-evaluation-intro"
    }
   ],
-  "journey": "D5"
+  "journey": "D5",
+  "board": {
+   "title": "Plan: the Agent Factory board",
+   "intro": "Every agent of the blueprint on one DevOps board, from idea to design, build and deploy. A card moves when its Agent Factory checks are met (workshop verdict, canvas, declarations, identity, value, cost, IT readiness, owner), so the board changes live during the workshop.",
+   "phases": [
+    {"id": "idea", "name": "Idea", "stages": ["hypothesis", "validated"], "what": "From hypothesis to a validated use case and agent"},
+    {"id": "design", "name": "Design", "stages": ["designed", "ready"], "what": "Canvas, declarations, identity, value and cost until the Definition of Ready"},
+    {"id": "build", "name": "Build", "stages": ["build"], "what": "Built and evaluated with the GitHub Copilot harness in DEV and TEST"},
+    {"id": "deploy", "name": "Deploy and operate", "stages": ["release", "operate"], "what": "Released through the pipeline, then measured and improved"}
+   ],
+   "wip": {"designed": 6, "ready": 4, "build": 3, "release": 3}
+  }
  },
  "it_readiness": {
   "title": "IT readiness: prepare discovery and design",
@@ -5313,7 +5334,7 @@
   "title": "Workshop attendees and their contributions",
   "date": "12 November 2026 (fictitious)",
   "place": "Microsoft Innovation Hub, Zurich",
-  "note": "Caldova Industrial AG and every person here are fictitious; the page shows how contributions from the transcripts and whiteboards are recorded.",
+  "note": "Caldova Industrial AG and every person here are fictitious; each contribution cites the transcript, call or chat it comes from (with the time in the recording), so the page shows who contributed what and on which evidence.",
   "people": [
    {
     "name": "Anna Keller",
@@ -5325,11 +5346,11 @@
      "Service"
     ],
     "contributions": [
-     "Asked for one governed platform and one build path for every agent",
-     "Sponsors the Agent Factory pilot with two MVP agents"
+     {"text": "Asked for one governed platform and one build path for every agent", "src": ["E01"], "at": "00:06:20"},
+     {"text": "Sponsors the Agent Factory pilot with two MVP agents", "src": ["E08"], "at": "01:42:10"}
     ],
     "src": [
-     "E01"
+     "E01", "E08"
     ]
    },
    {
@@ -5342,11 +5363,11 @@
      "Agent Factory"
     ],
     "contributions": [
-     "Proposed GitHub as the engineering control plane, subject to the security approval",
-     "Wants agent names and icons agreed before the first DEV save"
+     {"text": "Proposed GitHub as the engineering control plane, subject to the security approval", "src": ["E08"], "at": "02:15:40"},
+     {"text": "Wants agent names and icons agreed before the first DEV save", "src": ["E01"], "at": "00:21:05"}
     ],
     "src": [
-     "E01"
+     "E01", "E08"
     ]
    },
    {
@@ -5359,12 +5380,12 @@
      "Voice-to-service report"
     ],
     "contributions": [
-     "Technicians write reports in the evening: about 15 minutes per job",
-     "About 12% of jobs need a second visit; missing report data is one cause"
+     {"text": "Technicians write reports in the evening: about 15 minutes per job", "src": ["E05"], "at": "00:07:40"},
+     {"text": "About 12% of jobs need a second visit; missing report data is one cause", "src": ["E05"], "at": "00:11:05"}
     ],
     "quote": "If the report is done before the technician leaves the site, everybody wins.",
     "src": [
-     "E05"
+     "E05", "E08"
     ]
    },
    {
@@ -5376,10 +5397,10 @@
      "Service"
     ],
     "contributions": [
-     "Dispatch needs the confirmed report to plan follow-up visits the same day"
+     {"text": "Dispatch needs the confirmed report to plan follow-up visits the same day", "src": ["E05"], "at": "00:18:30"}
     ],
     "src": [
-     "E05"
+     "E05", "E08"
     ]
    },
    {
@@ -5392,11 +5413,11 @@
      "Guided buying and intake"
     ],
     "contributions": [
-     "About a quarter of indirect spend bypasses catalogues and frame contracts",
-     "Guided buying must route to SAP Ariba, never around it"
+     {"text": "About a quarter of indirect spend bypasses catalogues and frame contracts", "src": ["E06"]},
+     {"text": "Guided buying must route to SAP Ariba, never around it", "src": ["E08"], "at": "01:05:15"}
     ],
     "src": [
-     "E06"
+     "E06", "E08"
     ]
    },
    {
@@ -5408,9 +5429,9 @@
      "Finance"
     ],
     "contributions": [
-     "Value counts as cash only when a spend stops; released time is capacity"
+     {"text": "Value counts as cash only when a spend stops; released time is capacity", "src": ["E08"], "at": "02:48:00"}
     ],
-    "src": []
+    "src": ["E08"]
    },
    {
     "name": "Nina Graf",
@@ -5421,10 +5442,10 @@
      "Agent Factory"
     ],
     "contributions": [
-     "Facilitated the journeys and the MVP choice",
-     "Presented the landing zone and the Agent Factory"
+     {"text": "Facilitated the journeys and the MVP choice", "src": ["E08"]},
+     {"text": "Presented the landing zone and the Agent Factory", "src": ["E08"], "at": "02:05:00"}
     ],
-    "src": []
+    "src": ["E08"]
    },
    {
     "name": "Jonas Berger",
@@ -5435,9 +5456,9 @@
      "Voice-to-service report"
     ],
     "contributions": [
-     "Showed the GitHub Copilot harness and evaluation in Copilot Studio"
+     {"text": "Showed the GitHub Copilot harness and evaluation in Copilot Studio", "src": ["E08"], "at": "02:30:00"}
     ],
-    "src": []
+    "src": ["E08"]
    }
   ]
  },
@@ -5451,5 +5472,54 @@
    "4–6 months",
    "> 6 months"
   ]
+ },
+ "risks": {
+  "intro": "Risks raised in the calls and the workshop, the risks the use cases already name, and the Innovation Hub's standard risks of an agent programme. Rate them with the customer: likelihood and impact from 1 to 5.",
+  "items": [
+   {"id": "R-01", "title": "The seasonal service peak (November to February) limits technician time for the pilot", "category": "adoption",
+    "likelihood": 3, "impact": 3, "owner": "Head of Service Operations",
+    "mitigation": "Pilot with a technician panel of eight in one region; start after the peak planning in January",
+    "status": "open", "journeys": ["D3"], "use_cases": ["UC09"], "agents": ["D3-A05"], "src": ["E05", "E08"], "origin": "workshop"},
+   {"id": "R-02", "title": "GitHub as the engineering control plane waits for the security approval", "category": "security",
+    "likelihood": 3, "impact": 3, "owner": "Head of Digital",
+    "mitigation": "Decision D-01 on the IT readiness page; the factory starts in Copilot Studio with solution export until the approval",
+    "status": "mitigating", "journeys": ["D5"], "src": ["E08"], "origin": "workshop"},
+   {"id": "R-03", "title": "Agent names and icons are not agreed before the first DEV save", "category": "people",
+    "likelihood": 2, "impact": 3, "owner": "Head of Digital",
+    "mitigation": "Identity kit proposal reviewed in the workshop; process owners approve the names before DEV",
+    "status": "open", "src": ["E01"], "origin": "workshop"},
+   {"id": "R-C01", "title": "Over-automation: agents placed where a rule or a person should decide", "category": "rai",
+    "likelihood": 3, "impact": 4, "owner": "Agent boss of each agent",
+    "mitigation": "Workflow-first design review; autonomy one level lower at the start; a named person approves at every seam", "status": "open", "canon": true},
+   {"id": "R-C02", "title": "Prompt injection through mail, documents, supplier or web content", "category": "security",
+    "likelihood": 3, "impact": 4, "owner": "CISO",
+    "mitigation": "Outside content is data, never instruction; declared write actions with an allow-list; a prompt-injection test set in the evaluation pyramid", "status": "open", "canon": true},
+   {"id": "R-C03", "title": "Data in the systems of record is incomplete, or access is not approved in time", "category": "data",
+    "likelihood": 4, "impact": 4, "owner": "Data owner per journey",
+    "mitigation": "Read-only first; test access or synthetic data for the prototype (IT readiness P-27); test data under NDA before the build", "status": "open", "canon": true},
+   {"id": "R-C04", "title": "People keep their old way of working and bypass the agents", "category": "adoption",
+    "likelihood": 3, "impact": 3, "owner": "Journey leader",
+    "mitigation": "An agent boss and champions per journey; measured outcomes in the digital feedback loop; training before go-live", "status": "open", "canon": true},
+   {"id": "R-C05", "title": "Copilot Credit consumption above the plan", "category": "cost",
+    "likelihood": 2, "impact": 3, "owner": "FinOps owner",
+    "mitigation": "Budgets and alerts per environment; pay-as-you-go until a usage baseline exists; monthly plan versus actual; pay-as-you-go agreed for the pilot (FinOps page)", "status": "open", "canon": true},
+   {"id": "R-C06", "title": "Agents built outside the Agent Factory without owner, identity or registry entry", "category": "security",
+    "likelihood": 2, "impact": 4, "owner": "Platform owner",
+    "mitigation": "Microsoft Agent 365 registry and the agent identity kit; Definition of Ready before build; DLP policies in every environment", "status": "open", "canon": true},
+   {"id": "R-C07", "title": "Preview capabilities change or are withdrawn", "category": "technology",
+    "likelihood": 3, "impact": 2, "owner": "Microsoft account team",
+    "mitigation": "Dated availability with its source; every preview item has an owner and a fallback; verify before decisions", "status": "open", "canon": true}
+  ]
+ },
+ "prd": {
+  "status": "hypothesis", "owner": "Microsoft Innovation Hub with Caldova Digital",
+  "problem": "Technicians and buyers re-key information between systems: service reports are written after hours, and indirect spend bypasses negotiated channels.",
+  "goals": ["Confirmed service reports within minutes of the job in the pilot region",
+   "A complete requisition in the right channel within minutes; less maverick buying",
+   "Prove the Agent Factory: the second MVP costs less to build than the first"],
+  "non_goals": ["No agent decides about people, prices or approvals", "No write to a system of record without a declared action and a person's confirmation"],
+  "out_of_scope": ["Customer-facing chat on the website", "Autonomous purchasing above the approval limit", "Replacing SAP Ariba or Dynamics 365 Field Service processes"],
+  "exit_test": "Both MVP agents run in TEST with real users of one region; the second MVP reuses the platform and costs less to build than the first.",
+  "src": ["E01", "E05", "E06"]
  }
 }
