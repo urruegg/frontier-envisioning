@@ -32,6 +32,46 @@ def fake_demo(root: Path) -> Path:
 
 
 class BuildSite(unittest.TestCase):
+    def test_explicit_preview_fixture_has_its_own_real_csp_and_auth(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            demo = fake_demo(root)
+            preview = root / "preview"
+            preview.mkdir()
+            preview_page = PAGE.replace('console.log("hi");', 'console.log("preview");')
+            (preview / fe_lib.DEMO_HTML_NAME).write_text(preview_page, encoding="utf-8")
+            out = root / "site"
+            build_site.build(out, demo, "entra", TENANT, preview_demo=preview)
+            self.assertEqual((out / "blueprint-preview.html").read_text(encoding="utf-8"), preview_page)
+            cfg = json.loads((out / "staticwebapp.config.json").read_text(encoding="utf-8"))
+            routes = {route["route"]: route for route in cfg["routes"]}
+            policy = routes["/blueprint-preview.html"]["headers"]["Content-Security-Policy"]
+            self.assertEqual(policy, build_site.csp_for(preview_page))
+            self.assertNotEqual(policy, routes["/blueprint.html"]["headers"]["Content-Security-Policy"])
+            self.assertEqual(routes["/blueprint-preview.html"]["allowedRoles"], ["authenticated"])
+            self.assertNotIn("unsafe-eval", policy)
+            self.assertNotIn("script-src 'unsafe-inline'", policy)
+            default_out = root / "default-site"
+            build_site.build(default_out, demo, "none", None)
+            self.assertFalse((default_out / "blueprint-preview.html").exists())
+
+    def test_invalid_preview_fixture_refuses_before_deleting_existing_site(self):
+        for invalid in (None, '<script src="https://cdn.example.com/x.js"></script>'):
+            with self.subTest(invalid=invalid), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                demo = fake_demo(root)
+                preview = root / "preview"
+                preview.mkdir()
+                if invalid is not None:
+                    (preview / fe_lib.DEMO_HTML_NAME).write_text(invalid, encoding="utf-8")
+                out = root / "site"
+                out.mkdir()
+                sentinel = out / "good.txt"
+                sentinel.write_bytes(b"good site")
+                with self.assertRaises(SystemExit):
+                    build_site.build(out, demo, "none", None, preview_demo=preview)
+                self.assertEqual(sentinel.read_bytes(), b"good site")
+
     def test_csp_allows_exactly_the_inline_script(self):
         csp = build_site.csp_for(PAGE)
         digest = base64.b64encode(hashlib.sha256('\nconsole.log("hi");\n'.encode()).digest()).decode()
