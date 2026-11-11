@@ -16,7 +16,7 @@ license: MIT
 metadata:
   category: productivity
   icon: Rocket
-  version: "1.7.1"
+  version: "1.9.1"
   plugin: frontier-envisioning
 ---
 

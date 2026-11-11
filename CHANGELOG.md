@@ -2,6 +2,12 @@
 
 Releases of the Frontier Envisioning plugin. Engineering changes to the repository are recorded in the pull requests.
 
+## 1.9.1 — unreleased
+
+- Selective 1.9 process/ontology intake and optional, explicitly acknowledged
+  Preview FinOps are in progress under SPRINT-004. Preserve GA product-core
+  designation separately from Preview dependencies and release acceptance.
+
 ## 1.7.1 — unreleased
 
 - **Four-part, seventeen-view blueprint.** Vision includes Use cases and the

@@ -19,7 +19,9 @@ class Handover17(unittest.TestCase):
 
     def test_integrated_version_is_distinct_from_received_release(self):
         plugin = json.loads((ROOT / "plugin/.claude-plugin/plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(plugin["version"], "1.7.1")
+        self.assertNotEqual(plugin["version"], "1.7.0")
+        manifest = json.loads((ROOT / "plugin/package/manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(plugin["version"], manifest["version"])
 
     def test_received_inventory_fingerprint_is_preserved(self):
         path = ROOT / "docs/intake/source-inventory-1.7.0.json"
