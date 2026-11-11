@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.7 |
+| Version | 0.8 |
 | Date | 2026-11-10 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
@@ -11,6 +11,7 @@
 
 | Sprint | Goal | State |
 |---|---|---|
+| [SPRINT-003](SPRINT-003-handover-1.7-intake.md) | Selective 1.7.1 feature intake, build and internal distribution | [#22](https://github.com/urruegg/frontier-envisioning/issues/22); design approved, plan proposed; implementation not started |
 | [SPRINT-002](SPRINT-002-anonymised-distribution.md) | Anonymised current references and validated distribution artifacts | [#20](https://github.com/urruegg/frontier-envisioning/issues/20); local strict gates, eleven-entry bundle and seven-skill offline install verification pass; internal candidate, review/clearance separate |
 | [SPRINT-001](SPRINT-001-docs-governance-and-accessibility.md) | Documentation foundations, governance, accessibility and linked plural-layout cleanup | #15 human-merged with L1/L2 evidence and final sign-off; #17 human-merged ownership correction. #18 cleanup tracked; policies Proposed, protected routing still open |
 
