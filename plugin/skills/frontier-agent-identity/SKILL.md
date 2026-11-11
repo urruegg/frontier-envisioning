@@ -14,7 +14,7 @@ license: MIT
 metadata:
   category: productivity
   icon: PaintBrush
-  version: "1.6.1"
+  version: "1.7.1"
   plugin: frontier-envisioning
 ---
 
@@ -46,6 +46,11 @@ User: "Create the agent identity kit for Caldova"
 Demo: "Build the identity kit demo for Caldova" runs step 5 with `examples/caldova-agent-identity.json` and `examples/caldova-palette.json` (fictitious brand).
 
 Every blueprint build already runs steps 3, 5 and 6 as a proposal (frontier-blueprint's `build_with_identity.py`). When the engagement folder has `identity/config/seed-report.md`, start at Step 4 with it.
+
+Agent identity remains in Design in the seventeen-view blueprint; the Build >
+Plan cards reuse its icons and names. Vision > PRD/scaffold requirements keep
+canonical IDs when selecting a subset. Plan readiness or a displayed identity
+status does not approve names, provision Entra identities or authorise deployment.
 
 ## When to Use
 
@@ -106,6 +111,8 @@ Publish the zip and `catalog.html` to output with `CopyArtifact`; save the kit f
 - Always show the proposed names, kinds and colours to the user before building the kit, and ask about every shortened name.
 - Do not use real customer data in test fixtures; the stamping tests build a synthetic solution.
 - Always keep Microsoft-internal notes out of the kit: it is a customer deliverable.
+- Preserve original copyright and Microsoft product-icon terms. An internally
+  prepared kit or customer-scrubbed blueprint is not external/IP sharing approval.
 
 ## Failure handling
 

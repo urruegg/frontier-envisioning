@@ -15,7 +15,7 @@ license: MIT
 metadata:
   category: productivity
   icon: DataTrending
-  version: "1.6.1"
+  version: "1.7.1"
   plugin: frontier-envisioning
 ---
 
@@ -74,6 +74,11 @@ The run cost of each use case comes from the FinOps results of its agents. Build
 ### Step 6: Prepare the workshop
 The Use cases page sizes the matrix bubbles by value (dashed while a hypothesis) and lists the assumptions ranked by their effect on the NPV, each with its owner and question. Put the top ten on the agenda ("Value and cost of the MVP agents", 45 minutes after the MVP choice) and build the customer version before anything leaves Microsoft.
 
+Use cases and the MVP PRD now sit in Vision; the shared PRD model includes the
+value of the selected use cases. Workshops > Risks also surfaces open value/cost
+assumptions. Keep assumption evidence and owners; a scope verdict or computed
+Plan readiness is not validation of value or permission to build.
+
 ### Step 7: Merge the workshop (gate V2)
 `python scripts/merge_value_feedback.py --value value.json --finops finops.json --feedback <customer>-workshop-feedback.json --date <YYYY-MM-DD>` applies confirm, adjust (with the agreed value) and reject; it writes a changelog and bumps the version. Rebuild to recalculate. Gate V2: the five most sensitive assumptions are confirmed or adjusted by their owners; then set `status` to `validated`.
 
@@ -95,6 +100,8 @@ A business value assessment document (docx skill, structure in the method refere
 - Never measure value per employee; aggregate per process, team or agent.
 - Always show the value tree and the assumptions to the user before calculating, and the customer version before sharing.
 - No ROI claims beyond the data: present ranges and the budget view next to the economic view.
+- Customer generation must exclude internal-derived value/risk/PRD content,
+  not merely remove its source IDs. Customer export is not external/IP clearance.
 
 ## Failure handling
 

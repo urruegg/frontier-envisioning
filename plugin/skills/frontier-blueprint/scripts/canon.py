@@ -37,7 +37,7 @@ def _norm(t) -> str:
     return re.sub(r"[^a-z0-9]+", " ", str(t or "").lower()).strip()
 
 
-def add_canon(bp: dict, dfl: dict, parts=("factory", "landing_zone", "adrs", "it_readiness", "feedback_loop")) -> list:
+def add_canon(bp: dict, dfl: dict, parts=("factory", "landing_zone", "adrs", "it_readiness", "feedback_loop", "risks")) -> list:
     added = []
     domains = bp.setdefault("domains", [])
     if "factory" in parts and dfl.get("factory") and not factory_domain(bp):
@@ -88,6 +88,21 @@ def add_canon(bp: dict, dfl: dict, parts=("factory", "landing_zone", "adrs", "it
     if "feedback_loop" in parts and dfl.get("feedback_loop") and not isinstance(bp.get("feedback_loop"), dict):
         bp["feedback_loop"] = feedback_loop(bp, dfl)
         added.append("digital feedback loop")
+    if "risks" in parts and dfl.get("risk_canon"):
+        reg = bp.get("risks")
+        if isinstance(reg, list):
+            reg = {"items": reg}
+        if not isinstance(reg, dict):
+            reg = {}
+        have = {x.get("id") for x in reg.get("items") or [] if isinstance(x, dict)}
+        titles = {_norm(x.get("title")) for x in reg.get("items") or [] if isinstance(x, dict)}
+        new = [copy.deepcopy(x) for x in dfl["risk_canon"] if x.get("id") not in have and _norm(x.get("title")) not in titles]
+        if new:
+            reg["items"] = list(reg.get("items") or []) + new
+            bp["risks"] = reg
+            added.append(f"{len(new)} canon risks")
+    if isinstance(bp.get("factory"), dict) and dfl.get("factory", {}).get("board") and not isinstance(bp["factory"].get("board"), dict):
+        bp["factory"]["board"] = copy.deepcopy(dfl["factory"]["board"])
     return added
 
 

@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
-| Date | 2026-11-10 |
+| Version | 0.3 |
+| Date | 2026-11-11 |
 | Author | Urs Rüegg; Copilot AI-assisted maintenance |
 | Status | Maintained; approval not inferred |
 | Scope | Repository overview and developer entry points; document revision, not product version |
@@ -11,23 +11,24 @@
 
 **Innovation Hub Frontier solution envisioning and architecture design, as a Copilot Cowork plugin.**
 
-Frontier Envisioning helps Microsoft Innovation Hub solution engineers prepare and run Frontier envisioning and architecture design workshops. It gathers the customer context from Work IQ and workshop transcripts, builds the interactive **Frontier Company Blueprint** along the Hub journey (vision, design, workshop), writes the PRD, solution design, ADRs and IT readiness checklist, creates the agent identity kit and models the business value and what the agents cost.
+Frontier Envisioning helps Microsoft Innovation Hub solution engineers prepare and run Frontier envisioning and architecture design workshops. It gathers the customer context from Work IQ and workshop transcripts, builds the interactive **Frontier Company Blueprint** along the Hub journey (Vision, Design, Build, Workshops in the development intake), writes the PRD, solution design, ADRs and IT readiness checklist, creates the agent identity kit and models the business value and what the agents cost.
 
 The identity kit supplies branding, not Entra identity provisioning. HubWorks is controlled source integration, not an assumed runtime loader; documents or harness selection do not prove deployed capability.
 
 | | |
 |---|---|
 | Current product baseline | **1.6.0** (8 November 2026), imported from Copilot Cowork; 1.4.0 records retained |
-| Development patch | **1.6.1**: bounded sticky navigation fixes the workflow legend overlap; not yet released |
+| Received handover | **1.7.0**: [source/manifest receipt](docs/intake/handover-1.7.0.md); incoming release claims are not independently verified |
+| Integrated development version | **1.7.1 — UNRELEASED**: selective four-part/seventeen-view intake; retains 1.6.1/A6 accessibility, privacy and provenance corrections; final acceptance pending |
 | Repository home | [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning), private; use approved work material only |
 | Sole maintainer | [@urruegg](https://github.com/urruegg), the public-cloud account; no second collaborator is implied |
 | Plugin licence | MIT (Microsoft product icons: see [THIRD-PARTY-NOTICES.md](plugin/THIRD-PARTY-NOTICES.md)) |
 | Demo data | the fictitious Caldova Industrial AG only |
-| Status | Intake: see [docs/engineering/intake-plan.md](docs/engineering/intake-plan.md) and milestone *M0 · Intake baseline* |
+| Status | [#22](https://github.com/urruegg/frontier-envisioning/issues/22): design and plan approved; implementation in progress in [SPRINT-003](docs/sprints/SPRINT-003-handover-1.7-intake.md). [M0 intake](docs/engineering/intake-plan.md) remains historical baseline evidence |
 
 ## Use the plugin
 
-1. Download `frontier-envisioning-plugin-<version>.zip` from the latest release (keep it zipped).
+1. Obtain an approved `frontier-envisioning-plugin-<version>.zip` (keep it zipped). The current 1.7.1 intake is not a published release.
 2. Attach it in a new Copilot Cowork chat and type **Install the Frontier PlugIn**.
 3. Approve each step. The user guide is [plugin/README.md](plugin/README.md).
 
@@ -79,6 +80,25 @@ Where supported, eligible prose goes to `docs-agent`, checker/code to `frontier-
 | L3 | tag `vX.Y.Z` (people, enabled explicitly) | strict L1 and L2 on the tag, bundle, pinned SBOM, provenance and `release-approval` before the draft release |
 
 ## Local intake status
+
+The received 1.7.0 features are being integrated selectively as unreleased
+1.7.1: Vision now includes Use cases and PRD; Design covers agents, identity,
+architecture and readiness; Build adds Plan beside Roadmap and FinOps; Workshops
+groups Attendees, Discovery, Risks and Evidence. The shared Python PRD model
+keeps page/scaffold IDs aligned for selected subsets. The risk register retains
+normalised source bindings and retired-ID history; discarding that record
+cannot guarantee old ID-only feedback identity. Attendee contributions cite
+evidence and transcript times.
+
+Plan CSV is handover data, not a live connector or native import certification.
+WIP/readiness and document metadata are not permission. Customer exports remove
+internal-derived content before final model generation, but are not external/IP
+clearance. The private source host and Microsoft-internal distribution boundary
+remain unchanged. See the [current PRD intake](docs/prd.md#171-development-intake)
+and [design intake](docs/solution-design.md#171-development-intake).
+P1 review passed; P3 reports 58 DOM and 50 browser tests, with read-only review,
+final strict L1 and finished distribution/install-plan acceptance still pending.
+No actual Cowork install, publication or deployment is claimed.
 
 The 1.6.1 development patch addresses [issue #4](https://github.com/urruegg/frontier-envisioning/issues/4). The sticky agent list is bounded by the upper summary; the workflow remains full width below it. Historical product records remain unchanged.
 

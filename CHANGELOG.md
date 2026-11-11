@@ -2,6 +2,38 @@
 
 Releases of the Frontier Envisioning plugin. Engineering changes to the repository are recorded in the pull requests.
 
+## 1.7.1 — unreleased
+
+- **Four-part, seventeen-view blueprint.** Vision includes Use cases and the
+  PRD; Design contains agents, identity, architecture and readiness; Build
+  groups Roadmap, Plan and FinOps; Workshops groups Attendees, Discovery, Risks
+  and Evidence. Part labels/descriptions are configurable; existing routes remain.
+- **Shared PRD model.** Identical Python model copies feed the PRD page,
+  Markdown download and design scaffold. Authored fields survive rebuilds and
+  canonical requirement IDs remain stable when selecting a subset.
+- **Delivery Plan.** Journey lanes, seven computed factory stages, four phases,
+  WIP limits, identity cards, owner/readiness/next step, journey/MVP filters and
+  CSV handover export. CSV is not live integration or native import certification;
+  computed readiness and metadata grant no permission.
+- **Risk register and feedback.** Derived use-case/readiness risks, canon and
+  authored/workshop entries share a heat map and live ratings. Risk and PRD scope
+  verdicts export/merge/rebuild; invalid ratings and unknown IDs are reported.
+  Normalised source bindings and retired-ID history prevent silent reassignment;
+  discarding that history cannot guarantee old ID-only feedback identity.
+- **Evidenced attendees.** Sessions, focus links and contributions cite sources
+  and transcript times; missing evidence is flagged.
+- **Preserved privacy and accessibility.** Risk provenance is resolved before
+  customer scrubbing; final risk/PRD models derive from scrubbed sources, keeping
+  internal-derived attendee/risk/PRD content out of embedded data and downloads.
+  A6 catalogue contrast, modal focus/inert handling, tabs, filters, SVG controls,
+  adaptive text, targets, bounded sticky layout and reflow are retained.
+  Original icon/copyright terms and historical release/raster records remain.
+- Selectively integrated from received 1.7.0, not a release. P1 review passed;
+  P3 reports 58 DOM and 50 browser tests. Integrated review, final strict L1 and
+  finished distribution/install-plan acceptance remain pending. The source host
+  stays private; internal development distribution is not external/IP clearance,
+  actual Cowork installation, publication, deployment or WCAG certification.
+
 ## 1.6.1 — 2026-11-09
 
 - **Anonymised distribution (2026-11-10, #20).** Current enterprise-account references and machine-specific examples are redacted; original intake file hashes and private history remain intact. Plugin and complete-bundle builds validate text, filenames and nested ZIP content/comments before writing output. The complete bundle excludes internal repository analyses. Distribution is assumed Microsoft internal, not public/customer clearance.

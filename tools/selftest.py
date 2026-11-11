@@ -12,7 +12,8 @@ Runs, in a temporary folder:
   4. build_blueprint.py on the Caldova example (internal and customer audiences); the agent workflows
      (authored, derived from the canvas plan, checked for unknown node types and agents)
   5. merge_feedback.py with a synthetic workshop feedback export
-  6. scaffold_design_docs.py for the MVP agents (with each MVP agent's workflow)
+  6. scaffold_design_docs.py for the MVP agents (with each MVP agent's workflow);
+     shared PRD model, Plan board, risk register, evidence-based contributions
   7. agent identity: read_office_theme.py on a synthetic deck, seed_identity.py from the Caldova blueprint,
      make_kit.py on the Caldova example (validator 0 errors, kit unit tests pass), apply_identity.py and a
      blueprint build with the Agent identity page; build_with_identity.py (blueprint and identity kit in one
@@ -237,6 +238,44 @@ def main() -> int:
               and "### 8.2 Definition of Ready" in sdoc and "Innovation Hub canon" in sdoc and "P-30" in rdoc and "R-15" in rdoc and "D-08" in rdoc)
         check("solution design lists each MVP workflow (trigger, nodes, branches)", "### Workflow: Service report from voice notes (Service Report Agent)" in sdoc
               and "| 3.1 | Connector | Transcribe the voice note |" in sdoc and "- Trigger: When an agent calls the workflow" in sdoc)
+
+        # DOM/browser tests verify the rendered parts; this check exercises the data flow.
+        part_input = json.loads(json.dumps(bpn))
+        part_input["parts"] = {
+            "vision": {"label": "Synthetic vision", "desc": "Requirements first"},
+            "design": {"label": "Synthetic design"}, "build": {"label": "Synthetic build"},
+            "workshops": {"label": "Synthetic workshop"},
+        }
+        (t / "parts-input.json").write_text(json.dumps(part_input), encoding="utf-8")
+        code, out = run(bb, ["--data", str(t / "parts-input.json"), "--save-normalized", str(t / "parts-output.json")])
+        part_output = json.loads((t / "parts-output.json").read_text(encoding="utf-8")) if code == 0 else {}
+        check("blueprint preserves authored part overrides and PRD/risk data",
+              code == 0 and part_output.get("parts") == part_input["parts"]
+              and bool(part_output.get("prd")) and bool((part_output.get("risks") or {}).get("items")), out[-300:])
+        bprd = bpn.get("prd") or {}
+        check("risk register, PRD and attendee evidence built from the blueprint", st1.get("risks") == 15 and st1.get("prd_requirements") == 35
+              and st1.get("contributions_with_evidence") == 13 and bprd.get("mvp_agents") == ["D2-A01", "D3-A05"]
+              and [r.get("id") for r in (bpn.get("risks") or {}).get("items", [])][:2] == ["R-UC09-1", "R-C03"]
+              and (bpn.get("factory") or {}).get("board", {}).get("phases", [{}])[0].get("id") == "idea", json.dumps(st1)[:300])
+        fr_ids = [r.get("id") for x in bprd.get("agents", []) for r in x.get("requirements", [])] + [r.get("id") for r in bprd.get("acceptance", [])]
+        check("PRD model identical in both skills; design/prd.md carries the same requirement ids",
+              (S / "frontier-blueprint/scripts/prd_model.py").read_bytes() == (S / "frontier-solution-design/scripts/prd_model.py").read_bytes()
+              and len(fr_ids) >= 20 and all(i in prd for i in fr_ids))
+        check("seed adds the Hub canon risks and the plan board", sum(1 for r in (seedbp.get("risks") or {}).get("items", []) if r.get("canon")) == 7
+              and len((seedbp.get("factory") or {}).get("board", {}).get("phases", [])) == 4)
+        fb4 = {"type": "frontier-blueprint-feedback", "blueprint": "caldova-industrial-frontier", "exported": "2026-11-12T16:00:00Z",
+               "validations": {"risk:R-UC09-1": {"status": "mitigating", "likelihood": 3, "impact": 5, "note": "Works council briefing booked"},
+                               "risk:R-C05": {"status": "rejected"}, "risk:R-X99": {"status": "open"},
+                               "prd:scope": {"status": "validated", "note": "Two MVP agents agreed"}}}
+        (t / "fb4.json").write_text(json.dumps(fb4), encoding="utf-8")
+        code, out = run(mf, ["--blueprint", str(t / "bp.json"), "--feedback", str(t / "fb4.json"), "--out", str(t / "bp5.json")])
+        code2, out2 = run(bb, ["--data", str(t / "bp5.json"), "--out", str(t / "bp5.html"), "--save-normalized", str(t / "bp6.json")])
+        m6 = json.loads((t / "bp6.json").read_text(encoding="utf-8")) if code == 0 and code2 == 0 else {}
+        r6 = {r.get("id"): r for r in (m6.get("risks") or {}).get("items", [])}
+        check("workshop verdicts update the risk register and the PRD (kept on rebuild)", code == 0 and code2 == 0
+              and (r6.get("R-UC09-1") or {}).get("score") == 15 and (r6.get("R-UC09-1") or {}).get("derived") is False
+              and (r6.get("R-C05") or {}).get("resolution") == "not a risk" and (m6.get("prd") or {}).get("status") == "agreed"
+              and sum(1 for r in (m6.get("risks") or {}).get("items", []) if r.get("id") == "R-UC09-1") == 1 and '"risk:R-X99"' in out, (out + out2)[-300:])
 
         # agent identity kit
         ai = S / "frontier-agent-identity"

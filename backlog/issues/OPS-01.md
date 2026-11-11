@@ -1,7 +1,7 @@
 ---
 id: OPS-01
 title: "Plan versus actual from the licensing, credit and cost reports"
-milestone: "1.7.0"
+milestone: "M1"
 labels: [type:feature, area:value-finops, priority:P2, size:L]
 ---
 ## Context

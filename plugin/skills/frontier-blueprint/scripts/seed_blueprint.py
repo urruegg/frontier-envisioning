@@ -194,11 +194,20 @@ def main(argv=None) -> int:
         if not st.get("name"):
             continue
         org = str(st.get("org", "customer")).lower()
+        said, who = [], str(st["name"]).strip().lower()
+        for f in as_list(ctx.get("facts")):
+            e = next((e for e in as_list(f.get("evidence")) if isinstance(e, dict) and e.get("source")
+                      and str(e.get("speaker") or "").strip().lower() == who), None)
+            if e and f.get("statement"):
+                said.append({k: v for k, v in {"text": f["statement"], "src": [str(e["source"])], "at": e.get("at")}.items() if v})
+        contrib = ([{"text": st["interests"], "src": cites(st)}] if st.get("interests") else []) + said[:5]
         people.append({"name": st["name"], "org": short if org == "customer" else ("Microsoft" if org == "microsoft" else st.get("org")),
-                       "role": st.get("role", ""), "focus": [], "contributions": [st["interests"]] if st.get("interests") else [], "src": cites(st)})
+                       "role": st.get("role", ""), "focus": sorted({f.get("journey") for f in as_list(ctx.get("facts")) if f.get("journey") and any(
+                           isinstance(e, dict) and str(e.get("speaker") or "").strip().lower() == who for e in as_list(f.get("evidence")))}),
+                       "contributions": contrib, "src": cites(st)})
     if people:
         bp["attendees"] = {"title": "Workshop attendees and their contributions", "date": eng.get("workshop_date", ""), "place": eng.get("location", ""),
-                           "note": "Roles and contributions are summarised from the workshop transcripts and whiteboards; names only for people who attended.",
+                           "note": "Roles and contributions are summarised from the workshop transcripts and whiteboards, each with its source and the time in the recording; names only for people who attended.",
                            "people": people}
     todo.append("attendees: after the workshop, each participant's focus (journeys, use cases) and contributions from the transcript and whiteboards")
     if added:

@@ -860,6 +860,74 @@ svg.wfsvg{display:block}
 .idt .agentlink{all:unset;display:inline-flex;cursor:pointer;min-width:24px;min-height:24px}
 .idt .agentlink:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 
+/* Four-part journey, PRD, plan and risk register. 2D boards scroll locally. */
+.partdesc{flex-basis:100%;font-size:12px;color:var(--muted)}
+button.linkp{min-width:24px;min-height:24px}
+.valbox input[type=radio]{width:24px;height:24px;min-width:24px;min-height:24px;flex-shrink:0}
+.filters select,.rpanel select{min-width:24px;min-height:24px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)}
+.tstamp{font-variant-numeric:tabular-nums;font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap}
+details.prdx{border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;margin:6px 0;background:var(--panel);min-width:0}
+details.prdx>summary{cursor:pointer;font-weight:700;min-height:24px}
+details.prdx[open]>summary{margin-bottom:6px}
+.prdag{border:1px solid var(--line-soft);border-inline-start:4px solid var(--accent);border-radius:6px;padding:10px 12px;margin:10px 0;background:var(--panel);min-width:0}
+.grid3.prd3 .panel{min-width:0;overflow-wrap:anywhere}
+.phsum{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:10px 0}
+.phs{border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;background:var(--panel);display:flex;flex-direction:column;gap:2px;border-block-start:4px solid var(--grey)}
+.phs b{font-size:20px;line-height:1.1}
+.phs span{font-weight:700;font-size:12.5px}
+.phs em{font-style:normal;font-size:12px;color:var(--muted)}
+.phs.ph-idea,.kbph.ph-idea{border-color:#8A8A8A}
+.phs.ph-design,.kbph.ph-design{border-color:var(--accent)}
+.phs.ph-build,.kbph.ph-build{border-color:#C19C00}
+.phs.ph-deploy,.kbph.ph-deploy{border-color:var(--ok)}
+.kbwrap{overflow-x:auto;max-width:100%;margin:10px 0;padding:3px 3px 6px}
+.kb{display:grid;grid-template-columns:128px repeat(var(--cols),minmax(150px,1fr));gap:4px;min-width:calc(128px + var(--cols) * 154px)}
+.kbcorner,.kbph,.kbst,.kblane,.kbcell{border-radius:6px;padding:6px 8px;min-width:0}
+.kbcorner{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;display:flex;align-items:flex-end}
+.kbph{background:var(--chip);border-block-start:4px solid var(--grey);font-weight:800;font-size:12px;text-align:center}
+.kbst{background:var(--chip);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px;font-size:12px}
+.kbst .cnt{background:var(--panel);border-radius:999px;padding:0 8px;font-weight:800;white-space:nowrap}
+.kbst.over{border:2px solid var(--warn)}
+.kblane{background:var(--chip);border-inline-start:4px solid var(--d);display:flex;flex-direction:column;gap:2px;font-size:12.5px;overflow-wrap:anywhere}
+.kbcell{background:var(--band);display:flex;flex-direction:column;gap:6px;min-height:46px}
+.kcard{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:7px 8px;border:1px solid var(--line-soft);border-inline-start:3px solid var(--d);border-radius:6px;background:var(--panel);color:var(--ink);font-size:12px;min-width:24px;min-height:24px}
+.kcard:hover{border-color:var(--accent)}
+.kcard:focus-visible,.hrk:focus-visible,.kbwrap:focus-visible,.rpanel:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.kch{display:flex;align-items:center;flex-wrap:wrap;gap:6px;min-width:0}
+.kch b{overflow-wrap:anywhere;flex:1 1 60px;min-width:0}
+.kch .aicon{width:24px;height:24px;flex:none}
+.kmeta{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.kmeta .pill{white-space:normal}
+.kprog{display:block;height:4px;border-radius:999px;background:var(--chip-2);overflow:hidden}
+.kprog i{display:block;height:100%;background:var(--ok)}
+.knext{font-size:12px;color:var(--muted);line-height:1.35}
+ol.dor{margin:6px 0 0;padding-inline-start:20px;font-size:12.5px}
+.pill.rsc.high{background:var(--bad-soft);color:var(--bad)}
+.pill.rsc.medium{background:var(--warn-soft);color:var(--warn)}
+.pill.rsc.low{background:var(--ok-soft);color:var(--ok)}
+.pill.orig{background:var(--panel);border:1px solid var(--line);color:var(--muted)}
+.riskgrid{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:14px;align-items:start;margin:10px 0}
+.heatwrap{display:grid;grid-template-columns:18px minmax(0,1fr);grid-template-rows:1fr auto;gap:4px;min-width:0}
+.hyl{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-size:11px;color:var(--muted);font-weight:700}
+.hxl{grid-column:2;text-align:center;font-size:11px;color:var(--muted);font-weight:700}
+.heat{display:grid;grid-template-columns:16px repeat(5,minmax(0,1fr));gap:3px;min-width:0}
+.hax{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted)}
+.hc{min-height:56px;border-radius:4px;padding:3px;display:flex;flex-wrap:wrap;gap:3px;align-content:flex-start;min-width:0}
+.hc.low{background:var(--ok-soft)}
+.hc.medium{background:var(--warn-soft)}
+.hc.high{background:var(--bad-soft)}
+.hrk{all:unset;box-sizing:border-box;cursor:pointer;font-size:11px;font-weight:800;padding:2px 4px;min-width:24px;min-height:24px;border-radius:8px;background:var(--panel);border:1px solid var(--line);color:var(--ink);overflow-wrap:anywhere;max-width:100%}
+.hrk[aria-pressed=true],.hrk:hover{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.rpanel{min-width:0;overflow-wrap:anywhere}
+.rpanel .ptitle{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:flex-start}
+.rpanel p{margin:6px 0;font-size:13px}
+.rpanel .row{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 6px}
+.rlinks{margin:4px 0;gap:4px}
+table.rreg tr.sel td{background:var(--accent-soft)}
+table.rreg td:nth-child(2){min-width:240px}
+@media(max-width:900px){.riskgrid{grid-template-columns:minmax(0,1fr)}}
+@media print{.kbwrap{overflow:visible}.kb{min-width:0}}
+
 /* Reflow text and cards, not the contents of locally scrollable 2D diagrams/tables. */
 @media (max-width:700px){
   header.top{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px}
@@ -1258,6 +1326,9 @@ var ICON = {
   readiness:'<rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 9l1.6 1.6L13 7.2"/><path d="M8 15l1.6 1.6L13 13.2"/><path d="M15 9.5h2.5M15 15.5h2.5"/>',
   identity:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16.2c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4"/><path d="M14.5 10h4M14.5 13.5h4"/>'
 };
+ICON.prd = ICON.evidence;
+ICON.plan = ICON.blueprint;
+ICON.risks = '<path d="M12 3L2 21h20zM12 9v5M12 17v1"/>';
 function icon(k){ var sp = document.createElement("span"); sp.className = "ic-wrap"; sp.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (ICON[k] || "") + '</svg>'; return sp; }
 
 /* ---------------- views and state ---------------- */
@@ -1266,21 +1337,34 @@ var VIEWS = [
   {id:"org", label:"Org model", part:"Vision"},
   {id:"blueprint", label:"Blueprint", part:"Vision"},
   {id:"journeys", label:"Journeys", part:"Vision"},
-  {id:"attendees", label:"Attendees", part:"Vision", need:function(){ return has(BP.attendees && BP.attendees.people); }},
+  {id:"usecases", label:"Use cases", part:"Vision", need:function(){ return UCS.length > 0; }},
+  {id:"prd", label:"PRD", part:"Vision", need:function(){ return !!(BP.prd && typeof BP.prd === "object" && !Array.isArray(BP.prd)); }},
   {id:"agents", label:"Agents", part:"Design"},
   {id:"identity", label:"Agent identity", part:"Design", need:function(){ return hasIdentity(); }},
   {id:"architecture", label:"Target architecture", part:"Design", need:function(){ return has(BP.architecture); }},
-  {id:"usecases", label:"Use cases", part:"Design", need:function(){ return UCS.length > 0; }},
   {id:"readiness", label:"IT readiness", part:"Design", need:function(){ return !!(BP.it_readiness && typeof BP.it_readiness === "object"); }},
-  {id:"finops", label:"FinOps", part:"Design", need:function(){ return !!FO; }},
+  {id:"roadmap", label:"Roadmap", part:"Build", need:function(){ return has(BP.next_steps) || has(BP.mvp_options) || D.some(function(d){ return has(d.horizon_plan); }); }},
+  {id:"plan", label:"Plan", part:"Build", need:function(){ return ALL.length > 0; }},
+  {id:"finops", label:"FinOps", part:"Build", need:function(){ return !!FO; }},
+  {id:"attendees", label:"Attendees", part:"Workshop", need:function(){ return has(BP.attendees && BP.attendees.people); }},
   {id:"discovery", label:"Discovery", part:"Workshop", need:function(){ return D.some(function(d){ return has(d.discovery); }); }},
-  {id:"roadmap", label:"Roadmap", part:"Workshop", need:function(){ return has(BP.next_steps) || has(BP.mvp_options) || D.some(function(d){ return has(d.horizon_plan); }); }},
+  {id:"risks", label:"Risks", part:"Workshop", need:function(){ return has(BP.risks && BP.risks.items); }},
   {id:"evidence", label:"Evidence", part:"Workshop", need:function(){ return has(BP.evidence); }}
 ];
-var PARTS = {Vision:"Part 1 \u00b7 Vision", Design:"Part 2 \u00b7 Design", Workshop:"Part 3 \u00b7 Workshop"};
+var PART_DEF = {
+  Vision:{key:"vision",label:"Part 1 \u00b7 Vision",desc:"Envisioning: from the hypothesis to the solution envisioning, the use cases and their business value"},
+  Design:{key:"design",label:"Part 2 \u00b7 Design",desc:"From the solution envisioning to the architecture design"},
+  Build:{key:"build",label:"Part 3 \u00b7 Build",desc:"From the approved design and scope to the build with the Agent Factory"},
+  Workshop:{key:"workshops",label:"Part 4 \u00b7 Workshops",desc:"Who took part and contributed what, open questions, risks and the evidence"}
+};
+var PARTS = {};
+Object.keys(PART_DEF).forEach(function(k){
+  var d = PART_DEF[k], o = BP.parts && (BP.parts[d.key] || BP.parts[k]) || {};
+  PARTS[k] = {label:o.label || d.label, desc:o.desc || d.desc};
+});
 var ORDER = VIEWS.filter(function(v){ return !v.need || v.need(); }).map(function(v){ return v.id; });
 function viewMeta(id){ for (var i = 0; i < VIEWS.length; i++) if (VIEWS[i].id === id) return VIEWS[i]; return VIEWS[0]; }
-var state = { view:"overview", flq:null, flPause:false, flPlay:false, d:0, agent:null, uc:null, archTab:null, lz:"P", lzLens:null, fstep:0, adrFilter:"all", adr:null, orgStage:3, orgDomain:null, labels:true, badges:true, discFilter:"all" };
+var state = { view:"overview", flq:null, flPause:false, flPlay:false, d:0, agent:null, uc:null, archTab:null, lz:"P", lzLens:null, fstep:0, adrFilter:"all", adr:null, orgStage:3, orgDomain:null, labels:true, badges:true, discFilter:"all", planLane:"all", planMvp:false, riskSel:null, riskCat:"all", riskStatus:"active" };
 var DOMAIN_VIEWS = ["blueprint","journeys","agents","discovery"];
 
 function readHash(){
@@ -1322,7 +1406,7 @@ function renderRail(){
   var lastPart = null;
   ORDER.forEach(function(id){
     var vm = viewMeta(id);
-    if (vm.part !== lastPart){ r.appendChild(h("div",{class:"grp"}, PARTS[vm.part])); lastPart = vm.part; }
+    if (vm.part !== lastPart){ r.appendChild(h("div",{class:"grp",title:PARTS[vm.part].desc}, PARTS[vm.part].label)); lastPart = vm.part; }
     r.appendChild(h("button",{type:"button","aria-current": state.view === id ? "page" : null, onclick:function(){ go(id); }}, icon(id), h("span",null, vm.label)));
   });
 }
@@ -1357,7 +1441,7 @@ function renderBanner(){
 function renderCrumb(){
   var c = document.getElementById("crumb");
   var vm = viewMeta(state.view), i = ORDER.indexOf(state.view);
-  c.replaceChildren(h("span",null, PARTS[vm.part]), h("span",{"aria-hidden":"true"},"\u203a"), h("b",null, vm.label), h("span",{class:"note"}, "(" + (i + 1) + " of " + ORDER.length + " \u00b7 arrow keys to move)"));
+  c.replaceChildren(h("span",{title:PARTS[vm.part].desc}, PARTS[vm.part].label), h("span",{"aria-hidden":"true"},"\u203a"), h("b",null, vm.label), h("span",{class:"note"}, "(" + (i + 1) + " of " + ORDER.length + " \u00b7 arrow keys to move)"), h("span",{class:"partdesc"}, PARTS[vm.part].desc));
 }
 function renderSubnav(){
   var t = document.getElementById("subnav");
@@ -2643,7 +2727,7 @@ function canvasOf(a){
   };
 }
 function cbox(title, v, cls, lg){ return h("div",{class:"c" + (cls ? " " + cls : "")}, h("h4",null,title), Array.isArray(v) ? (lg ? ulLogos(v) : ul(v)) : (lg && has(v) ? h("span",null, logosFor(String(v), 18), String(v)) : val(v))); }
-function valBox(kind, id){
+function valBox(kind, id, onStatusChange){
   var k = "val|" + kind + "|" + id, n = note(k);
   var name = "v-" + kind + "-" + id.replace(/\W/g,"_");
   var opts = [["validated","Validated"],["adjusted","Adjust"],["rejected","Reject"],["open","Open"]];
@@ -2652,7 +2736,10 @@ function valBox(kind, id){
     h("b",null,"Workshop validation"), h("span",{class:"note"}," \u00b7 saved in this browser; export it from Discovery"),
     h("div",{class:"opts",role:"radiogroup","aria-label":"Validation status"}, opts.map(function(o){
       var rid = name + "-" + o[0];
-      return h("label",{class:"opt",for:rid}, h("input",{type:"radio",id:rid,name:name,value:o[0],checked: n.status === o[0] ? true : null,onchange:function(){ setNote(k,{status:o[0]}); stEl.textContent = "Saved"; }}), o[1]);
+      return h("label",{class:"opt",for:rid}, h("input",{type:"radio",id:rid,name:name,value:o[0],checked: n.status === o[0] ? true : null,onchange:function(){
+        setNote(k,{status:o[0]}); stEl.textContent = "Saved";
+        if (onStatusChange) onStatusChange();
+      }}), o[1]);
     })),
     h("label",{class:"note",for:name + "-note"},"Notes from the discussion"),
     h("textarea",{id:name + "-note",placeholder:"What changed, what is missing, who owns it",oninput:function(e){ setNote(k,{note:e.target.value}); stEl.textContent = "Saved"; }}, n.note || ""),
@@ -2729,7 +2816,11 @@ function renderAttendees(){
       return h("article",{class:"person"},
         h("div",{class:"ph2"}, h("div",{class:"av2" + (o === "Microsoft" ? " ms" : ""),"aria-hidden":"true"}, initials(p.name)), h("div",null, h("h4",null, p.name || TBC), h("div",{class:"role"}, p.role || TBC), (p.where || p.team) ? h("div",{class:"note"}, [p.where, p.team].filter(Boolean).join(" \u00b7 ")) : null)),
         arr(p.focus).length ? h("div",{class:"tags"}, p.focus.map(function(f){ var t = attFocusTarget(f); return t ? h("button",{type:"button",class:"pill linkp",onclick:function(){ if (t.uc) openUseCase(t.uc); else go("journeys",{d:t.d}); }}, f) : h("span",{class:"pill"}, f); })) : null,
-        arr(p.contributions).length ? h("ul",{class:"clean contrib"}, p.contributions.map(function(c){ return h("li",null, itemText(c)); })) : null,
+        arr(p.contributions).length ? h("ul",{class:"clean contrib"}, p.contributions.filter(Boolean).map(function(c){
+          var o = typeof c === "object" ? c : {text:String(c)}, own = srcList(o.src), src = own.length ? own : srcList(p.src);
+          return h("li",null, o.text || o.name || "", o.at ? h("span",{class:"tstamp",title:"Time in the recording"}, " " + o.at) : null, " ",
+            src.length ? evPills(src) : h("span",{class:"pill open"},"No evidence yet"), own.length || !src.length ? null : h("span",{class:"note"}," (session)"));
+        })) : null,
         p.quote ? h("blockquote",{class:"quote"}, "\u201c" + p.quote + "\u201d") : null,
         h("div",null, evPills(p.src)));
     })));
@@ -2838,6 +2929,7 @@ function renderFactorySections(){
     out.push(h("h3",{class:"sub"},"Agent workflow: from hypothesis to handover and production"), lifecycleRow(L));
     out.push(h("p",{class:"note"},"Where each agent of this blueprint stands. The stage follows the workshop verdicts, the canvas and declarations, the identity, the value case, the cost model and IT readiness, so it moves live during the workshop."));
     out.push(factoryBoard(L));
+    out.push(h("div",{class:"btnrow"},pageLink("plan")));
   }
   out.push(h("h3",{class:"sub"},"Ready to hand over to build"), handoverTable());
   var steps = factorySteps();
@@ -3105,6 +3197,9 @@ function ucDetail(u){
       fld("Are sufficient safeguards available?", null, h("div",null, txt(u.safeguards), has(u.safeguard_points) ? ul(u.safeguard_points) : null))),
     has(u.dependencies) ? fld("Dependencies", null, ul(u.dependencies)) : null));
   return h("div",{class:"ucdetail",id:"ucdetail"}, head, general, h("div",{class:"grid2 ucgrid"}, value, feas),
+    (function(){ var risks = riskItems().filter(function(r){ return arr(r.use_cases).indexOf(u.id) >= 0; });
+      return risks.length ? h("div",{class:"btnrow uc-risk-links"},h("b",null,"Risk register"),risks.map(function(r){ return riskLink(r.id); })) : null;
+    })(),
     h("p",{class:"note"}, "Evidence: ", evPills(u.src) || "Microsoft hypothesis", u.source_note ? " \u00b7 " + u.source_note : ""), valBox("uc", u.id));
 }
 
@@ -3747,6 +3842,8 @@ function notesText(){
   PILLAR_ORDER.forEach(function(pk){ var n = note("val|loop|" + pk); if (n.status || n.note) L.push("- Feedback loop \u00b7 " + PILLARS[pk].label + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });
   var nf = note("val|finops|model"); if (nf.status || nf.note) L.push("- FinOps model: " + (nf.status || "") + (nf.note ? " \u2014 " + nf.note : ""));
   var ni = note("val|identity|names"); if (ni.status || ni.note) L.push("- Agent identity (names, colours, icons): " + (ni.status || "") + (ni.note ? " \u2014 " + ni.note : ""));
+  var np = note("val|prd|scope"); if (np.status || np.note) L.push("- PRD scope: " + (np.status || "") + (np.note ? " \u2014 " + np.note : ""));
+  riskItems().forEach(function(r){ var n = note("val|risk|" + r.id), k = rk(r); if (n.status || n.note || n.likelihood || n.impact) L.push("- Risk " + r.id + " " + r.title + ": " + k.status + " \u00b7 Likelihood " + k.L + ", impact " + k.I + " (score " + k.score + ")" + (n.note ? " \u2014 " + n.note : "")); });
   UCS.forEach(function(u){ var n = note("val|uc|" + u.id); if (n.status || n.note) L.push("- Use case " + u.id + " " + u.name + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });
   return L.join("\n");
 }
@@ -3784,7 +3881,7 @@ function renderRoadmap(){
     });
     return h("div",{class:"col"}, h("h4",null, z.h + " \u00b7 " + (z.label || "")), h("div",{class:"rng"}, z.meaning || ""), cards.length ? cards : h("p",{class:"tbc"},TBC));
   }));
-  var out = [h("h2",{class:"sec"},"Roadmap and next steps"), BP.roadmap_intro ? h("p",{class:"lead"}, BP.roadmap_intro) : null, cols];
+  var out = [h("h2",{class:"sec"},"Roadmap and next steps"), BP.roadmap_intro ? h("p",{class:"lead"}, BP.roadmap_intro) : null, h("div",{class:"btnrow"},pageLink("plan")), cols];
   if (arr(BP.mvp_options).length){
     out.push(h("h3",{class:"sub"},"MVP candidates"));
     out.push(h("div",{class:"mvp"}, BP.mvp_options.map(function(m){
@@ -3824,8 +3921,297 @@ function renderEvidence(){
     stats, internal ? h("p",{class:"note"}, h("span",{class:"pill int"},"Internal"), " " + internal + " source" + (internal === 1 ? " is" : "s are") + " Microsoft-internal. Build the customer version before sharing.") : null, table];
 }
 
+/* ---------------- PRD: the shared Python model, not independently numbered requirements ---------------- */
+function dataTable(cols, rows, cls){
+  return h("div",{class:"tscroll"}, h("table",{class:"t " + (cls || "")},
+    h("thead",null, h("tr",null, cols.map(function(c){ return h("th",{scope:"col"}, c); }))),
+    h("tbody",null, rows.map(function(row){ return h("tr",null, row.map(function(c){ return h("td",null, c); })); }))));
+}
+function prdStatus(){
+  var st = String(note("val|prd|scope").status || (BP.prd || {}).status || "hypothesis").toLowerCase();
+  return {agreed:"validated",draft:"hypothesis"}[st] || st;
+}
+function prdRequirements(P){ return arr(P.platform).concat(arr(P.agents).reduce(function(out, a){ return out.concat(arr(a.requirements)); }, [])); }
+function reqRows(rows){ return arr(rows).map(function(r){ return [r.id, r.text || TBC, r.priority || "Must", r.verify || TBC]; }); }
+function prdRelease(P){ var rows = arr(P.release_plan).filter(function(r){ return Array.isArray(r) && r.length >= 3; }); return rows.length ? rows : arr(P.release_plan_default); }
+function prdValues(){
+  return arr((BP.prd || {}).use_cases).map(function(x){
+    var u = ucById(x.id), v = u && valueOf(u), res = v && (v.results || v);
+    if (!v) return null;
+    var st = v.status || "hypothesis", label = (STATUS[String(st).toLowerCase()] || {label:st}).label;
+    return {name:x.id + " \u00b7 " + x.name, status:st, statusLabel:label,
+      summary:[num(res.npv) ? "NPV " + chf(res.npv, true) : null, num(res.roi) ? "ROI " + pct(res.roi) : null,
+        num(res.payback_months) ? "payback " + res.payback_months.toFixed(1) + " months" : null].filter(Boolean).join(" \u00b7 ")};
+  }).filter(Boolean);
+}
+function prdValue(){
+  return h("ul",{class:"clean"}, prdValues().map(function(v){
+    return h("li",null, h("b",null, v.name), " ", v.summary, " ", statusPill(v.status));
+  }));
+}
+function renderPrd(){
+  var P = BP.prd || {}, fr = prdRequirements(P), stEl = h("span",{class:"status",role:"status"});
+  var scopeBadge = statusPill(prdStatus());
+  scopeBadge.setAttribute("role","status");
+  function updateScopeBadge(){
+    var next = statusPill(prdStatus());
+    scopeBadge.className = next.className;
+    scopeBadge.textContent = next.textContent;
+  }
+  var reqCols = ["ID","Requirement","Priority","Verified by"];
+  var out = [h("h2",{class:"sec"}, P.title || "Product requirements (PRD)"),
+    h("p",{class:"lead"},"What the first agents must do, from the use cases and business value. The solution design continues with the same FR, NFR and AC requirement IDs. Hypotheses are not approvals. ", evPills(P.src)),
+    h("div",{class:"idstrip"}, scopeBadge, P.basis ? h("span",{class:"pill"}, P.basis) : null,
+      h("span",{class:"pill acc"}, arr(P.scope).length + " MVP agents"), h("span",{class:"pill"}, fr.length + " functional requirements"),
+      h("span",{class:"pill"}, arr(P.nfr).length + " non-functional"), h("span",{class:"pill"}, arr(P.acceptance).length + " acceptance criteria"),
+      P.owner ? h("span",{class:"pill"},"Owner \u00b7 " + P.owner) : null),
+    h("div",{class:"btnrow"}, h("button",{type:"button",class:"btn",onclick:function(){
+      download(fileSlug() + "-prd.md", prdMarkdown(), "text/markdown;charset=utf-8", stEl);
+    }},"Download the PRD (Markdown)"), pageLink("risks"), pageLink("plan"), stEl),
+    h("h3",{class:"sub"},"1 \u00b7 Problem and vision"), P.problem ? h("p",null, h("b",null, P.problem)) : null,
+    h("ul",{class:"clean"}, arr(P.problems).map(function(pr){
+      return h("li",null, h("b",null, pr.name || pr.use_case), ul(arr(pr.items).map(function(x){ return x[0] + ": " + x[1]; })), evPills(pr.src));
+    })), h("blockquote",{class:"quote"}, P.vision || TBC), ul(arr(P.commitments).map(function(c){ return c.join(" "); })),
+    h("h3",{class:"sub"},"2 \u00b7 Goals and how success is measured"),
+    h("div",{class:"grid2"}, h("div",null, h("h4",null,"Goals"), ul(P.goals)), h("div",null, h("h4",null,"Non-goals"), ul(P.non_goals))),
+    dataTable(["Maturity","Current","Target"], arr(P.maturity)),
+    dataTable(["KPI","Journey","Baseline","Target"], arr(P.kpis).map(function(k){ return [h("span",null, h("b",null, k.kpi), k.definition ? h("div",{class:"note"}, k.definition) : null), k.journey_name, k.baseline || TBC, k.target || TBC]; })), prdValue(),
+    h("h3",{class:"sub"},"3 \u00b7 Scope of the MVP"),
+    dataTable(["Agent","Journey","Autonomy","Horizon","What it proves"], arr(P.scope).map(function(x){ return [AG[x.agent] ? agentChip(AG[x.agent],true) : x.name, x.journey_name, x.autonomy || TBC, x.horizon || TBC, x.proves || TBC]; })),
+    h("div",{class:"btnrow"}, arr(P.use_cases).map(function(x){ var u = ucById(x.id); return u ? h("button",{type:"button",class:"pill linkp",onclick:function(){ openUseCase(u); }}, x.id + " \u00b7 " + x.name) : null; })),
+    h("div",{class:"grid2"}, h("div",null, h("h4",null,"In scope"), ul(arr(P.scope).map(function(x){ return x.name + ": " + x.capability; }))),
+      h("div",null, h("h4",null,"Out of scope"), ul(P.out_of_scope))),
+    h("div",{class:"callout"}, h("b",null,"Exit test \u00b7 "), P.exit_test || TBC),
+    h("h3",{class:"sub"},"4 \u00b7 Users"), dataTable(["Persona","Journey","Goal","Pain today","Decides"], arr(P.personas).map(function(x){ return [x.role, x.journey_name, x.goal || TBC, x.pain || TBC, x.decides || TBC]; })),
+    h("h3",{class:"sub"},"5 \u00b7 Functional requirements"),
+    h("details",{class:"prdx"}, h("summary",null,"Platform: " + arr(P.platform).length + " requirements every agent meets"), dataTable(reqCols, reqRows(P.platform), "req"))];
+  arr(P.agents).forEach(function(x){
+    out.push(h("section",{class:"prdag"}, h("h4",null, x.name), h("div",{class:"btnrow"}, AG[x.agent] ? agentChip(AG[x.agent]) : null),
+      h("p",null, x.capability || TBC), dataTable(reqCols, reqRows(x.requirements), "req"),
+      h("details",{class:"prdx"}, h("summary",null,"The seven declarations"), dataTable(["Declaration","Mandate"], arr(x.declarations)))));
+  });
+  out.push(h("h3",{class:"sub"},"6 \u00b7 Non-functional requirements"),
+    h("details",{class:"prdx"}, h("summary",null, arr(P.nfr).length + " non-functional requirements"),
+      dataTable(["ID","Category","Requirement"], arr(P.nfr).map(function(r){ return [r.id,r.category,r.text]; }), "prd-nfr")),
+    h("h3",{class:"sub"},"7 \u00b7 Acceptance criteria"), dataTable(["ID","Agent","Criterion"], arr(P.acceptance).map(function(r){ return [r.id, AG[r.agent] ? agentChip(AG[r.agent],true) : r.agent_name, r.text]; })),
+    h("h3",{class:"sub"},"8 \u00b7 Dependencies, risks and open decisions"),
+    h("div",{class:"grid3 prd3"}, h("div",{class:"panel"}, h("h4",null,"Dependencies"), ul(P.dependencies)),
+      h("div",{class:"panel"}, h("h4",null,"Risks"), h("ul",{class:"clean"}, arr(P.risks).map(function(r){ return h("li",null, riskLink(r.id), " " + r.title, r.score ? h("span",{class:"pill rsc " + riskLevel(r.score)}, String(r.score)) : null); }))),
+      h("div",{class:"panel"}, h("h4",null,"Open decisions"), ul(arr(P.decisions).map(function(x){ return x.id + ": " + x.question; })))),
+    h("h3",{class:"sub"},"9 \u00b7 Release plan and Definition of Ready"),
+    dataTable(["Phase","Scope","Exit criterion"], prdRelease(P)), h("h4",null,"Definition of Ready (before the build)"), ul(P.definition_of_ready), pageLink("plan"),
+    h("h3",{class:"sub"},"Workshop verdict on the MVP scope"), valBox("prd","scope",updateScopeBadge));
+  return out;
+}
+function mdTable(cols, rows){
+  function esc(x){ return String(x === undefined || x === null || x === "" ? "[To complete]" : x).replace(/\|/g, "\\|").replace(/\r?\n/g, " "); }
+  return ["| " + cols.join(" | ") + " |", "|" + cols.map(function(){ return "---"; }).join("|") + "|"]
+    .concat(rows.map(function(r){ return "| " + r.map(esc).join(" | ") + " |"; })).concat([""]);
+}
+function prdMarkdown(){
+  var P = BP.prd || {}, L = ["# Product Requirements \u2014 " + (M.customer || "Customer"), "",
+    "Status: " + prdStatus(), "Owner: " + (P.owner || TBC), "Basis: " + (P.basis || TBC), "",
+    "## 1. Problem and vision", "", P.problem || "", "", P.vision || ""];
+  function bullets(items){ arr(items).forEach(function(x){ L.push("- " + x); }); L.push(""); }
+  function table(cols, rows){ L = L.concat(mdTable(cols, rows)); }
+  arr(P.problems).forEach(function(pr){ bullets(arr(pr.items).map(function(x){ return pr.name + " (" + x[0] + "): " + x[1]; })); });
+  bullets(arr(P.commitments).map(function(c){ return c.join(" "); }));
+  L.push("## 2. Goals and measures", ""); bullets(P.goals); L.push("Non-goals:"); bullets(P.non_goals);
+  table(["Maturity","Current","Target"], arr(P.maturity));
+  table(["KPI","Definition","Journey","Baseline","Target"], arr(P.kpis).map(function(k){ return [k.kpi,k.definition,k.journey_name,k.baseline,k.target]; }));
+  L.push("Business value of the use cases in scope (hypothesis until confirmed):", "");
+  bullets(prdValues().map(function(v){ return v.name + " " + v.summary + " " + v.statusLabel; }));
+  L.push("## 3. Scope", ""); table(["Agent","Journey","Autonomy","Horizon","What it proves"], arr(P.scope).map(function(x){ return [x.name,x.journey_name,x.autonomy,x.horizon,x.proves]; }));
+  L.push("Out of scope:"); bullets(P.out_of_scope); L.push("Exit test: " + (P.exit_test || TBC), "", "## 4. Users", "");
+  table(["Persona","Journey","Goal","Pain today","Decides"], arr(P.personas).map(function(x){ return [x.role,x.journey_name,x.goal,x.pain,x.decides]; }));
+  L.push("## 5. Functional requirements", "", "### Platform", ""); table(["ID","Requirement","Priority","Verified by"], reqRows(P.platform));
+  arr(P.agents).forEach(function(x){ L.push("### " + x.name, "", x.capability || "", ""); table(["ID","Requirement","Priority","Verified by"], reqRows(x.requirements)); table(["Declaration","Mandate"], arr(x.declarations)); });
+  L.push("## 6. Non-functional requirements", ""); table(["ID","Category","Requirement"], arr(P.nfr).map(function(r){ return [r.id,r.category,r.text]; }));
+  L.push("## 7. Acceptance criteria", ""); table(["ID","Agent","Criterion"], arr(P.acceptance).map(function(r){ return [r.id,r.agent_name,r.text]; }));
+  L.push("## 8. Dependencies, risks and open decisions", ""); bullets(P.dependencies);
+  bullets(arr(P.risks).map(function(r){ return r.id + ": " + r.title + " (score " + r.score + ")"; }));
+  bullets(arr(P.decisions).map(function(x){ return x.id + ": " + x.question; }));
+  L.push("## 9. Release plan and Definition of Ready", ""); table(["Phase","Scope","Exit criterion"], prdRelease(P)); bullets(P.definition_of_ready);
+  var n = note("val|prd|scope"); if (n.note) L.push("Workshop scope notes: " + n.note, "");
+  return L.join("\n") + "\n";
+}
+function fileSlug(){ return String(M.short || M.customer || "blueprint").replace(/[^A-Za-z0-9]+/g,"-").toLowerCase(); }
+function pageLink(id){
+  return ORDER.indexOf(id) < 0 ? null : h("button",{type:"button",class:"btn",onclick:function(){ go(id); }}, viewMeta(id).label);
+}
+/* Restore the logical control after a live update, never a detached old node. */
+function refreshControl(id, fallback){
+  render();
+  var el = document.getElementById(id) || document.getElementById(fallback || "");
+  if (el) el.focus({preventScroll:true});
+}
+
+/* ---------------- Plan: live Agent Factory checks; CSV is a handover, not a native import ---------------- */
+var DEF_PHASES = [{id:"idea",name:"Idea",stages:["hypothesis","validated"],what:"Hypothesis to validated use case"},
+  {id:"design",name:"Design",stages:["designed","ready"],what:"Design and Definition of Ready"},
+  {id:"build",name:"Build",stages:["build"],what:"Build and evaluate in DEV and TEST"},
+  {id:"deploy",name:"Deploy and operate",stages:["release","operate"],what:"Release, measure and improve"}];
+var DEF_STAGE = {hypothesis:"Hypothesis",validated:"Validated",designed:"Designed",ready:"Ready for build",build:"In build",release:"Released",operate:"Operate & learn"};
+var DEF_HANDOVER = [["validated","Validated in the workshop"],["canvas","Trigger canvas complete"],["declarations","Seven declarations made"],["identity","Identity: display names and icons"],["value","Business value validated"],["cost","Cost envelope modelled"],["readiness","IT readiness for the build stage"],["owner","Agent boss named"]];
+function boardCfg(){
+  var B = FAC && FAC.board || {}, phases = arr(B.phases).filter(function(p){ return p && arr(p.stages).length; });
+  return {title:B.title || "Plan: the Agent Factory board",intro:B.intro || "Every agent from idea to design, build and deploy. Cards follow the live handover checks, not permission to build.",phases:phases.length ? phases : DEF_PHASES,wip:B.wip || {}};
+}
+function handoverDef(){ return FAC && arr(FAC.handover).length ? FAC.handover : DEF_HANDOVER; }
+function stageLabel(id){ var st = arr(FAC && FAC.lifecycle).filter(function(x){ return x.id === id; })[0]; return st && st.name || DEF_STAGE[id] || id; }
+function nextStep(a){
+  var st = agentStage(a), checks = agentChecks(a), miss = handoverDef().filter(function(x){ return checks[x[0]] !== 1; });
+  return {build:"Build and evaluate in DEV and TEST",release:"Release through the pipeline; measure the outcome",operate:"Measure, learn and improve"}[st] || (miss.length ? miss[0][1] : "Hand over to build");
+}
+function planAgents(){
+  return D.map(function(d){ return [d,(d.orchestrator ? [d.orchestrator] : []).concat(d.agents).filter(function(a){ return a && (!state.planMvp || isMvp(a)); })]; })
+    .filter(function(x){ return (state.planLane === "all" || x[0].id === state.planLane) && x[1].length; });
+}
+function kanbanCard(a){
+  var d = a._d || {}, checks = agentChecks(a), H = handoverDef(), done = H.filter(function(x){ return checks[x[0]] === 1; }).length, au = autonomyOf(a);
+  return h("button",{type:"button",class:"kcard",style:domainStyle(d.color),title:nameOf(a) + " \u00b7 next: " + nextStep(a),onclick:function(){ openAgent(a.id); }},
+    h("span",{class:"kch"}, idIcon(a) || h("span",{class:"aicon ini",style:filled(d.color)}, initials(shortOf(a))), h("b",null, shortOf(a)), isMvp(a) ? h("span",{class:"pill acc"},"MVP") : null),
+    h("span",{class:"kmeta"}, au ? h("span",{class:"pill"},"L" + au.n + " \u00b7 " + au.label) : null, h("span",{class:"note"}, a.owner || TBC)),
+    h("span",{class:"kprog","aria-label":done + " of " + H.length + " checks"}, h("i",{style:"width:" + Math.round(done / H.length * 100) + "%"})),
+    h("span",{class:"knext"}, h("b",null,"Next \u00b7 "), nextStep(a)));
+}
+function renderPlan(){
+  var cfg = boardCfg(), stages = [].concat.apply([], cfg.phases.map(function(p){ return arr(p.stages); })), lanes = planAgents(), cnt = {}, stEl = h("span",{class:"status",role:"status"});
+  stages.forEach(function(k){ cnt[k] = 0; });
+  var cells = lanes.map(function(x){
+    var by = {}; stages.forEach(function(k){ by[k] = []; });
+    x[1].forEach(function(a){ var st = agentStage(a); if (!by[st]) st = stages[0]; by[st].push(a); cnt[st]++; }); return [x[0],by];
+  });
+  var grid = h("div",{class:"kb",role:"region","aria-label":"Agent Factory board: journeys by stage",style:"--cols:" + stages.length}, h("div",{class:"kbcorner"},"Journey"));
+  cfg.phases.forEach(function(p){ grid.appendChild(h("div",{class:"kbph ph-" + p.id,style:"grid-column:span " + arr(p.stages).length}, p.name)); });
+  grid.appendChild(h("div",{class:"kbcorner"}));
+  stages.forEach(function(k){ var lim = cfg.wip[k], over = num(lim) && cnt[k] > lim;
+    grid.appendChild(h("div",{class:"kbst" + (over ? " over" : "")}, h("b",null, stageLabel(k)), h("span",{class:"cnt"}, cnt[k] + (num(lim) ? " / " + lim : "")), over ? h("span",{class:"note"},"Above WIP limit (advisory)") : null));
+  });
+  cells.forEach(function(x){
+    grid.appendChild(h("div",{class:"kblane",style:domainStyle(x[0].color)}, h("b",null, x[0].name), h("span",{class:"note"}, x[0].journey_name || "")));
+    stages.forEach(function(k){ grid.appendChild(h("div",{class:"kbcell",role:"group","aria-label":x[0].name + " \u00b7 " + stageLabel(k) + ": " + x[1][k].length + " agents"}, x[1][k].map(kanbanCard))); });
+  });
+  var fd = facDom();
+  return [h("h2",{class:"sec"}, cfg.title), h("p",{class:"lead"}, cfg.intro, " ", evPills(FAC && FAC.src)),
+    h("div",{class:"phsum"}, cfg.phases.map(function(p){ return h("div",{class:"phs ph-" + p.id}, h("b",null, String(arr(p.stages).reduce(function(n,k){ return n + (cnt[k] || 0); },0))), h("span",null, p.name), h("em",null, p.what || "")); })),
+    h("div",{class:"filters"}, h("span",{class:"lbl note"},"Journey"), [["all","All journeys"]].concat(D.map(function(d){ return [d.id,d.name]; })).map(function(f){ var id = "plan-lane-" + f[0];
+      return h("button",{type:"button",id:id,class:"btn","aria-pressed":String(state.planLane === f[0]),onclick:function(){ state.planLane = f[0]; refreshControl(id); }}, f[1]); }),
+      h("label",{class:"chk",for:"plan-mvp"}, h("input",{type:"checkbox",id:"plan-mvp",checked:state.planMvp,onchange:function(e){ state.planMvp = e.target.checked; refreshControl("plan-mvp"); }}),"MVP only"),
+      h("button",{type:"button",class:"btn",onclick:function(){ download(fileSlug() + "-agent-backlog.csv", planCsv(), "text/csv;charset=utf-8", stEl); }},"Export backlog (CSV)"),
+      fd ? h("button",{type:"button",class:"btn",onclick:function(){ go("journeys",{d:D.indexOf(fd)}); }},"How the Agent Factory works") : null, stEl),
+    cells.length ? h("div",{class:"kbwrap",tabindex:"0",role:"region","aria-label":"Scrollable agent board",onkeydown:function(e){
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") e.stopPropagation();
+    }}, grid) : h("p",{class:"note",role:"status"},"No agent matches the filter."),
+    h("h3",{class:"sub"},"What moves a card"), h("ol",{class:"clean dor"}, handoverDef().map(function(x){ return h("li",null, x[1]); })),
+    h("p",{class:"note"},"Stages reflect workshop validation, design checks and lifecycle. WIP limits are advisory, not approval. Exported CSV is a handover format: map destination fields explicitly for Azure Boards or GitHub Projects; no native import is performed.")];
+}
+function csvCell(v){
+  var text = String(v === undefined || v === null ? "" : v);
+  // Spreadsheet applications may ignore leading whitespace before a formula.
+  if (/^[\s]*[=+\-@]/.test(text) || /^[\t\r\n]/.test(text)) text = "'" + text;
+  return /[",;\r\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+}
+function planCsv(){
+  var H = handoverDef(), rows = [["ID","Title","Work Item Type","State","Area Path","Tags","Description","Acceptance Criteria","Owner"]];
+  planAgents().forEach(function(x){ x[1].forEach(function(a){ var c = agentChecks(a), au = autonomyOf(a);
+    rows.push([a.id,nameOf(a),"User Story",stageLabel(agentStage(a)),x[0].name,
+      [isMvp(a) ? "MVP" : null,au ? "Autonomy L" + au.n : null,a.horizon || null,isFactory(x[0]) ? "Agent Factory" : null].filter(Boolean).join("; "),
+      a.capability || "",H.filter(function(k){ return c[k[0]] !== 1; }).map(function(k){ return k[1]; }).join("; "),a.owner || ""]);
+  }); });
+  return rows.map(function(r){ return r.map(csvCell).join(","); }).join("\r\n") + "\r\n";
+}
+
+/* ---------------- Risks: ratings and verdicts use the existing workshop feedback model ---------------- */
+var RCAT = {value:"Business value",adoption:"Adoption and change",data:"Data and integration",security:"Security and compliance",rai:"Responsible AI",technology:"Technology and platform",cost:"Cost",delivery:"Delivery and readiness",people:"People and organisation"};
+var RORIGIN = {workshop:"Workshop","use case":"Use case",canon:"Hub canon","IT readiness":"IT readiness",author:"Authored"};
+var RSTAT = [["open","Open"],["mitigating","Mitigating"],["accepted","Accepted"],["closed","Closed"],["rejected","Not a risk"]];
+function riskLevel(sc){ return sc >= 15 ? "high" : sc >= 8 ? "medium" : "low"; }
+function riskRating(v, fallback){ return typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 5 ? v : fallback; }
+function rk(r){
+  var n = note("val|risk|" + r.id), L = riskRating(n.likelihood,riskRating(r.likelihood,3)), I = riskRating(n.impact,riskRating(r.impact,3));
+  return {L:L,I:I,score:L * I,status:String(n.status || r.status || "open").toLowerCase(),changed:!!(n.status || n.likelihood || n.impact || n.note)};
+}
+function riskItems(){ return arr(BP.risks && BP.risks.items).filter(function(r){ return r && r.id; }); }
+function riskShown(r){ var k = rk(r); return (state.riskCat === "all" || r.category === state.riskCat) && (state.riskStatus === "all" || (k.status !== "closed" && k.status !== "rejected")); }
+function openRisk(id){ state.riskSel = id; state.riskCat = "all"; state.riskStatus = "all"; go("risks"); var p = document.getElementById("rpanel"); if (p) p.focus(); }
+function riskLink(id){ return riskItems().some(function(r){ return r.id === id; }) ? h("button",{type:"button",class:"pill linkp",onclick:function(){ openRisk(id); }}, id) : h("span",{class:"pill"}, id || TBC); }
+function riskLinks(r){
+  return h("div",{class:"btnrow rlinks"}, arr(r.journeys).map(function(id){ var d = domById(id); return d ? h("button",{type:"button",class:"optchip",onclick:function(){ go("journeys",{d:D.indexOf(d)}); }}, d.name) : null; }),
+    arr(r.use_cases).map(function(id){ var u = ucById(id); return u ? h("button",{type:"button",class:"pill linkp",onclick:function(){ openUseCase(u); }}, id) : null; }),
+    arr(r.agents).map(function(id){ return AG[id] ? agentChip(AG[id],true) : null; }));
+}
+function riskBox(r){
+  var key = "val|risk|" + r.id, name = "rk-" + String(r.id).replace(/\W/g,"_"), n = note(key), k = rk(r);
+  function update(id, patch){ setNote(key,patch); refreshControl(id,"risk-category"); var status = document.getElementById("risk-save"); if (status) status.textContent = "Saved"; }
+  function sel(label,f){
+    var id = name + "-" + f;
+    return h("label",{class:"chk",for:id}, label + " ", h("select",{id:id,onchange:function(e){ var p = {}; p[f] = Number(e.target.value); update(id,p); }},
+      [1,2,3,4,5].map(function(v){ return h("option",{value:String(v),selected:v === (f === "likelihood" ? k.L : k.I)}, String(v)); })));
+  }
+  return h("div",{class:"valbox"}, h("b",null,"Workshop rating"), h("span",{class:"note"}," \u00b7 saved in this browser; export from Discovery"),
+    h("div",{class:"opts",role:"radiogroup","aria-label":"Status of " + r.id}, RSTAT.map(function(o){ var id = name + "-" + o[0];
+      return h("label",{class:"opt",for:id}, h("input",{type:"radio",id:id,name:name,value:o[0],checked:k.status === o[0],onchange:function(){ update(id,{status:o[0]}); }}), o[1]); })),
+    h("div",{class:"row"},sel("Likelihood","likelihood"),sel("Impact","impact")), h("label",{class:"note",for:name + "-note"},"Notes, owner and next step"),
+    h("textarea",{id:name + "-note",oninput:function(e){ setNote(key,{note:e.target.value}); document.getElementById("risk-save").textContent = "Saved"; }}, n.note || ""),
+    h("span",{class:"status",id:"risk-save",role:"status"}));
+}
+function riskPanel(r){
+  var k = rk(r);
+  return h("div",{class:"panel rpanel",id:"rpanel",tabindex:"-1","data-risk":r.id},
+    h("div",{class:"ptitle"}, h("b",null, r.id + " \u00b7 " + r.title), h("span",{class:"pill rsc " + riskLevel(k.score)},"Score " + k.score)),
+    h("div",{class:"btnrow"}, h("span",{class:"pill"},RCAT[r.category] || r.category || TBC),h("span",{class:"pill orig"},RORIGIN[r.origin] || r.origin || TBC)),
+    r.description ? h("p",null,r.description) : null, h("p",null,h("b",null,"Mitigation \u00b7 "),r.mitigation || TBC),
+    h("p",null,h("b",null,"Owner \u00b7 "),r.owner || TBC),riskLinks(r),evPills(r.src),
+    arr(r.workshop_notes).length ? h("ul",{class:"clean workshop-risk-notes"},arr(r.workshop_notes).map(function(w){
+      return h("li",{class:"note"},(w.date || "") + " \u00b7 " + (w.note || w.text || ""), " ",evPills(w.src));
+    })) : null,riskBox(r));
+}
+function heatMap(items){
+  var g = h("div",{class:"heat",role:"group","aria-label":"Risks by likelihood (rows, 5 at the top) and impact (columns)"});
+  for (var L = 5; L >= 1; L--){
+    g.appendChild(h("div",{class:"hax","aria-hidden":"true"},String(L)));
+    for (var I = 1; I <= 5; I++){
+      var list = items.filter(function(r){ var k = rk(r); return k.L === L && k.I === I; });
+      g.appendChild(h("div",{class:"hc " + riskLevel(L * I),role:"group","aria-label":"Likelihood " + L + ", impact " + I + ": " + list.length + " risks"},
+        list.map(function(r){ var id = "heat-" + r.id; return h("button",{type:"button",id:id,class:"hrk","aria-pressed":String(state.riskSel === r.id),title:r.title,onclick:function(){ state.riskSel = r.id; refreshControl(id); }}, r.id); })));
+    }
+  }
+  g.appendChild(h("div",{class:"hax","aria-hidden":"true"}));
+  for (var j = 1; j <= 5; j++) g.appendChild(h("div",{class:"hax","aria-hidden":"true"},String(j)));
+  return h("div",{class:"heatwrap"},h("div",{class:"hyl"},"Likelihood"),g,h("div",{class:"hxl"},"Impact"));
+}
+function renderRisks(){
+  var R = BP.risks || {}, all = riskItems(), items = all.filter(riskShown), cats = [], lv = {high:0,medium:0,low:0};
+  all.forEach(function(r){ if (r.category && cats.indexOf(r.category) < 0) cats.push(r.category); });
+  items.forEach(function(r){ lv[riskLevel(rk(r).score)]++; });
+  var sel = items.filter(function(r){ return r.id === state.riskSel; })[0] || items[0];
+  state.riskSel = sel ? sel.id : null;
+  var out = [h("h2",{class:"sec"},R.title || "Risks, assumptions and open decisions"),h("p",{class:"lead"},R.intro || "Rate risks with the customer: likelihood and impact from 1 to 5. The register follows workshop ratings live.", " ",evPills(R.src)),
+    h("div",{class:"idstrip"},h("span",{class:"pill acc"},items.length + " risks"),["high","medium","low"].map(function(k){ return h("span",{class:"pill rsc " + k},lv[k] + " " + k); })),
+    h("div",{class:"filters"},h("label",{for:"risk-category"},"Category "),h("select",{id:"risk-category",onchange:function(e){ state.riskCat = e.target.value; refreshControl("risk-category"); }},
+      [["all","All categories"]].concat(cats.map(function(c){ return [c,RCAT[c] || c]; })).map(function(o){ return h("option",{value:o[0],selected:state.riskCat === o[0]},o[1]); })),
+      h("label",{class:"chk",for:"rk-closed"},h("input",{type:"checkbox",id:"rk-closed",checked:state.riskStatus === "all",onchange:function(e){ state.riskStatus = e.target.checked ? "all" : "active"; refreshControl("rk-closed"); }}),"Show closed")),
+    h("div",{class:"riskgrid"},heatMap(items),sel ? riskPanel(sel) : h("p",{class:"note",role:"status"},"No risk matches the filter.")),
+    h("h3",{class:"sub"},"Risk register"),h("div",{class:"tscroll"},h("table",{class:"t rreg"},h("thead",null,h("tr",null,["ID","Risk","Category","L","I","Score","Owner","Mitigation","Status"].map(function(c){ return h("th",{scope:"col"},c); }))),
+      h("tbody",null,items.slice().sort(function(a,b){ return rk(b).score - rk(a).score; }).map(function(r){ var k = rk(r), id = "risk-row-" + r.id;
+        return h("tr",{class:"riskrow" + (state.riskSel === r.id ? " sel" : "")},h("td",null,h("button",{type:"button",class:"pill linkp",id:id,"aria-pressed":String(state.riskSel === r.id),onclick:function(){ state.riskSel = r.id; refreshControl(id); }},r.id)),
+          h("td",null,h("b",null,r.title),riskLinks(r),evPills(r.src)),h("td",null,RCAT[r.category] || r.category || TBC),h("td",null,String(k.L)),h("td",null,String(k.I)),
+          h("td",null,h("span",{class:"pill rsc " + riskLevel(k.score)},String(k.score))),h("td",null,r.owner || TBC),h("td",null,r.mitigation || TBC),
+          h("td",null,(RSTAT.filter(function(o){ return o[0] === k.status; })[0] || [0,k.status])[1],k.changed ? h("span",{class:"note"}," \u00b7 workshop") : null));
+      }))))];
+  var ass = Object.keys(ASSM).map(function(id){ return ASSM[id]; }).filter(function(a){ return String(note("val|ass|" + a.id).status || a.status || "").toLowerCase() !== "validated"; });
+  var dec = arr((BP.it_readiness || {}).decisions).filter(function(x){ return rdStatus(x) !== "agreed"; });
+  var adr = arr((BP.architecture || {}).decisions).filter(function(x){ return adrStatus(x) !== "agreed"; });
+  out.push(h("h3",{class:"sub"},"Assumptions to confirm and decisions to take"),h("div",{class:"grid2"},
+    h("div",{class:"panel"},h("h4",null,"Value and cost assumptions still open (" + ass.length + ")"),ul(ass.map(function(a){ return a.id + ": " + (a.statement || a.name || ""); }))),
+    h("div",{class:"panel"},h("h4",null,"Decisions still open (" + (dec.length + adr.length) + ")"),
+      ul(dec.map(function(x){ return x.id + ": " + (x.decision || x.q || x.item || x.text || ""); }).concat(adr.map(function(x){ return x.id + ": " + x.title; }))),pageLink("readiness"),pageLink("architecture"))));
+  return out;
+}
+
 /* ---------------- render ---------------- */
-var RENDER = { overview:renderOverview, org:renderOrg, blueprint:renderBlueprint, journeys:function(){ var o = renderJourney(); return isFactory(dom()) ? o.concat(renderFactorySections()) : o; }, attendees:renderAttendees, readiness:renderReadiness, agents:renderAgents, identity:renderIdentity, architecture:renderArchitecture, usecases:renderUseCases, finops:renderFinops, discovery:renderDiscovery, roadmap:renderRoadmap, evidence:renderEvidence };
+var RENDER = { overview:renderOverview, org:renderOrg, blueprint:renderBlueprint, journeys:function(){ var o = renderJourney(); return isFactory(dom()) ? o.concat(renderFactorySections()) : o; }, attendees:renderAttendees, readiness:renderReadiness, agents:renderAgents, identity:renderIdentity, architecture:renderArchitecture, usecases:renderUseCases, finops:renderFinops, discovery:renderDiscovery, roadmap:renderRoadmap, evidence:renderEvidence, prd:renderPrd, plan:renderPlan, risks:renderRisks };
 function render(scrollTop){
   if (ORDER.indexOf(state.view) < 0) state.view = ORDER[0];
   if (state.d >= D.length) state.d = 0;

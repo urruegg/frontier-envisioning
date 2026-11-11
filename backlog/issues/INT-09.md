@@ -1,7 +1,7 @@
 ---
 id: INT-09
 title: "Reproducible blueprint builds (SOURCE_DATE_EPOCH)"
-milestone: "1.7.0"
+milestone: "M1"
 labels: [type:chore, area:plugin, agent:copilot, priority:P2, size:S]
 ---
 ## Context
@@ -12,4 +12,4 @@ labels: [type:chore, area:plugin, agent:copilot, priority:P2, size:S]
 
 - [ ] `build_blueprint.py` uses SOURCE_DATE_EPOCH when set
 - [ ] The release workflow sets SOURCE_DATE_EPOCH from the tag commit
-- [ ] `verify_release.py` compares the demo without normalisation for 1.7.0 manifests
+- [ ] `verify_release.py` compares the demo without normalisation for future repository-cut release manifests, without changing historical records

@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
-| Date | 2026-11-09 |
+| Version | 0.2 |
+| Date | 2026-11-11 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained catalogue; decision approval not inferred |
 | Scope | Architecture decision routing; document revision, not product version |
@@ -21,5 +21,6 @@ Product and plugin decisions ADR-0001 to ADR-0016 are recorded in the [solution 
 | [0022](0022-deterministic-guardrails.md) | Deterministic guardrails: hooks and a hashed customer denylist | Proposed |
 | [0023](0023-digital-feedback-loop.md) | Digital feedback loop on the Overview: SVG animation, official Microsoft names only (product, 1.5.0) | Proposed |
 | [0024](0024-agent-workflow-view.md) | Agent workflow in the Copilot Studio workflow designer style, derived from the plan until authored (product, 1.6.0) | Proposed |
+| [0025](0025-four-part-journey-structure.md) | Four-part journey, shared PRD model, Plan board, risks and evidenced attendees (selective 1.7.1 intake) | Proposed |
 
 Template: Context, Decision, Consequences, Alternatives considered, Status.

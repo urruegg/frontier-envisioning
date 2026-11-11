@@ -4,15 +4,15 @@ import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { openBlueprint, txt, wait } from "./helpers.mjs";
 
-const VIEWS = ["Overview", "Org model", "Blueprint", "Journeys", "Attendees", "Agents", "Agent identity", "Target architecture",
-  "Use cases", "IT readiness", "FinOps", "Discovery", "Roadmap", "Evidence"];
+const VIEWS = ["Overview", "Org model", "Blueprint", "Journeys", "Use cases", "PRD", "Agents", "Agent identity", "Target architecture",
+  "IT readiness", "Roadmap", "Plan", "FinOps", "Attendees", "Discovery", "Risks", "Evidence"];
 
 describe("Frontier Company Blueprint (Caldova demo)", () => {
   let bp;
   before(async () => { bp = await openBlueprint(); });
   after(async () => { await bp.close(); });
 
-  it("lists the 14 views of the Innovation Hub journey in order", () => {
+  it("lists the 17 views of the Innovation Hub journey in order", () => {
     assert.deepEqual([...bp.doc.querySelectorAll("#rail button")].map(txt), VIEWS);
     assert.match(bp.doc.title, /Caldova Industrial AG/);
   });

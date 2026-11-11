@@ -1,7 +1,7 @@
 ---
 id: EPIC-OPS
 title: "Epic: operate loop (plan versus actual)"
-milestone: "1.7.0"
+milestone: "M1"
 labels: [type:epic, area:value-finops, priority:P2, size:L]
 ---
 ## Context
@@ -14,4 +14,4 @@ Close the loop between the value case and FinOps model and what the agents reall
 
 ## Source
 
-[PRD A.12](../../docs/prd.md#a12-release-plan) (release 1.7)
+[PRD A.12](../../docs/prd.md#a12-release-plan) (historical versioned plan); current seed milestone M1 is not tied to a release number.

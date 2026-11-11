@@ -112,6 +112,22 @@ Quadrants: Quick wins (value 3 or more, feasibility 3 or more), Invest (high val
 ## 7a. Attendees, Agent Factory, landing zone and IT readiness
 
 - **Attendees**: one card per person who shaped the hypothesis: role, organisation, the journeys and use cases they spoke to, and what they contributed (cite the transcript or notes). Microsoft people too. Use names only with consent.
+- **PRD (Vision)**: write a sourced problem, goals, exclusions, exit test,
+  release plan and owner/status. Use the shared Python model for requirements,
+  value, dependencies, top risks and readiness; selected subsets keep canonical
+  IDs. Agree the scope in the workshop (`prd:scope`), not by editing derived IDs.
+- **Plan (Build)**: use factory stages, journey/MVP filters and the next-step
+  cards to discuss handover. CSV requires destination mapping; it is not a live
+  connector or native import certification. WIP/readiness is not approval.
+- **Risks (Workshops)**: rate use-case risk points and blocked readiness with
+  integer likelihood/impact 1-5, owner and mitigation. Keep canon and authored
+  entries; merge ratings/status/notes as `risk:<id>`. Retain normalised source
+  bindings and retired-ID history. Discarding that record cannot guarantee old
+  ID-only feedback identity after edited/reordered sources.
+- **Evidenced contributions (Workshops)**: each attendee contribution uses
+  `{text, src[], at}` with transcript time where available; sessions identify
+  evidence records. Plain sentences remain compatible but missing evidence is
+  flagged. Do not infer participation from a mention.
 - **Agent Factory**: keep the canon journey; it is how every agent goes from hypothesis to operate. Adapt the build steps to the customer's tools only when they have decided; the control plane stays open (GitHub, Azure DevOps or both) until decision D-01.
 - **Landing zone**: per journey, mark DEV, TEST and PROD as now, next or later, and the data classes allowed. Keep the CAF areas generic; add customer systems through the journeys.
 - **ADRs**: the canon ADRs (ADR-F01…) are a starting position the workshop confirms or adapts; customer decisions get their own ids. Write context, decision, consequences and alternatives.
@@ -136,6 +152,11 @@ Use only official Microsoft names: Microsoft IQ, Work IQ, Fabric IQ, Foundry IQ,
 - Every statement Microsoft proposes stays `status: hypothesis` until the workshop validates it.
 - Product names exactly as Microsoft writes them; anything not verified is "to confirm".
 
+Keep internal content provenance independent of workshop verdicts. Customer
+generation resolves risk visibility before scrubbing and derives final risks
+and PRD afterwards; removing source IDs alone is not sanitisation. Review the
+HTML, embedded JSON and downloads. A customer export is not external/IP approval.
+
 ## 9. Journey pattern library (starting points, adapt to evidence)
 
 | Journey | Typical stages | Lead agent | Candidate specialists |
@@ -159,8 +180,11 @@ labelled tabs. Filters expose pressed state. Selected controls have 24 CSS
 pixel minimum hit areas; narrow pages reflow at 320px with local diagram scrolling.
 
 Before handover, check both colour schemes, keyboard focus, a narrow viewport
-and the authored brand palette. Development automation targets WCAG 2.2 AA,
-but does not certify conformance. The separate identity catalogue still has
-blocking AA text contrast (Later wave 4.40:1; Finance header 4.33:1) in this
-development patch. Manual Narrator/screen-reader, zoom, real Windows
-high-contrast and voice acceptance remain pending; do not describe them as passed.
+and the authored brand palette, including PRD/Plan/Risks and their downloads.
+Development automation targets WCAG 2.2 AA, but does not certify conformance.
+The earlier catalogue failures (Later wave 4.40:1; Finance header 4.33:1) were
+corrected in A6 using an accessible status foreground and full-opacity header
+text. Preserve that correction, original palette and icon artwork in 1.7.1.
+Integrated review/final gates remain separate. Manual Narrator/screen-reader,
+zoom, real Windows high-contrast and voice acceptance remain pending; do not
+describe them as passed.

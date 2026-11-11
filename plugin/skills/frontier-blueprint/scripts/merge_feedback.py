@@ -38,7 +38,11 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from risks import fill_risks, level, rating  # noqa: E402
+
 VALID = {"validated", "adjusted", "adjust", "rejected", "open"}
+RVALID = {"open", "mitigating", "accepted", "closed"}
 QVALID = {"open", "partial", "answered"}
 
 
@@ -52,6 +56,23 @@ def bump(v: str) -> str:
         return f"{int(major)}.{int(minor) + 1}"
     except ValueError:
         return f"{v}.1"
+
+
+def verdict_error(val, statuses, ratings=False):
+    """Validate a whole new-model verdict before making any mutation."""
+    if not isinstance(val, dict):
+        return "verdict must be an object"
+    if "status" in val and str(val["status"]).lower() not in statuses:
+        return f"invalid status {val['status']!r}"
+    if "note" in val and not isinstance(val["note"], str):
+        return "note must be text"
+    if ratings:
+        for field in ("likelihood", "impact"):
+            if field in val and not rating(val[field], 0):
+                return f"{field} must be a finite integer 1-5"
+    if not (val.get("status") or val.get("note") or (ratings and any(f in val for f in ("likelihood", "impact")))):
+        return "no recognised verdict fields"
+    return None
 
 
 def main(argv=None) -> int:
@@ -117,7 +138,16 @@ def main(argv=None) -> int:
                          "summary": "Validation and answers captured live during the workshop."})
         summary["files"].append({"file": fpath, "evidence_id": wid})
 
-        for key, val in (fb.get("validations") or {}).items():
+        validations = fb.get("validations") or {}
+        ambiguous = set()
+        if any(key.startswith("risk:") for key in validations):
+            reg = bp.get("risks") if isinstance(bp.get("risks"), dict) else {}
+            ids = [r.get("id") for r in as_list(reg.get("items")) if isinstance(r, dict)]
+            ambiguous = {rid for rid in ids if ids.count(rid) > 1}
+            # Rebind against the edited sources before resolving an exported ID.
+            # In particular, a stale pure-derived row must not receive a verdict.
+            fill_risks(bp)
+        for key, val in validations.items():
             kind, _, ident = key.partition(":")
             if kind == "ready":
                 # IT readiness: status and note of a preparation item, readiness check, workstation check, question or decision
@@ -180,6 +210,60 @@ def main(argv=None) -> int:
                     "date": day, "topic": ident, "status": str(val.get("status", "")).lower() or None,
                     "note": val.get("note") or None, "src": [wid]}.items() if v})
                 summary["identity_feedback"] = summary.get("identity_feedback", 0) + 1
+                continue
+            if kind == "risk":
+                if ident in ambiguous:
+                    summary.setdefault("invalid", []).append({"id": key, "reason": "duplicate risk id"})
+                    continue
+                reg = bp.get("risks") if isinstance(bp.get("risks"), dict) else {}
+                matches = [x for x in as_list(reg.get("items")) if isinstance(x, dict) and x.get("id") == ident]
+                if not matches:
+                    summary["unknown"].append(key)
+                    continue
+                reason = "duplicate risk id" if len(matches) != 1 else verdict_error(val, RVALID | {"rejected"}, ratings=True)
+                if reason:
+                    summary.setdefault("invalid", []).append({"id": key, "reason": reason})
+                    continue
+                item = matches[0]
+                if "source_key" in val and val["source_key"] != item.get("source_key"):
+                    summary.setdefault("invalid", []).append({"id": key, "reason": "risk source identity changed"})
+                    continue
+                st = str(val.get("status", "")).lower()
+                if st == "rejected":
+                    item["status"], item["resolution"] = "closed", "not a risk"
+                elif st in RVALID:
+                    item["status"] = st
+                for f in ("likelihood", "impact"):
+                    if f in val:
+                        item[f] = rating(val[f])
+                if val.get("note"):
+                    item.setdefault("workshop_notes", []).append({"date": day, "note": val["note"], "src": [wid]})
+                # Keep the content's sources separate from the workshop's
+                # verdict provenance, including for authored risks.
+                item.setdefault("content_src", list(as_list(item.get("src"))))
+                item["derived"] = False
+                item["src"] = sorted(set(as_list(item.get("src")) + [wid]))
+                item["score"] = rating(item.get("likelihood")) * rating(item.get("impact"))
+                item["level"] = level(item["score"])
+                summary["risks_updated"] = summary.get("risks_updated", 0) + 1
+                continue
+            if kind == "prd":
+                prd = bp.get("prd") if isinstance(bp.get("prd"), dict) else None
+                if prd is None or ident != "scope":
+                    summary["unknown"].append(key)
+                    continue
+                reason = verdict_error(val, {"validated", "agreed", "accepted", "adjust", "adjusted", "rejected"})
+                if reason:
+                    summary.setdefault("invalid", []).append({"id": key, "reason": reason})
+                    continue
+                st = str(val.get("status", "")).lower()
+                if st in ("validated", "agreed", "accepted"):
+                    prd["status"] = "agreed"
+                elif st in ("adjust", "adjusted", "rejected"):
+                    prd["status"] = "adjusted" if st == "adjust" else st
+                if val.get("note"):
+                    prd.setdefault("workshop_notes", []).append({"date": day, "note": val["note"], "src": [wid]})
+                summary["prd_updated"] = summary.get("prd_updated", 0) + 1
                 continue
             target = agents.get(ident) if kind == "agent" else (ucs.get(ident) if kind == "uc" else None)
             if target is None:

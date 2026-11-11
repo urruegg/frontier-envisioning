@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.1 |
-| Date | 2026-11-10 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split and accessibility maintenance) |
+| Version | 1.2 |
+| Date | 2026-11-11 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance and selective intake) |
 | Status | Maintained design; no new product or release approval implied |
-| Scope | Part B with unreleased accessibility design, technical sources and the historical 1.6.0 file inventory |
-| References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md) |
+| Scope | Unreleased 1.7.1 intake design, preserved Part B/accessibility design, technical sources and historical 1.6.0 file inventory |
+| References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [Intake plan](plans/2026-11-10-handover-1.7-intake-plan.md) |
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Both builders reuse the package
 module's bounded, recursive byte/ZIP validator before writing inventory,
@@ -27,6 +27,87 @@ results or approvals. The appendix retains the original 1.6.0 inventory
 (including its former combined-document path); it is not a current file list.
 The [unreleased 1.6.1 requirement](prd.md#161-patch-workflow-legend-accessibility)
 remains separate from these historical claims.
+
+## 1.7.1 development intake
+
+**Received 1.7.0 features are selectively integrated as unreleased 1.7.1;
+not a release.** The [current PRD intake](prd.md#171-development-intake),
+[approved design](specs/2026-11-10-handover-1.7-intake-design.md) and
+[written plan](plans/2026-11-10-handover-1.7-intake-plan.md) govern this delta.
+[ADR-0025](adr/0025-four-part-journey-structure.md) records the received rationale
+with Proposed status; the [sprint](sprints/SPRINT-003-handover-1.7-intake.md)
+records execution evidence and remaining gates. Part B, its historical results
+and the original inventory below are preserved, not replaced by the incoming
+combined document.
+
+### Four-part navigation and workshop outputs
+
+| Part | Views |
+|---|---|
+| Vision | Overview, Org model, Blueprint, Journeys, Use cases, PRD |
+| Design | Agents, Agent identity, Target architecture, IT readiness |
+| Build | Roadmap, Plan, FinOps |
+| Workshops | Attendees, Discovery, Risks, Evidence |
+
+The seventeen-view rail and breadcrumb take optional labels/descriptions from
+`parts`. Existing route IDs and older blueprints remain usable. The PRD view
+downloads Markdown and records `prd:scope`; use-case risk links select the
+register, while Roadmap and Agent Factory link to Plan. Notes stay in browser
+storage until the feedback file is exported and merged.
+
+### Canonical Python models and retained identity
+
+`prd_model.py` is identical in frontier-blueprint and frontier-solution-design.
+The HTML's embedded `prd` and scaffolded `design/prd.md` use the same derivation:
+problem/provenance, scope, personas, functional/non-functional requirements,
+acceptance, KPIs, business value, dependencies, risks, decisions, release plan
+and Definition of Ready. Authored problem, goals, exclusions, exit test, release
+plan, status and owner survive rebuilds. IDs are allocated from the full
+blueprint's canonical agent order before subset selection; filtering must not
+renumber the surviving requirements.
+
+`risks.py` combines use-case risk points, blocked readiness items, canon and
+authored/workshop risks. Finite integer likelihood/impact values from 1 to 5
+produce score and level; booleans and invalid feedback are rejected/reported.
+Normalised `risks.source_ids` retains current source bindings and retired IDs;
+each bound risk carries `source_key`. Source changes reserve the old identity
+rather than assigning its verdict to a different risk. Workshop-owned records
+survive rebuilds with separate content provenance (`content_src`). Keep this
+normalised history: discarding it cannot guarantee old ID-only feedback identity.
+
+Attendee contributions carry text, source IDs and transcript timestamps, with
+sessions and focus links. The seed uses evidenced transcript speakers; missing
+evidence is flagged, never fabricated.
+
+### Plan, privacy and preserved hardening
+
+`factory.board` groups computed stages under Idea, Design, Build and Deploy.
+The Plan view uses the existing eight handover checks, journey/MVP filters,
+identity cards, owner/readiness/next-step values and WIP limits. Its CSV download
+quotes delimiters, newlines and Unicode and handles spreadsheet formula prefixes.
+It is handover data, not a live Azure Boards/GitHub Projects connector, a native
+compatibility certification or permission to build/deploy.
+
+For customer generation, resolve bound risk visibility **before** source
+scrubbing, including promoted legacy workshop risks. Scrub internal-only objects
+and content provenance, discard cached derived PRD fields, then derive final
+risks and PRD from scrubbed sources. Embedded data and downloadable Markdown
+must not retain internal-derived content merely after removing its source ID.
+Attendee contributions follow the same evidence boundary.
+
+Retain the A6 catalogue correction, modal/inert/focus lifecycle, roving tabs,
+pressed filters, SVG controls, adaptive text contrast, bounded sticky layout,
+targets and narrow reflow. Original brand/icon and release/raster bytes remain
+historical evidence. The finite 1.7.1 raster-input profile is verified separately;
+it does not replace original hashes or prove a release.
+
+The repository remains private at `urruegg/frontier-envisioning`; development
+distribution remains Microsoft internal. Keep the shared recursive pre-write
+byte/ZIP guard, eleven-entry complete-bundle allowlist and analysis/intake
+exclusions. Customer scrubbing, WIP/readiness and metadata are not external/IP
+clearance. Final strict L1, integrated review, finished distribution/install-plan
+acceptance and manual Cowork/assistive-technology checks remain separate;
+no installation, publication or deployment is claimed here.
 
 ## Part B — Solution Design
 

@@ -1,7 +1,7 @@
 ---
 id: OPS-02
 title: "Value and FinOps cockpit in Power BI and a monthly digest"
-milestone: "1.7.0"
+milestone: "M1"
 labels: [type:feature, area:value-finops, priority:P3, size:M]
 ---
 ## Context
