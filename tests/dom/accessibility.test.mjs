@@ -333,7 +333,7 @@ it("keeps rejected workshop agent and portfolio nodes opaque without losing save
 
 for (const [colour, foreground] of [
   ["#FFFFFF", "#000000"], ["#000000", "#FFFFFF"], ["#0000FF", "#FFFFFF"],
-  ["#777777", "#000000"]
+  ["#777777", "#000000"], ["#FFFF00", "#000000"], ["#00FFFF", "#000000"]
 ]) {
   it(`derives readable foregrounds from validated public data (${colour}) without altering icon art`, async () => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), "frontier-a4-colour-"));
@@ -352,6 +352,7 @@ for (const [colour, foreground] of [
         if (environment.band) { environment.band = colour; environment.label = colour; }
       }
       const originalIcon = data.domains[0].agents[0].identity.icon;
+      delete data.domains[0].orchestrator.identity.icon; // exercise the new Plan's generated fallback, not icon art
       data.meta.status_note = "A4 <>& \u2028\u2029";
       const escaped = JSON.stringify(data).replace(/</g, "\\u003c").replace(/>/g, "\\u003e")
         .replace(/&/g, "\\u0026").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
@@ -374,6 +375,11 @@ for (const [colour, foreground] of [
       }
       assert.ok([...bp.view().querySelectorAll("img.aicon")].some((image) =>
         image.getAttribute("src") === originalIcon), "embedded icon bytes unchanged");
+      await bp.go("#/plan");
+      const fallback = bp.view().querySelector(".kcard .ini");
+      assert.ok(fallback, "plan fallback exists without identity artwork");
+      assert.equal(fallback.style.color.toUpperCase(), foreground);
+      assert.equal(bp.view().querySelector(".kcard").style.getPropertyValue("--d-on"), foreground);
       assert.deepEqual(bp.errors, []);
     } finally {
       if (bp) await bp.close();

@@ -3,8 +3,8 @@
 // Run: python tools/dev.py site e2e   (needs: npm install && npx playwright install chromium)
 import { test, expect } from "@playwright/test";
 
-const VIEWS = ["Overview", "Org model", "Blueprint", "Journeys", "Attendees", "Agents", "Agent identity", "Target architecture",
-  "Use cases", "IT readiness", "FinOps", "Discovery", "Roadmap", "Evidence"];
+const VIEWS = ["Overview", "Org model", "Blueprint", "Journeys", "Use cases", "PRD", "Agents", "Agent identity", "Target architecture",
+  "IT readiness", "Roadmap", "Plan", "FinOps", "Attendees", "Discovery", "Risks", "Evidence"];
 
 function watchProblems(page) {
   const problems = [];
@@ -29,7 +29,7 @@ test("landing page links to the blueprint, the catalogue and the plugin", async 
   expect(problems).toEqual([]);
 });
 
-test("blueprint renders the 14 views in Chromium under the security policy", async ({ page }, testInfo) => {
+test("blueprint renders the 17 views in Chromium under the security policy", async ({ page }, testInfo) => {
   const problems = watchProblems(page);
   const response = await page.goto("/blueprint.html");
   expect(response.headers()["content-security-policy"]).toMatch(/script-src 'sha256-[A-Za-z0-9+/=]+'/);

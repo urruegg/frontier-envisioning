@@ -5,8 +5,8 @@ import { test, expect } from "@playwright/test";
 import axe from "axe-core";
 
 const WCAG = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
-const VIEWS = ["Overview", "Org model", "Blueprint", "Journeys", "Attendees", "Agents", "Agent identity",
-  "Target architecture", "Use cases", "IT readiness", "FinOps", "Discovery", "Roadmap", "Evidence"];
+const VIEWS = ["Overview", "Org model", "Blueprint", "Journeys", "Use cases", "PRD", "Agents", "Agent identity",
+  "Target architecture", "IT readiness", "Roadmap", "Plan", "FinOps", "Attendees", "Discovery", "Risks", "Evidence"];
 const ARCHITECTURE = ["Landing zone", "Layers and integrations", "Flows", "Decisions (ADRs)"];
 test.setTimeout(180_000);
 
@@ -71,6 +71,24 @@ for (const colorScheme of ["light", "dark"]) {
       summaries.push(await scan(page, info, `${colorScheme}-view-${VIEWS[i]}`));
     }
 
+    await open(page, "/blueprint.html#/prd");
+    for (const summary of await page.locator("details.prdx > summary").all()) await summary.click();
+    summaries.push(await scan(page, info, `${colorScheme}-prd-expanded-requirements`));
+
+    await open(page, "/blueprint.html#/plan");
+    await page.locator("#plan-mvp").check();
+    await expect(page.locator(".kcard")).toHaveCount(2);
+    summaries.push(await scan(page, info, `${colorScheme}-plan-mvp-filter`));
+
+    await open(page, "/blueprint.html#/risks");
+    await page.locator("#risk-category").selectOption("cost");
+    await expect(page.locator(".riskrow")).toHaveCount(1);
+    summaries.push(await scan(page, info, `${colorScheme}-risk-category-filter`));
+    await page.locator('#rpanel input[value="closed"]').click();
+    await expect(page.locator("#rpanel")).toHaveCount(0);
+    await expect(page.locator("#risk-category")).toBeFocused();
+    summaries.push(await scan(page, info, `${colorScheme}-risk-empty-filter`));
+
     await open(page, "/blueprint.html#/org");
     await page.locator(".orgside .filters button").nth(1).click();
     summaries.push(await scan(page, info, `${colorScheme}-org-filtered-journey`));
@@ -100,7 +118,7 @@ for (const colorScheme of ["light", "dark"]) {
       body: Buffer.from(JSON.stringify({ summaries, problems }, null, 2)),
       contentType: "application/json"
     });
-    expect(summaries).toHaveLength(22);
+    expect(summaries).toHaveLength(29);
     expect(problems, "page errors and CSP/console errors").toEqual([]);
   });
 
@@ -142,7 +160,7 @@ for (const colorScheme of ["light", "dark"]) {
     expect(problems).toEqual([]);
   });
 
-  test(`blueprint all 14 views reflow at 320px without clipping diagrams (${colorScheme})`, async ({ page }, info) => {
+  test(`blueprint all 17 views reflow at 320px without clipping diagrams (${colorScheme})`, async ({ page }, info) => {
     await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
     await page.setViewportSize({ width: 320, height: 900 });
     const problems = watchProblems(page);
@@ -674,7 +692,7 @@ test("narrow header reserves readable title space rather than one-word columns",
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(321);
 });
 
-test("all 14 views reflow at 320 CSS pixels without document overflow", async ({ page }, info) => {
+test("all 17 views reflow at 320 CSS pixels without document overflow", async ({ page }, info) => {
   await page.setViewportSize({ width: 320, height: 900 });
   const problems = watchProblems(page);
   await open(page, "/blueprint.html");
