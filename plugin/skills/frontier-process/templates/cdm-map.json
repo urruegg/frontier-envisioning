@@ -1,0 +1,713 @@
+{
+ "schema": "frontier-cdm-map/1.0",
+ "checked": "2026-11-11",
+ "note": "The Microsoft standard entity behind each pattern entity type: Common Data Model entities (the Dataverse tables of Dynamics 365 and Power Platform), Dataverse tables of Dynamics 365 apps that extend them, and the finance and operations tables published in the Common Data Model (operationsCommon). Column names are the Dataverse logical names, as they appear in the lakehouse that Link to Fabric creates; finance and operations tables keep their field names. The silver layer conforms other systems (for example SAP) to the same entities and columns. Verify each attribute with the table definition browser of the customer's environment before binding; entries marked checked=false are still to verify.",
+ "standards": {
+  "cdm": {
+   "label": "Common Data Model",
+   "what": "Standard entity of the Common Data Model, a Dataverse table"
+  },
+  "dataverse": {
+   "label": "Dataverse (Dynamics 365)",
+   "what": "Dataverse table of a Dynamics 365 app that extends the Common Data Model foundation"
+  },
+  "operations": {
+   "label": "Common Data Model (finance and operations)",
+   "what": "Finance and operations table published in the Common Data Model (operationsCommon)"
+  },
+  "custom": {
+   "label": "Custom extension",
+   "what": "No standard entity: a custom table that follows the Common Data Model conventions"
+  }
+ },
+ "match": {
+  "exact": "The same business concept",
+  "extends": "Specialises the standard entity (a subset or a subtype)",
+  "related": "The closest standard entity; the silver layer maps and completes it",
+  "custom": "No standard entity"
+ },
+ "roles": {
+  "fact": "Events and transactions: fact tables in the gold star schema",
+  "dimension": "Business entities to filter and group by: dimension tables"
+ },
+ "entities": {
+  "Customer": {
+   "standard": "cdm",
+   "entity": "Account",
+   "folder": "core/applicationCommon/foundationCommon/crmCommon",
+   "table": "account",
+   "key": "accountid",
+   "business_key": "accountnumber",
+   "match": "exact",
+   "role": "dimension",
+   "attributes": {
+    "customerId": "accountnumber",
+    "customerName": "name",
+    "segment": "customertypecode",
+    "country": "address1_country",
+    "status": "statecode"
+   },
+   "src": [
+    "S20",
+    "S22"
+   ],
+   "checked": true,
+   "note": "Business that represents a customer or potential customer; the company that is billed in business transactions."
+  },
+  "Product": {
+   "standard": "cdm",
+   "entity": "Product",
+   "folder": "core/applicationCommon/foundationCommon",
+   "table": "product",
+   "key": "productid",
+   "business_key": "productnumber",
+   "match": "exact",
+   "role": "dimension",
+   "attributes": {
+    "productId": "productnumber",
+    "productName": "name",
+    "productGroup": "parentproductid",
+    "unitOfMeasure": "defaultuomid",
+    "listPrice": "price"
+   },
+   "src": [
+    "S21"
+   ],
+   "checked": true,
+   "note": "Information about products and their pricing; the parent product is the product family."
+  },
+  "Supplier": {
+   "standard": "operations",
+   "entity": "VendTable (Vendors)",
+   "folder": "core/operationsCommon/Tables/SupplyChain/Vendor/Main",
+   "table": "VendTable",
+   "key": "RecId",
+   "business_key": "AccountNum",
+   "match": "exact",
+   "role": "dimension",
+   "attributes": {
+    "supplierId": "AccountNum",
+    "status": "Blocked"
+   },
+   "src": [
+    "S25"
+   ],
+   "checked": true,
+   "note": "Name and addresses come from the party the vendor references; an ERP other than finance and operations is conformed to this shape in the silver layer."
+  },
+  "Employee": {
+   "standard": "cdm",
+   "entity": "BookableResource",
+   "folder": "core/applicationCommon/foundationCommon",
+   "table": "bookableresource",
+   "key": "bookableresourceid",
+   "business_key": "name",
+   "match": "related",
+   "role": "dimension",
+   "attributes": {},
+   "src": [
+    "S21",
+    "S24"
+   ],
+   "checked": true,
+   "related": [
+    "User (service)",
+    "Worker in the HR system of record"
+   ],
+   "note": "People who do the work are bookable resources in Dataverse; the HR system of record stays the master for employment data (to confirm with HR). Model people only in the roles the process needs."
+  },
+  "Asset": {
+   "standard": "dataverse",
+   "entity": "Customer Asset",
+   "folder": "Dynamics 365 Field Service",
+   "table": "msdyn_customerasset",
+   "key": "msdyn_customerassetid",
+   "business_key": "msdyn_name",
+   "match": "exact",
+   "role": "dimension",
+   "attributes": {
+    "assetId": "msdyn_name",
+    "model": "msdyn_product",
+    "status": "statecode"
+   },
+   "src": [
+    "S28"
+   ],
+   "checked": true,
+   "note": "Extends the Dynamics 365 customer asset; msdyn_deviceid links the asset to its IoT device and msdyn_parentasset builds the asset hierarchy."
+  },
+  "Site": {
+   "standard": "cdm",
+   "entity": "Site",
+   "folder": "core/applicationCommon/foundationCommon/crmCommon/service",
+   "table": "site",
+   "key": "siteid",
+   "business_key": "name",
+   "match": "exact",
+   "role": "dimension",
+   "attributes": {
+    "siteName": "name"
+   },
+   "src": [
+    "S24",
+    "S31"
+   ],
+   "checked": true,
+   "related": [
+    "Functional location (msdyn_functionallocation) for where an asset is installed"
+   ],
+   "note": "Location or branch office where an organization does business."
+  },
+  "LegalEntity": {
+   "standard": "operations",
+   "entity": "CompanyInfo (Legal entity)",
+   "folder": "core/operationsCommon/Tables/Finance/Ledger/Main",
+   "table": "CompanyInfo",
+   "key": "RecId",
+   "business_key": "DataArea",
+   "match": "exact",
+   "role": "dimension",
+   "attributes": {},
+   "src": [
+    "S27"
+   ],
+   "checked": true,
+   "note": "Attribute names to verify in the table definition."
+  },
+  "Lead": {
+   "standard": "cdm",
+   "entity": "Lead",
+   "folder": "core/applicationCommon/foundationCommon/crmCommon",
+   "table": "lead",
+   "key": "leadid",
+   "business_key": "leadid",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "leadId": "leadid",
+    "source": "leadsourcecode",
+    "receivedAt": "createdon",
+    "status": "statecode"
+   },
+   "src": [
+    "S22"
+   ],
+   "checked": true,
+   "note": "Prospect or potential sales opportunity; converted into accounts, contacts or opportunities when qualified. The first response time is a custom attribute."
+  },
+  "Opportunity": {
+   "standard": "cdm",
+   "entity": "Opportunity",
+   "folder": "core/applicationCommon/foundationCommon/crmCommon/sales",
+   "table": "opportunity",
+   "key": "opportunityid",
+   "business_key": "opportunityid",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "opportunityId": "opportunityid",
+    "stage": "stepname",
+    "estimatedValue": "estimatedvalue",
+    "expectedClose": "estimatedclosedate",
+    "probability": "closeprobability"
+   },
+   "src": [
+    "S23"
+   ],
+   "checked": true,
+   "note": "Potential revenue-generating event or sale to an account, tracked through a sales process."
+  },
+  "Quote": {
+   "standard": "cdm",
+   "entity": "Quote",
+   "folder": "core/applicationCommon/foundationCommon/crmCommon/sales",
+   "table": "quote",
+   "key": "quoteid",
+   "business_key": "quotenumber",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "quoteId": "quotenumber",
+    "quoteValue": "totalamount",
+    "discountPct": "discountpercentage",
+    "createdAt": "createdon",
+    "status": "statecode"
+   },
+   "src": [
+    "S23"
+   ],
+   "checked": true,
+   "note": "Formal offer for products and services at specific prices and payment terms. The sent date is a custom attribute."
+  },
+  "SalesOrder": {
+   "standard": "cdm",
+   "entity": "Order",
+   "folder": "core/applicationCommon/foundationCommon/crmCommon/sales",
+   "table": "salesorder",
+   "key": "salesorderid",
+   "business_key": "ordernumber",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "salesOrderId": "ordernumber",
+    "orderValue": "totalamount",
+    "orderedAt": "submitdate",
+    "status": "statecode"
+   },
+   "src": [
+    "S23"
+   ],
+   "checked": true,
+   "note": "Quote that has been accepted; when the ERP owns the order, the silver layer conforms it to this shape."
+  },
+  "Requisition": {
+   "standard": "operations",
+   "entity": "PurchReqTable (Purchase requisitions)",
+   "folder": "core/operationsCommon/Tables (procurement)",
+   "table": "PurchReqTable",
+   "key": "RecId",
+   "business_key": "PurchReqId",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "requisitionId": "PurchReqId"
+   },
+   "src": [
+    "S19"
+   ],
+   "checked": false,
+   "note": "Table and attribute names to verify in the Common Data Model reference."
+  },
+  "PurchaseOrder": {
+   "standard": "operations",
+   "entity": "PurchTable (Purchase orders)",
+   "folder": "core/operationsCommon/Tables (procurement)",
+   "table": "PurchTable",
+   "key": "RecId",
+   "business_key": "PurchId",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "purchaseOrderId": "PurchId"
+   },
+   "src": [
+    "S19"
+   ],
+   "checked": false,
+   "note": "Table and attribute names to verify in the Common Data Model reference."
+  },
+  "Contract": {
+   "standard": "operations",
+   "entity": "AgreementHeader (Purchase agreements)",
+   "folder": "core/operationsCommon/Tables (procurement)",
+   "table": "AgreementHeader",
+   "key": "RecId",
+   "business_key": "DocumentTitle",
+   "match": "related",
+   "role": "dimension",
+   "attributes": {},
+   "src": [
+    "S19",
+    "S24"
+   ],
+   "checked": false,
+   "related": [
+    "Contract (service) for customer service contracts"
+   ],
+   "note": "Purchase agreements in finance and operations; a contract management system stays the master for the document itself. To verify."
+  },
+  "GoodsReceipt": {
+   "standard": "operations",
+   "entity": "VendPackingSlipJour (Product receipts)",
+   "folder": "core/operationsCommon/Tables/Finance/AccountsPayable",
+   "table": "VendPackingSlipJour",
+   "key": "RecId",
+   "business_key": "PackingSlipId",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "goodsReceiptId": "PackingSlipId"
+   },
+   "src": [
+    "S43"
+   ],
+   "checked": false,
+   "note": "Table and attribute names to verify in the Common Data Model reference."
+  },
+  "SupplierInvoice": {
+   "standard": "operations",
+   "entity": "VendInvoiceJour (Vendor invoices)",
+   "folder": "core/operationsCommon/Tables/Finance/AccountsPayable/Transaction",
+   "table": "VendInvoiceJour",
+   "key": "RecId",
+   "business_key": "InvoiceId",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "invoiceId": "InvoiceId",
+    "invoiceAmount": "InvoiceAmount",
+    "invoiceDate": "InvoiceDate"
+   },
+   "src": [
+    "S43"
+   ],
+   "checked": true,
+   "note": "Attribute names to verify in the table definition."
+  },
+  "ServiceRequest": {
+   "standard": "cdm",
+   "entity": "Case",
+   "folder": "core/applicationCommon/foundationCommon/crmCommon/service",
+   "table": "incident",
+   "key": "incidentid",
+   "business_key": "ticketnumber",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "serviceRequestId": "ticketnumber",
+    "channel": "caseorigincode",
+    "priority": "prioritycode",
+    "raisedAt": "createdon",
+    "status": "statecode"
+   },
+   "src": [
+    "S24"
+   ],
+   "checked": true,
+   "note": "Service request case associated with a contract."
+  },
+  "WorkOrder": {
+   "standard": "dataverse",
+   "entity": "Work Order",
+   "folder": "Dynamics 365 Field Service",
+   "table": "msdyn_workorder",
+   "key": "msdyn_workorderid",
+   "business_key": "msdyn_name",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "workOrderId": "msdyn_name",
+    "workType": "msdyn_workordertype",
+    "scheduledAt": "msdyn_datewindowstart",
+    "completedAt": "msdyn_completedon",
+    "status": "msdyn_systemstatus"
+   },
+   "src": [
+    "S31"
+   ],
+   "checked": true,
+   "note": "Stores the work done for an account: incident details, resources, tasks, billing; links to the customer asset and the IoT alert. First-time fix is derived."
+  },
+  "ServiceReport": {
+   "standard": "custom",
+   "entity": "Service report",
+   "folder": "custom extension",
+   "table": null,
+   "key": null,
+   "business_key": null,
+   "match": "custom",
+   "role": "fact",
+   "attributes": {},
+   "src": [
+    "S21",
+    "S31"
+   ],
+   "checked": true,
+   "related": [
+    "BookableResourceBooking (the visit)",
+    "Work order (msdyn_workorder) summary"
+   ],
+   "note": "No standard table: the technician's confirmed report is a custom table in the service domain, linked to the work order and the booking."
+  },
+  "SparePart": {
+   "standard": "cdm",
+   "entity": "Product",
+   "folder": "core/applicationCommon/foundationCommon",
+   "table": "product",
+   "key": "productid",
+   "business_key": "productnumber",
+   "match": "extends",
+   "role": "dimension",
+   "attributes": {
+    "partId": "productnumber",
+    "partName": "name"
+   },
+   "src": [
+    "S21"
+   ],
+   "checked": true,
+   "note": "A spare part is a product held in stock; stock levels come from the ERP or warehouse inventory."
+  },
+  "AlarmEvent": {
+   "standard": "dataverse",
+   "entity": "IoT Alert",
+   "folder": "Dynamics 365 Field Service",
+   "table": "msdyn_iotalert",
+   "key": "msdyn_iotalertid",
+   "business_key": "msdyn_alerttoken",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "alarmCode": "msdyn_alerttype",
+    "occurredAt": "msdyn_alerttime"
+   },
+   "src": [
+    "S30"
+   ],
+   "checked": true,
+   "note": "Only actionable alerts reach Dataverse (with msdyn_customerasset, msdyn_case and msdyn_workorder links); raw telemetry stays in the eventhouse. msdyn_alertpriorityscore (0 to 100) carries the priority."
+  },
+  "ServiceContract": {
+   "standard": "cdm",
+   "entity": "Contract",
+   "folder": "core/applicationCommon/foundationCommon/crmCommon/service",
+   "table": "contract",
+   "key": "contractid",
+   "business_key": "title",
+   "match": "related",
+   "role": "dimension",
+   "attributes": {
+    "serviceContractId": "contractid",
+    "validFrom": "activeon",
+    "status": "statecode"
+   },
+   "src": [
+    "S24"
+   ],
+   "checked": true,
+   "related": [
+    "Entitlement (support terms and SLA)",
+    "Field Service agreement for recurring maintenance"
+   ],
+   "note": "Agreement to provide customer service during a specified time or number of cases."
+  },
+  "LedgerAccount": {
+   "standard": "operations",
+   "entity": "MainAccount (Main accounts)",
+   "folder": "core/operationsCommon/Tables/Finance/Ledger",
+   "table": "MainAccount",
+   "key": "RecId",
+   "business_key": "MainAccountId",
+   "match": "exact",
+   "role": "dimension",
+   "attributes": {
+    "accountNumber": "MainAccountId",
+    "accountName": "Name"
+   },
+   "src": [
+    "S27"
+   ],
+   "checked": false,
+   "note": "Table and attribute names to verify in the Common Data Model reference."
+  },
+  "JournalEntry": {
+   "standard": "operations",
+   "entity": "GeneralJournalAccountEntry",
+   "folder": "core/operationsCommon/Tables/Finance/Ledger/TransactionLine",
+   "table": "GeneralJournalAccountEntry",
+   "key": "RecId",
+   "business_key": "RecId",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "amount": "AccountingCurrencyAmount",
+    "source": "PostingType"
+   },
+   "src": [
+    "S26"
+   ],
+   "checked": true,
+   "note": "Line level; the posting date and period come from the general journal entry header (GeneralJournalEntry), the account from MainAccount."
+  },
+  "Reconciliation": {
+   "standard": "custom",
+   "entity": "Reconciliation",
+   "folder": "custom extension",
+   "table": null,
+   "key": null,
+   "business_key": null,
+   "match": "custom",
+   "role": "fact",
+   "attributes": {},
+   "src": [],
+   "checked": true,
+   "note": "Held in the close or reconciliation tool; model as a custom table in the finance domain."
+  },
+  "CloseTask": {
+   "standard": "custom",
+   "entity": "Close task",
+   "folder": "custom extension",
+   "table": null,
+   "key": null,
+   "business_key": null,
+   "match": "custom",
+   "role": "fact",
+   "attributes": {},
+   "src": [],
+   "checked": true,
+   "note": "Held in the close calendar or checklist; model as a custom table in the finance domain."
+  },
+  "CostCenter": {
+   "standard": "operations",
+   "entity": "Financial dimension value (cost center)",
+   "folder": "core/operationsCommon/Tables/Finance/FinancialDimensions",
+   "table": "DimensionAttributeValue",
+   "key": "RecId",
+   "business_key": "DisplayValue",
+   "match": "related",
+   "role": "dimension",
+   "attributes": {},
+   "src": [
+    "S26"
+   ],
+   "checked": false,
+   "note": "Cost centers are values of a financial dimension; to verify."
+  },
+  "Position": {
+   "standard": "operations",
+   "entity": "HcmPosition (Positions)",
+   "folder": "core/operationsCommon/Tables/HumanResources",
+   "table": "HcmPosition",
+   "key": "RecId",
+   "business_key": "PositionId",
+   "match": "exact",
+   "role": "dimension",
+   "attributes": {
+    "positionId": "PositionId"
+   },
+   "src": [
+    "S19"
+   ],
+   "checked": false,
+   "note": "Table and attribute names to verify in the Common Data Model reference."
+  },
+  "JobRequisition": {
+   "standard": "custom",
+   "entity": "Job requisition",
+   "folder": "custom extension",
+   "table": null,
+   "key": null,
+   "business_key": null,
+   "match": "custom",
+   "role": "fact",
+   "attributes": {},
+   "src": [],
+   "checked": true,
+   "note": "Held in the recruiting system; model as a custom table in the HR domain."
+  },
+  "Candidate": {
+   "standard": "custom",
+   "entity": "Candidate",
+   "folder": "custom extension",
+   "table": null,
+   "key": null,
+   "business_key": null,
+   "match": "custom",
+   "role": "dimension",
+   "attributes": {},
+   "src": [],
+   "checked": true,
+   "note": "Personal data: keep the attributes to what the process needs."
+  },
+  "LearningRecord": {
+   "standard": "custom",
+   "entity": "Learning record",
+   "folder": "custom extension",
+   "table": null,
+   "key": null,
+   "business_key": null,
+   "match": "custom",
+   "role": "fact",
+   "attributes": {},
+   "src": [],
+   "checked": true,
+   "note": "Held in the learning system; model as a custom table in the HR domain."
+  },
+  "ProductionOrder": {
+   "standard": "operations",
+   "entity": "ProdTable (Production orders)",
+   "folder": "core/operationsCommon/Tables/SupplyChain/Production",
+   "table": "ProdTable",
+   "key": "RecId",
+   "business_key": "ProdId",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "productionOrderId": "ProdId"
+   },
+   "src": [
+    "S19"
+   ],
+   "checked": false,
+   "note": "Table and attribute names to verify in the Common Data Model reference."
+  },
+  "WorkCenter": {
+   "standard": "operations",
+   "entity": "WrkCtrTable (Resources)",
+   "folder": "core/operationsCommon/Tables/SupplyChain/Production",
+   "table": "WrkCtrTable",
+   "key": "RecId",
+   "business_key": "WrkCtrId",
+   "match": "exact",
+   "role": "dimension",
+   "attributes": {
+    "workCenterId": "WrkCtrId"
+   },
+   "src": [
+    "S19"
+   ],
+   "checked": false,
+   "note": "Table and attribute names to verify in the Common Data Model reference."
+  },
+  "Batch": {
+   "standard": "operations",
+   "entity": "InventBatch (Batches)",
+   "folder": "core/operationsCommon/Tables/SupplyChain/Inventory",
+   "table": "InventBatch",
+   "key": "RecId",
+   "business_key": "InventBatchId",
+   "match": "exact",
+   "role": "dimension",
+   "attributes": {
+    "batchId": "InventBatchId"
+   },
+   "src": [
+    "S19"
+   ],
+   "checked": false,
+   "note": "Table and attribute names to verify in the Common Data Model reference."
+  },
+  "QualityInspection": {
+   "standard": "operations",
+   "entity": "InventQualityOrderTable (Quality orders)",
+   "folder": "core/operationsCommon/Tables/SupplyChain/Inventory",
+   "table": "InventQualityOrderTable",
+   "key": "RecId",
+   "business_key": "QualityOrderId",
+   "match": "exact",
+   "role": "fact",
+   "attributes": {
+    "inspectionId": "QualityOrderId"
+   },
+   "src": [
+    "S19"
+   ],
+   "checked": false,
+   "note": "Table and attribute names to verify in the Common Data Model reference."
+  },
+  "ProcessCase": {
+   "standard": "custom",
+   "entity": "Process case",
+   "folder": "custom extension",
+   "table": null,
+   "key": null,
+   "business_key": null,
+   "match": "custom",
+   "role": "fact",
+   "attributes": {},
+   "src": [],
+   "checked": true,
+   "note": "A generic case until the journey's business objects are named."
+  }
+ }
+}

@@ -8,12 +8,14 @@
 Applies globalHeaders and the matching route headers and status codes from staticwebapp.config.json, so
 browser tests see the real Content-Security-Policy. Sign-in rules (allowedRoles) are not emulated: the
 server binds to 127.0.0.1 only. Standard library only.
+FRONTIER_SITE_DIR explicitly selects an isolated test root; --dir overrides it.
 """
 from __future__ import annotations
 
 import argparse
 import functools
 import json
+import os
 import sys
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -62,7 +64,7 @@ def make_handler(root: Path):
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--dir", default=str(SITE_DIR))
+    ap.add_argument("--dir", default=os.environ.get("FRONTIER_SITE_DIR") or str(SITE_DIR))
     ap.add_argument("--port", type=int, default=4173)
     a = ap.parse_args(argv)
     root = Path(a.dir)

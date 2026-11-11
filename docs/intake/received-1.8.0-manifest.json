@@ -1,0 +1,46 @@
+{
+ "schema": "frontier-release-manifest/1.0",
+ "version": "1.8.0",
+ "date": "2026-11-11",
+ "provenance": "Built and validated in Copilot Cowork and published on 11 November 2026 (self-test 45 of 45, unit tests 77 of 77, DOM tests 18 of 18, pipeline tests passed, skill validation 0 failures and scores 96 to 100, conflict scan 0 unresolved, security scan and package validation passed, HTML validator 0 findings, customer-neutrality scan 0 findings). Adds the optional process ontology for Microsoft Fabric IQ (skill frontier-process: entity types bound to OneLake, data agents per journey, operations agents, ontology.ttl for the Fabric import) and the Ontology page in Part 2 Design to 1.7.0. Imported into the repository as the engineering baseline; the repository reproduces the artefacts below.",
+ "artefacts": [
+  {
+   "name": "frontier-envisioning-plugin-1.8.0.zip",
+   "build_path": "dist/frontier-envisioning-plugin-1.8.0.zip",
+   "bytes": 661471,
+   "sha256": "b227075cbda7f60523d1d8b6d8890bd432f8797b48f058ee8b29da642d5106f6"
+  },
+  {
+   "name": "Frontier Company Blueprint - Template (Caldova sample).html",
+   "build_path": "build/demo/Frontier Company Blueprint - Template (Caldova sample).html",
+   "bytes": 968912,
+   "sha256": "d7c7888f731f63d5d0b744663c8ef31e911abf7533d91acb49e310f209da436d",
+   "normalise": "generated-date",
+   "sha256_normalised": "1b05ee798e7574bb28a4560de844676c8cbd1881976970fa309fcc13883a4863"
+  },
+  {
+   "name": "Caldova - agent identity package v1.0.zip",
+   "build_path": "build/demo/identity/Caldova - agent identity package v1.0.zip",
+   "bytes": 3308707,
+   "sha256": "2026c84c5806e0b8c2003e837f15e635fb78f2fa79f247164c47c1a5b51a5400"
+  },
+  {
+   "name": "Caldova - agent identity catalogue.html",
+   "build_path": "build/demo/identity/caldova-agent-identity/catalog.html",
+   "bytes": 299998,
+   "sha256": "08e2da864f13575d0a630d90954e81a06283a1082a32cf10adfd30d038fa20f1"
+  },
+  {
+   "name": "Caldova - process ontology.ttl",
+   "build_path": "build/demo/ontology/ontology.ttl",
+   "bytes": 29054,
+   "sha256": "d110987a63fbdcd087a287cef4f3ce74d344f14db317f728621780e87105edad"
+  }
+ ],
+ "not_reproduced": [
+  {
+   "name": "frontier-envisioning-github-repo-1.8.0.zip",
+   "reason": "the repository starting point itself; it contains this manifest, so its hash cannot be recorded here"
+  }
+ ]
+}

@@ -81,6 +81,61 @@ VTT = """WEBVTT
 """
 
 
+def process_checks(t: Path, sample: Path, check) -> None:
+    """Exercise process commands independently of the optional FinOps flow."""
+    process = S / "frontier-process"
+    seed = load(process / "scripts/seed_ontology.py")
+    build = load(process / "scripts/build_ontology.py")
+    apply = load(process / "scripts/apply_ontology.py")
+    merge = load(process / "scripts/merge_ontology_feedback.py")
+    blueprint = load(S / "frontier-blueprint/scripts/build_blueprint.py")
+    work = t / "process-checks"
+    work.mkdir()
+    code, text = run(seed, ["--blueprint", str(sample), "--out", str(work / "seed.json")])
+    seeded = json.loads((work / "seed.json").read_text(encoding="utf-8")) if code == 0 else {}
+    check("process seed derives standard entities and OneLake sources", code == 0
+          and {"Customer", "WorkOrder", "AlarmEvent"} <= {e["id"] for e in seeded.get("entity_types", [])}
+          and len(seeded.get("sources", [])) == 9, text[-300:])
+    args = ["--ontology", str(process / "examples/caldova-ontology.json"), "--blueprint", str(sample), "--out-dir", str(work / "artifacts")]
+    code, text = run(build, args)
+    files = {p.name: p.read_bytes() for p in (work / "artifacts").iterdir()} if code == 0 else {}
+    expected = {"ontology.normalized.json", "ontology.ttl", "ontology.md", "data-agents.md", "data-products.md"}
+    norm = json.loads(files.get("ontology.normalized.json", b"{}"))
+    check("process builds five deterministic artifacts with explicit mapping gaps",
+          code == 0 and set(files) == expected and norm.get("stats", {}).get("to_verify") == 6
+          and files.get("ontology.ttl", b"").count(b" a owl:Class") == 27, text[-300:])
+    code2, _ = run(build, args)
+    check("process rebuild is byte-identical and LF-only", code2 == 0 and files == {p.name: p.read_bytes() for p in (work / "artifacts").iterdir()}
+          and all(b"\r\n" not in content for content in files.values()))
+    code, text = run(build, args + ["--strict"])
+    check("strict process warnings preserve previous good artifacts", code == 1 and files == {p.name: p.read_bytes() for p in (work / "artifacts").iterdir()}, text[-300:])
+    code, text = run(apply, ["--blueprint", str(sample), "--ontology", str(work / "artifacts/ontology.normalized.json"), "--out", str(work / "bp.json")])
+    bp = json.loads((work / "bp.json").read_text(encoding="utf-8")) if code == 0 else {}
+    groups = [g for g in (bp.get("it_readiness") or {}).get("groups", []) if g.get("id") == "fabric-iq"]
+    check("process apply writes the model and one readiness group", code == 0 and len(groups) == 1 and len(groups[0]["items"]) == 15, text[-300:])
+    feedback = work / "feedback.json"
+    feedback.write_text(json.dumps({"type": "frontier-blueprint-feedback", "exported": "2026-11-12T10:00:00Z",
+        "validations": {"onto:WorkOrder": {"status": "validated", "note": "Synthetic confirmation"}, "onto:DP-999": {"status": "validated"}}}),
+        encoding="utf-8", newline="\n")
+    merged = work / "merged.json"
+    code, text = run(merge, ["--ontology", str(work / "artifacts/ontology.normalized.json"), "--feedback", str(feedback), "--out", str(merged)])
+    summary = json.loads(text) if code == 0 else {}
+    before = merged.read_bytes() if code == 0 else b""
+    code2, _ = run(merge, ["--ontology", str(merged), "--feedback", str(feedback), "--out", str(merged)]) if code == 0 else (1, "")
+    check("process feedback reports unknown IDs and repeats without duplication", code == 0 and code2 == 0
+          and summary.get("unknown") == ["onto:DP-999"] and before == merged.read_bytes(), text[-300:])
+    sentinel = "SYNTHETIC_PROCESS_PRIVACY_SELFTEST"
+    if bp.get("ontology"):
+        bp["ontology"]["visibility"] = "internal"
+        bp["ontology"]["entity_types"][0]["description"] = sentinel
+        bp["ontology"]["readiness"][0]["item"] = sentinel
+    (work / "private.json").write_text(json.dumps(bp), encoding="utf-8", newline="\n")
+    code, text = run(blueprint, ["--data", str(work / "private.json"), "--audience", "customer",
+                                "--save-normalized", str(work / "customer.json"), "--no-product-icons"])
+    customer = (work / "customer.json").read_text(encoding="utf-8") if code == 0 else sentinel
+    check("process root privacy precedes customer projection", code == 0 and sentinel not in customer and '"ontology"' not in customer, text[-300:])
+
+
 def main() -> int:
     ok = True
     results = []
@@ -125,6 +180,7 @@ def main() -> int:
         code, out = run(bb, ["--data", str(sample), "--out", str(t / "bp-c.html"), "--audience", "customer"])
         chtml = (t / "bp-c.html").read_text(encoding="utf-8") if code == 0 else ""
         check("customer version strips internal evidence", code == 0 and "Caldova account plan FY27" not in chtml)
+        process_checks(t, sample, check)
 
         # 1.4: Innovation Hub canon (Agent Factory journey, landing zone, ADRs, IT readiness), product icons, Hub journey views
         def stats_of(text):
@@ -331,11 +387,11 @@ def main() -> int:
         rates = json.loads((fdir / "rates/rates-2026-11.json").read_text(encoding="utf-8"))
         rv = json.loads((vdir / "examples/reference-hr-assistant.value.json").read_text(encoding="utf-8"))
         rf = json.loads((fdir / "examples/reference-hr-assistant.finops.json").read_text(encoding="utf-8"))
-        rf["results"] = fc.run(rf, rv, rates)
+        rf["results"] = fc.run(rf, rv, rates, acknowledge_finops_preview=True)
         ag = rf["results"]["agents"][0]
         po = {o["option"]: o for o in rf["results"]["purchase_options"]}
         sc = [round(x["credits_month"]) for x in rf["results"]["credit_scenarios"]]
-        uc = vc.run(rv, rf)["use_cases"][0]
+        uc = vc.run(rv, rf, acknowledge_finops_preview=True)["use_cases"][0]
         near = lambda a, b, tol: a is not None and abs(a - b) <= tol
         golden = (round(ag["credits_month"]) == 81780 and near(ag["lines"]["credits"], 662.42, 0.01) and near(ag["total_month"], 2582.42, 0.01)
                   and near(po["packs"]["annual_chf"], 7776.0, 0.01) and near(po["cc-p3"]["annual_chf"], 7827.52, 0.01) and sc == [136300, 27260, 18780, 163560]
@@ -344,8 +400,25 @@ def main() -> int:
         check("value and FinOps reproduce the method's worked example", golden,
               json.dumps({"credits": ag["credits_month"], "npv": uc["npv"], "roi": uc["roi"], "payback": uc["payback_months"], "scenarios": sc})[:300])
         bwi_vf = load(S / "frontier-blueprint/scripts/build_with_identity.py")
+        refused_dir = t / "unacknowledged-preview"
+        refused_code, refused_out = run(bwi_vf, [
+            "--data", str(sample), "--finops", str(fdir / "examples/caldova-finops.json"),
+            "--out-dir", str(refused_dir), "--no-identity",
+        ])
+        check("unacknowledged FinOps refuses before creating output",
+              refused_code == 2 and not refused_dir.exists()
+              and "--acknowledge-finops-preview" in refused_out, refused_out[-300:])
+        cached = json.loads(json.dumps(rf))
+        cached["maturity"] = "ga"
+        cached["preview_acknowledged"] = True
+        refused = False
+        try:
+            fc.run(cached, rv, rates)
+        except ValueError as exc:
+            refused = "--acknowledge-finops-preview" in str(exc)
+        check("cached or forged GA cost metadata cannot acknowledge a new invocation", refused)
         code, out = run(bwi_vf, ["--data", str(sample), "--value", str(vdir / "examples/caldova-value.json"), "--finops", str(fdir / "examples/caldova-finops.json"),
-                                 "--out-dir", str(t / "vfdemo"), "--no-identity"])
+                                 "--out-dir", str(t / "vfdemo"), "--no-identity", "--acknowledge-finops-preview"])
         vf = json.loads(out[out.index("{"):]) if code == 0 and "{" in out else {}
         vf_html = Path(vf.get("html", t / "missing.html"))
         vf_text = vf_html.read_text(encoding="utf-8") if vf_html.exists() else ""
@@ -360,7 +433,8 @@ def main() -> int:
         (t / "merge/fb.json").write_text(json.dumps({"type": "frontier-blueprint-feedback", "exported": "2026-11-12T16:40:00Z", "validations": {
             "ass:ASS-003": {"status": "adjusted", "value": 12, "note": "Head of Service"}, "ass:ASS-101": {"status": "validated"}, "ass:ASS-999": {"status": "validated"},
             "uc:UC09": {"status": "validated"}}}), encoding="utf-8")
-        code, out = run(mv, ["--value", str(t / "merge/value.json"), "--finops", str(t / "merge/finops.json"), "--feedback", str(t / "merge/fb.json")])
+        code, out = run(mv, ["--value", str(t / "merge/value.json"), "--finops", str(t / "merge/finops.json"), "--feedback", str(t / "merge/fb.json"),
+                            "--acknowledge-finops-preview"])
         mres = json.loads(out[out.index("{"):]) if code == 0 and "{" in out else {}
         mval = json.loads((t / "merge/value.json").read_text(encoding="utf-8"))
         mfin = json.loads((t / "merge/finops.json").read_text(encoding="utf-8"))
@@ -370,10 +444,13 @@ def main() -> int:
               and a3["base"] == 12 and a3["status"] == "adjusted" and a101["status"] == "confirmed" and mval["version"] == "0.2" and mfin["version"] == "0.2", out[-300:])
         sv, sf = load(vdir / "scripts/seed_value.py"), load(fdir / "scripts/seed_finops.py")
         c1, o1 = run(sv, ["--blueprint", str(sample), "--out", str(t / "seed-value.json")])
-        c2, o2 = run(sf, ["--blueprint", str(sample), "--value", str(t / "seed-value.json"), "--out", str(t / "seed-finops.json")])
+        c2, o2 = run(sf, ["--blueprint", str(sample), "--value", str(t / "seed-value.json"), "--out", str(t / "seed-finops.json"),
+                        "--acknowledge-finops-preview"])
         seeded_v = json.loads((t / "seed-value.json").read_text(encoding="utf-8")) if c1 == 0 else {}
         seeded_f = json.loads((t / "seed-finops.json").read_text(encoding="utf-8")) if c2 == 0 else {}
-        sres = vc.run(seeded_v, seeded_f) if c1 == 0 and c2 == 0 else {}
+        if c1 == 0 and c2 == 0:
+            seeded_f["results"] = fc.run(seeded_f, seeded_v, rates, acknowledge_finops_preview=True)
+        sres = vc.run(seeded_v, seeded_f, acknowledge_finops_preview=True) if c1 == 0 and c2 == 0 else {}
         cov = {a["id"]: a["usage"]["billable_share"] for a in seeded_f.get("agents", [])}
         check("value and FinOps seeds leave volumes to collect", c1 == 0 and c2 == 0 and len(sres.get("inputs_needed", [])) == 2 and not sres.get("use_cases")
               and cov.get("D2-A01") == "1 - licensed_share" and cov.get("D3-A05") == 1, (o1 + o2)[-300:])
@@ -393,8 +470,16 @@ def main() -> int:
             (t / "empty").mkdir()
             code, out = run(inst, ["--root", str(t / "pkg"), "--installed", str(t / "empty")])
             plan = json.loads(out) if code == 0 else {}
-            check("install check passes on the released package", code == 0 and plan.get("verified") and len(plan.get("copy_calls", [])) == 7
-                  and all(x["status"] == "new" for x in plan.get("skills", [])), out[-300:] if code else "")
+            expected = json.loads((ROOT / "plugin/package/manifest.json").read_text(encoding="utf-8"))["agentSkills"]
+            installed = plan.get("skills", [])
+            finops = next((x for x in installed if x.get("name") == "frontier-finops"), {})
+            check("install check passes on the released package",
+                  code == 0 and plan.get("verified") and len(plan.get("copy_calls", [])) == len(expected) == 8
+                  and all(x["status"] == "new" for x in installed)
+                  and sum(x.get("maturity") == "ga" for x in installed) == 7
+                  and finops.get("maturity") == "preview" and finops.get("optional") is True
+                  and finops.get("requires_preview_ack") is True
+                  and "preview_acknowledged" not in plan, out[-300:] if code else "")
             with open(t / "pkg/skills/frontier-blueprint/SKILL.md", "a", encoding="utf-8") as fh:
                 fh.write("\n<!-- altered -->\n")
             code, out = run(inst, ["--root", str(t / "pkg"), "--installed", str(t / "empty")])

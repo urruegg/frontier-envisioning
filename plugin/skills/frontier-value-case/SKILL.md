@@ -15,13 +15,20 @@ license: MIT
 metadata:
   category: productivity
   icon: DataTrending
-  version: "1.7.1"
+  version: "1.9.1"
   plugin: frontier-envisioning
+  maturity: ga
+  optional: false
+  requires_preview_ack: false
 ---
 
 # Business value case
 
 Turns the blueprint's use cases into a CFO-credible value case in CHF. Every number is either evidence (a customer statement, a measurement) or a labelled assumption with an owner, a range and a question for the workshop. A deterministic script calculates; the blueprint shows the value in the use cases and the matrix, and lets the workshop confirm, adjust or reject each assumption live. The verdicts come back as a feedback file and are merged into the next version.
+
+This is a GA product wrapper, not a claim that results are validated or that
+providers are GA. Value-only work uses ordinary evidence and assumptions without
+FinOps; missing costs are an open budget gap, not zero or validated ROI.
 
 ## Quick Start
 
@@ -30,9 +37,9 @@ User: "Build the value case for Caldova"
 1. Find the blueprint (normalized JSON), the context pack and an existing value.json in the engagement folder
 2. python scripts/seed_value.py --blueprint blueprint.normalized.json --out working/frontier/<slug>/value.json
 3. Fill the value tree and the assumptions from evidence (volumes, minutes, rates, error costs); label the rest
-4. frontier-finops: the cost model for the same agents (finops.json)
-5. python ../frontier-blueprint/scripts/build_with_identity.py --data blueprint.json --value value.json --finops finops.json --out-dir working/frontier/<slug> ...
-6. Publish the HTML; reply with value per year (range), NPV, payback, the budget view and the top assumptions with owners
+4. Review ordinary cost assumptions and gaps with the budget owner; do not invoke FinOps by default
+5. python ../frontier-blueprint/scripts/build_with_identity.py --data blueprint.json --value value.json --out-dir working/frontier/<slug>
+6. Review the HTML; reply with supported value ranges and assumptions/owners; withhold unsupported ROI/payback and state missing budget evidence
 ```
 
 Demo: "Build the Frontier blueprint demo for Caldova" (frontier-blueprint) uses `examples/caldova-value.json`. `examples/reference-hr-assistant.value.json` is the method's worked example; the self-test checks that the scripts reproduce its published results.
@@ -48,7 +55,7 @@ Demo: "Build the Frontier blueprint demo for Caldova" (frontier-blueprint) uses 
 
 - Running the whole engagement end to end: use frontier-envisioning instead.
 - Agent names, colours and icons: use frontier-agent-identity instead.
-- Costs, Copilot Credits, licences, purchase options or guardrails: use frontier-finops instead.
+- Costs, credits, licences, purchase options or guardrails: frontier-finops, with its full Preview notice and confirmation first.
 - The blueprint HTML, journeys and agents: use frontier-blueprint instead.
 - Gathering context or analysing transcripts: use frontier-context-discovery instead.
 - A business case for a CRM sales deal: use the sales business case skill instead.
@@ -57,7 +64,7 @@ Demo: "Build the Frontier blueprint demo for Caldova" (frontier-blueprint) uses 
 ## Workflow
 
 ### Step 1: Locate the engagement
-Read `engagement.json`, the normalized blueprint and the context pack from the engagement folder (OneDrive `Documents/Cowork/frontier-envisioning/<slug>/`, then `input/`). Reuse an existing `value.json`; never start a second one for the same customer.
+Read `engagement.json`, the normalized blueprint and the context pack from the engagement folder (OneDrive `Documents/Cowork/frontier-envisioning/<slug>/`, then `input/`). Reuse the appropriate ordinary value model. If the existing model embeds Preview-derived costs/value, preserve the original unchanged: on decline, prepare clean core inputs and an ordinary non-FinOps value model, not the cached Preview model. No automatic cleansing or `--no-finops` flag exists; never strip provenance or relabel old costs GA.
 
 ### Step 2: Evidence first
 Look for numbers before assuming them: volumes, handling times, loaded rates, error costs, spends that could stop, current tool and licence costs. Search with the `SearchM365` tool (meetings, transcripts, mail, files) and read documents with `ReadFileContent`; run **frontier-context-discovery** on new transcripts. Fact mode uses customer numbers; hypothesis mode uses labelled defaults; mixed is normal. Record evidence ids in `src`.
@@ -65,11 +72,31 @@ Look for numbers before assuming them: volumes, handling times, loaded rates, er
 ### Step 3: Write the value tree and the assumption register
 Seed with `seed_value.py` (volume and minutes stay empty until evidence or the customer provides them), then write each lever: driver (efficiency, quality, revenue, strategic), category (cash, capacity, risk, revenue) and formula over named variables. Each assumption has a statement, unit, low, base, high, source type, confidence, owner, question and status. Rules: [references/value-method.md](references/value-method.md). Show the levers and the assumptions to the user before calculating.
 
-### Step 4: Costs from frontier-finops
-The run cost of each use case comes from the FinOps results of its agents. Build or update `finops.json` with **frontier-finops** first.
+### Step 4: Ordinary costs; optional Preview FinOps
+Use the customer's ordinary, sourced cost assumptions where available and name
+the missing evidence and real budget owner. FinOps is not a prerequisite.
+Only for requested FinOps work, load [frontier-finops](../frontier-finops/SKILL.md),
+show its full exact Preview notice and obtain actual current-scenario
+confirmation before seed/calc/apply, cost recommendations or figures.
+Decline skips the optional subflow; an absent unrequested module does not block
+core value work. A requested-but-missing module is an explicit error.
 
 ### Step 5: Calculate (gate V1)
-`build_with_identity.py --value --finops` runs `finops_calc.py`, `value_calc.py` and the apply scripts on copies and renders the blueprint. Gate V1: every MVP use case has a value tree, every number has a source or an assumption label, sensitivity done. Check `inputs_needed` and fill the gaps.
+`build_with_identity.py --data blueprint.json --value value.json --out-dir working/frontier/<slug>` calculates/applies ordinary value on copies without
+FinOps. Gate V1: every MVP use case has a value tree, every number has a source
+or assumption label, sensitivity done. Check `inputs_needed`; do not present
+missing cost evidence as a passed budget/readiness gate.
+
+After actual Preview confirmation, the optional wrapper form adds
+`--finops finops.json --acknowledge-finops-preview`. Direct `value_calc.py`,
+`apply_value.py` and `merge_value_feedback.py` also need
+`--acknowledge-finops-preview` when consuming FinOps or Preview-derived value;
+ordinary value-only examples do not. Operational APIs default keyword-only
+`acknowledge_finops_preview=False`. Each new invocation or changed scope/model/
+rates/grounding needs renewed confirmation; wrapper forwarding covers one chain
+only. Old JSON, notes, installation, GA claims or a calculation request are not
+acknowledgement. A cache/model/rates mismatch requires fresh calculation before
+apply; the flag does not make cached results current.
 
 ### Step 6: Prepare the workshop
 The Use cases page sizes the matrix bubbles by value (dashed while a hypothesis) and lists the assumptions ranked by their effect on the NPV, each with its owner and question. Put the top ten on the agenda ("Value and cost of the MVP agents", 45 minutes after the MVP choice) and build the customer version before anything leaves Microsoft.
@@ -80,7 +107,12 @@ assumptions. Keep assumption evidence and owners; a scope verdict or computed
 Plan readiness is not validation of value or permission to build.
 
 ### Step 7: Merge the workshop (gate V2)
-`python scripts/merge_value_feedback.py --value value.json --finops finops.json --feedback <customer>-workshop-feedback.json --date <YYYY-MM-DD>` applies confirm, adjust (with the agreed value) and reject; it writes a changelog and bumps the version. Rebuild to recalculate. Gate V2: the five most sensitive assumptions are confirmed or adjusted by their owners; then set `status` to `validated`.
+`python scripts/merge_value_feedback.py --value value.json --feedback <customer>-workshop-feedback.json --date <YYYY-MM-DD>` applies ordinary value verdicts.
+For a confirmed Preview operation only, add
+`--finops finops.json --acknowledge-finops-preview`. It writes a changelog and
+bumps the version; rebuild to recalculate. V2 requires the five most sensitive
+assumptions confirmed/adjusted by owners. A value status never validates
+Preview pricing or grants budget approval.
 
 ### Step 8: Deliver
 A business value assessment document (docx skill, structure in the method reference) and, when asked, an Excel model with live formulas (xlsx skill, sheet layout in the method reference). Gate V3: the baseline is measured before go-live, with the method agreed.
@@ -100,6 +132,15 @@ A business value assessment document (docx skill, structure in the method refere
 - Never measure value per employee; aggregate per process, team or agent.
 - Always show the value tree and the assumptions to the user before calculating, and the customer version before sharing.
 - No ROI claims beyond the data: present ranges and the budget view next to the economic view.
+- Carry the Preview notice, non-GA grounding/model limitations, assumptions and
+  scenario/model/rate/source provenance into every FinOps-derived ROI/NPV,
+  comparison, unit cost, PRD/design, reply and export. Legacy/imported FinOps is
+  always Preview. Technical acknowledgement metadata is not human approval.
+- Browser acknowledgement is fresh, document-local and independent of scripts;
+  reload resets it, no localStorage consent, warning persists. Flat/nested
+  Preview results and linked assumptions stay gated; ordinary own value stays
+  available. Private components/rankings/outcomes are withheld, not zero.
+  Do not recover `internal_notes`; viewer acknowledgement is not access control.
 - Customer generation must exclude internal-derived value/risk/PRD content,
   not merely remove its source IDs. Customer export is not external/IP clearance.
 
@@ -108,7 +149,9 @@ A business value assessment document (docx skill, structure in the method refere
 - If `value_calc.py` reports `inputs_needed`: collect those assumptions (evidence or customer) before quoting numbers.
 - If an assumption id is missing from the register: add it or fix the variable; never invent a value.
 - If the feedback file belongs to another blueprint or names unknown ids: report them and ask which version was shown.
-- If no FinOps results are available: the costs are zero and flagged; build the cost model before presenting ROI.
+- If cost evidence is missing: keep the budget gap with its real owner and
+  withhold unsupported ROI/payback, even if a formula emits zero cost. Continue
+  ordinary value work without FinOps; offer Preview only after its awareness gate.
 - If the sponsor asks for a single number: give the base case with its range and the two assumptions it depends on most.
 
 ## Files

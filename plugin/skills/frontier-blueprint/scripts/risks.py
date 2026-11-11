@@ -3,11 +3,14 @@
 """Normalise authored, canon and derived blueprint risks. Standard library only."""
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import re
+import sys
 from collections import Counter
 from decimal import Decimal, InvalidOperation
+from pathlib import Path
 
 CATEGORIES = {
     "value": "Business value", "adoption": "Adoption and change", "data": "Data and integration",
@@ -119,6 +122,27 @@ def derive_risks(bp: dict, rep=None) -> list:
                             "internal": it.get("internal") is True or g.get("internal") is True or rd.get("internal") is True,
                             "origin": "IT readiness", "derived": True, "ref": it.get("id"),
                             "source_key": _source_key("IT readiness", it.get("id"), f"Blocked IT readiness item: {what}")})
+    onto = bp.get("ontology") if isinstance(bp.get("ontology"), dict) else {}
+    for i, q in enumerate(as_list(onto.get("risks")), start=1):
+        if not isinstance(q, dict) or not str(q.get("title") or "").strip():
+            continue
+        ref = q.get("id") or f"R-ONT-{i}"
+        refs = list(as_list(q.get("content_src", q.get("src", onto.get("content_src", onto.get("src"))))))
+        row = {"id": ref, "title": q["title"], "category": q.get("category") if q.get("category") in CATEGORIES else classify(q["title"]),
+               "likelihood": _rated(q, "likelihood", rep, f"risk {ref}"),
+               "impact": _rated(q, "impact", rep, f"risk {ref}"),
+               "owner": q.get("owner") or "", "mitigation": q.get("mitigation") or "",
+               "status": q.get("status") if q.get("status") in STATUSES else "open",
+               "journeys": list(as_list(q.get("journeys"))), "use_cases": [], "agents": list(as_list(q.get("agents"))),
+               "src": list(as_list(q.get("src", onto.get("src")))), "content_src": refs,
+               "internal": onto.get("internal") is True or q.get("internal") is True
+                           or str(onto.get("visibility", "")).lower() == "internal" or str(q.get("visibility", "")).lower() == "internal",
+               "origin": "ontology", "derived": True, "ref": ref,
+               "source_key": _source_key("ontology", ref, q["title"])}
+        for field in ("entities", "entity", "sources", "source", "secondary", "namespace", "data_agents", "operations_agents", "data_products"):
+            if field in q:
+                row[field] = copy.deepcopy(q[field])
+        out.append(row)
     return out
 
 
@@ -128,6 +152,16 @@ def _unique_id(base, key, used):
         candidate = f"{base}-{key[:10]}-{n}"
         n += 1
     return candidate
+
+
+def _ontology_lineage(bp, row):
+    """The optional process helper is loaded only for ontology-origin risks."""
+    onto = bp.get("ontology")
+    if not isinstance(onto, dict):
+        return [], None
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "frontier-process" / "scripts"))
+    from ontology_lib import private_content, risk_ancestors
+    return risk_ancestors(onto, row, bp), private_content
 
 
 def _bind_sources(bp, reg, items, derived, rep):
@@ -149,6 +183,9 @@ def _bind_sources(bp, reg, items, derived, rep):
                 r["source_key"] = _source_key("use case", refs[0], r.get("title"))
             elif r.get("origin") == "IT readiness" and r.get("ref"):
                 r["source_key"] = _source_key("IT readiness", r["ref"], r.get("title"))
+            elif r.get("origin") == "ontology":
+                r.setdefault("ref", r.get("id"))
+                r["source_key"] = _source_key("ontology", r["ref"], r.get("title"))
         if r.get("source_key") and r.get("id"):
             bindings.setdefault(r["source_key"], r["id"])
     reserved = set(bindings.values()) | {r["id"] for r in items}
@@ -178,6 +215,19 @@ def _bind_sources(bp, reg, items, derived, rep):
             lineage.extend(use_cases.get(uid, ()))
         lineage.extend(domains[did] for did in as_list(r.get("journeys")) if did in domains)
         lineage.extend(ready_items.get(r.get("ref"), ()))
+        if r.get("origin") == "ontology":
+            ontology_nodes, private_content = _ontology_lineage(bp, r)
+            lineage.extend(ontology_nodes)
+            if private_content is not None and any(private_content(node, bp) for node in ontology_nodes):
+                r["internal"] = True
+                # Restrict the current source independently of an old verdict.
+                # The title/source_key binding still remains retired.
+                onto = bp["ontology"]
+                current_risk = next((q for q in as_list(onto.get("risks")) if isinstance(q, dict) and q.get("id") == r.get("ref")), None)
+                if current_risk is not None:
+                    current_nodes, _ = _ontology_lineage(bp, current_risk)
+                    if any(private_content(node, bp) for node in current_nodes):
+                        current_risk["internal"] = True
         # Container ancestry survives a retired title binding. Restrict retained
         # content using the current parent, without moving its verdict to a new risk.
         for node in lineage:
@@ -204,6 +254,10 @@ def _bind_sources(bp, reg, items, derived, rep):
                         u[field] = points
             if source.get("origin") == "IT readiness" and source.get("ref") in ready_items:
                 ready_items[source["ref"]][0]["internal"] = True
+            if source.get("origin") == "ontology":
+                for q in as_list((bp.get("ontology") or {}).get("risks")):
+                    if isinstance(q, dict) and _source_key("ontology", q.get("id"), q.get("title")) == r.get("source_key"):
+                        q["internal"] = True
         if r.get("source_key") and r["source_key"] not in current and rep is not None:
             rep.warn(f"risk {r['id']}: source changed or removed; workshop content retained separately")
     for r in derived:

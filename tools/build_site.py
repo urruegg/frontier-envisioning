@@ -4,11 +4,13 @@
 """Assemble the showcase site for Azure Static Web Apps from the built demo.
 
   python tools/build_site.py [--out build/site] [--auth none|entra] [--tenant-id GUID] [--demo build/demo]
+         [--preview-demo build/demo-finops-preview]
 
 Output:
   index.html                 landing page (site/index.html with version, date and commit filled in)
   blueprint.html             the Caldova blueprint (from build/demo)
   identity-catalogue.html    the agent identity catalogue (from build/demo)
+  blueprint-preview.html    only when an explicit developer Preview fixture is supplied
   downloads/<plugin zip>     the plugin package, when dist/ holds it
   staticwebapp.config.json   routes, security headers and sign-in
 
@@ -17,6 +19,8 @@ SHA-256 hash), no external resources and no framing. With --auth entra (the defa
 every route requires a signed-in user of the given Microsoft Entra tenant; the client id and secret are
 app settings (AAD_CLIENT_ID, AAD_CLIENT_SECRET) set by the infrastructure, never in this file.
 The tenant id may also come from SITE_AUTH_TENANT_ID, the mode from SITE_AUTH_MODE.
+FRONTIER_PREVIEW_DEMO explicitly selects the optional browser-test fixture; it does not acknowledge
+viewer use or include that fixture in the default distribution.
 """
 from __future__ import annotations
 
@@ -75,7 +79,7 @@ def commit_id() -> str:
         return "local"
 
 
-def build(out: Path, demo: Path, auth: str, tenant: str | None) -> dict:
+def build(out: Path, demo: Path, auth: str, tenant: str | None, *, preview_demo: Path | None = None) -> dict:
     if auth == "entra" and not (tenant and GUID.match(tenant)):
         raise SystemExit("--auth entra needs --tenant-id (a GUID) or SITE_AUTH_TENANT_ID")
     src_html = demo / DEMO_HTML_NAME
@@ -87,6 +91,13 @@ def build(out: Path, demo: Path, auth: str, tenant: str | None) -> dict:
     for need in (src_html, catalogue):
         if not need.exists():
             raise SystemExit(f"missing {need} - run: python tools/dev.py demo")
+    preview_page = None
+    if preview_demo is not None:
+        preview_html = preview_demo / DEMO_HTML_NAME
+        if not preview_html.is_file():
+            raise SystemExit(f"missing {preview_html} - build the explicitly acknowledged Preview demo first")
+        preview_page = preview_html.read_text(encoding="utf-8")
+        csp_for(preview_page)
     if out.exists():
         shutil.rmtree(out)
     (out / "downloads").mkdir(parents=True)
@@ -94,6 +105,8 @@ def build(out: Path, demo: Path, auth: str, tenant: str | None) -> dict:
     pkg = DIST / f"frontier-envisioning-plugin-{version}.zip"
     pages = {"blueprint.html": src_html.read_text(encoding="utf-8"),
              "identity-catalogue.html": catalogue.read_text(encoding="utf-8")}
+    if preview_page is not None:
+        pages["blueprint-preview.html"] = preview_page
     package_href = "#"
     if pkg.exists():
         shutil.copyfile(pkg, out / "downloads" / pkg.name)
@@ -135,10 +148,13 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default=str(SITE_DIR))
     ap.add_argument("--demo", default=str(DEMO_DIR))
+    ap.add_argument("--preview-demo", default=os.environ.get("FRONTIER_PREVIEW_DEMO"),
+                    help="explicit developer Preview fixture; omitted by default")
     ap.add_argument("--auth", choices=("none", "entra"), default=os.environ.get("SITE_AUTH_MODE") or "none")
     ap.add_argument("--tenant-id", default=os.environ.get("SITE_AUTH_TENANT_ID"))
     a = ap.parse_args(argv)
-    print(json.dumps(build(Path(a.out), Path(a.demo), a.auth, a.tenant_id), indent=1))
+    print(json.dumps(build(Path(a.out), Path(a.demo), a.auth, a.tenant_id,
+                           preview_demo=Path(a.preview_demo) if a.preview_demo else None), indent=1))
     return 0
 
 

@@ -269,10 +269,89 @@ function facDom(){ return D.filter(isFactory)[0] || null; }
 /* business value and FinOps: blocks written by frontier-value-case (apply_value.py) and frontier-finops (apply_finops.py) */
 var VC = BP.value_case && typeof BP.value_case === "object" && !Array.isArray(BP.value_case) ? BP.value_case : null;
 var FO = BP.finops && typeof BP.finops === "object" && !Array.isArray(BP.finops) ? BP.finops : null;
+var ONT = BP.ontology && typeof BP.ontology === "object" && !Array.isArray(BP.ontology) ? BP.ontology : null;
+var FINOPS_NOTICE = "Frontier FinOps is Preview. Its grounding and cost model are not GA and need refinement. Results are provisional planning estimates, not validated pricing, budget approval or purchase/commitment advice. Verify rates and assumptions independently before decisions.";
+/* Viewer awareness only, scoped to this document instance. Artifact metadata is neither
+   human approval nor encryption/access control. Never read or save consent in NOTES. */
+var previewAcknowledged = false;
+function previewDerived(value){
+  return !!(value && (Object.prototype.hasOwnProperty.call(value,"finops_preview") || value.finops));
+}
+var VALUE_FINANCIAL_FIELDS = ["npv","npv_budget","roi","payback_months","cost_year","build","pv_cost","break_even","scenarios","rank","swing_npv"];
+/* One resolver for the supported flat / results shape. The selected result is
+   authoritative for financial fields: missing/redacted nested amounts must not
+   fall back to an old outer cache. Keep independent outer values and metadata,
+   while collecting ancestry and assumption links from both layers. Never walk
+   opaque notes or recursively discover alternative financial objects. */
+function caseValueSource(u){
+  var outer = u && u.business_value;
+  if (!outer || typeof outer !== "object" || Array.isArray(outer)) return null;
+  var nested = outer.results && typeof outer.results === "object" && !Array.isArray(outer.results) ? outer.results : null;
+  var result = nested || outer, value = Object.create(null);
+  Object.keys(outer).forEach(function(k){
+    if (k !== "results" && k !== "internal_notes" && (!nested || VALUE_FINANCIAL_FIELDS.indexOf(k) < 0)) value[k] = outer[k];
+  });
+  if (nested) Object.keys(result).forEach(function(k){
+    if (k !== "results" && k !== "internal_notes") value[k] = result[k];
+  });
+  return {value:value,ancestry:nested ? [outer,result] : [outer],
+    assumptions:arr(outer.assumptions).concat(nested ? arr(result.assumptions) : [])};
+}
+function casePreview(u){
+  var source = caseValueSource(u);
+  return !!FO || previewDerived(VC) || !!(source && (source.ancestry.some(previewDerived) ||
+    source.assumptions.some(function(id){ return assumptionPreview(ASSM[id]); })));
+}
+/* Aggregate provenance is the union of the actual contributing cases, not only
+   the wrapper's marker. Do not spread a sibling's provenance to a public case,
+   or recompute a public-only subset and label it as the full portfolio. */
+function portfolioPreview(){
+  return !!FO || previewDerived(VC) || previewDerived(VC && VC.totals) ||
+    UCS.some(function(u){ return u.business_value && casePreview(u); }) ||
+    arr(VC && VC.assumptions).some(assumptionPreview);
+}
+function previewPresent(){ return portfolioPreview() || Object.keys(ASSM).some(function(id){ return assumptionPreview(ASSM[id]); }); }
+function previewNotice(){
+  return h("aside",{class:"preview-notice",role:"note","aria-label":"FinOps Preview notice"},
+    h("p",null, FINOPS_NOTICE),
+    h("p",null, previewAcknowledged ? "Provisional comparisons, not recommendations. Source restrictions still apply; acknowledgement is not budget approval." : "Preview-derived figures are withheld. Script/caller metadata does not acknowledge this viewer."),
+    previewAcknowledged ? null : h("button",{id:"finops-preview-ack",type:"button",class:"btn",onclick:function(){
+      previewAcknowledged = true; render(); document.getElementById("view").focus({preventScroll:true});
+    }},"I acknowledge Preview estimates for this blueprint"));
+}
+function presentedValue(value, inheritedPreview){
+  if (!value || previewAcknowledged || !(inheritedPreview || previewDerived(value))) return value;
+  var out = Object.create(null);
+  Object.keys(value).forEach(function(k){
+    if (VALUE_FINANCIAL_FIELDS.indexOf(k) < 0 && k !== "results" && k !== "internal_notes") out[k] = value[k];
+  });
+  return out;
+}
 var ASSM = {};
 arr(VC && VC.assumptions).concat(arr(FO && FO.assumptions)).forEach(function(a){ if (a && a.id && !ASSM[a.id]) ASSM[a.id] = a; });
+/* Source membership is provenance even when the value register also has a copy
+   of this ID. Do not infer consent from any marker, maturity or acknowledgement. */
+var FO_ASSUMPTIONS = {};
+arr(FO && FO.assumptions).forEach(function(a){ if (a && a.id) FO_ASSUMPTIONS[a.id] = true; });
+function assumptionPreview(a){ return !!(a && (FO_ASSUMPTIONS[a.id] || previewDerived(a))); }
+function assumptionWithheld(a){ return !previewAcknowledged && assumptionPreview(a); }
+function presentedAssumption(a){
+  if (!assumptionWithheld(a)) return a;
+  /* Do not merely blank the numeric cells: model statements/questions/notes can
+     themselves contain rates or cost figures. Keep identity/source constraints. */
+  return {id:a.id,statement:"FinOps Preview assumption \u2014 figures withheld until viewer acknowledgement",
+    status:a.status,src:a.src,source_type:a.source_type,confidence:a.confidence,owner:a.owner,
+    use_cases:a.use_cases,internal:a.internal,customer_facing:a.customer_facing};
+}
+function presentedAssumptionVerdict(a, verdict){
+  if (!assumptionWithheld(a)) return verdict;
+  var out = {};
+  Object.keys(verdict).forEach(function(k){ if (k !== "value") out[k] = verdict[k]; });
+  return out;
+}
+function withheldAssumptionValue(){ return h("span",{class:"note"},"Numeric value withheld (FinOps Preview)"); }
 function num(x){ return typeof x === "number" && isFinite(x); }
-function grp(n, dec){ var p = Math.abs(n).toFixed(dec || 0).split("."); p[0] = p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ","); return (n < 0 ? "\u2212" : "") + p.join("."); }
+function grp(n, dec){ if (!num(n)) return TBC; var p = Math.abs(n).toFixed(dec || 0).split("."); p[0] = p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ","); return (n < 0 ? "\u2212" : "") + p.join("."); }
 function curr(){ return (VC && VC.currency) || (FO && FO.currency) || "CHF"; }
 function chf(x, short){
   if (!num(x)) return TBC;
@@ -287,7 +366,7 @@ function fmtA(v, unit){
   if (unit === "share") return pct(v, Math.abs(v * 100 - Math.round(v * 100)) > 1e-9 ? 1 : 0);
   return grp(v, v % 1 ? 2 : 0) + (unit ? " " + unit : "");
 }
-function valueOf(u){ var b = u && u.business_value; return b && typeof b === "object" && !Array.isArray(b) ? b : null; }
+function valueOf(u){ var source = caseValueSource(u); return source ? presentedValue(source.value, casePreview(u)) : null; }
 function mvpAgents(m){
   var opt = String(m.option || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
   var pool = ALL.filter(function(a){ return isMvp(a) && (!m.domain || (a._d && a._d.id === m.domain)); });
@@ -364,6 +443,7 @@ var ICON = {
 };
 ICON.prd = ICON.evidence;
 ICON.plan = ICON.blueprint;
+ICON.ontology = '<circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><path d="M8 8l3 7M16 8l-3 7M9 6h6"/>';
 ICON.risks = '<path d="M12 3L2 21h20zM12 9v5M12 17v1"/>';
 function icon(k){ var sp = document.createElement("span"); sp.className = "ic-wrap"; sp.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (ICON[k] || "") + '</svg>'; return sp; }
 
@@ -378,6 +458,7 @@ var VIEWS = [
   {id:"agents", label:"Agents", part:"Design"},
   {id:"identity", label:"Agent identity", part:"Design", need:function(){ return hasIdentity(); }},
   {id:"architecture", label:"Target architecture", part:"Design", need:function(){ return has(BP.architecture); }},
+  {id:"ontology", label:"Ontology", part:"Design", need:function(){ return ontEnts().length > 0; }},
   {id:"readiness", label:"IT readiness", part:"Design", need:function(){ return !!(BP.it_readiness && typeof BP.it_readiness === "object"); }},
   {id:"roadmap", label:"Roadmap", part:"Build", need:function(){ return has(BP.next_steps) || has(BP.mvp_options) || D.some(function(d){ return has(d.horizon_plan); }); }},
   {id:"plan", label:"Plan", part:"Build", need:function(){ return ALL.length > 0; }},
@@ -443,7 +524,7 @@ function renderRail(){
   ORDER.forEach(function(id){
     var vm = viewMeta(id);
     if (vm.part !== lastPart){ r.appendChild(h("div",{class:"grp",title:PARTS[vm.part].desc}, PARTS[vm.part].label)); lastPart = vm.part; }
-    r.appendChild(h("button",{type:"button","aria-current": state.view === id ? "page" : null, onclick:function(){ go(id); }}, icon(id), h("span",null, vm.label)));
+    r.appendChild(h("button",{type:"button","data-view":id,"aria-current": state.view === id ? "page" : null, onclick:function(){ go(id); }}, icon(id), h("span",null, vm.label)));
   });
 }
 function renderHeader(){
@@ -1035,8 +1116,9 @@ function flOut(x, q){
   return h("li",null, h("span",null, x.text || (k && k.kpi) || ""),
     k ? h("div",{class:"flkpi"}, h("b",null, k.kpi), (k.baseline || k.target) ? [" \u00b7 ", k.baseline || TBC, " \u2192 ", h("b",null, k.target || TBC)] : null, evPills(k.src)) : null,
     arr(x.assumptions).length ? h("div",{class:"flass"}, h("span",{class:"note"},"Value hypotheses to confirm in the workshop"), arr(x.assumptions).map(function(id){
-      var a = ASSM[id];
-      return a ? h("span",{class:"flassi", title:a.question || null}, h("b",null, id), " ", a.statement || "", " \u00b7 ", fmtA(a.base, a.unit), " ", assPill(a)) : h("span",{class:"pill"}, id);
+      var a = ASSM[id], shown = a && presentedAssumption(a);
+      return a ? h("span",{class:"flassi", title:shown.question || null}, h("b",null, id), " ", shown.statement || "", " \u00b7 ",
+        assumptionWithheld(a) ? withheldAssumptionValue() : fmtA(shown.base, shown.unit), " ", assPill(a), evPills(shown.src)) : h("span",{class:"pill"}, id);
     })) : null,
     evPills(x.src));
 }
@@ -1879,7 +1961,8 @@ function agentChecks(a){
   var nDecl = DECL.filter(function(x){ return has(decl[x[0]]); }).length;
   var vals = UCS.filter(function(u){ return arr(u.agents).some(function(n){ return agentByName(n) === a; }); }).map(valueOf).filter(Boolean);
   var vOk = vals.length && vals.every(function(v){ return v.status === "validated"; }) ? 1 : (vals.some(function(v){ return v.status === "validated" || v.status === "partly validated"; }) ? .5 : 0);
-  var cost = FO && arr(FO.agents).some(function(x){ return x.id === a.id; }) ? (FO.verify ? .5 : 1) : 0;
+  /* A model is evidence to verify, never budget approval or a passed readiness check. */
+  var cost = FO && arr(FO.agents).some(function(x){ return x.id === a.id && num(x.total_month); }) ? .5 : 0;
   var rd = readinessShare(["workshop","prototype","build"]);
   var full = has(c.trigger) && has(c.plan) && has(c.outcome) && has(c.data_sources);
   return {validated: st === "validated" || st === "adjusted" ? 1 : 0, canvas: full ? 1 : (has(c.trigger) || has(c.plan) ? .5 : 0),
@@ -2312,47 +2395,72 @@ function verdict(a){ var n = note("val|ass|" + a.id); return n.status || n.value
 function assPill(a){
   var n = verdict(a), st = String((n && n.status) || a.status || "open").toLowerCase();
   var m = {validated:["val","Confirmed"], confirmed:["val","Confirmed"], adjusted:["adj","Adjusted"], rejected:["int","Rejected"], open:["open","Open"]}[st] || ["open","Open"];
-  return h("span",{class:"pill " + m[0]}, m[1] + (n ? " \u00b7 in the workshop" : ""));
+  return h("span",{class:"pill " + m[0],"data-assumption-status":"val|ass|" + a.id}, m[1] + (n ? " \u00b7 in the workshop" : ""));
+}
+function syncAssumptionPeers(a, source){
+  var k = "val|ass|" + a.id, saved = note(k);
+  document.querySelectorAll(".assbox[data-assumption-key]").forEach(function(box){
+    if (box === source || box.getAttribute("data-assumption-key") !== k) return;
+    box.querySelectorAll('input[type="radio"]').forEach(function(input){ input.checked = input.value === saved.status; });
+    var value = box.querySelector(".assval"), text = box.querySelector(".assnote"), status = box.querySelector(".status");
+    /* Update only controls already permitted by the presentation gate. Never
+       create a numeric input or recover a withheld amount while echoing notes. */
+    if (value && !assumptionWithheld(a)) value.value = num(saved.value) ? String(saved.value) : "";
+    if (text) text.value = saved.note || "";
+    if (status) status.textContent = "Saved";
+  });
+  var next = assPill(a);
+  document.querySelectorAll("[data-assumption-status]").forEach(function(pill){
+    if (pill.getAttribute("data-assumption-status") !== k) return;
+    pill.className = next.className; pill.textContent = next.textContent;
+  });
 }
 function srcType(a){
   var t = {customer:"Customer-stated", measured:"Measured", benchmark:"Benchmark (prior)", hypothesis:"Hypothesis"}[a.source_type] || a.source_type || "Hypothesis";
   return t + (a.confidence ? " \u00b7 " + a.confidence + " confidence" : "");
 }
-function assBox(a){
-  var k = "val|ass|" + a.id, n = note(k), name = "a-" + String(a.id).replace(/\W/g,"_");
+function assBox(a, instance){
+  /* DOM groups belong to a rendering instance; feedback still belongs to the
+     stable assumption ID shared by the detail, portfolio and FinOps views. */
+  var k = "val|ass|" + a.id, n = note(k), name = "a-" + String(a.id).replace(/\W/g,"_") + "-" + String(instance).replace(/\W/g,"_");
   var st = h("span",{class:"status",role:"status"});
   var opts = [["validated","Confirm"],["adjusted","Adjust"],["rejected","Reject"],["open","Open"]];
-  return h("div",{class:"assbox"},
+  function save(patch){ setNote(k,patch); st.textContent = "Saved"; syncAssumptionPeers(a,box); }
+  var box = h("div",{class:"assbox","data-assumption-key":k},
     h("div",{class:"opts",role:"radiogroup","aria-label":"Workshop verdict for " + a.id}, opts.map(function(o){
       var rid = name + "-" + o[0];
-      return h("label",{class:"opt",for:rid}, h("input",{type:"radio",id:rid,name:name,value:o[0],checked: n.status === o[0] ? true : null,onchange:function(){ setNote(k,{status:o[0]}); st.textContent = "Saved"; }}), o[1]);
+      return h("label",{class:"opt",for:rid}, h("input",{type:"radio",id:rid,name:name,value:o[0],checked: n.status === o[0] ? true : null,onchange:function(){ save({status:o[0]}); }}), o[1]);
     })),
-    h("input",{type:"number",step:"any",class:"assval","aria-label":"Agreed value for " + a.id + (a.unit ? " in " + a.unit : ""),placeholder:"Agreed value" + (a.unit === "share" ? " (0-1)" : ""),value: num(n.value) ? String(n.value) : null,
-      oninput:function(e){ var v = e.target.value; setNote(k,{value: v === "" ? null : +v}); st.textContent = "Saved"; }}),
-    h("input",{type:"text",class:"assnote","aria-label":"Note for " + a.id,placeholder:"Who said it, source",value: n.note || null,oninput:function(e){ setNote(k,{note:e.target.value}); st.textContent = "Saved"; }}),
+    assumptionWithheld(a) ? withheldAssumptionValue() : h("input",{type:"number",step:"any",class:"assval","aria-label":"Agreed value for " + a.id + (a.unit ? " in " + a.unit : ""),placeholder:"Agreed value" + (a.unit === "share" ? " (0-1)" : ""),value: num(n.value) ? String(n.value) : null,
+      oninput:function(e){ var v = e.target.value; save({value: v === "" ? null : +v}); }}),
+    h("input",{type:"text",class:"assnote","aria-label":"Note for " + a.id,placeholder:"Who said it, source",value: n.note || null,oninput:function(e){ save({note:e.target.value}); }}),
     st);
+  return box;
 }
-function assTable(list, effect){
+function assTable(list, effect, instance){
   if (!list.length) return null;
   return h("div",{class:"tscroll"}, h("table",{class:"t asst"},
     h("thead",null, h("tr",null, ["Assumption","Base (low \u2013 high)","Source","Owner and question"].concat(effect ? ["Effect on NPV"] : []).concat(["Workshop"]).map(function(c){ return h("th",{scope:"col"}, c); }))),
-    h("tbody",null, list.map(function(a){
+    h("tbody",null, list.map(function(a,i){
+      var shown = presentedAssumption(a);
       return h("tr",null,
-        h("td",null, h("b",null, a.id + (a.rank ? " \u00b7 #" + a.rank : "")), h("div",null, a.statement || ""), arr(a.use_cases).length ? h("div",{class:"note"}, a.use_cases.join(" \u00b7 ")) : null, a.note ? h("div",{class:"note"}, a.note) : null),
-        h("td",{class:"nowrap"}, h("b",null, fmtA(a.base, a.unit)), h("div",{class:"note"}, fmtA(a.low, a.unit), " \u2013 ", fmtA(a.high, a.unit))),
-        h("td",null, srcType(a), " ", evPills(a.src)),
-        h("td",null, a.owner ? h("b",null, a.owner) : null, a.question ? h("div",{class:"note"}, a.question) : null),
-        effect ? h("td",{class:"nowrap"}, num(a.swing_npv) ? chf(a.swing_npv, true) : "\u2014") : null,
-        h("td",null, assPill(a), assBox(a)));
+        h("td",null, h("b",null, a.id + (shown.rank && (previewAcknowledged || !portfolioPreview()) ? " \u00b7 #" + shown.rank : "")), h("div",null, shown.statement || ""), arr(shown.use_cases).length ? h("div",{class:"note"}, shown.use_cases.join(" \u00b7 ")) : null, shown.note ? h("div",{class:"note"}, shown.note) : null),
+        h("td",{class:"nowrap"}, assumptionWithheld(a) ? withheldAssumptionValue() : [h("b",null, fmtA(shown.base, shown.unit)), h("div",{class:"note"}, fmtA(shown.low, shown.unit), " \u2013 ", fmtA(shown.high, shown.unit))]),
+        h("td",null, srcType(shown), " ", evPills(shown.src)),
+        h("td",null, shown.owner ? h("b",null, shown.owner) : null, shown.question ? h("div",{class:"note"}, shown.question) : null),
+        effect ? h("td",{class:"nowrap"}, num(shown.swing_npv) && (previewAcknowledged || !portfolioPreview()) ? chf(shown.swing_npv, true) : TBC) : null,
+        h("td",null, assPill(a), assBox(a,(instance || "assumptions") + "-" + i)));
     }))));
 }
-function assList(list){
-  return h("div",{class:"asslist"}, list.map(function(a){
+function assList(list, instance){
+  return h("div",{class:"asslist"}, list.map(function(a,i){
+    var shown = presentedAssumption(a);
     return h("div",{class:"assrow"},
-      h("div",null, h("b",null, a.id), " ", a.statement || "", " ", assPill(a)),
-      h("div",{class:"note"}, "Base ", h("b",null, fmtA(a.base, a.unit)), " (", fmtA(a.low, a.unit), " \u2013 ", fmtA(a.high, a.unit), ") \u00b7 ", srcType(a), a.owner ? " \u00b7 owner: " + a.owner : ""),
-      a.question ? h("div",{class:"note"}, "\u201c" + a.question + "\u201d") : null,
-      assBox(a));
+      h("div",null, h("b",null, a.id), " ", shown.statement || "", " ", assPill(a), evPills(shown.src)),
+      h("div",{class:"note"}, assumptionWithheld(a) ? withheldAssumptionValue() : ["Base ", h("b",null, fmtA(shown.base, shown.unit)), " (", fmtA(shown.low, shown.unit), " \u2013 ", fmtA(shown.high, shown.unit), ")"],
+        " \u00b7 ", srcType(shown), shown.owner ? " \u00b7 owner: " + shown.owner : ""),
+      shown.question ? h("div",{class:"note"}, "\u201c" + shown.question + "\u201d") : null,
+      assBox(a,(instance || "case") + "-" + i));
   }));
 }
 function beText(be){
@@ -2383,16 +2491,20 @@ function ucValue(u){
       })))),
     v.agents_missing_cost ? h("p",{class:"note"}, "Cost not modelled yet for: " + arr(v.agents_missing_cost).join(", ")) : null,
     h("div",{class:"small-lbl"},"Assumptions to clarify in the workshop"),
-    assList(arr(v.assumptions).map(function(id){ return ASSM[id]; }).filter(Boolean)));
+    assList(arr(v.assumptions).map(function(id){ return ASSM[id]; }).filter(Boolean),"usecase-" + u.id));
 }
 function matrixLegend(){
   return h("p",{class:"note mxlegend"}, h("span",{class:"lg-size"}), "Bubble size = value per year (base case)", h("span",{class:"lg-dash"}), "dashed ring = value still a hypothesis \u00b7 dark ring = MVP candidate \u00b7 use cases without a value case keep the standard size");
 }
 function valueSection(){
-  var T = VC.totals || {}, q = arr(VC.questions);
+  var T = presentedValue(VC.totals, portfolioPreview()) || {}, q = arr(VC.questions);
+  var withheld = !previewAcknowledged && portfolioPreview();
   var rows = UCS.filter(function(u){ return valueOf(u); });
-  var top = q.map(function(id){ return ASSM[id]; }).filter(Boolean);
-  var rest = arr(VC.assumptions).filter(function(a){ return q.indexOf(a.id) < 0; });
+  /* The selected top-question subset is itself a ranking signal. Before viewer
+     acknowledgement, present all public inputs in ID order, not a ranked subset. */
+  var top = withheld ? arr(VC.assumptions).slice().sort(function(a,b){ return String(a.id).localeCompare(String(b.id)); })
+    : q.map(function(id){ return ASSM[id]; }).filter(Boolean);
+  var rest = withheld ? [] : arr(VC.assumptions).filter(function(a){ return q.indexOf(a.id) < 0; });
   return [
     h("h3",{class:"sub"},"Business value \u00b7 a hypothesis until the workshop confirms it"),
     h("p",{class:"note"}, "Per year at full adoption, in " + curr() + ". Economic view = cash + realised capacity; the budget view counts cash only; risk reduction is shown separately. NPV over " + (VC.horizon_years || 3) + " years at " + pct(VC.discount_rate, 1) + ". Ranges combine the effects of the individual assumptions."),
@@ -2413,9 +2525,9 @@ function valueSection(){
       })))),
     arr(VC.inputs_needed).length ? h("p",{class:"note"}, "Inputs still to collect: " + VC.inputs_needed.map(function(x){ return x.use_case + " (" + arr(x.assumptions).join(", ") + ")"; }).join("; ")) : null,
     h("h3",{class:"sub"},"Assumptions to clarify in the workshop"),
-    h("p",{class:"note"}, "Ranked by their effect on the NPV. Confirm, adjust (enter the agreed value) or reject each one with its owner. Verdicts are saved in this browser, exported from Discovery and merged into the next version of the value case, which is then recalculated."),
-    assTable(top, true),
-    rest.length ? h("details",{class:"acc"}, h("summary",null, h("span",{class:"n"}, String(rest.length)), "More value assumptions"), h("div",{class:"bd"}, assTable(rest, true))) : null,
+    h("p",{class:"note"}, (portfolioPreview() ? (previewAcknowledged ? "Provisional Preview-derived ranking and NPV effects, not recommendations. " : "Portfolio financial totals, ranking and NPV effects include Preview-derived cases and are withheld until acknowledgement; public case values are not a substitute portfolio total. ") : "Ranked by their effect on the NPV. ") + "Confirm, adjust (enter the agreed value) or reject each one with its owner. Verdicts are saved in this browser and exported from Discovery."),
+    assTable(top, true,"value-top"),
+    rest.length ? h("details",{class:"acc"}, h("summary",null, h("span",{class:"n"}, String(rest.length)), "More value assumptions"), h("div",{class:"bd"}, assTable(rest, true,"value-more"))) : null,
     arr(VC.discipline).length ? h("details",{class:"acc"}, h("summary",null, h("span",{class:"n"},"\u2713"), "Value discipline and sources"), h("div",{class:"bd"}, ul(VC.discipline),
       h("ul",{class:"clean idrules"}, arr(VC.sources).map(function(x){ return h("li",null, /^https:\/\//.test(x.url || "") ? h("a",{href:x.url,target:"_blank",rel:"noopener"}, x.title || x.url) : (x.title || "")); })))) : null];
 }
@@ -2431,6 +2543,7 @@ function agentCell(a){
   return ag ? h("button",{type:"button",class:"agentlink",onclick:function(){ openAgent(a.id); }}, label) : label;
 }
 function renderFinops(){
+  if (!previewAcknowledged) return [h("h2",{class:"sec"},"FinOps \u00b7 what the agents cost"), h("p",{class:"note"},"Cost figures, purchase comparisons and guardrail settings require viewer acknowledgement. Missing budget evidence remains a gap."), valBox("finops","model")];
   var F = FO || {}, T = F.totals || {}, L = T.lines || {}, agents = arr(F.agents);
   var opts = arr(F.purchase_options), low = opts.filter(function(o){ return o.lowest; })[0];
   var max = Math.max.apply(null, agents.map(function(a){ return a.total_month || 0; }).concat([1]));
@@ -2442,21 +2555,21 @@ function renderFinops(){
       F.fx && num(F.fx.chf_per_usd) ? h("span",{class:"pill"}, "CHF per USD " + F.fx.chf_per_usd) : null,
       F.purchase && F.purchase.option ? h("span",{class:"pill"}, "Purchase model " + F.purchase.option + " (hypothesis)") : null,
       h("span",{class:"pill"}, agents.length + " agents modelled"), h("span",{class:"pill"}, "List prices, excl. VAT")),
-    h("div",{class:"vkpis"}, vk("Run cost per month", chf(T.total_month, true), "all modelled agents"), vk("Run cost per year", chf(T.annual, true), "at full adoption"),
-      vk("Build", chf(T.build, true), "one-time estimate"), vk("Copilot Credits", grp(T.credits_month || 0), "per month \u00b7 " + chf(L.credits, true) + " pay-as-you-go"),
-      vk("People share", T.total_month ? pct((L.people || 0) / T.total_month) : TBC, "of the run cost"), low ? vk("Lowest credit option", chf(low.annual_chf, true), low.label) : null),
+    h("div",{class:"vkpis"}, vk("Run cost per month", chf(T.total_month), "all modelled agents"), vk("Run cost per year", chf(T.annual, true), "at full adoption"),
+      vk("Build", chf(T.build, true), "one-time estimate"), vk("Copilot Credits", grp(T.credits_month), "per month \u00b7 " + chf(L.credits, true) + " pay-as-you-go"),
+      vk("People share", T.total_month && num(L.people) ? pct(L.people / T.total_month) : TBC, "of the run cost"), low ? vk("Lowest credit option", chf(low.annual_chf, true), low.label + " (provisional comparison)") : null),
     h("h3",{class:"sub"},"Cost per agent and month"),
-    h("div",{class:"tscroll"}, h("table",{class:"t"},
+    h("div",{class:"tscroll"}, h("table",{class:"t finops-agents"},
       h("thead",null, h("tr",null, ["Agent","Harness and audience","Sessions","Credits","Credit cost","Licences","Azure","People","Total","Build","Unit cost"].map(function(c){ return h("th",{scope:"col"}, c); }))),
       h("tbody",null, agents.map(function(a){
         var ln = a.lines || {}, un = a.unit || {};
         return h("tr",null, h("td",null, agentCell(a)), h("td",null, (a.harness || "") + " \u00b7 " + (a.audience || ""), a.coverage ? h("div",{class:"note"}, a.coverage) : null),
-          h("td",{class:"nowrap"}, grp(a.sessions || 0), h("div",{class:"note"}, pct(a.billable_share) + " billed")), h("td",{class:"nowrap"}, grp(a.credits_month || 0)),
+          h("td",{class:"nowrap"}, grp(a.sessions), h("div",{class:"note"}, pct(a.billable_share) + " billed")), h("td",{class:"nowrap"}, grp(a.credits_month)),
           h("td",{class:"nowrap"}, chf(ln.credits)), h("td",{class:"nowrap"}, chf(ln.licences)), h("td",{class:"nowrap"}, chf(ln.azure)), h("td",{class:"nowrap"}, chf(ln.people), num(a.run_hours_month) ? h("div",{class:"note"}, grp(a.run_hours_month) + " h") : null),
           h("td",{class:"nowrap"}, h("b",null, chf(a.total_month))), h("td",{class:"nowrap"}, chf(a.build, true)),
           h("td",{class:"nowrap"}, num(un.per_session) ? chf(un.per_session) + " per session" : TBC, num(un.per_outcome) ? h("div",{class:"note"}, chf(un.per_outcome) + " per " + (un.outcome || "outcome")) : null));
       })))),
-    h("div",{class:"cbars",role:"img","aria-label":"Cost composition per agent"}, agents.map(function(a){
+    h("div",{class:"cbars",role:"img","aria-label":"Provisional cost composition per agent; unavailable totals omitted"}, agents.filter(function(a){ return num(a.total_month); }).map(function(a){
       var ln = a.lines || {};
       return h("div",{class:"cbar"}, h("span",null, a.name || a.id), h("div",{class:"track",style:"width:" + Math.max(4, Math.round((a.total_month || 0) / max * 100)) + "%"},
         keys.map(function(k){ var v = ln[k[0]] || 0; return v > 0 ? h("span",{class:"seg-" + k[0],style:"width:" + (v / (a.total_month || 1) * 100).toFixed(2) + "%",title:k[1] + " " + chf(v)}) : null; })),
@@ -2467,21 +2580,21 @@ function renderFinops(){
     h("div",{class:"tscroll"}, h("table",{class:"t"}, h("thead",null, h("tr",null, ["Agent","Event","Credits each","Credits per month","Share"].map(function(c){ return h("th",{scope:"col"}, c); }))),
       h("tbody",null, agents.map(function(a){ return arr(a.events).map(function(e, i){
         return h("tr",null, h("td",null, i === 0 ? h("b",null, a.name || a.id) : ""), h("td",null, e.label || e.event), h("td",{class:"nowrap"}, num(e.credits_each) ? grp(e.credits_each, e.credits_each % 1 ? 2 : 0) : ""),
-          h("td",{class:"nowrap"}, grp(e.credits_month || 0)), h("td",{class:"nowrap"}, a.credits_month ? pct((e.credits_month || 0) / a.credits_month) : ""));
+          h("td",{class:"nowrap"}, grp(e.credits_month)), h("td",{class:"nowrap"}, a.credits_month && num(e.credits_month) ? pct(e.credits_month / a.credits_month) : TBC));
       }); })))),
     F.coverage_note ? h("p",{class:"note"}, F.coverage_note) : null,
     h("h3",{class:"sub"},"Purchase options for the credits"),
     h("div",{class:"tscroll"}, h("table",{class:"t"}, h("thead",null, h("tr",null, ["Option","Per year","Versus pay-as-you-go","Utilisation","Conditions"].map(function(c){ return h("th",{scope:"col"}, c); }))),
       h("tbody",null, opts.map(function(o){
         return h("tr",null, h("td",null, h("b",null, o.label), o.lowest ? h("span",{class:"pill val",style:"margin-inline-start:6px"},"lowest") : null), h("td",{class:"nowrap"}, chf(o.annual_chf)),
-          h("td",{class:"nowrap"}, o.option === "payg" ? "\u2014" : (o.vs_payg > 0 ? "+" : "") + pct(o.vs_payg, 1)), h("td",{class:"nowrap"}, num(o.utilisation) ? pct(o.utilisation) : ""), h("td",null, o.note || ""));
+          h("td",{class:"nowrap"}, o.option === "payg" ? "\u2014" : num(o.vs_payg) ? (o.vs_payg > 0 ? "+" : "") + pct(o.vs_payg, 1) : TBC), h("td",{class:"nowrap"}, num(o.utilisation) ? pct(o.utilisation) : TBC), h("td",null, o.note || ""));
       })))),
     h("p",{class:"note"}, (F.purchase && F.purchase.note) || "A hypothesis: commit to packs or P3 only after a usage baseline; P3 purchases cannot be refunded."),
     arr(F.credit_scenarios).length ? [h("h3",{class:"sub"},"Sensitivity of the credit cost"),
       h("div",{class:"tscroll"}, h("table",{class:"t"}, h("thead",null, h("tr",null, ["Case","Credits per month","Credit cost per month","Change"].map(function(c){ return h("th",{scope:"col"}, c); }))),
-        h("tbody",null, [h("tr",null, h("td",null, h("b",null,"Base case")), h("td",{class:"nowrap"}, grp(T.credits_month || 0)), h("td",{class:"nowrap"}, chf(L.credits)), h("td",null,"\u2014"))].concat(F.credit_scenarios.map(function(x){
-          return h("tr",null, h("td",null, x.name), h("td",{class:"nowrap"}, grp(x.credits_month || 0)), h("td",{class:"nowrap"}, chf(x.chf_month)),
-            h("td",{class:"nowrap"}, (x.change > 0 ? "+" : "") + pct(x.change, 1), h("span",{class:"chg " + (x.change > 0 ? "up" : "down"),style:"width:" + Math.min(80, Math.round(Math.abs(x.change) * 60)) + "px"})));
+        h("tbody",null, [h("tr",null, h("td",null, h("b",null,"Base case")), h("td",{class:"nowrap"}, grp(T.credits_month)), h("td",{class:"nowrap"}, chf(L.credits)), h("td",null,"\u2014"))].concat(F.credit_scenarios.map(function(x){
+          return h("tr",null, h("td",null, x.name), h("td",{class:"nowrap"}, grp(x.credits_month)), h("td",{class:"nowrap"}, chf(x.chf_month)),
+            h("td",{class:"nowrap"}, num(x.change) ? (x.change > 0 ? "+" : "") + pct(x.change, 1) : TBC, num(x.change) ? h("span",{class:"chg " + (x.change > 0 ? "up" : "down"),style:"width:" + Math.min(80, Math.round(Math.abs(x.change) * 60)) + "px"}) : null));
         })))))] : null,
     arr(F.lessons).length ? [h("h3",{class:"sub"},"What the numbers say"), ul(F.lessons)] : null,
     arr(F.guardrails).length ? [h("h3",{class:"sub"},"Guardrails"),
@@ -2492,7 +2605,7 @@ function renderFinops(){
         h("tbody",null, F.tags.map(function(t){ return h("tr",null, ["agent-id","agent-name","schema","solution","journey","environment","cost-centre"].map(function(c){ return h("td",null, String(t[c] || "")); })); }))))] : null,
     arr(F.assumptions).length ? [h("h3",{class:"sub"},"Cost assumptions to clarify in the workshop"),
       h("p",{class:"note"}, "Confirm, adjust or reject with the owner; verdicts are exported with the workshop notes and merged into the next version of the cost model."),
-      assTable(F.assumptions, false)] : null,
+      assTable(F.assumptions, false,"finops")] : null,
     h("h3",{class:"sub"},"Rates and sources"),
     arr(F.rates).length ? h("div",{class:"tscroll"}, h("table",{class:"t"}, h("thead",null, h("tr",null, ["Rate","Value","Source"].map(function(c){ return h("th",{scope:"col"}, c); }))),
       h("tbody",null, F.rates.map(function(r){ return h("tr",null, h("td",null, r.label || ""), h("td",null, r.value || ""), h("td",null, r.source || "")); })))) : null,
@@ -2796,7 +2909,8 @@ function renderUseCases(){
         h("td",null, d.name || ""), h("td",null, ucAgentIcons(u)), h("td",null, String(u.value || TBC)), h("td",null, String(u.feasibility || TBC)), h("td",null, u.horizon || TBC), h("td",null, statusPill(note("val|uc|" + u.id).status || u.status)));
     }))));
   return [h("h2",{class:"sec"},"Use case portfolio"), h("p",{class:"lead"}, BP.use_case_intro || "Every candidate placed by value and feasibility. Bubble colour = journey, dark ring = MVP candidate. Select a bubble or a row for the detail and to record the workshop verdict."),
-    h("div",{class:"ucwrap"}, matrixSvg(), table), VC ? matrixLegend() : null,
+    h("div",{class:"ucwrap"}, h("div",{class:"matrixwrap",tabindex:"0",role:"region","aria-label":"Locally scrollable use-case matrix",
+      onkeydown:function(e){ if (/^Arrow/.test(e.key)) e.stopPropagation(); }}, matrixSvg()), table), VC ? matrixLegend() : null,
     (function(){ var su = UCS.filter(function(x){ return x.id === state.uc; })[0]; return su ? ucDetail(su) : h("p",{class:"note"},"Select a use case in the matrix or the table to open it in the use-case template: general, value and feasibility, with its agents and the assumptions to clarify."); })(),
     VC ? valueSection() : null];
 }
@@ -2857,26 +2971,36 @@ function renderDiscovery(){
 }
 function feedbackObject(){
   var out = {type:"frontier-blueprint-feedback", schema:"1.0", blueprint:M.id || M.customer || "", version:M.version || "", exported:new Date().toISOString(), validations:{}, discovery:{}};
+  if (previewPresent()) out.finops_preview_notice = FINOPS_NOTICE;
   Object.keys(NOTES).forEach(function(k){
     var p = k.split("|");
-    if (p[0] === "val") out.validations[p[1] + ":" + p.slice(2).join("|")] = NOTES[k];
+    if (p[0] === "val") out.validations[p[1] + ":" + p.slice(2).join("|")] =
+      p[1] === "ass" ? presentedAssumptionVerdict(ASSM[p.slice(2).join("|")], NOTES[k]) : NOTES[k];
     else if (p[0] === "q") out.discovery[p.slice(1).join("|")] = NOTES[k];
   });
   return out;
 }
 function notesText(){
   var L = [(M.customer || "Customer") + " \u2014 Frontier blueprint workshop notes", "Exported " + new Date().toLocaleString(), ""];
+  if (previewPresent()) L.unshift(FINOPS_NOTICE, previewAcknowledged ? "Provisional Preview figures, not recommendations." : "Preview numeric assumption values withheld until viewer acknowledgement.", "");
   D.forEach(function(d){
     var lines = [];
     questionsOf(d).forEach(function(x){ var n = note("q|" + x.id); if (n.note || n.status || n.discussed) lines.push("- [" + (n.status || "open") + "] " + (x.q.q || "") + (n.note ? "\n    " + n.note : "")); });
     (d.orchestrator ? [d.orchestrator] : []).concat(d.agents).forEach(function(a){ var n = note("val|agent|" + a.id); if (n.status || n.note) lines.push("- Agent " + nameOf(a) + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });
     if (lines.length) L.push("## " + d.name, ...lines, "");
   });
-  Object.keys(NOTES).filter(function(k){ return k.indexOf("val|ass|") === 0; }).sort().forEach(function(k){ var n = NOTES[k], id = k.slice(8), a = ASSM[id] || {}; if (n.status || n.note || num(n.value)) L.push("- Assumption " + id + (a.statement ? " (" + a.statement + ")" : "") + ": " + (n.status || "") + (num(n.value) ? " \u2192 " + n.value + (a.unit ? " " + a.unit : "") : "") + (n.note ? " \u2014 " + n.note : "")); });
+  Object.keys(NOTES).filter(function(k){ return k.indexOf("val|ass|") === 0; }).sort().forEach(function(k){
+    var id = k.slice(8), a = ASSM[id] || {}, shown = presentedAssumption(a), n = presentedAssumptionVerdict(a, NOTES[k]);
+    if (n.status || n.note || num(n.value) || assumptionWithheld(a)) L.push("- Assumption " + id + (shown.statement ? " (" + shown.statement + ")" : "") + ": " + (n.status || "") + (num(n.value) ? " \u2192 " + n.value + (shown.unit ? " " + shown.unit : "") : "") + (n.note ? " \u2014 " + n.note : ""));
+  });
   Object.keys(NOTES).filter(function(k){ return k.indexOf("val|ready|") === 0; }).sort().forEach(function(k){ var n = NOTES[k]; if (n.status || n.note) L.push("- IT readiness " + k.slice(10) + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });
   Object.keys(NOTES).filter(function(k){ return k.indexOf("val|adr|") === 0; }).sort().forEach(function(k){ var n = NOTES[k]; if (n.status || n.note) L.push("- Decision " + k.slice(8) + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });
   PILLAR_ORDER.forEach(function(pk){ var n = note("val|loop|" + pk); if (n.status || n.note) L.push("- Feedback loop \u00b7 " + PILLARS[pk].label + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });
   var nf = note("val|finops|model"); if (nf.status || nf.note) L.push("- FinOps model: " + (nf.status || "") + (nf.note ? " \u2014 " + nf.note : ""));
+  Object.keys(NOTES).filter(function(k){ return k.indexOf("val|onto|") === 0; }).sort().forEach(function(k){
+    var n = NOTES[k], id = k.slice(9);
+    L.push("- Ontology " + id + (ontFeedbackIds().indexOf(id) < 0 ? " (unknown feedback ID)" : "") + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : ""));
+  });
   var ni = note("val|identity|names"); if (ni.status || ni.note) L.push("- Agent identity (names, colours, icons): " + (ni.status || "") + (ni.note ? " \u2014 " + ni.note : ""));
   var np = note("val|prd|scope"); if (np.status || np.note) L.push("- PRD scope: " + (np.status || "") + (np.note ? " \u2014 " + np.note : ""));
   riskItems().forEach(function(r){ var n = note("val|risk|" + r.id), k = rk(r); if (n.status || n.note || n.likelihood || n.impact) L.push("- Risk " + r.id + " " + r.title + ": " + k.status + " \u00b7 Likelihood " + k.L + ", impact " + k.I + " (score " + k.score + ")" + (n.note ? " \u2014 " + n.note : "")); });
@@ -2972,7 +3096,7 @@ function reqRows(rows){ return arr(rows).map(function(r){ return [r.id, r.text |
 function prdRelease(P){ var rows = arr(P.release_plan).filter(function(r){ return Array.isArray(r) && r.length >= 3; }); return rows.length ? rows : arr(P.release_plan_default); }
 function prdValues(){
   return arr((BP.prd || {}).use_cases).map(function(x){
-    var u = ucById(x.id), v = u && valueOf(u), res = v && (v.results || v);
+    var u = ucById(x.id), v = u && valueOf(u), res = v;
     if (!v) return null;
     var st = v.status || "hypothesis", label = (STATUS[String(st).toLowerCase()] || {label:st}).label;
     return {name:x.id + " \u00b7 " + x.name, status:st, statusLabel:label,
@@ -3048,6 +3172,7 @@ function prdMarkdown(){
   var P = BP.prd || {}, L = ["# Product Requirements \u2014 " + (M.customer || "Customer"), "",
     "Status: " + prdStatus(), "Owner: " + (P.owner || TBC), "Basis: " + (P.basis || TBC), "",
     "## 1. Problem and vision", "", P.problem || "", "", P.vision || ""];
+  if (previewPresent()) L.unshift(FINOPS_NOTICE, previewAcknowledged ? "Provisional comparisons, not recommendations." : "Preview-derived figures withheld; viewer acknowledgement required.", "");
   function bullets(items){ arr(items).forEach(function(x){ L.push("- " + x); }); L.push(""); }
   function table(cols, rows){ L = L.concat(mdTable(cols, rows)); }
   arr(P.problems).forEach(function(pr){ bullets(arr(pr.items).map(function(x){ return pr.name + " (" + x[0] + "): " + x[1]; })); });
@@ -3240,14 +3365,211 @@ function renderRisks(){
   var dec = arr((BP.it_readiness || {}).decisions).filter(function(x){ return rdStatus(x) !== "agreed"; });
   var adr = arr((BP.architecture || {}).decisions).filter(function(x){ return adrStatus(x) !== "agreed"; });
   out.push(h("h3",{class:"sub"},"Assumptions to confirm and decisions to take"),h("div",{class:"grid2"},
-    h("div",{class:"panel"},h("h4",null,"Value and cost assumptions still open (" + ass.length + ")"),ul(ass.map(function(a){ return a.id + ": " + (a.statement || a.name || ""); }))),
+    h("div",{class:"panel"},h("h4",null,"Value and cost assumptions still open (" + ass.length + ")"),ul(ass.map(function(a){ var shown = presentedAssumption(a); return a.id + ": " + (shown.statement || shown.name || ""); }))),
     h("div",{class:"panel"},h("h4",null,"Decisions still open (" + (dec.length + adr.length) + ")"),
       ul(dec.map(function(x){ return x.id + ": " + (x.decision || x.q || x.item || x.text || ""); }).concat(adr.map(function(x){ return x.id + ": " + x.title; }))),pageLink("readiness"),pageLink("architecture"))));
   return out;
 }
 
+/* ---------------- Ontology: reviewed process projection, never opaque internal notes ---------------- */
+function ontEnts(){ return arr(ONT && ONT.entity_types).filter(function(e){ return e && typeof e.id === "string" && e.id; }); }
+function ontEnt(id){ return ontEnts().filter(function(e){ return e.id === id; })[0] || null; }
+function ontVisible(e){ return !state.ontJourney || state.ontJourney === "all" || arr(e.journeys).indexOf(state.ontJourney) >= 0; }
+function ontFeedbackIds(){
+  return ["model"].concat(["entity_types","relationship_types","data_agents","operations_agents","data_products"].reduce(function(out, key){
+    return out.concat(arr(ONT && ONT[key]).filter(function(x){ return x && x.id; }).map(function(x){ return x.id; }));
+  }, []));
+}
+function ontStatus(x){ return note("val|onto|" + x.id).status || x.status || "hypothesis"; }
+function ontChip(id){
+  var e = ontEnt(id);
+  return e ? h("button",{type:"button",class:"pill linkp",onclick:function(){
+    state.ontJourney = "all"; state.ontSel = e.id; render();
+    document.getElementById("ontology-node-" + e.id).focus({preventScroll:true});
+    document.getElementById("opanel").scrollIntoView({block:"nearest"});
+  }},e.name || id) : h("span",{class:"pill"},id);
+}
+/* A defensive projection for the new presentation/export paths. Do not recover
+   redacted information from opaque notes, cached exports or caller metadata. */
+function ontSafe(value){
+  if (Array.isArray(value)) return value.map(ontSafe);
+  if (!value || typeof value !== "object") return value;
+  var out = {};
+  Object.keys(value).forEach(function(k){
+    if (["internal_notes","ttl","kit"].indexOf(k) < 0) out[k] = ontSafe(value[k]);
+  });
+  return out;
+}
+function ontFields(value){
+  value = ontSafe(value);
+  if (Array.isArray(value)) return h("ul",{class:"clean"},value.map(function(v){ return h("li",null,ontFields(v)); }));
+  if (!value || typeof value !== "object") return has(value) ? String(value) : TBC;
+  return h("dl",{class:"ont-fields"},Object.keys(value).map(function(k){
+    return [h("dt",null,k.replace(/_/g," ")),h("dd",null,ontFields(value[k]))];
+  }));
+}
+function ontStdText(st){
+  st = st || {}; var en = st.entity == null ? "None" : String(st.entity);
+  if (st.standard === "cdm") return "Common Data Model: " + en + (st.table ? " (Dataverse table " + st.table + ")" : "");
+  if (st.standard === "dataverse") return "Dataverse, " + (st.folder || "Dynamics 365") + ": " + en + (st.table ? " (" + st.table + ")" : "");
+  if (st.standard === "operations") return "Common Data Model, finance and operations: " + en;
+  return "Custom extension (no standard entity)";
+}
+function ontGraph(){
+  var ents = ontEnts().filter(ontVisible), width = 1040, positions = {};
+  ents.forEach(function(e,i){ positions[e.id] = {x:20 + (i % 5) * 205,y:30 + Math.floor(i / 5) * 90}; });
+  var svg = s("svg",{class:"osvg",viewBox:"0 0 " + width + " " + (Math.ceil(ents.length / 5) * 90 + 20),width:width,height:Math.ceil(ents.length / 5) * 90 + 20,role:"group","aria-label":"Ontology entity types and relationships"});
+  arr(ONT.relationship_types).forEach(function(r){
+    var a = positions[r.from], b = positions[r.to]; if (!a || !b) return;
+    svg.appendChild(s("path",{class:"oedge",d:"M" + (a.x + 90) + "," + (a.y + 24) + " L" + (b.x + 90) + "," + (b.y + 24)},
+      s("title",null,(r.label || r.name || r.id) + ": " + r.from + " to " + r.to + " (" + (r.cardinality || TBC) + ")")));
+  });
+  ents.forEach(function(e){
+    var p = positions[e.id], id = "ontology-node-" + e.id, selected = state.ontSel === e.id;
+    function pick(){ state.ontSel = selected ? null : e.id; refreshControl(id); }
+    var g = s("g",{id:id,class:"onode" + (selected ? " sel" : ""),role:"button",tabindex:"0","aria-pressed":String(selected),"data-entity":e.id,
+      "aria-label":"Entity type " + (e.name || e.id) + ", " + arr(e.properties).length + " properties, " + ontStatus(e),transform:"translate(" + p.x + "," + p.y + ")"},
+      s("rect",{width:180,height:48,rx:6,class:e.source ? "" : "unbound"}),
+      s("text",{x:10,y:20},wrapWords(e.name || e.id,24,1)[0]),
+      s("text",{x:10,y:38,class:"osub"},arr(e.properties).length + " properties \u00b7 " + (e.source ? "bound" : "to bind")));
+    g.addEventListener("click",pick);
+    g.addEventListener("keydown",function(ev){ if (ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); ev.stopPropagation(); pick(); } });
+    svg.appendChild(g);
+  });
+  return h("div",{class:"owrap",tabindex:"0",role:"region","aria-label":"Locally scrollable ontology graph",onkeydown:function(ev){ if (/^Arrow/.test(ev.key)) ev.stopPropagation(); }},svg);
+}
+function ontPanel(e){
+  var st = e.standard || {}, columns = st.attributes || {};
+  return h("section",{class:"panel opanel",id:"opanel","data-entity":e.id,"aria-label":"Selected entity " + (e.name || e.id)},
+    h("h3",null,e.name || e.id),h("p",null,e.description || TBC),statusPill(ontStatus(e)),evPills(e.src),
+    h("p",null,ontStdText(st), " \u00b7 ", st.checked ? "checked" : "to verify", " \u00b7 ", e.source && (e.binding || {}).table ? e.binding.table : "Not bound yet \u2014 to bind"),
+    dataTable(["Property","Type","Standard column","Key / notes"],arr(e.properties).concat(arr(e.timeseries)).map(function(p){
+      return [p.name,p.type,columns[p.name] || TBC,(arr(e.key).indexOf(p.name) >= 0 ? "Key. " : "") + (p.description || "") + (p.unit ? " (" + p.unit + ")" : "")];
+    }),"oproperties"),
+    ontFields({synonyms:e.synonyms,source:e.source,binding:e.binding,standard:st}),
+    h("h4",null,"Relationships"),arr(ONT.relationship_types).filter(function(r){ return r.from === e.id || r.to === e.id; }).map(function(r){
+      return h("details",{class:"acc"},h("summary",null,r.label || r.name || r.id),ontChip(r.from)," \u2192 ",ontChip(r.to),ontFields(r),valBox("onto",r.id));
+    }),
+    valBox("onto",e.id));
+}
+function ontCards(key, cls){
+  return h("div",{class:"ontology-cards"},arr(ONT[key]).map(function(x){
+    return h("article",{class:"panel " + (cls || "")},h("h4",null,(x.id ? x.id + " \u00b7 " : "") + (x.name || x.title || x.item || "")),
+      x.id ? statusPill(ontStatus(x)) : null,ontFields(x),
+      ontFeedbackIds().indexOf(x.id) >= 0 ? h("details",{class:"acc"},h("summary",null,"Workshop verdict"),valBox("onto",x.id)) : null);
+  }));
+}
+function ontLit(value){
+  return '"' + String(value == null ? "" : value).replace(/\\/g,"\\\\").replace(/"/g,'\\"').replace(/\n/g,"\\n").replace(/\r/g,"\\r").replace(/\t/g,"\\t") + '"';
+}
+/* Mirrors ontology_lib.to_turtle, with parity checked against the actual Python
+   artifact, not a second hand-authored golden. No runtime Python or network. */
+function ontTurtle(){
+  var meta = ONT.meta || {}, uri = meta.namespace_uri;
+  if (!/^https?:\/\/[^\s<>"{}|\\^`]+[#/]$/.test(uri || "")){
+    var slug = String(meta.short || meta.customer || "customer").trim().toLowerCase().replace(/[^A-Za-z0-9]+/g,"-").replace(/^-+|-+$/g,"") || "x";
+    uri = "https://example.org/frontier/" + slug + "/ontology#";
+  }
+  var title = ONT.title || "Process ontology", version = meta.version === undefined ? "0.1" : meta.version;
+  var L = ["@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .","@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .",
+    "@prefix owl: <http://www.w3.org/2002/07/owl#> .","@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .","@prefix skos: <http://www.w3.org/2004/02/skos/core#> .",
+    "@prefix : <" + uri + "> .","","# " + title + " v" + version + " (" + (meta.status === undefined ? "hypothesis" : meta.status) + ")",
+    "# Generated by the Frontier Envisioning plugin (frontier-process). Import into a new, empty ontology (preview) item.",
+    "# Keys, data bindings, rules and metrics are configured in Fabric (see ontology.md).","",
+    "<" + uri.replace(/[#/]+$/,"") + "> a owl:Ontology ;","  rdfs:label " + ontLit(title) + " ;","  owl:versionInfo " + ontLit(version) + " .",""];
+  ontEnts().forEach(function(e){
+    var st = e.standard || {}, parts = [":" + e.id + " a owl:Class","  rdfs:label " + ontLit(e.name || e.id)], desc = String(e.description || "").trim();
+    if (arr(e.key).length) desc += (desc ? " " : "") + "Key: " + e.key.join(", ") + ".";
+    if (Object.keys(st).length) desc += (desc ? " " : "") + ontStdText(st) + ".";
+    if (desc) parts.push("  rdfs:comment " + ontLit(desc));
+    var syn = arr(e.synonyms).slice(), short = String(st.entity || "").replace(/\s*\(.*?\)/g,"").trim();
+    if (["cdm","dataverse"].indexOf(st.standard) >= 0 && short && syn.concat([e.name,e.id]).map(function(x){ return String(x).toLowerCase(); }).indexOf(short.toLowerCase()) < 0) syn.push(short);
+    if (syn.length) parts.push("  skos:altLabel " + syn.map(ontLit).join(", "));
+    if (e.base) parts.push("  rdfs:subClassOf :" + e.base);
+    L.push(parts.join(" ;\n") + " .");
+    arr(e.properties).concat(arr(e.timeseries)).forEach(function(p){
+      var types = {string:"string",integer:"integer",double:"double",boolean:"boolean",datetime:"dateTime"};
+      var pp = [":" + e.id + "_" + p.name + " a owl:DatatypeProperty","  rdfs:label " + ontLit(p.name),"  rdfs:domain :" + e.id,"  rdfs:range xsd:" + (types[p.type] || "string")];
+      var nt = String(p.description || "").trim(), col = (st.attributes || {})[p.name];
+      if (col) nt += (nt ? " " : "") + "Standard column: " + col + ".";
+      if (arr(e.timeseries).some(function(t){ return JSON.stringify(t) === JSON.stringify(p); })) nt += (nt ? " " : "") + "Time series" + (p.unit ? " (" + p.unit + ")" : "") + ": bind with a timestamp column.";
+      if (nt) pp.push("  rdfs:comment " + ontLit(nt));
+      L.push(pp.join(" ;\n") + " .");
+    }); L.push("");
+  });
+  arr(ONT.relationship_types).forEach(function(r){
+    var desc = String(r.description || "").trim();
+    desc += (desc ? " " : "") + "Cardinality " + (r.cardinality === undefined ? "n:1" : r.cardinality) + ".";
+    L.push([":" + r.id + " a owl:ObjectProperty","  rdfs:label " + ontLit(r.label || r.name),"  rdfs:domain :" + r.from,"  rdfs:range :" + r.to,"  rdfs:comment " + ontLit(desc)].join(" ;\n") + " .");
+  });
+  return L.join("\n").trimEnd() + "\n";
+}
+function ontMarkdown(kind){
+  var sections = kind === "data-agents" ? ["sources","sources_doc","entity_types","data_agents","operations_agents"]
+    : kind === "data-products" ? ["data_product_standard","domains","semantic_models","data_products","sources","sources_doc"]
+    : ["intro","meta","stack","namespaces","entity_types","relationship_types","process","data_architecture","domains","semantic_models","data_product_standard","data_products","sources","sources_doc","rules","metrics","data_agents","operations_agents","build_steps","readiness","risks","decisions"];
+  function md(value){ return String(value == null ? TBC : value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/([\\`*[\]|])/g,"\\$1"); }
+  function lines(value, indent){
+    if (Array.isArray(value)) return value.map(function(v){ return indent + "-\n" + lines(v,indent + "  "); }).join("\n");
+    if (value && typeof value === "object") return Object.keys(value).map(function(k){ return indent + "- **" + md(k) + "**: " + (value[k] && typeof value[k] === "object" ? "\n" + lines(value[k],indent + "  ") : md(value[k]).replace(/\r?\n/g,"\n" + indent + "  ")); }).join("\n");
+    return indent + md(value);
+  }
+  var out = ["# " + md(ONT.title || "Process ontology"),"","Fabric ontology and agent integrations are Preview. Native Fabric import and binding require manual verification; this download is a design handover, not an import success.",""];
+  sections.forEach(function(k){ if (has(ONT[k])) out.push("## " + k.replace(/_/g," ").replace(/^\w/,function(c){ return c.toUpperCase(); }),"",lines(ontSafe(ONT[k]),""),""); });
+  out.push("Verify standard mappings marked to verify and preserve all source/access restrictions. No budget or purchase approval is implied.");
+  return out.join("\n") + "\n";
+}
+function renderOntology(){
+  var ents = ontEnts(), stEl = h("span",{class:"status",role:"status"});
+  if (!state.ontJourney) state.ontJourney = "all";
+  if (!ontEnt(state.ontSel) || !ontVisible(ontEnt(state.ontSel))) state.ontSel = null;
+  var sel = ontEnt(state.ontSel);
+  var unknown = Object.keys(NOTES).filter(function(k){ return k.indexOf("val|onto|") === 0 && ontFeedbackIds().indexOf(k.slice(9)) < 0; });
+  var out = [h("h2",{class:"sec"},ONT.title || "Process ontology"),h("p",{class:"lead"},ONT.intro || "Business entities, properties and relationships grounded in OneLake."),
+    h("p",{class:"ontology-warning",role:"note"},"Fabric ontology and agent integrations are Preview. Native Fabric import is manual: verify mappings, permissions, bindings and provider availability. The GA skill wrapper does not change provider Preview status."),
+    unknown.length ? h("p",{role:"status"},"Unknown ontology feedback IDs retained for review: " + unknown.map(function(k){ return k.slice(9); }).join(", ")) : null,
+    h("div",{class:"btnrow"},["ontology.ttl","ontology.md","data-agents.md","data-products.md"].map(function(name){
+      return h("button",{type:"button",class:"btn",onclick:function(){ download(fileSlug() + "-" + name,name === "ontology.ttl" ? ontTurtle() : ontMarkdown(name.replace(".md","")),name === "ontology.ttl" ? "text/turtle;charset=utf-8" : "text/markdown;charset=utf-8",stEl); }},"Download " + name);
+    }),stEl),
+    h("h3",{class:"sub"},"Entity types and relationships"),
+    h("div",{class:"filters"},[["all","All journeys"]].concat(D.filter(function(d){ return ents.some(function(e){ return arr(e.journeys).indexOf(d.id) >= 0; }); }).map(function(d){ return [d.id,d.name]; })).map(function(f){
+      var id = "ontology-journey-" + f[0];
+      return h("button",{id:id,type:"button",class:"btn","aria-pressed":String(state.ontJourney === f[0]),onclick:function(){ state.ontJourney = f[0]; refreshControl(id); }},f[1]);
+    })),
+    ontGraph(),sel ? ontPanel(sel) : h("p",{role:"status"},"No entity type selected."),
+    h("h3",{class:"sub"},"Common Data Model table and column mappings"),
+    dataTable(["Entity","Standard entity","Table","Match / role","Columns mapped","Checked"],ents.filter(ontVisible).map(function(e){
+      var st = e.standard || {};
+      return [ontChip(e.id),ontStdText(st),st.table || "custom table",(st.match || TBC) + " / " + (st.role || TBC),String(st.mapped == null ? TBC : st.mapped) + " of " + arr(e.properties).length,
+        h("span",{class:st.checked || st.standard === "custom" ? "" : "mapping-gap"},st.standard === "custom" ? "custom" : st.checked ? "checked" : "to verify")];
+    }),"ocdm"),
+    h("h3",{class:"sub"},"Process and semantic data layer"),ontFields(ONT.process),
+    h("div",{class:"olayers"},["Bronze","Silver","Gold"].map(function(layer){ return h("div",{class:"panel"},h("h4",null,layer),layer === "Bronze" ? "Sources as received" : layer === "Silver" ? "Conformed business entities and bindings" : "Semantic models and governed data products"); })),
+    ontFields(ONT.data_architecture),h("h3",{class:"sub"},"Fabric and governance domains"),ontCards("domains"),
+    h("h3",{class:"sub"},"Semantic models"),ontCards("semantic_models"),
+    h("h3",{class:"sub"},"Data product governance"),ontFields(ONT.data_product_standard),ontCards("data_products","oproduct"),
+    h("h3",{class:"sub"},"Sources and access restrictions"),ontCards("sources"),ontFields(ONT.sources_doc),
+    h("h3",{class:"sub"},"Data agents"),ontCards("data_agents"),
+    h("h3",{class:"sub"},"Operations agents"),ontCards("operations_agents"),
+    h("h3",{class:"sub"},"Rules"),ontCards("rules"),h("h3",{class:"sub"},"Metrics"),ontCards("metrics"),
+    h("h3",{class:"sub"},"Build steps"),ontFields(ONT.build_steps),
+    h("h3",{class:"sub"},"Readiness"),ontCards("readiness"),h("h3",{class:"sub"},"Risks and decisions"),ontCards("risks"),ontCards("decisions"),
+    h("h3",{class:"sub"},"Workshop verdict on the ontology"),valBox("onto","model")];
+  /* Keep the graph and selected card available; substantial design sections use
+     native keyboard-accessible disclosures instead of a wall of expanded data. */
+  var result = [], section = null;
+  out.forEach(function(el){
+    if (el && el.tagName === "H3" && el.textContent !== "Entity types and relationships"){
+      section = h("details",{class:"acc ontsection"},h("summary",null,el));
+      result.push(section);
+    } else if (section) add(section,el);
+    else result.push(el);
+  });
+  return result;
+}
+
 /* ---------------- render ---------------- */
-var RENDER = { overview:renderOverview, org:renderOrg, blueprint:renderBlueprint, journeys:function(){ var o = renderJourney(); return isFactory(dom()) ? o.concat(renderFactorySections()) : o; }, attendees:renderAttendees, readiness:renderReadiness, agents:renderAgents, identity:renderIdentity, architecture:renderArchitecture, usecases:renderUseCases, finops:renderFinops, discovery:renderDiscovery, roadmap:renderRoadmap, evidence:renderEvidence, prd:renderPrd, plan:renderPlan, risks:renderRisks };
+var RENDER = { overview:renderOverview, org:renderOrg, blueprint:renderBlueprint, journeys:function(){ var o = renderJourney(); return isFactory(dom()) ? o.concat(renderFactorySections()) : o; }, attendees:renderAttendees, readiness:renderReadiness, agents:renderAgents, identity:renderIdentity, architecture:renderArchitecture, usecases:renderUseCases, finops:renderFinops, discovery:renderDiscovery, roadmap:renderRoadmap, evidence:renderEvidence, prd:renderPrd, plan:renderPlan, risks:renderRisks, ontology:renderOntology };
 function render(scrollTop){
   if (ORDER.indexOf(state.view) < 0) state.view = ORDER[0];
   if (state.d >= D.length) state.d = 0;
@@ -3256,11 +3578,20 @@ function render(scrollTop){
   renderRail(); renderCrumb(); renderSubnav();
   var v = document.getElementById("view");
   var out;
-  try { out = RENDER[state.view](); }
+  try { out = RENDER[state.view](); if (previewPresent()) out = [previewNotice()].concat(out); }
   catch (e) { out = [h("div",{class:"empty"}, h("b",null,"This view could not be drawn."), h("p",null, String(e && e.message || e)))]; if (window.console) console.error(e); }
   var selectedJourney = document.querySelector('#subnav [role="tab"][aria-selected="true"]');
   var content = selectedJourney ? h("section",{id:"journey-panel",role:"tabpanel","aria-labelledby":selectedJourney.id}, out) : out;
   v.replaceChildren(); add(v, content); v.appendChild(pager());
+  /* Tables without an interactive cell still need keyboard scrolling at 320px.
+     Stop arrow navigation here, while preserving the browser's scroll default. */
+  v.querySelectorAll(".tscroll").forEach(function(region,i){
+    region.tabIndex = 0;
+    region.setAttribute("role","region");
+    var headers = Array.from(region.querySelectorAll("thead th")).map(function(th){ return th.textContent; });
+    region.setAttribute("aria-label","Scrollable table " + (i + 1) + (headers.length ? ": " + headers.join(", ") : ""));
+    region.addEventListener("keydown",function(ev){ if (/^Arrow/.test(ev.key)) ev.stopPropagation(); });
+  });
   writeHash();
   if (scrollTop) { try { window.scrollTo(0, 0); v.focus({preventScroll:true}); } catch (e) {} }
 }

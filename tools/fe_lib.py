@@ -123,7 +123,7 @@ def utf16_units(text: str) -> int:
 
 
 def frontmatter(md: str) -> dict:
-    """Very small YAML-frontmatter reader: top-level 'key: value' pairs plus metadata.version."""
+    """Read top-level fields and the owned version/maturity metadata."""
     m = re.match(r"^---\r?\n(.*?)\r?\n---", md, re.S)
     out: dict = {}
     if not m:
@@ -139,7 +139,41 @@ def frontmatter(md: str) -> dict:
     ver = re.search(r"(?m)^\s+version:\s*['\"]?([0-9][\w.\-]*)['\"]?\s*$", block)
     if ver:
         out["metadata.version"] = ver.group(1)
+    metadata = False
+    for line in block.splitlines():
+        if line and not line[0].isspace():
+            metadata = line.startswith("metadata:")
+        elif metadata:
+            field = re.match(r"^\s+(maturity|optional|requires_preview_ack):\s*(.*?)\s*$", line)
+            if field:
+                value = field[2].strip("'\"")
+                out["metadata." + field[1]] = value
     if out.get("description") in (">", "|", ">-", "|-"):
         desc = re.search(r"(?ms)^description:\s*[>|]-?\s*\n(.*?)(?=^\S|\Z)", block)
         out["description"] = " ".join(x.strip() for x in desc.group(1).splitlines()) if desc else ""
     return out
+
+
+def maturity_fields(fields: dict) -> dict:
+    result = {}
+    for key in ("maturity", "optional", "requires_preview_ack"):
+        value = fields.get("metadata." + key)
+        if value is not None:
+            result[key] = value == "true" if value in {"true", "false"} else value
+    return result
+
+
+def maturity_errors(name: str, fields: dict) -> list[str]:
+    errors = []
+    expected = "preview" if name == "frontier-finops" else "ga"
+    if fields.get("maturity") != expected:
+        errors.append(f"{name}: product maturity must be {expected}")
+    for key in ("optional", "requires_preview_ack"):
+        if type(fields.get(key)) is not bool:
+            errors.append(f"{name}: {key} must be an explicit boolean")
+    if name == "frontier-finops":
+        if fields.get("optional") is not True or fields.get("requires_preview_ack") is not True:
+            errors.append(f"{name}: FinOps must be optional Preview with acknowledgement required")
+    elif fields.get("requires_preview_ack") is not False:
+        errors.append(f"{name}: GA core must not require FinOps Preview acknowledgement")
+    return errors

@@ -40,7 +40,7 @@ class RasterReplay(unittest.TestCase):
     def test_explicit_patch_preview_uses_base_rasters_and_reviewed_current_inputs(self):
         module = self.module()
         self.assertTrue(hasattr(module, "PREVIEW_VERSIONS"), "explicit patch-preview support is missing")
-        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1", "1.7.1"})
+        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1", "1.7.1", "1.9.1"})
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             kit, profile, current = self.current_fixture(root)
@@ -335,7 +335,7 @@ class FinishedDemoArchive(unittest.TestCase):
                     summary = {"identity": {
                         "kit": str(kit), "zip": str(archive), "catalogue": str(kit / "catalog.html"),
                         "tests": "passed", "validation": {"errors": []}, "without_identity": [],
-                    }, "value_finops": {"finops": "fixture"}}
+                    }, "value_finops": {"finops": None}}
                     return subprocess.CompletedProcess(cmd, 0, stdout=json.dumps(summary), stderr="")
 
                 def replay(kit, **kwargs):

@@ -1,0 +1,1601 @@
+{
+ "schema": "frontier-ontology-patterns/1.0",
+ "note": "Journey patterns of the Innovation Hub for a first process ontology. The seed picks a pattern per journey by keywords, adds the shared core entity types it uses and maps the journey KPIs to entity types. Entity, property and relationship names are proposals in business language; the workshop and the data owners confirm them.",
+ "core": [
+  {
+   "id": "Customer",
+   "name": "Customer",
+   "description": "An organisation that buys products or services; one record per sold-to party.",
+   "synonyms": [
+    "Account",
+    "Client",
+    "Sold-to party"
+   ],
+   "key": [
+    "customerId"
+   ],
+   "properties": [
+    {
+     "name": "customerId",
+     "type": "string"
+    },
+    {
+     "name": "customerName",
+     "type": "string"
+    },
+    {
+     "name": "segment",
+     "type": "string"
+    },
+    {
+     "name": "country",
+     "type": "string"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "system_hint": "crm|sales|dynamics 365 sales|salesforce|erp|sap"
+  },
+  {
+   "id": "Product",
+   "name": "Product",
+   "description": "A sellable or purchasable item, machine type or service product; one record per material number.",
+   "synonyms": [
+    "Material",
+    "Article",
+    "Item",
+    "Catalogue item"
+   ],
+   "key": [
+    "productId"
+   ],
+   "properties": [
+    {
+     "name": "productId",
+     "type": "string"
+    },
+    {
+     "name": "productName",
+     "type": "string"
+    },
+    {
+     "name": "productGroup",
+     "type": "string"
+    },
+    {
+     "name": "unitOfMeasure",
+     "type": "string"
+    },
+    {
+     "name": "listPrice",
+     "type": "double"
+    }
+   ],
+   "system_hint": "erp|sap|plm|pim"
+  },
+  {
+   "id": "Supplier",
+   "name": "Supplier",
+   "description": "An organisation the company buys from; one record per vendor number.",
+   "synonyms": [
+    "Vendor"
+   ],
+   "key": [
+    "supplierId"
+   ],
+   "properties": [
+    {
+     "name": "supplierId",
+     "type": "string"
+    },
+    {
+     "name": "supplierName",
+     "type": "string"
+    },
+    {
+     "name": "country",
+     "type": "string"
+    },
+    {
+     "name": "riskRating",
+     "type": "string"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "system_hint": "erp|sap|ariba|supplier"
+  },
+  {
+   "id": "Employee",
+   "name": "Employee",
+   "description": "A person working for the company in a role that the process needs (owner, approver, technician).",
+   "synonyms": [
+    "Worker",
+    "Staff member",
+    "Technician"
+   ],
+   "key": [
+    "employeeId"
+   ],
+   "properties": [
+    {
+     "name": "employeeId",
+     "type": "string"
+    },
+    {
+     "name": "role",
+     "type": "string"
+    },
+    {
+     "name": "orgUnit",
+     "type": "string"
+    },
+    {
+     "name": "site",
+     "type": "string"
+    }
+   ],
+   "system_hint": "hr|hcm|workday|successfactors|entra"
+  },
+  {
+   "id": "Asset",
+   "name": "Asset",
+   "description": "A machine or installation at a customer or plant, tracked over its life (installed base).",
+   "synonyms": [
+    "Installed base",
+    "Equipment",
+    "Machine"
+   ],
+   "key": [
+    "assetId"
+   ],
+   "properties": [
+    {
+     "name": "assetId",
+     "type": "string"
+    },
+    {
+     "name": "serialNumber",
+     "type": "string"
+    },
+    {
+     "name": "model",
+     "type": "string"
+    },
+    {
+     "name": "installedAt",
+     "type": "datetime"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "timeseries": [
+    {
+     "name": "temperature",
+     "type": "double",
+     "unit": "°C"
+    },
+    {
+     "name": "vibration",
+     "type": "double",
+     "unit": "mm/s"
+    },
+    {
+     "name": "alarmCode",
+     "type": "string",
+     "unit": ""
+    }
+   ],
+   "system_hint": "field service|iot|asset|eam|maximo|sap pm"
+  },
+  {
+   "id": "Site",
+   "name": "Site",
+   "description": "A physical location: customer site, plant, warehouse or office.",
+   "synonyms": [
+    "Location",
+    "Plant"
+   ],
+   "key": [
+    "siteId"
+   ],
+   "properties": [
+    {
+     "name": "siteId",
+     "type": "string"
+    },
+    {
+     "name": "siteName",
+     "type": "string"
+    },
+    {
+     "name": "country",
+     "type": "string"
+    },
+    {
+     "name": "siteType",
+     "type": "string"
+    }
+   ],
+   "system_hint": "erp|sap|crm|field service"
+  },
+  {
+   "id": "LegalEntity",
+   "name": "Legal entity",
+   "description": "A company code that books, reports and pays.",
+   "synonyms": [
+    "Company code"
+   ],
+   "key": [
+    "companyCode"
+   ],
+   "properties": [
+    {
+     "name": "companyCode",
+     "type": "string"
+    },
+    {
+     "name": "legalName",
+     "type": "string"
+    },
+    {
+     "name": "currency",
+     "type": "string"
+    },
+    {
+     "name": "country",
+     "type": "string"
+    }
+   ],
+   "system_hint": "erp|sap|fi"
+  }
+ ],
+ "patterns": [
+  {
+   "id": "lead-to-order",
+   "name": "Lead-to-Order",
+   "match": "lead|opportunit|quote|sales|commercial|crm|order intake|offer",
+   "core": [
+    "Customer",
+    "Product",
+    "Employee",
+    "Site"
+   ],
+   "entities": [
+    {
+     "id": "Lead",
+     "name": "Lead",
+     "description": "A sales signal not yet qualified: inbound request, event contact or tender notice.",
+     "synonyms": [
+      "Inquiry",
+      "Prospect"
+     ],
+     "key": [
+      "leadId"
+     ],
+     "properties": [
+      {
+       "name": "leadId",
+       "type": "string"
+      },
+      {
+       "name": "source",
+       "type": "string"
+      },
+      {
+       "name": "receivedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      },
+      {
+       "name": "respondedAt",
+       "type": "datetime"
+      }
+     ],
+     "system_hint": "crm|dynamics 365 sales|salesforce"
+    },
+    {
+     "id": "Opportunity",
+     "name": "Opportunity",
+     "description": "A qualified chance to sell, with value, stage and expected close date.",
+     "synonyms": [
+      "Deal",
+      "Pipeline item"
+     ],
+     "key": [
+      "opportunityId"
+     ],
+     "properties": [
+      {
+       "name": "opportunityId",
+       "type": "string"
+      },
+      {
+       "name": "stage",
+       "type": "string"
+      },
+      {
+       "name": "estimatedValue",
+       "type": "double"
+      },
+      {
+       "name": "expectedClose",
+       "type": "datetime"
+      },
+      {
+       "name": "probability",
+       "type": "double"
+      }
+     ],
+     "system_hint": "crm|dynamics 365 sales|salesforce"
+    },
+    {
+     "id": "Quote",
+     "name": "Quote",
+     "description": "A priced offer to a customer, with lines, discounts and validity.",
+     "synonyms": [
+      "Offer",
+      "Proposal"
+     ],
+     "key": [
+      "quoteId"
+     ],
+     "properties": [
+      {
+       "name": "quoteId",
+       "type": "string"
+      },
+      {
+       "name": "quoteValue",
+       "type": "double"
+      },
+      {
+       "name": "discountPct",
+       "type": "double"
+      },
+      {
+       "name": "createdAt",
+       "type": "datetime"
+      },
+      {
+       "name": "sentAt",
+       "type": "datetime"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "cpq|configurator|crm|sap sd"
+    },
+    {
+     "id": "SalesOrder",
+     "name": "Sales order",
+     "description": "A confirmed customer order, handed over to fulfilment.",
+     "synonyms": [
+      "Order",
+      "Customer order"
+     ],
+     "key": [
+      "salesOrderId"
+     ],
+     "properties": [
+      {
+       "name": "salesOrderId",
+       "type": "string"
+      },
+      {
+       "name": "orderValue",
+       "type": "double"
+      },
+      {
+       "name": "orderedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "erp|sap|sd"
+    }
+   ],
+   "relationships": [
+    [
+     "Lead",
+     "converts_to",
+     "Opportunity",
+     "1:1"
+    ],
+    [
+     "Customer",
+     "has_opportunity",
+     "Opportunity",
+     "1:n"
+    ],
+    [
+     "Opportunity",
+     "results_in",
+     "Quote",
+     "1:n"
+    ],
+    [
+     "Quote",
+     "becomes",
+     "SalesOrder",
+     "1:1"
+    ],
+    [
+     "Customer",
+     "places",
+     "SalesOrder",
+     "1:n"
+    ],
+    [
+     "Quote",
+     "quotes",
+     "Product",
+     "n:n"
+    ],
+    [
+     "Employee",
+     "owns",
+     "Opportunity",
+     "1:n"
+    ]
+   ],
+   "kpi_map": {
+    "lead|response": "Lead",
+    "quote": "Quote",
+    "pipeline|opportunit|win": "Opportunity",
+    "order|attach|revenue|service attach": "SalesOrder"
+   },
+   "questions": [
+    "Which leads received this week have no response yet, and who owns them?",
+    "What is the average quote cycle time by product group over the last 12 weeks?",
+    "Which open opportunities above the deal-desk threshold have had no activity for 14 days?",
+    "Which customers ordered machines last quarter without a service contract?"
+   ]
+  },
+  {
+   "id": "source-to-pay",
+   "name": "Source-to-Pay",
+   "match": "procure|purchas|source|spend|supplier|requisition|invoice|ariba|buy",
+   "core": [
+    "Supplier",
+    "Product",
+    "Employee",
+    "LegalEntity"
+   ],
+   "entities": [
+    {
+     "id": "Requisition",
+     "name": "Purchase requisition",
+     "description": "A request to buy, with requester, category and amount.",
+     "synonyms": [
+      "Purchase request",
+      "PR",
+      "Request"
+     ],
+     "key": [
+      "requisitionId"
+     ],
+     "properties": [
+      {
+       "name": "requisitionId",
+       "type": "string"
+      },
+      {
+       "name": "category",
+       "type": "string"
+      },
+      {
+       "name": "amount",
+       "type": "double"
+      },
+      {
+       "name": "requestedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "channel",
+       "type": "string"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "erp|sap|mm|ariba"
+    },
+    {
+     "id": "PurchaseOrder",
+     "name": "Purchase order",
+     "description": "A commitment to a supplier for goods or services.",
+     "synonyms": [
+      "PO",
+      "Spend line",
+      "Order"
+     ],
+     "key": [
+      "purchaseOrderId"
+     ],
+     "properties": [
+      {
+       "name": "purchaseOrderId",
+       "type": "string"
+      },
+      {
+       "name": "orderValue",
+       "type": "double"
+      },
+      {
+       "name": "orderedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "onContract",
+       "type": "boolean"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "erp|sap|mm|ariba"
+    },
+    {
+     "id": "Contract",
+     "name": "Contract",
+     "description": "An agreement with a supplier: prices, terms, validity and renewal date.",
+     "synonyms": [
+      "Framework agreement",
+      "Agreement"
+     ],
+     "key": [
+      "contractId"
+     ],
+     "properties": [
+      {
+       "name": "contractId",
+       "type": "string"
+      },
+      {
+       "name": "validFrom",
+       "type": "datetime"
+      },
+      {
+       "name": "validTo",
+       "type": "datetime"
+      },
+      {
+       "name": "contractValue",
+       "type": "double"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "contract|clm|ariba|sharepoint"
+    },
+    {
+     "id": "GoodsReceipt",
+     "name": "Goods receipt",
+     "description": "The confirmed receipt of goods or services against an order.",
+     "synonyms": [
+      "GR",
+      "Goods received",
+      "Delivery"
+     ],
+     "key": [
+      "goodsReceiptId"
+     ],
+     "properties": [
+      {
+       "name": "goodsReceiptId",
+       "type": "string"
+      },
+      {
+       "name": "receivedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "quantity",
+       "type": "double"
+      }
+     ],
+     "system_hint": "erp|sap|mm"
+    },
+    {
+     "id": "SupplierInvoice",
+     "name": "Supplier invoice",
+     "description": "An invoice from a supplier, matched against order and receipt.",
+     "synonyms": [
+      "Invoice",
+      "AP invoice"
+     ],
+     "key": [
+      "invoiceId"
+     ],
+     "properties": [
+      {
+       "name": "invoiceId",
+       "type": "string"
+      },
+      {
+       "name": "invoiceAmount",
+       "type": "double"
+      },
+      {
+       "name": "invoiceDate",
+       "type": "datetime"
+      },
+      {
+       "name": "blocked",
+       "type": "boolean"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "erp|sap|fi|ariba"
+    }
+   ],
+   "relationships": [
+    [
+     "Employee",
+     "requests",
+     "Requisition",
+     "1:n"
+    ],
+    [
+     "Requisition",
+     "becomes",
+     "PurchaseOrder",
+     "1:n"
+    ],
+    [
+     "PurchaseOrder",
+     "orders_from",
+     "Supplier",
+     "n:1"
+    ],
+    [
+     "PurchaseOrder",
+     "references",
+     "Contract",
+     "n:1"
+    ],
+    [
+     "Contract",
+     "with_supplier",
+     "Supplier",
+     "n:1"
+    ],
+    [
+     "GoodsReceipt",
+     "receives",
+     "PurchaseOrder",
+     "n:1"
+    ],
+    [
+     "SupplierInvoice",
+     "bills",
+     "PurchaseOrder",
+     "n:1"
+    ],
+    [
+     "PurchaseOrder",
+     "buys",
+     "Product",
+     "n:n"
+    ]
+   ],
+   "kpi_map": {
+    "spend|maverick|contract|under management": "PurchaseOrder",
+    "requisition|cycle": "Requisition",
+    "invoice|payment|exception": "SupplierInvoice",
+    "tail|negotiat": "PurchaseOrder",
+    "supplier|risk": "Supplier"
+   },
+   "questions": [
+    "Which purchase orders last month were placed outside a contract, by category?",
+    "What is the requisition-to-order cycle time by channel this quarter?",
+    "Which contracts expire in the next 90 days and how much spend runs through them?",
+    "Which supplier invoices are blocked for more than five days, and why?"
+   ]
+  },
+  {
+   "id": "request-to-resolution",
+   "name": "Request-to-Resolution",
+   "match": "service|field|repair|maintenance|work order|technician|installed base|request-to-resolution",
+   "core": [
+    "Customer",
+    "Asset",
+    "Employee",
+    "Product",
+    "Site"
+   ],
+   "entities": [
+    {
+     "id": "ServiceRequest",
+     "name": "Service request",
+     "description": "A request for service from a customer, an alarm or a planned maintenance plan.",
+     "synonyms": [
+      "Case",
+      "Ticket",
+      "Service call"
+     ],
+     "key": [
+      "serviceRequestId"
+     ],
+     "properties": [
+      {
+       "name": "serviceRequestId",
+       "type": "string"
+      },
+      {
+       "name": "channel",
+       "type": "string"
+      },
+      {
+       "name": "priority",
+       "type": "string"
+      },
+      {
+       "name": "raisedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "field service|crm|service"
+    },
+    {
+     "id": "WorkOrder",
+     "name": "Work order",
+     "description": "The planned job to fix or maintain an asset: skills, parts and schedule.",
+     "synonyms": [
+      "Job",
+      "Service order",
+      "Repair"
+     ],
+     "key": [
+      "workOrderId"
+     ],
+     "properties": [
+      {
+       "name": "workOrderId",
+       "type": "string"
+      },
+      {
+       "name": "workType",
+       "type": "string"
+      },
+      {
+       "name": "scheduledAt",
+       "type": "datetime"
+      },
+      {
+       "name": "completedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "firstTimeFix",
+       "type": "boolean"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "field service|sap pm|service"
+    },
+    {
+     "id": "ServiceReport",
+     "name": "Service report",
+     "description": "The technician's report of a visit: findings, work done, parts used, confirmed by the technician.",
+     "synonyms": [
+      "Visit report",
+      "Field report",
+      "Report"
+     ],
+     "key": [
+      "serviceReportId"
+     ],
+     "properties": [
+      {
+       "name": "serviceReportId",
+       "type": "string"
+      },
+      {
+       "name": "visitedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "confirmedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "followUpNeeded",
+       "type": "boolean"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "field service|service"
+    },
+    {
+     "id": "SparePart",
+     "name": "Spare part",
+     "description": "A part used or needed on a job, with availability.",
+     "synonyms": [
+      "Part",
+      "Component"
+     ],
+     "key": [
+      "partId"
+     ],
+     "properties": [
+      {
+       "name": "partId",
+       "type": "string"
+      },
+      {
+       "name": "partName",
+       "type": "string"
+      },
+      {
+       "name": "stockLevel",
+       "type": "double"
+      }
+     ],
+     "system_hint": "erp|sap|mm|field service",
+     "base": "Product"
+    },
+    {
+     "id": "AlarmEvent",
+     "name": "Alarm event",
+     "description": "A live alarm or telemetry event from an asset (time series).",
+     "synonyms": [
+      "Alarm",
+      "Telemetry event"
+     ],
+     "key": [
+      "alarmEventId"
+     ],
+     "properties": [
+      {
+       "name": "alarmEventId",
+       "type": "string"
+      },
+      {
+       "name": "alarmCode",
+       "type": "string"
+      },
+      {
+       "name": "severity",
+       "type": "string"
+      },
+      {
+       "name": "occurredAt",
+       "type": "datetime"
+      }
+     ],
+     "system_hint": "iot|telemetry|event|stream",
+     "event": true
+    }
+   ],
+   "relationships": [
+    [
+     "Customer",
+     "owns",
+     "Asset",
+     "1:n"
+    ],
+    [
+     "Asset",
+     "located_at",
+     "Site",
+     "n:1"
+    ],
+    [
+     "ServiceRequest",
+     "concerns",
+     "Asset",
+     "n:1"
+    ],
+    [
+     "AlarmEvent",
+     "raised_by",
+     "Asset",
+     "n:1"
+    ],
+    [
+     "AlarmEvent",
+     "triggers",
+     "ServiceRequest",
+     "n:1"
+    ],
+    [
+     "ServiceRequest",
+     "resolved_by",
+     "WorkOrder",
+     "1:n"
+    ],
+    [
+     "WorkOrder",
+     "assigned_to",
+     "Employee",
+     "n:1"
+    ],
+    [
+     "WorkOrder",
+     "documented_in",
+     "ServiceReport",
+     "1:1"
+    ],
+    [
+     "WorkOrder",
+     "uses",
+     "SparePart",
+     "n:n"
+    ]
+   ],
+   "kpi_map": {
+    "first-time|second-visit|fix": "WorkOrder",
+    "report": "ServiceReport",
+    "invoice": "WorkOrder",
+    "response|request|sla": "ServiceRequest",
+    "uptime|alarm|downtime": "Asset"
+   },
+   "questions": [
+    "Which assets had more than two alarms in the last 30 days and no open work order?",
+    "What is the first-time fix rate by region and work type this quarter?",
+    "Which confirmed service reports from last week still have no invoice?",
+    "Which technicians are certified for the asset models with the most open requests?"
+   ]
+  },
+  {
+   "id": "record-to-report",
+   "name": "Record-to-Report",
+   "match": "finance|close|record-to-report|ledger|account|reconcil|report|controlling|fi/co",
+   "core": [
+    "LegalEntity",
+    "Employee"
+   ],
+   "entities": [
+    {
+     "id": "LedgerAccount",
+     "name": "Ledger account",
+     "description": "A general ledger account in the chart of accounts.",
+     "synonyms": [
+      "GL account",
+      "General ledger account",
+      "Account"
+     ],
+     "key": [
+      "accountNumber"
+     ],
+     "properties": [
+      {
+       "name": "accountNumber",
+       "type": "string"
+      },
+      {
+       "name": "accountName",
+       "type": "string"
+      },
+      {
+       "name": "accountType",
+       "type": "string"
+      }
+     ],
+     "system_hint": "erp|sap|fi"
+    },
+    {
+     "id": "JournalEntry",
+     "name": "Journal entry",
+     "description": "A posting to the ledger, with amount, period and source.",
+     "synonyms": [
+      "Posting",
+      "Journal",
+      "Subledger entry"
+     ],
+     "key": [
+      "journalEntryId"
+     ],
+     "properties": [
+      {
+       "name": "journalEntryId",
+       "type": "string"
+      },
+      {
+       "name": "amount",
+       "type": "double"
+      },
+      {
+       "name": "postingDate",
+       "type": "datetime"
+      },
+      {
+       "name": "period",
+       "type": "string"
+      },
+      {
+       "name": "source",
+       "type": "string"
+      }
+     ],
+     "system_hint": "erp|sap|fi"
+    },
+    {
+     "id": "Reconciliation",
+     "name": "Reconciliation",
+     "description": "The reconciliation of an account for a period, with open items and preparer.",
+     "synonyms": [
+      "Account reconciliation",
+      "Reconcile"
+     ],
+     "key": [
+      "reconciliationId"
+     ],
+     "properties": [
+      {
+       "name": "reconciliationId",
+       "type": "string"
+      },
+      {
+       "name": "period",
+       "type": "string"
+      },
+      {
+       "name": "openItems",
+       "type": "integer"
+      },
+      {
+       "name": "difference",
+       "type": "double"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "erp|close|excel|blackline"
+    },
+    {
+     "id": "CloseTask",
+     "name": "Close task",
+     "description": "A task in the period-end close calendar with owner, due date and status.",
+     "synonyms": [
+      "Close activity",
+      "Close calendar task"
+     ],
+     "key": [
+      "closeTaskId"
+     ],
+     "properties": [
+      {
+       "name": "closeTaskId",
+       "type": "string"
+      },
+      {
+       "name": "period",
+       "type": "string"
+      },
+      {
+       "name": "dueAt",
+       "type": "datetime"
+      },
+      {
+       "name": "completedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "excel|close|checklist"
+    },
+    {
+     "id": "CostCenter",
+     "name": "Cost center",
+     "description": "An organisational unit that collects costs.",
+     "synonyms": [
+      "Cost centre"
+     ],
+     "key": [
+      "costCenterId"
+     ],
+     "properties": [
+      {
+       "name": "costCenterId",
+       "type": "string"
+      },
+      {
+       "name": "costCenterName",
+       "type": "string"
+      },
+      {
+       "name": "responsible",
+       "type": "string"
+      }
+     ],
+     "system_hint": "erp|sap|co"
+    }
+   ],
+   "relationships": [
+    [
+     "JournalEntry",
+     "posted_to",
+     "LedgerAccount",
+     "n:1"
+    ],
+    [
+     "JournalEntry",
+     "booked_by",
+     "LegalEntity",
+     "n:1"
+    ],
+    [
+     "JournalEntry",
+     "charged_to",
+     "CostCenter",
+     "n:1"
+    ],
+    [
+     "Reconciliation",
+     "reconciles",
+     "LedgerAccount",
+     "n:1"
+    ],
+    [
+     "CloseTask",
+     "owned_by",
+     "Employee",
+     "n:1"
+    ],
+    [
+     "Reconciliation",
+     "prepared_by",
+     "Employee",
+     "n:1"
+    ]
+   ],
+   "kpi_map": {
+    "close|days": "CloseTask",
+    "reconcil|open item": "Reconciliation",
+    "variance|cost": "CostCenter",
+    "posting|journal": "JournalEntry"
+   },
+   "questions": [
+    "Which close tasks for this period are overdue, and who owns them?",
+    "Which accounts have reconciling items older than 60 days?",
+    "What explains the variance above 5% on the top ten cost centers this month?"
+   ]
+  },
+  {
+   "id": "hire-to-retire",
+   "name": "Hire-to-Retire",
+   "match": "hr|people|talent|recruit|hire|employee|workforce|onboard|payroll|learning",
+   "core": [
+    "Employee",
+    "LegalEntity",
+    "Site"
+   ],
+   "entities": [
+    {
+     "id": "Position",
+     "name": "Position",
+     "description": "A budgeted role in an organisational unit, filled or vacant.",
+     "synonyms": [
+      "Role",
+      "Job"
+     ],
+     "key": [
+      "positionId"
+     ],
+     "properties": [
+      {
+       "name": "positionId",
+       "type": "string"
+      },
+      {
+       "name": "jobTitle",
+       "type": "string"
+      },
+      {
+       "name": "orgUnit",
+       "type": "string"
+      },
+      {
+       "name": "fte",
+       "type": "double"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "hr|hcm|workday|successfactors"
+    },
+    {
+     "id": "JobRequisition",
+     "name": "Job requisition",
+     "description": "An approved request to fill a position.",
+     "synonyms": [
+      "Vacancy",
+      "Opening"
+     ],
+     "key": [
+      "jobRequisitionId"
+     ],
+     "properties": [
+      {
+       "name": "jobRequisitionId",
+       "type": "string"
+      },
+      {
+       "name": "openedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "approvedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "hr|ats|recruit"
+    },
+    {
+     "id": "Candidate",
+     "name": "Candidate",
+     "description": "A person applying for a requisition (personal data: minimise).",
+     "synonyms": [
+      "Applicant"
+     ],
+     "key": [
+      "candidateId"
+     ],
+     "properties": [
+      {
+       "name": "candidateId",
+       "type": "string"
+      },
+      {
+       "name": "stage",
+       "type": "string"
+      },
+      {
+       "name": "appliedAt",
+       "type": "datetime"
+      }
+     ],
+     "system_hint": "ats|recruit"
+    },
+    {
+     "id": "LearningRecord",
+     "name": "Learning record",
+     "description": "A course, certification or skill record of an employee.",
+     "synonyms": [
+      "Certification",
+      "Training"
+     ],
+     "key": [
+      "learningRecordId"
+     ],
+     "properties": [
+      {
+       "name": "learningRecordId",
+       "type": "string"
+      },
+      {
+       "name": "course",
+       "type": "string"
+      },
+      {
+       "name": "completedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "validTo",
+       "type": "datetime"
+      }
+     ],
+     "system_hint": "lms|learning|hr"
+    }
+   ],
+   "relationships": [
+    [
+     "Employee",
+     "holds",
+     "Position",
+     "n:1"
+    ],
+    [
+     "JobRequisition",
+     "fills",
+     "Position",
+     "n:1"
+    ],
+    [
+     "Candidate",
+     "applies_for",
+     "JobRequisition",
+     "n:n"
+    ],
+    [
+     "LearningRecord",
+     "completed_by",
+     "Employee",
+     "n:1"
+    ]
+   ],
+   "kpi_map": {
+    "time to hire|requisition|vacanc": "JobRequisition",
+    "candidate|application": "Candidate",
+    "learning|certif|skill": "LearningRecord",
+    "headcount|fte|position": "Position"
+   },
+   "questions": [
+    "Which requisitions have been open for more than 60 days, by organisational unit?",
+    "Which certifications expire in the next 90 days and for which teams?",
+    "How many positions are vacant per site this month?"
+   ]
+  },
+  {
+   "id": "plan-to-produce",
+   "name": "Plan-to-Produce",
+   "match": "production|manufactur|plant|shop floor|mes|quality|plan-to-produce|operations",
+   "core": [
+    "Product",
+    "Asset",
+    "Site",
+    "Employee"
+   ],
+   "entities": [
+    {
+     "id": "ProductionOrder",
+     "name": "Production order",
+     "description": "An order to produce a quantity of a product on a line.",
+     "synonyms": [
+      "Manufacturing order",
+      "Work order"
+     ],
+     "key": [
+      "productionOrderId"
+     ],
+     "properties": [
+      {
+       "name": "productionOrderId",
+       "type": "string"
+      },
+      {
+       "name": "quantity",
+       "type": "double"
+      },
+      {
+       "name": "plannedStart",
+       "type": "datetime"
+      },
+      {
+       "name": "actualEnd",
+       "type": "datetime"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      }
+     ],
+     "system_hint": "erp|sap|pp|mes"
+    },
+    {
+     "id": "WorkCenter",
+     "name": "Work center",
+     "description": "A line or cell where production happens.",
+     "synonyms": [
+      "Line",
+      "Cell"
+     ],
+     "key": [
+      "workCenterId"
+     ],
+     "properties": [
+      {
+       "name": "workCenterId",
+       "type": "string"
+      },
+      {
+       "name": "workCenterName",
+       "type": "string"
+      },
+      {
+       "name": "capacityHours",
+       "type": "double"
+      }
+     ],
+     "system_hint": "erp|sap|mes"
+    },
+    {
+     "id": "Batch",
+     "name": "Batch",
+     "description": "A produced lot with its quality status.",
+     "synonyms": [
+      "Lot"
+     ],
+     "key": [
+      "batchId"
+     ],
+     "properties": [
+      {
+       "name": "batchId",
+       "type": "string"
+      },
+      {
+       "name": "producedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "qualityStatus",
+       "type": "string"
+      }
+     ],
+     "system_hint": "erp|mes|quality"
+    },
+    {
+     "id": "QualityInspection",
+     "name": "Quality inspection",
+     "description": "An inspection with results and a decision.",
+     "synonyms": [
+      "Inspection lot"
+     ],
+     "key": [
+      "inspectionId"
+     ],
+     "properties": [
+      {
+       "name": "inspectionId",
+       "type": "string"
+      },
+      {
+       "name": "inspectedAt",
+       "type": "datetime"
+      },
+      {
+       "name": "result",
+       "type": "string"
+      },
+      {
+       "name": "defects",
+       "type": "integer"
+      }
+     ],
+     "system_hint": "quality|qm|mes"
+    }
+   ],
+   "relationships": [
+    [
+     "ProductionOrder",
+     "produces",
+     "Product",
+     "n:1"
+    ],
+    [
+     "ProductionOrder",
+     "runs_on",
+     "WorkCenter",
+     "n:1"
+    ],
+    [
+     "Batch",
+     "from_order",
+     "ProductionOrder",
+     "n:1"
+    ],
+    [
+     "QualityInspection",
+     "inspects",
+     "Batch",
+     "n:1"
+    ],
+    [
+     "WorkCenter",
+     "part_of",
+     "Site",
+     "n:1"
+    ],
+    [
+     "WorkCenter",
+     "uses_asset",
+     "Asset",
+     "n:n"
+    ]
+   ],
+   "kpi_map": {
+    "oee|throughput|output": "WorkCenter",
+    "scrap|defect|quality": "QualityInspection",
+    "schedule|adherence|order": "ProductionOrder"
+   },
+   "questions": [
+    "Which work centers lost the most hours to unplanned stops this week?",
+    "Which batches failed inspection last month, by product and defect type?"
+   ]
+  }
+ ],
+ "fallback": {
+  "id": "generic",
+  "name": "Generic process",
+  "core": [
+   "Customer",
+   "Product",
+   "Employee"
+  ],
+  "entities": [
+   {
+    "id": "ProcessCase",
+    "name": "Process case",
+    "description": "One run of the journey from trigger to outcome, with its current stage.",
+    "synonyms": [
+     "Case"
+    ],
+    "key": [
+     "caseId"
+    ],
+    "properties": [
+     {
+      "name": "caseId",
+      "type": "string"
+     },
+     {
+      "name": "stage",
+      "type": "string"
+     },
+     {
+      "name": "openedAt",
+      "type": "datetime"
+     },
+     {
+      "name": "closedAt",
+      "type": "datetime"
+     },
+     {
+      "name": "status",
+      "type": "string"
+     }
+    ]
+   }
+  ],
+  "relationships": [
+   [
+    "ProcessCase",
+    "handled_by",
+    "Employee",
+    "n:1"
+   ]
+  ],
+  "kpi_map": {},
+  "questions": [
+   "Which cases are open longer than the target, by stage?"
+  ]
+ }
+}

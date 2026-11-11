@@ -1,0 +1,46 @@
+{
+ "schema": "frontier-release-manifest/1.0",
+ "version": "1.9.0",
+ "date": "2026-11-11",
+ "provenance": "Built and validated in Copilot Cowork and published on 11 November 2026 (self-test 47 of 47, unit tests 87 of 87, DOM tests 18 of 18, pipeline tests passed, skill validation 0 failures and scores 96 to 100, conflict scan 0 unresolved, security scan and package validation passed, HTML validator 0 findings, customer-neutrality scan 0 findings). Grounds the process ontology of 1.8.0 in the Microsoft Common Data Model (a standard entity, table and columns per entity type), adds the medallion semantic layer in OneLake (silver conformed to the Common Data Model, gold Direct Lake semantic models per journey), Fabric and Purview domains and data products per the Cloud Adoption Framework's operational standards. Imported into the repository as the engineering baseline; the repository reproduces the artefacts below.",
+ "artefacts": [
+  {
+   "name": "frontier-envisioning-plugin-1.9.0.zip",
+   "build_path": "dist/frontier-envisioning-plugin-1.9.0.zip",
+   "bytes": 689099,
+   "sha256": "f3892650f1a6dd306ce0c12892db89d566f073ff92051a326740ae27d891561f"
+  },
+  {
+   "name": "Frontier Company Blueprint - Template (Caldova sample).html",
+   "build_path": "build/demo/Frontier Company Blueprint - Template (Caldova sample).html",
+   "bytes": 995890,
+   "sha256": "9d5eadaf338a76340a7c6c61da2d59a55a589adaaa821db0d1eb405cf8a632e6",
+   "normalise": "generated-date",
+   "sha256_normalised": "73cec62bf7e9be59e38447ad451635acefd2867b74992e3e60ff605ef939767f"
+  },
+  {
+   "name": "Caldova - agent identity package v1.0.zip",
+   "build_path": "build/demo/identity/Caldova - agent identity package v1.0.zip",
+   "bytes": 3308707,
+   "sha256": "2026c84c5806e0b8c2003e837f15e635fb78f2fa79f247164c47c1a5b51a5400"
+  },
+  {
+   "name": "Caldova - agent identity catalogue.html",
+   "build_path": "build/demo/identity/caldova-agent-identity/catalog.html",
+   "bytes": 299998,
+   "sha256": "08e2da864f13575d0a630d90954e81a06283a1082a32cf10adfd30d038fa20f1"
+  },
+  {
+   "name": "Caldova - process ontology.ttl",
+   "build_path": "build/demo/ontology/ontology.ttl",
+   "bytes": 33837,
+   "sha256": "64d880af192e1c9bfc15d400f0315a8f5dd59a17e9a0c3b5c5af172546a3d96b"
+  }
+ ],
+ "not_reproduced": [
+  {
+   "name": "frontier-envisioning-github-repo-1.9.0.zip",
+   "reason": "the repository starting point itself; it contains this manifest, so its hash cannot be recorded here"
+  }
+ ]
+}

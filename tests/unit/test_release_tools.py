@@ -123,6 +123,61 @@ class Bootstrap(unittest.TestCase):
 
 
 class ReleaseDocuments(unittest.TestCase):
+    def test_core_bundle_rejects_preview_or_incomplete_inputs_before_overwrite(self):
+        bundle = load("tools/build_release.py")
+        packager = load("tools/build_package.py")
+        archive_bytes = io.BytesIO()
+        with zipfile.ZipFile(archive_bytes, "w") as archive:
+            archive.writestr("README.md", b"synthetic archive")
+        nested_zip = archive_bytes.getvalue()
+        cases = [
+            (b'{"profile":"finops-preview","status":"built","variant":"full"}', None),
+            (b'{"profile":"core","status":"incomplete","variant":"full"}', None),
+            (b'{"profile":"core","status":"built","variant":"svg-only"}', None),
+            (b'{"profile":"core","status":"built","variant":"full","value_finops":{"finops":"costs.json"}}', None),
+            (b"malformed", None),
+            (b"[]", None),
+            *[(b'{"profile":"core","status":"built","variant":"full"}', f"ontology/{name}")
+              for name in ("ontology.ttl", "ontology.md", "data-agents.md", "data-products.md")],
+            (b'{"profile":"core","status":"built","variant":"full"}', "identity/kit.zip"),
+        ]
+        for report, missing in cases:
+            with self.subTest(report=report, missing=missing), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                dist, demo, plugin = root / "dist", root / "demo", root / "plugin"
+                files = {
+                    dist / "frontier-envisioning-plugin-1.9.1.zip": nested_zip,
+                    demo / bundle.DEMO_HTML_NAME: b"blueprint",
+                    demo / "identity" / "caldova-agent-identity" / "catalog.html": b"catalogue",
+                    demo / "identity" / "kit.zip": nested_zip,
+                    demo / "build-report.json": report,
+                    **{demo / "ontology" / name: b"ontology output\n"
+                       for name in ("ontology.ttl", "ontology.md", "data-agents.md", "data-products.md")},
+                    plugin / "README.md": b"guide", plugin / "MIT.md": b"licence",
+                    plugin / "THIRD-PARTY-NOTICES.md": b"notices",
+                    root / "CHANGELOG.md": b"history",
+                    root / "docs" / "prd.md": b"requirements",
+                    root / "docs" / "solution-design.md": b"design",
+                }
+                if missing:
+                    files.pop(demo / missing)
+                for path, data in files.items():
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_bytes(data)
+                output = dist / "frontier-envisioning-1.9.1-complete.zip"
+                sums = dist / "SHA256SUMS.txt"
+                output.write_bytes(b"previous output")
+                sums.write_bytes(b"previous checksums")
+                with mock.patch.object(bundle, "ROOT", root), mock.patch.object(bundle, "PLUGIN", plugin), \
+                        mock.patch.object(bundle, "DEMO_DIR", demo), \
+                        mock.patch.object(bundle, "plugin_version", return_value="1.9.1"), \
+                        mock.patch.object(bundle, "load_module", return_value=packager), \
+                        contextlib.redirect_stdout(io.StringIO()) as messages:
+                    self.assertEqual(bundle.main(["--dist", str(dist)]), 1)
+                self.assertTrue(messages.getvalue())
+                self.assertEqual(output.read_bytes(), b"previous output")
+                self.assertEqual(sums.read_bytes(), b"previous checksums")
+
     def test_complete_bundle_contains_both_authoritative_documents(self):
         bundle = load("tools/build_release.py")
         packager = load("tools/build_package.py")
@@ -135,6 +190,12 @@ class ReleaseDocuments(unittest.TestCase):
                 "docs/prd.md": b"requirements\r\n",
                 "docs/solution-design.md": b"architecture\n",
             }
+            ontology = {
+                "ontology.ttl": b"ontology triples\n",
+                "ontology.md": b"ontology design\n",
+                "data-agents.md": b"agent proposals\n",
+                "data-products.md": b"product proposals\n",
+            }
             archive_bytes = io.BytesIO()
             with zipfile.ZipFile(archive_bytes, "w") as archive:
                 archive.writestr("README.md", b"synthetic archive")
@@ -144,6 +205,9 @@ class ReleaseDocuments(unittest.TestCase):
                 demo / bundle.DEMO_HTML_NAME: b"blueprint",
                 demo / "identity" / "caldova-agent-identity" / "catalog.html": b"catalogue",
                 demo / "identity" / "caldova-agent-identity.zip": nested_zip,
+                demo / "build-report.json": b'{"profile":"core","status":"built","variant":"full"}',
+                demo / "ontology" / "costs.json": b"optional Preview costs must not be bundled",
+                **{demo / "ontology" / name: data for name, data in ontology.items()},
                 plugin / "README.md": b"guide",
                 plugin / "MIT.md": b"licence",
                 plugin / "THIRD-PARTY-NOTICES.md": b"notices",
@@ -175,6 +239,7 @@ class ReleaseDocuments(unittest.TestCase):
                 f"demo/{bundle.DEMO_HTML_NAME}": b"blueprint",
                 "demo/Caldova - agent identity catalogue.html": b"catalogue",
                 "demo/caldova-agent-identity.zip": nested_zip,
+                **{f"demo/ontology/{name}": data for name, data in ontology.items()},
                 **documents,
             }
             with zipfile.ZipFile(dist / "frontier-envisioning-1.6.1-complete.zip") as archive:
@@ -187,11 +252,14 @@ class ReleaseDocuments(unittest.TestCase):
                     archive.namelist(),
                     [prefix + name for name in [*expected, "START-HERE.md"]],
                 )
+                self.assertEqual(len(archive.namelist()), 15)
                 start = archive.read(prefix + "START-HERE.md").decode("utf-8")
                 for name in documents:
                     self.assertIn(name if not name.startswith("docs/analysis/") else "docs/analysis/", start)
                 self.assertNotIn("prd-and-solution-design.md", start)
                 self.assertNotIn("docs/analysis/", start)
+                self.assertIn("optional Preview FinOps", start)
+                self.assertIn("demo/ontology/", start)
                 for entry in archive.infolist():
                     self.assertEqual(entry.date_time, packager.FIXED_DATE)
                     self.assertEqual(entry.create_system, 3)

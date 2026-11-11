@@ -32,6 +32,32 @@ A lever with `"booked": false` is shown, never counted (for example employee sea
 
 ## Calculation
 
+Ordinary value work is independent of FinOps. Use sourced ordinary cost
+assumptions, with ranges and accountable owners; if costs are missing, report
+the budget gap and withhold unsupported ROI/payback, even if a formula emits
+a number. Missing evidence is not zero or budget/readiness approval.
+
+For requested Preview costs or Preview-derived value, first show the full
+[FinOps notice](../../frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure)
+and obtain actual current-scenario confirmation. Each operational value calc/
+apply/feedback invocation needs `--acknowledge-finops-preview` for these inputs;
+ordinary value-only use does not. Renew for new invocation/scope/model/rates/
+grounding; wrapper forwarding is one chain only. Old JSON/notes/installation/
+GA claims are not consent. Technical caller metadata is not human approval.
+Recalculate before applying after a cache/model/rates mismatch.
+
+On decline or absent unrequested FinOps, keep the original unchanged and use
+clean core and ordinary non-FinOps value inputs, not the cached Preview model.
+Requested-but-missing FinOps is an explicit error; no automatic cleansing is
+promised. Legacy/imported FinOps remains Preview. Carry the full warning,
+assumptions and scenario/model/rate/source provenance into derived ROI/NPV,
+unit costs, comparisons, PRD/design, replies and exports. Browser acknowledgement
+is independent, transient and document-local, resets on reload, never
+localStorage consent; the warning persists. Gate flat/nested results and linked
+assumptions while retaining ordinary own value. Private components/rankings/
+outcomes are withheld, not zero; never recover `internal_notes`. Viewer
+acknowledgement is not encryption or access control.
+
 - Monthly simulation over the horizon (default 3 years); adoption ramp per quarter (`adoption_ramp`, last value repeats). Variable costs (credits, Azure) follow the ramp; licences and people are fixed.
 - **Budget view** = cash + revenue. **Economic view** = budget + realised capacity. **Risk** = separate.
 - **NPV** = PV(economic value) - PV(cost); annual discounting at the customer's rate (default 8%), build cost at year 0. **ROI** = NPV / PV(cost). **Payback** = first month with cumulative net >= 0, undiscounted, interpolated.
@@ -52,9 +78,9 @@ Before: the customer version shows ranges and the top ten assumptions with the r
 
 ## Documents
 
-**Business value assessment** (docx skill): 1 Executive summary (value range, NPV, payback, budget view, what must be true) · 2 Scope and baseline · 3 Value tree per use case · 4 Assumption register (with owners and status) · 5 Costs (from FinOps) · 6 Scenarios and sensitivity · 7 Risks and measurement plan (KPIs, baseline, method) · 8 Decisions and next steps · Sources (benchmarks labelled).
+**Business value assessment** (docx skill): 1 Executive summary (supported ranges, NPV/payback, budget view, gaps) · 2 Scope and baseline · 3 Value tree · 4 Assumptions with owners/status · 5 Ordinary costs, or explicitly acknowledged Preview costs with full notice/provenance · 6 Scenarios and sensitivity · 7 Risks and measurement · 8 Decisions and next steps · Sources.
 
-**Excel model** (xlsx skill, live formulas, inputs colour-coded): Inputs · Assumptions · Value (levers per use case) · Cost (from finops.json) · Scenarios · Sensitivity · Summary.
+**Excel model** (xlsx skill, live formulas, inputs colour-coded): Inputs · Assumptions · Value · Cost (ordinary inputs by default; Preview warning/provenance if used) · Scenarios · Sensitivity · Summary. Independently verify purchase prices, terms and assumptions; comparisons are not commitment advice.
 
 ## Data contract (abridged)
 

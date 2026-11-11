@@ -19,12 +19,14 @@ from fe_lib import ROOT
 
 PROFILE = ROOT / "tests" / "fixtures" / "caldova-raster-1.4.0"
 SUPPORTED_VERSIONS = {"1.4.0", "1.5.0", "1.6.0"}
-PREVIEW_VERSIONS = {"1.6.1", "1.7.1"}
+PREVIEW_VERSIONS = {"1.6.1", "1.7.1", "1.9.1"}
 BASE_PROFILE_SHA256 = "46d37eef1a55f8655c4d09447b6335e39ec3b356621186339404c813ecfa5d15"
 CURRENT_INPUT_PROFILE = "tests/fixtures/caldova-raster-1.6.1-inputs.json"
 CURRENT_INPUT_PROFILE_SHA256 = "27e0277754cecfa6239f4138e810aecd4908622ff6537da456dc2fc222108236"
 INTEGRATED_INPUT_PROFILE = "tests/fixtures/caldova-raster-1.7.1-inputs.json"
 INTEGRATED_INPUT_PROFILE_SHA256 = "d9bd99a7a5ac020f1ade201e898dacd4cb8a6230839707188bb62f250e251a58"
+PROCESS_INPUT_PROFILE = "tests/fixtures/caldova-raster-1.9.1-inputs.json"
+PROCESS_INPUT_PROFILE_SHA256 = "d91044f03bb34f6559eddc8debf035a5d3aa697d7800d723a700528b23004453"
 CURRENT_INPUT_PATHS = {"catalog.html", "scripts/identity_docs.py"}
 IDENTITY_ARCHIVE = "Caldova - agent identity package v1.0.zip"
 
@@ -69,10 +71,14 @@ def _release_identity_digest(version: str) -> str:
 
 
 def _current_inputs(inputs: dict, version: str) -> tuple[dict, dict]:
-    relative, profile_digest = (
-        (INTEGRATED_INPUT_PROFILE, INTEGRATED_INPUT_PROFILE_SHA256) if version == "1.7.1"
-        else (CURRENT_INPUT_PROFILE, CURRENT_INPUT_PROFILE_SHA256)
-    )
+    profiles = {
+        "1.6.1": (CURRENT_INPUT_PROFILE, CURRENT_INPUT_PROFILE_SHA256),
+        "1.7.1": (INTEGRATED_INPUT_PROFILE, INTEGRATED_INPUT_PROFILE_SHA256),
+        "1.9.1": (PROCESS_INPUT_PROFILE, PROCESS_INPUT_PROFILE_SHA256),
+    }
+    if version not in profiles:
+        raise RasterProfileError(f"current input profile is not approved for {version}")
+    relative, profile_digest = profiles[version]
     path = ROOT / relative
     record = _read_record(path, "current input profile")
     _verify(path.read_bytes(), profile_digest, "current input profile")

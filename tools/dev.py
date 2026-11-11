@@ -17,10 +17,10 @@ Commands
   package         build the plugin package into dist/ (and refresh plugin/install/plugin-install.json)
   demo            build the Caldova demo into build/demo (blueprint, identity kit, catalogue)
   verify-release  compare dist/ and build/demo with releases/<version>/manifest.json
-  dom             page tests on the demo in a headless DOM (Node + happy-dom)
+  dom             core and explicitly acknowledged Preview fixture tests in a headless DOM
   site            assemble the showcase site into build/site (SITE_AUTH_MODE / SITE_AUTH_TENANT_ID)
   serve           serve build/site on http://127.0.0.1:4173 with the hosting headers
-  e2e             browser tests (Playwright) against the served site
+  e2e             core and Preview browser tests on an isolated local site (Playwright)
   bundle          the complete release bundle into dist/
   bump X.Y.Z      set a new version everywhere (see tools/bump_version.py)
   precommit       gate L0: template drift, lint, docs, neutrality
@@ -195,6 +195,15 @@ def cmd_verify_release():
         raise GateFailure("the build does not reproduce the release manifest")
 
 
+def prepare_preview_fixture() -> Path:
+    preview = BUILD / "demo-finops-preview"
+    if tool("build_demo", [
+        "--out", str(preview), "--with-finops-preview", "--acknowledge-finops-preview",
+    ]):
+        raise GateFailure("explicit FinOps Preview test fixture failed")
+    return preview
+
+
 @step("DOM tests (happy-dom)")
 def cmd_dom():
     if not which("node"):
@@ -203,8 +212,12 @@ def cmd_dom():
         return optional_missing("happy-dom", "npm install")
     if not (DEMO_DIR / DEMO_HTML_NAME).exists():
         cmd_demo()
+    preview = prepare_preview_fixture()
     files = [str(p.relative_to(ROOT)) for p in sorted((ROOT / "tests" / "dom").glob("*.test.mjs"))]
-    if run(["node", "--test", *files], env={"BLUEPRINT_HTML": str(DEMO_DIR / DEMO_HTML_NAME)}):
+    if run(["node", "--test", *files], env={
+        "BLUEPRINT_HTML": str(DEMO_DIR / DEMO_HTML_NAME),
+        "BLUEPRINT_PREVIEW_HTML": str(preview / DEMO_HTML_NAME),
+    }):
         raise GateFailure("DOM tests failed")
 
 
@@ -224,11 +237,17 @@ def cmd_serve():
 def cmd_e2e():
     if not node_modules("@playwright/test"):
         return optional_missing("@playwright/test", "npm install && npx playwright install chromium")
-    if not (BUILD / "site" / "index.html").exists():
-        cmd_site()
+    if not (DEMO_DIR / DEMO_HTML_NAME).exists():
+        cmd_demo()
+    preview = prepare_preview_fixture()
+    test_site = BUILD / "site-e2e"
+    if tool("build_site", [
+        "--out", str(test_site), "--preview-demo", str(preview), "--auth", "none",
+    ]):
+        raise GateFailure("isolated browser-test site build")
     cli = ROOT / "node_modules" / "@playwright" / "test" / "cli.js"
     cmd = ["node", str(cli), "test"] if cli.exists() else [npx() or "npx", "playwright", "test"]
-    if run(cmd, env=browser_env()):
+    if run(cmd, env={**browser_env(), "FRONTIER_SITE_DIR": str(test_site)}):
         raise GateFailure("browser tests failed")
 
 

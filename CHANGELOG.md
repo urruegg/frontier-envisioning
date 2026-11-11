@@ -2,6 +2,29 @@
 
 Releases of the Frontier Envisioning plugin. Engineering changes to the repository are recorded in the pull requests.
 
+## 1.9.1 — unreleased
+
+- **Eight skills, optional process.** Seven non-FinOps GA product wrappers plus
+  bundled optional Preview FinOps. Requested process work produces deterministic
+  local ontology/Turtle, data-agent and product documents; Fabric import/agent
+  tests remain manual and unchecked mappings stay explicit.
+- **FinOps awareness first.** Default core/value/identity/design/process does
+  not invoke FinOps. The full Preview notice and actual current-scenario
+  confirmation precede cost operations/figures; each top-level CLI needs
+  `--acknowledge-finops-preview`. Renewed acknowledgement, legacy/cache handling,
+  downstream provenance and independent document-local viewer gates are explicit.
+  Technical flags are not human pricing or budget approval.
+- **Isolated development profiles.** Default core demo/complete bundle excludes
+  explicit Preview demo/cost JSON; fifteen allowlisted entries include four
+  ontology documents. Explicit Preview testing uses separate output and real CSP.
+- **Bounded product records.** New 1.9.1 requirements/acceptance are separate from
+  unchanged historical product sections; process/CDM ADRs remain Proposed.
+  [SPRINT-004](docs/sprints/SPRINT-004-handover-1.9-preview-finops.md) records
+  D0–D3 returned evidence, pre-D4 checks and remaining D5 review/build/validation.
+  Final post-doc tests and actual Cowork/Fabric/AT checks are not claimed.
+  GA designation is not provider GA, result confidence, release/deployment or
+  external/public/IP clearance; private engineering distribution is unchanged.
+
 ## 1.7.1 — unreleased
 
 - **Four-part, seventeen-view blueprint.** Vision includes Use cases and the

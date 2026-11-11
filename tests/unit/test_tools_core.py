@@ -198,11 +198,14 @@ class DemoReleaseDate(unittest.TestCase):
             with mock.patch.object(sys, "path", [str(fe_lib.SKILLS / "frontier-finops" / "scripts"), *sys.path]):
                 calculator = load("plugin/skills/frontier-finops/scripts/finops_calc.py", "test_date_finops")
             with contextlib.redirect_stdout(io.StringIO()):
-                self.assertEqual(calculator.main(["--finops", str(finops), "--value", str(value)]), 0)
+                self.assertEqual(calculator.main(["--finops", str(finops), "--value", str(value),
+                                                  "--acknowledge-finops-preview"]), 0)
                 summary = {"value_finops": {"folder": str(folder), "finops": str(finops), "value": str(value)}}
-                self.assertEqual(build_demo.build_at_release_date(out, summary, "2026-11-08"), 0)
+                self.assertEqual(build_demo.build_at_release_date(
+                    out, summary, "2026-11-08", acknowledge_finops_preview=True), 0)
                 self.assertEqual(json.loads(data.read_text(encoding="utf-8"))["finops"]["rates_age_days"], 4)
-                self.assertEqual(build_demo.build_at_release_date(out, summary, "2026-11-09"), 0)
+                self.assertEqual(build_demo.build_at_release_date(
+                    out, summary, "2026-11-09", acknowledge_finops_preview=True), 0)
                 self.assertEqual(json.loads(data.read_text(encoding="utf-8"))["finops"]["rates_age_days"], 5)
                 self.assertTrue((out / fe_lib.DEMO_HTML_NAME).is_file())
 
@@ -259,12 +262,74 @@ class BrowserCache(unittest.TestCase):
         with mock.patch.dict(os.environ, {}, clear=True), \
                 mock.patch.object(dev, "run", return_value=0) as run, \
                 mock.patch.object(dev, "node_modules", return_value=True), \
-                mock.patch.object(dev, "cmd_site"):
+                mock.patch.object(dev, "cmd_demo"), \
+                mock.patch.object(dev, "tool", return_value=0):
             dev.cmd_e2e()
         self.assertEqual(
             run.call_args.kwargs.get("env"),
-            {"PLAYWRIGHT_BROWSERS_PATH": str(fe_lib.BUILD / "playwright-browsers")},
+            {"PLAYWRIGHT_BROWSERS_PATH": str(fe_lib.BUILD / "playwright-browsers"),
+             "FRONTIER_SITE_DIR": str(fe_lib.BUILD / "site-e2e")},
         )
+
+
+class PreviewGateFixtures(unittest.TestCase):
+    def test_ci_browser_job_uses_the_isolated_fixture_runner(self):
+        import yaml
+
+        workflow = yaml.safe_load((fe_lib.ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8"))
+        browser_step = next(step for step in workflow["jobs"]["l2"]["steps"] if step.get("name") == "Browser tests")
+        self.assertEqual(browser_step["run"], "python tools/dev.py e2e --strict")
+        self.assertEqual(
+            workflow["jobs"]["l2"].get("env", {}).get("PLAYWRIGHT_BROWSERS_PATH"),
+            "${{ github.workspace }}/build/playwright-browsers",
+            "Chromium installation and the task runner must use the same explicit cache",
+        )
+
+    def test_dom_prepares_explicit_preview_and_passes_both_fixtures(self):
+        dev = load("tools/dev.py")
+        with mock.patch.object(dev, "which", return_value="node"), \
+                mock.patch.object(dev, "node_modules", return_value=True), \
+                mock.patch.object(dev, "cmd_demo"), \
+                mock.patch.object(dev, "tool", return_value=0) as tool, \
+                mock.patch.object(dev, "run", return_value=0) as run:
+            dev.cmd_dom()
+        preview = fe_lib.BUILD / "demo-finops-preview"
+        tool.assert_any_call("build_demo", [
+            "--out", str(preview), "--with-finops-preview", "--acknowledge-finops-preview",
+        ])
+        self.assertEqual(run.call_args.kwargs["env"], {
+            "BLUEPRINT_HTML": str(fe_lib.DEMO_DIR / fe_lib.DEMO_HTML_NAME),
+            "BLUEPRINT_PREVIEW_HTML": str(preview / fe_lib.DEMO_HTML_NAME),
+        })
+
+    def test_e2e_prepares_an_isolated_site_with_both_real_csp_fixtures(self):
+        dev = load("tools/dev.py")
+        with mock.patch.object(dev, "node_modules", return_value=True), \
+                mock.patch.object(dev, "cmd_demo"), \
+                mock.patch.object(dev, "tool", return_value=0) as tool, \
+                mock.patch.object(dev, "run", return_value=0) as run:
+            dev.cmd_e2e()
+        preview = fe_lib.BUILD / "demo-finops-preview"
+        tool.assert_any_call("build_demo", [
+            "--out", str(preview), "--with-finops-preview", "--acknowledge-finops-preview",
+        ])
+        tool.assert_any_call("build_site", [
+            "--out", str(fe_lib.BUILD / "site-e2e"), "--preview-demo", str(preview), "--auth", "none",
+        ])
+        self.assertEqual(run.call_args.kwargs["env"]["FRONTIER_SITE_DIR"], str(fe_lib.BUILD / "site-e2e"))
+
+    def test_failed_preview_build_stops_the_test_runner(self):
+        for command in ("cmd_dom", "cmd_e2e"):
+            with self.subTest(command=command):
+                dev = load("tools/dev.py")
+                with mock.patch.object(dev, "which", return_value="node"), \
+                        mock.patch.object(dev, "node_modules", return_value=True), \
+                        mock.patch.object(dev, "cmd_demo"), \
+                        mock.patch.object(dev, "tool", return_value=1), \
+                        mock.patch.object(dev, "run") as run:
+                    with self.assertRaises(dev.GateFailure):
+                        getattr(dev, command)()
+                    run.assert_not_called()
 
 
 class Neutrality(unittest.TestCase):

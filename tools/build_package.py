@@ -40,7 +40,7 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from check_repo import FORBIDDEN_FILES, SECRET_PATTERNS
-from fe_lib import is_text
+from fe_lib import frontmatter as read_frontmatter, is_text, maturity_errors, maturity_fields
 
 ROOT = Path(__file__).resolve().parent.parent
 PLUGIN = ROOT / "plugin"
@@ -129,13 +129,9 @@ def add_bytes(zf: zipfile.ZipFile, data: bytes, arcname: str) -> None:
 
 
 def frontmatter(skill_md: Path) -> dict:
-    text = skill_md.read_text(encoding="utf-8")
-    m = re.match(r"^---\n(.*?)\n---", text, re.S)
-    out = {}
-    if m:
-        nm = re.search(r"(?m)^name:\s*(\S+)\s*$", m.group(1))
-        ver = re.search(r"(?m)^\s+version:\s*['\"]?([0-9][\w.\-]*)['\"]?\s*$", m.group(1))
-        out = {"name": nm.group(1) if nm else None, "version": ver.group(1) if ver else None}
+    fields = read_frontmatter(skill_md.read_text(encoding="utf-8"))
+    out = {"name": fields.get("name"), "version": fields.get("metadata.version")}
+    out.update(maturity_fields(fields))
     return out
 
 
@@ -165,6 +161,7 @@ def main(argv=None) -> int:
             errors.append(f"{f}: frontmatter name {fm.get('name')!r} does not match the folder")
         if fm.get("version") != version:
             errors.append(f"{f}: metadata version {fm.get('version')!r} is not the release version {version}")
+        errors.extend(maturity_errors(Path(f).name, fm))
     for f in on_disk:
         if f not in folders:
             errors.append(f"{f} exists but is not listed in manifest agentSkills")
@@ -182,7 +179,11 @@ def main(argv=None) -> int:
     for f in folders:
         base = PLUGIN / f
         files = {p.relative_to(base).as_posix(): sha256_bytes(p.read_bytes()) for p in files_under(base)}
-        install_spec["skills"].append({"name": Path(f).name, "folder": f, "files": files})
+        fields = frontmatter(base / "SKILL.md")
+        install_spec["skills"].append({
+            "name": Path(f).name, "folder": f, "files": files,
+            **{key: fields[key] for key in ("maturity", "optional", "requires_preview_ack")},
+        })
     spec_bytes = (json.dumps(install_spec, indent=1) + "\n").encode("utf-8")
     entries = [
         ((PLUGIN / "README.md").read_bytes(), "README.md"),

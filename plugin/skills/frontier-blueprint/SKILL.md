@@ -1,10 +1,9 @@
 ---
 name: frontier-blueprint
 description: |
-  Builds or updates the Frontier Company Blueprint HTML in 17 views: Vision (Microsoft IQ
-  feedback loop, HAIRO org model, journeys, use cases, PRD), Design (agents with workflow
-  and identity, landing zone, ADRs, IT readiness), Build (Roadmap, Agent Factory Plan,
-  FinOps) and Workshops (evidenced attendees, Discovery, Risks, Evidence).
+  Builds or updates the Frontier Company Blueprint HTML: Vision, Design, Build and
+  Workshops, with workflows, identity, PRD, Plan, risks and evidence. Ontology is optional;
+  FinOps is optional Preview and needs explicit current-scenario awareness first.
   Use when asked to "build the Frontier blueprint for <customer>", "create the hybrid
   organisation mockup", "update the blueprint with the workshop feedback", "show the
   delivery Plan", "rate the workshop risks", "make the customer-ready version" or
@@ -15,28 +14,33 @@ license: MIT
 metadata:
   category: productivity
   icon: Organization
-  version: "1.7.1"
+  version: "1.9.1"
   plugin: frontier-envisioning
+  maturity: ga
+  optional: false
+  requires_preview_ack: false
 ---
 
 # Frontier Company Blueprint
 
 Produces a single, self-contained HTML file a solution engineer can present and work in during the envisioning workshop. It follows the Innovation Hub method: the customer's business context (from **frontier-context-discovery**) becomes a hypothesis of how the company, or one function, could run human-led and agent-operated, grounded in Microsoft's Frontier guidance. The workshop validates it live; the exported feedback is merged into the next version.
 
-The HTML follows the Innovation Hub journey in seventeen views:
+The HTML follows the Innovation Hub journey; optional data determines the view set:
 
 | Part | Views |
 |---|---|
 | **1 Vision** | Overview (Frontier phase ladder and **digital feedback loop** through Microsoft IQ) · Org model (HAIRO) · Blueprint · Journeys, including **Agent Factory** (DevSecOps, handover checks, build steps, evaluations) · Use cases (problem/provenance, value, feasibility and matrix) · **PRD** (MVP requirements, Markdown download, scope verdict) |
-| **2 Design** | Agents (trigger canvas, Copilot Studio-style workflow, seven declarations, role profile) · Agent identity · Target architecture (**Landing zone**, Layers and integrations, Flows, **Decisions/ADRs**) · **IT readiness** |
-| **3 Build** | Roadmap and MVP candidates · **Plan** (factory journey lanes, stages, phases, WIP limits, CSV handover) · FinOps |
+| **2 Design** | Agents (trigger canvas, Copilot Studio-style workflow, seven declarations, role profile) · Agent identity · Target architecture (**Landing zone**, Layers and integrations, Flows, **Decisions/ADRs**) · **IT readiness** · optional **Ontology** |
+| **3 Build** | Roadmap and MVP candidates · **Plan** (factory journey lanes, stages, phases, WIP limits, CSV handover) · optional **FinOps (Preview)** |
 | **4 Workshops** | **Attendees** (sessions and evidenced contributions) · Discovery questions and live notes · **Risks** (register, heat map, ratings) · Evidence register |
 
 Agent identity icons mark agents everywhere; Microsoft product icons mark products, design areas and factory tools (only the icons used are embedded).
 
 Part labels and descriptions can be overridden with `parts`. This is unreleased
-1.7.1, selectively adapted from received 1.7.0; version metadata is not release
-or distribution approval.
+1.9.1. Seven non-FinOps skills are GA product wrappers, not a guarantee of
+result confidence, provider GA, release/deployment or external/IP clearance.
+Fabric ontology/agent/operations features remain Preview with dated source and
+mapping gaps; MOS3 `devPreview` remains a separate packaging protocol.
 
 ## Quick Start
 
@@ -45,12 +49,29 @@ User: "Build the Frontier blueprint for Caldova"
 1. Find customer-context.json (input/, output, OneDrive via ReadFileContent)
 2. python scripts/seed_blueprint.py --context customer-context.json --out working/frontier/caldova/blueprint.json
 3. Write the hypothesis: stages, personas, lead + specialist agents, approval seam, scores, MVP canvases
-4. python scripts/build_with_identity.py --data .../blueprint.json --out-dir working/frontier/caldova [--theme <customer deck>.pptx] [--value value.json --finops finops.json] --save-normalized ...
+4. python scripts/build_with_identity.py --data working/frontier/caldova/blueprint.json --out-dir working/frontier/caldova --save-normalized working/frontier/caldova/blueprint.normalized.json
    -> Caldova Frontier Company Blueprint.html (with the Agent identity page) + identity/Caldova - agent identity package v1.0.zip (proposal)
 5. CopyArtifact the HTML, the kit zip and catalog.html to output; reply with journeys, agents, MVP candidates and the proposed names
 ```
 
 **Agent identity (built by default).** `build_with_identity.py` creates the agent identity kit together with the HTML, using the scripts of **frontier-agent-identity** installed next to this skill: it seeds a proposal from the blueprint (names, journey colours, glyphs; the customer's Office theme when one is given), builds and validates the kit, writes the identity into every agent and renders the blueprint with the **Agent identity** page below Agents. Every agent view then uses the display name and icon; the working name stays visible. Names stay a proposal until the customer approves them in the identity review (frontier-agent-identity, Gate E).
+
+Add ordinary `--value value.json` without FinOps when requested. For process
+work, use **frontier-process** and `--ontology ontology.json`. Neither requires
+FinOps. For requested cost work, show the full notice and obtain actual
+current-scenario confirmation from [frontier-finops](../frontier-finops/SKILL.md)
+before any seed/calc/apply, recommendation or cost figure; only then add
+`--finops finops.json --acknowledge-finops-preview`. Every top-level invocation
+or changed scope/model/rates/grounding needs renewed acknowledgement; the wrapper
+forwards it within one action chain only, not as human approval.
+
+On decline or absent unrequested FinOps, continue core and state missing budget
+evidence. Requested-but-missing FinOps is an explicit error. Old GA claims,
+installed skills, JSON flags, notes and earlier runs are not consent. Keep old
+embedded Preview originals unchanged; use clean core and ordinary non-FinOps
+value inputs for the declined path. Omitting `--finops` does not cleanse old
+fields. Do not invent `--no-finops`, strip provenance or reuse cached Preview
+value as GA. Recalculate before apply after a cache/model/rates mismatch.
 
 ## When to Use
 
@@ -65,14 +86,21 @@ User: "Build the Frontier blueprint for Caldova"
 - Gathering or refreshing the customer's context: use **frontier-context-discovery** first
 - PRD, solution design, ADRs or a design repository: use **frontier-solution-design**
 - Reviewing, rebranding or approving agent names, or stamping them into solutions: use **frontier-agent-identity**
-- Business value, ROI and the assumptions behind them: use **frontier-value-case**; agent costs, credits and guardrails: use **frontier-finops**
+- Business value/ROI: **frontier-value-case**; requested costs/guardrails: **frontier-finops** for its full Preview notice and confirmation first
 - A generic slide or one-pager: use the pptx or document skills
 - A plain HTML page without the blueprint method: use the html skill
 
 ## Workflow
 
 ### Demo (no customer needed)
-When the user asks for the demo or the sample ("Build the Frontier blueprint demo for Caldova"), run `python scripts/build_with_identity.py --data examples/caldova-blueprint.json --identity-config ../frontier-agent-identity/examples/caldova-agent-identity.json --palette ../frontier-agent-identity/examples/caldova-palette.json --value ../frontier-value-case/examples/caldova-value.json --finops ../frontier-finops/examples/caldova-finops.json --out-dir working/demo --html "Caldova Frontier Company Blueprint (demo).html"` and publish the HTML, `identity/Caldova - agent identity package v1.0.zip` and the kit's `catalog.html` as `Caldova - agent identity catalogue.html`. Caldova Industrial AG is fictitious; say so in the reply.
+For "Build the Frontier blueprint demo for Caldova", run
+`python scripts/build_with_identity.py --data examples/caldova-blueprint.json --identity-config ../frontier-agent-identity/examples/caldova-agent-identity.json --palette ../frontier-agent-identity/examples/caldova-palette.json --value ../frontier-value-case/examples/caldova-value.json --ontology ../frontier-process/examples/caldova-ontology.json --out-dir working/demo --html "Caldova Frontier Company Blueprint (demo).html"`.
+This curated demo requests process but not FinOps. If the optional process module
+is absent, state that gap and omit `--ontology`; do not claim the Ontology output.
+Publish the HTML, identity ZIP and catalogue after review. Caldova Industrial AG
+is fictitious. A separately requested Preview demo needs the full awareness gate
+and adds `--finops ../frontier-finops/examples/caldova-finops.json --acknowledge-finops-preview`
+with separate output, not the default demo.
 
 ### Step 1: Start from evidence
 1. Look for the context pack: `input/`, the output folder, or OneDrive `Documents/Cowork/frontier-envisioning/<slug>/` (read it with the `ReadFileContent` tool, mode download). If it is missing, run **frontier-context-discovery** first (or, if the user insists on a quick draft, work from what they provide and mark everything as hypothesis).
@@ -104,7 +132,7 @@ retain canon/authored risks. Attendee contributions cite sources and transcript
 times; missing evidence remains a flagged gap.
 
 ### Step 3: Build and check
-1. `python scripts/build_with_identity.py --data working/frontier/<slug>/blueprint.json --out-dir working/frontier/<slug> --html "<Customer> Frontier Company Blueprint.html" --save-normalized working/frontier/<slug>/blueprint.normalized.json --report working/frontier/<slug>/build-report.json` plus `--theme <file>` when a customer-authored deck or template is available (find one with the `SearchM365` tool and download it with `ReadFileContent`, or ask the user to attach it) and `--prefix <publisher prefix>` when known. It writes the identity kit to `identity/` (proposal, `seed-report.md`) and the HTML with the Agent identity page. After the identity review, pass the reviewed `--identity-config` and `--palette` instead; `--no-identity` builds the blueprint without the kit. With `--value` and `--finops` (from frontier-value-case and frontier-finops) it also calculates both on copies: business value in the use cases and the matrix, and the FinOps page.
+1. `python scripts/build_with_identity.py --data working/frontier/<slug>/blueprint.json --out-dir working/frontier/<slug> --html "<Customer> Frontier Company Blueprint.html" --save-normalized working/frontier/<slug>/blueprint.normalized.json --report working/frontier/<slug>/build-report.json` plus `--theme <file>` when a customer-authored deck or template is available (find one with the `SearchM365` tool and download it with `ReadFileContent`, or ask the user to attach it) and `--prefix <publisher prefix>` when known. It writes the identity kit to `identity/` (proposal, `seed-report.md`) and the HTML with the Agent identity page. After the identity review, pass the reviewed `--identity-config` and `--palette` instead; `--no-identity` builds the blueprint without the kit. Ordinary `--value value.json` calculates/applies value on copies without FinOps. Optional process uses `--ontology ontology.json`. Only after the awareness gate, `--finops finops.json --acknowledge-finops-preview` calculates/applies Preview costs in that wrapper chain.
    A blueprint from release 1.3 or earlier gets the canon with `--canon`; `--no-product-icons` leaves the Microsoft product icons out.
 2. Fix every ERROR. Read the WARN lines: unknown agents in stages, uncited evidence ids, MVP agents missing declarations, an unofficial "… IQ" name or unknown area in the feedback loop, an unknown workflow node or trigger type or an unknown agent in a workflow. Rebuild until clean or every remaining warning is deliberate.
 3. Validate the HTML with the html skill's validator when available (`validate.py` must report success).
@@ -141,6 +169,14 @@ times; missing evidence remains a flagged gap.
 
 ## Guardrails
 
+- Fresh browser acknowledgement is independent of script acknowledgement and
+  document-local, never localStorage consent. Reload resets it; the Preview
+  warning persists. Gate flat/nested costs, linked assumptions and derived
+  ROI/NPV/unit costs, comparisons and PRD summaries; keep ordinary own value.
+  Private components/rankings/outcomes are withheld, not zero; never recover
+  `internal_notes`. This is not encryption or access control. Carry limitations,
+  assumptions and scenario/model/rate/source provenance into replies and exports.
+  Missing budget evidence stays open with the real owner.
 - Never fabricate: hypotheses are labelled as hypotheses and only evidence-backed statements cite sources. Never invent customer numbers, quotes, systems or names.
 - Never show Microsoft-internal evidence in a customer version; always build the customer version before sharing outside Microsoft.
 - Always confirm before sharing: show the user the customer version and let them review before it is sent to anyone.
@@ -176,7 +212,9 @@ times; missing evidence remains a flagged gap.
 - `scripts/canon.py` — adds the canon blocks to a blueprint without overwriting what it has, and completes the feedback loop from the journeys
 - `scripts/seed_blueprint.py` — context pack to blueprint seed
 - `scripts/build_blueprint.py` — validate, normalise, customer version, render
-- `scripts/build_with_identity.py` — blueprint and agent identity kit in one step (default build); with `--value` and `--finops` also the business value and the FinOps page
+- `scripts/build_with_identity.py` — core blueprint/identity, ordinary `--value`,
+  optional `--ontology`; requested `--finops` requires `--acknowledge-finops-preview`
+  after actual scenario confirmation
 - `scripts/workflow.py` — the agent workflows: Copilot Studio node and trigger types, derivation from the canvas plan, checks (used by the build)
 - `scripts/prd_model.py` — canonical PRD derivation, identical to the solution-design copy
 - `scripts/risks.py` — risk derivation, ratings and retained source/ID bindings

@@ -1,0 +1,855 @@
+{
+ "schema": "frontier-fabric-iq-canon/1.0",
+ "checked": "2026-11-11",
+ "note": "Microsoft Fabric IQ facts the process ontology relies on, with their Microsoft Learn source. Ontology, its agent integrations and operations agents are in preview: re-check the sources and the Fabric known-issues site before a workshop (90-day rule). Since 1.9 the canon also carries the data architecture the ontology sits on: the Common Data Model as the canonical model of the silver layer, the medallion layers in OneLake, gold semantic models and the data product standard of the Cloud Adoption Framework, Microsoft Purview Unified Catalog and Fabric domains.",
+ "stack": [
+  {
+   "id": "onelake",
+   "name": "OneLake",
+   "what": "One governed data lake for the organisation: systems of record arrive through mirroring and shortcuts, without building copy pipelines where an open format allows it; OneLake catalog, OneLake security and sensitivity labels govern access.",
+   "src": [
+    "S12"
+   ]
+  },
+  {
+   "id": "semantic",
+   "name": "Power BI semantic models",
+   "what": "The curated analytics layer with measures and hierarchies; an ontology can be generated from a semantic model and carries its DAX measures as metrics.",
+   "src": [
+    "S1"
+   ]
+  },
+  {
+   "id": "ontology",
+   "name": "Ontology (preview)",
+   "what": "The business context layer of Fabric IQ: entity types, properties, relationships, rules and metrics, bound to live data in OneLake so people, applications and agents share one vocabulary.",
+   "src": [
+    "S2"
+   ]
+  },
+  {
+   "id": "agents",
+   "name": "Agents grounded in the ontology",
+   "what": "The ontology agent, Fabric data agents (questions and answers), operations agents (monitoring and actions with approval in Teams), Copilot Studio agents (Fabric IQ MCP tool), Foundry IQ agents and custom agents through the ontology MCP server.",
+   "src": [
+    "S5"
+   ]
+  }
+ ],
+ "binding_sources": [
+  "eventhouse",
+  "KQL database",
+  "lakehouse",
+  "mirrored database",
+  "semantic model",
+  "SQL database",
+  "warehouse"
+ ],
+ "property_types": [
+  "string",
+  "integer",
+  "double",
+  "boolean",
+  "datetime"
+ ],
+ "key_types": [
+  "string",
+  "integer"
+ ],
+ "data_agent_max_sources": 5,
+ "paths": {
+  "mirroring": {
+   "item": "mirrored database",
+   "what": "Mirroring adds an external database or catalog (for example Azure SQL Database, SQL Server, Oracle, SAP, Snowflake, Azure Databricks) and keeps it in sync in OneLake.",
+   "src": [
+    "S12"
+   ]
+  },
+  "shortcut": {
+   "item": "lakehouse",
+   "what": "A shortcut references tables or folders in an open format (Delta, Iceberg) where they live, for example in Azure Data Lake Storage, Amazon S3, Google Cloud Storage or Dataverse.",
+   "src": [
+    "S12"
+   ]
+  },
+  "eventstream": {
+   "item": "eventhouse",
+   "what": "Live events and telemetry stream into an eventhouse (Real-Time Intelligence) and bind as time series.",
+   "src": [
+    "S3"
+   ]
+  },
+  "pipeline": {
+   "item": "lakehouse",
+   "what": "A pipeline or copy job loads sources that neither mirroring nor shortcuts cover; curated tables land in a lakehouse or warehouse.",
+   "src": [
+    "S12"
+   ]
+  },
+  "semantic model": {
+   "item": "semantic model",
+   "what": "An existing Power BI semantic model is reused: generate the ontology from it, or bind to it (check the known issue for agents).",
+   "src": [
+    "S1"
+   ]
+  }
+ },
+ "system_rules": [
+  [
+   "sap s/4|s/4hana|sap ecc|sap erp|\\bsap\\b(?!.*ariba)",
+   "mirroring"
+  ],
+  [
+   "dynamics 365|dataverse|power apps",
+   "shortcut"
+  ],
+  [
+   "azure sql|sql server|oracle|postgres|mysql|cosmos|snowflake|databricks",
+   "mirroring"
+  ],
+  [
+   "iot|telemetry|sensor|event|scada|historian|stream",
+   "eventstream"
+  ],
+  [
+   "power bi|semantic model|dataset",
+   "semantic model"
+  ],
+  [
+   "ariba|salesforce|workday|successfactors|coupa|servicenow|excel|cpq|configurator|feed|api",
+   "pipeline"
+  ]
+ ],
+ "not_ontology": [
+  "sharepoint",
+  "manual",
+  "template",
+  "document",
+  "teams",
+  "outlook",
+  "public web",
+  "web",
+  "email",
+  "chat",
+  "github",
+  "copilot studio",
+  "agent 365",
+  "power platform"
+ ],
+ "consumers": {
+  "m365_copilot": {
+   "name": "Microsoft 365 Copilot",
+   "how": "Publish the data agent to the Agent Store; users chat with it or @mention it in Copilot and Teams.",
+   "src": [
+    "S10"
+   ]
+  },
+  "copilot_studio": {
+   "name": "Copilot Studio",
+   "how": "Add the data agent to a Copilot Studio agent, or ground the agent in the ontology with the Fabric IQ MCP tool (list_ontology_entity_types, search_ontology).",
+   "src": [
+    "S7"
+   ]
+  },
+  "foundry": {
+   "name": "Microsoft Foundry",
+   "how": "Use the ontology as a Fabric IQ knowledge source in a Foundry IQ knowledge base.",
+   "src": [
+    "S8"
+   ]
+  },
+  "teams": {
+   "name": "Microsoft Teams",
+   "how": "Operations agents send recommendations to the Fabric Operations Agent Teams app; a person approves or rejects each action.",
+   "src": [
+    "S6"
+   ]
+  }
+ },
+ "build_steps": [
+  {
+   "id": "B1",
+   "name": "Unify and conform the data in OneLake",
+   "what": "Bring the systems of record into bronze with shortcuts (Link to Fabric for Dataverse and Dynamics 365) or mirroring, conform the business entities to the Common Data Model in silver (one Delta table per entity type: errors fixed, duplicates removed, records matched across systems) and curate the gold data products; the ontology binds to silver (managed lakehouse tables without column mapping; string or integer keys; time series with a UTC timestamp).",
+   "src": [
+    "S3",
+    "S12",
+    "S33",
+    "S29",
+    "S18"
+   ]
+  },
+  {
+   "id": "B2",
+   "name": "Create the ontology",
+   "what": "Create an empty ontology (preview) item and import ontology.ttl (owl:Class becomes an entity type, owl:DatatypeProperty a property, owl:ObjectProperty a relationship type; labels, descriptions and synonyms are kept). Or generate it from an existing semantic model.",
+   "src": [
+    "S4",
+    "S2"
+   ]
+  },
+  {
+   "id": "B3",
+   "name": "Bind the data",
+   "what": "Bind every entity type to its OneLake source and choose its key; bind relationship types and time series. The ontology agent proposes bindings in Plan mode; a person applies them in Act mode.",
+   "src": [
+    "S3",
+    "S9"
+   ]
+  },
+  {
+   "id": "B4",
+   "name": "Add rules and metrics",
+   "what": "Add the business rules in natural language and the metrics from the DAX measures of the journey's gold semantic model; create a named version.",
+   "src": [
+    "S2",
+    "S41"
+   ]
+  },
+  {
+   "id": "B5",
+   "name": "Data agents",
+   "what": "Create one Fabric data agent per journey with the ontology as its context source (up to five sources per agent), add instructions and example queries, test, then publish to Microsoft 365 Copilot or add it to the Copilot Studio agents of the journey.",
+   "src": [
+    "S5",
+    "S11",
+    "S10"
+   ]
+  },
+  {
+   "id": "B6",
+   "name": "Operations agents",
+   "what": "Create an operations agent per monitored process with the ontology as knowledge, natural-language rules and actions; recommendations arrive in Teams for approval.",
+   "src": [
+    "S6"
+   ]
+  },
+  {
+   "id": "B7",
+   "name": "Govern",
+   "what": "Workspace and item permissions, OneLake security (row, column, object level), sensitivity labels and DLP apply to the bound data; agents answer with the user's permissions. Publish each data product with its owner, purpose, intended uses, access process and quality status, endorse it (promoted, certified) and make it discoverable in the OneLake catalog and Purview Unified Catalog.",
+   "src": [
+    "S2",
+    "S15",
+    "S13",
+    "S35",
+    "S38"
+   ]
+  }
+ ],
+ "readiness": [
+  {
+   "id": "F-01",
+   "item": "Fabric capacity F2 or higher (or Power BI Premium P1 with Fabric enabled) in the region of the data; trial capacities don't run operations agents",
+   "why": "Data agents and operations agents need a paid capacity",
+   "owner": "Fabric administrator",
+   "stage": "prototype",
+   "src": [
+    "S13",
+    "S16"
+   ]
+  },
+  {
+   "id": "F-02",
+   "item": "Tenant settings: users can create ontology (preview) items and Fabric items",
+   "why": "Prerequisite to create and import the ontology",
+   "owner": "Fabric administrator",
+   "stage": "prototype",
+   "src": [
+    "S4"
+   ]
+  },
+  {
+   "id": "F-03",
+   "item": "Tenant settings for data agents: Copilot and Azure OpenAI; cross-geo processing and storing for AI where the capacity is outside the US and EU",
+   "why": "Data agents and operations agents use Azure OpenAI",
+   "owner": "Fabric administrator with the data protection officer",
+   "stage": "prototype",
+   "src": [
+    "S13"
+   ]
+  },
+  {
+   "id": "F-04",
+   "item": "Operations agent settings and the Fabric Operations Agent Teams app for the approvers",
+   "why": "Recommendations and approvals arrive in Teams",
+   "owner": "Fabric and Teams administrators",
+   "stage": "build",
+   "src": [
+    "S6"
+   ]
+  },
+  {
+   "id": "F-05",
+   "item": "Workspaces and domains for the process ontology (DEV, TEST, PROD), with owners per namespace",
+   "why": "Ownership, lifecycle and CI/CD of the ontology",
+   "owner": "Data platform owner",
+   "stage": "build",
+   "src": [
+    "S12"
+   ]
+  },
+  {
+   "id": "F-06",
+   "item": "Mirroring and shortcut connections for the systems of record, with service identities and named data owners",
+   "why": "Bindings need the curated data in OneLake",
+   "owner": "Data platform owner with the system owners",
+   "stage": "build",
+   "src": [
+    "S12"
+   ]
+  },
+  {
+   "id": "F-07",
+   "item": "Binding-ready tables: managed lakehouse tables without column mapping, string or integer keys, time series with a UTC timestamp",
+   "why": "Data binding limitations of the preview",
+   "owner": "Data engineering",
+   "stage": "build",
+   "src": [
+    "S3"
+   ]
+  },
+  {
+   "id": "F-08",
+   "item": "Copilot Studio production environment with the ontology MCP tools allowed (Fabric IQ MCP)",
+   "why": "Copilot Studio agents grounded in the ontology",
+   "owner": "Power Platform administrator",
+   "stage": "build",
+   "src": [
+    "S7"
+   ]
+  },
+  {
+   "id": "F-09",
+   "item": "Copilot extensibility enabled to publish data agents to the Agent Store in Microsoft 365 Copilot",
+   "why": "Business users reach the data agents in Copilot and Teams",
+   "owner": "Microsoft 365 administrator",
+   "stage": "build",
+   "src": [
+    "S10"
+   ]
+  },
+  {
+   "id": "F-10",
+   "item": "OneLake security roles, sensitivity labels and DLP policies on the bound items",
+   "why": "Agents answer with the user's permissions; labels and DLP protect exports",
+   "owner": "Security and compliance",
+   "stage": "build",
+   "src": [
+    "S15"
+   ]
+  },
+  {
+   "id": "F-11",
+   "item": "Medallion lakehouses per domain: bronze (mirroring, shortcuts, eventstreams), silver tables conformed to the Common Data Model, gold data products; materialized lake views where no copy is needed",
+   "why": "The ontology binds to conformed, binding-ready tables; the data products build on them",
+   "owner": "Data platform owner",
+   "stage": "build",
+   "src": [
+    "S33",
+    "S44",
+    "S18"
+   ]
+  },
+  {
+   "id": "F-12",
+   "item": "Link to Fabric for Dataverse and Dynamics 365 (workspace identity), with the tables the ontology needs, finance and operations tables included",
+   "why": "Brings the Common Data Model tables into OneLake without copy pipelines",
+   "owner": "Power Platform administrator",
+   "stage": "build",
+   "src": [
+    "S29",
+    "S32"
+   ]
+  },
+  {
+   "id": "F-13",
+   "item": "Data product standard per domain: accountable owner, business purpose, intended uses, access process, quality status; endorsement meanings (promoted, certified); sensitivity labels",
+   "why": "The minimum to publish a data product that agents may use",
+   "owner": "Chief data officer with the domain owners",
+   "stage": "build",
+   "src": [
+    "S35"
+   ]
+  },
+  {
+   "id": "F-14",
+   "item": "Microsoft Purview Unified Catalog: governance domains (a data domain for the shared business objects, a functional unit per journey), data products, glossary terms from the ontology, critical data elements for the keys",
+   "why": "Business context, access requests and policies across the data estate",
+   "owner": "Data governance lead",
+   "stage": "build",
+   "src": [
+    "S38",
+    "S39"
+   ]
+  },
+  {
+   "id": "F-15",
+   "item": "A gold semantic model per journey in Direct Lake on OneLake (star schema) that owns the measures behind the ontology's metrics",
+   "why": "Metrics with one definition for reports, the ontology and the agents",
+   "owner": "BI lead",
+   "stage": "build",
+   "src": [
+    "S40",
+    "S42"
+   ]
+  }
+ ],
+ "risks": [
+  {
+   "id": "R-ONT-1",
+   "title": "Ontology, its agent integrations and operations agents are in preview and can change",
+   "category": "technology",
+   "likelihood": 3,
+   "impact": 3,
+   "mitigation": "Keep the ontology definition in ontology.ttl and the repository; re-check the Microsoft Learn sources and the Fabric known issues before each phase; the old ontology experience retires on 31 January 2027",
+   "src": [
+    "S2"
+   ]
+  },
+  {
+   "id": "R-ONT-2",
+   "title": "Data agents and operations agents don't work with an ontology bound to semantic models (known issue)",
+   "category": "technology",
+   "likelihood": 3,
+   "impact": 4,
+   "mitigation": "Bind the entity types that agents use to lakehouse, warehouse or eventhouse tables; reuse semantic-model measures as metrics; re-check the known issue",
+   "src": [
+    "S17",
+    "S6"
+   ]
+  },
+  {
+   "id": "R-ONT-3",
+   "title": "Keys and master data are not clean enough to relate the entity instances across systems",
+   "category": "data",
+   "likelihood": 3,
+   "impact": 4,
+   "mitigation": "Profile the key columns before binding; agree one key per entity type with its data owner; map cross-system keys in the curated layer",
+   "src": [
+    "S3"
+   ]
+  },
+  {
+   "id": "R-ONT-4",
+   "title": "Answers of data agents published to Microsoft 365 Copilot can leave Fabric's compliance boundary or region",
+   "category": "security",
+   "likelihood": 2,
+   "impact": 4,
+   "mitigation": "Review with the data protection officer before publishing to the Agent Store; keep sensitive data agents inside Fabric or Copilot Studio",
+   "src": [
+    "S10"
+   ]
+  },
+  {
+   "id": "R-ONT-5",
+   "title": "Capacity consumption of data agents, graph queries and operations agents is not yet known",
+   "category": "cost",
+   "likelihood": 3,
+   "impact": 3,
+   "mitigation": "Measure consumption in the prototype on a dedicated capacity; add it to the FinOps model before scaling",
+   "src": [
+    "S14"
+   ]
+  },
+  {
+   "id": "R-ONT-6",
+   "title": "Source data doesn't map cleanly to the Common Data Model (SAP or custom fields), so the silver layer needs mapping work and custom extensions",
+   "category": "data",
+   "likelihood": 3,
+   "impact": 3,
+   "mitigation": "Map the entity types of the MVP journey first; keep custom extensions in the domain's namespace with the Common Data Model conventions; verify the columns with the table definition browser",
+   "src": [
+    "S18",
+    "S19"
+   ]
+  },
+  {
+   "id": "R-ONT-7",
+   "title": "A data product approved for analytics or AI grounding is reused by an agent that takes actions, without a new review",
+   "category": "governance",
+   "likelihood": 2,
+   "impact": 4,
+   "mitigation": "List the intended uses per data product; route agent actions and external sharing through the domain's review; record the approval with the data product",
+   "src": [
+    "S35"
+   ]
+  }
+ ],
+ "decisions": [
+  {
+   "id": "OD-ONT-1",
+   "question": "One enterprise ontology with a namespace per journey, or one ontology per domain?",
+   "recommendation": "One ontology with namespaces while the journeys share core entity types (Customer, Product, Asset); split when ownership or lifecycle differ",
+   "owner": "Enterprise architecture with the data owners"
+  },
+  {
+   "id": "OD-ONT-2",
+   "question": "Bind to Power BI semantic models or to lakehouse and warehouse tables?",
+   "recommendation": "Generate from semantic models to reuse definitions and measures; bind the entity types that agents use to tables until the known issue is resolved",
+   "owner": "Data platform owner"
+  },
+  {
+   "id": "OD-ONT-3",
+   "question": "Which systems of record are mirrored, which are shortcuts and which need a pipeline?",
+   "recommendation": "Mirroring for supported databases and SAP, shortcuts for Dataverse and open formats, pipelines for the rest",
+   "owner": "Data platform owner with the system owners"
+  },
+  {
+   "id": "OD-ONT-4",
+   "question": "Which data agents are published to Microsoft 365 Copilot, and which serve only the journey's Copilot Studio agents?",
+   "recommendation": "Start inside Fabric and Copilot Studio; publish to the Agent Store after the data protection review",
+   "owner": "Journey owner with the data protection officer"
+  },
+  {
+   "id": "OD-ONT-5",
+   "question": "Which canonical model do the silver tables follow: the Common Data Model, or the source systems' own models?",
+   "recommendation": "The Common Data Model entities and Dataverse column names, with custom extensions only where no standard entity exists; Dynamics 365 data arrives in that shape through Link to Fabric",
+   "owner": "Enterprise architecture with the data platform owner"
+  },
+  {
+   "id": "OD-ONT-6",
+   "question": "Who owns each data product, what is its quality commitment, and which uses need an additional review?",
+   "recommendation": "The journey's business owner owns its data products; agent actions and external sharing always need a review; promote first, certify after the first release",
+   "owner": "Chief data officer with the domain owners"
+  }
+ ],
+ "sources": [
+  {
+   "id": "S1",
+   "title": "What is Fabric IQ?",
+   "url": "https://learn.microsoft.com/en-us/fabric/iq/overview"
+  },
+  {
+   "id": "S2",
+   "title": "What is ontology (preview)?",
+   "url": "https://learn.microsoft.com/en-us/fabric/iq/ontology/overview"
+  },
+  {
+   "id": "S3",
+   "title": "Data binding in ontology (preview)",
+   "url": "https://learn.microsoft.com/en-us/fabric/iq/ontology/how-to-bind-data"
+  },
+  {
+   "id": "S4",
+   "title": "Import and export ontologies (preview)",
+   "url": "https://learn.microsoft.com/en-us/fabric/iq/ontology/how-to-import-export"
+  },
+  {
+   "id": "S5",
+   "title": "Agent integration options for ontology (preview)",
+   "url": "https://learn.microsoft.com/en-us/fabric/iq/ontology/concepts-agent-integration"
+  },
+  {
+   "id": "S6",
+   "title": "Create an operations agent grounded in an ontology (preview)",
+   "url": "https://learn.microsoft.com/en-us/fabric/iq/ontology/how-to-create-operations-agent"
+  },
+  {
+   "id": "S7",
+   "title": "Build a Copilot Studio agent grounded in an ontology (preview)",
+   "url": "https://learn.microsoft.com/en-us/fabric/iq/ontology/how-to-create-agent-copilot-studio"
+  },
+  {
+   "id": "S8",
+   "title": "Build a Foundry IQ agent grounded in an ontology (preview)",
+   "url": "https://learn.microsoft.com/en-us/fabric/iq/ontology/how-to-create-agent-foundry-iq"
+  },
+  {
+   "id": "S9",
+   "title": "Use the ontology agent (preview) in Fabric",
+   "url": "https://learn.microsoft.com/en-us/fabric/iq/ontology/how-to-use-ontology-agent"
+  },
+  {
+   "id": "S10",
+   "title": "Consume a Fabric data agent in Microsoft Copilot",
+   "url": "https://learn.microsoft.com/en-us/fabric/data-science/data-agent-microsoft-365-copilot"
+  },
+  {
+   "id": "S11",
+   "title": "Use ontology as context in Fabric data agent",
+   "url": "https://learn.microsoft.com/en-us/fabric/data-science/data-agent-ontology-sources"
+  },
+  {
+   "id": "S12",
+   "title": "Unify data with OneLake shortcuts and mirroring",
+   "url": "https://learn.microsoft.com/en-us/fabric/onelake/unify-data"
+  },
+  {
+   "id": "S13",
+   "title": "Fabric data agent concepts",
+   "url": "https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent"
+  },
+  {
+   "id": "S14",
+   "title": "Add and configure data sources in a Fabric data agent",
+   "url": "https://learn.microsoft.com/en-us/fabric/data-science/data-agent-add-datasources"
+  },
+  {
+   "id": "S15",
+   "title": "What is OneLake?",
+   "url": "https://learn.microsoft.com/en-us/fabric/onelake/onelake-overview"
+  },
+  {
+   "id": "S16",
+   "title": "Create and configure operations agents",
+   "url": "https://learn.microsoft.com/en-us/fabric/real-time-intelligence/operations-agent"
+  },
+  {
+   "id": "S17",
+   "title": "Create a data agent grounded in an ontology (preview)",
+   "url": "https://learn.microsoft.com/en-us/fabric/iq/ontology/how-to-create-data-agent"
+  },
+  {
+   "id": "S18",
+   "title": "Common Data Model",
+   "url": "https://learn.microsoft.com/en-us/common-data-model/"
+  },
+  {
+   "id": "S19",
+   "title": "About Common Data Model",
+   "url": "https://learn.microsoft.com/en-us/common-data-model/use"
+  },
+  {
+   "id": "S20",
+   "title": "Account in applicationCommon (Common Data Model)",
+   "url": "https://learn.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/account"
+  },
+  {
+   "id": "S21",
+   "title": "Overview of foundationCommon (Common Data Model)",
+   "url": "https://learn.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/overview"
+  },
+  {
+   "id": "S22",
+   "title": "Overview of crmCommon (Common Data Model)",
+   "url": "https://learn.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/overview"
+  },
+  {
+   "id": "S23",
+   "title": "Overview of sales (Common Data Model)",
+   "url": "https://learn.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/sales/overview"
+  },
+  {
+   "id": "S24",
+   "title": "Overview of service (Common Data Model)",
+   "url": "https://learn.microsoft.com/en-us/common-data-model/schema/core/applicationcommon/foundationcommon/crmcommon/service/overview"
+  },
+  {
+   "id": "S25",
+   "title": "VendTable in Main (Common Data Model, finance and operations)",
+   "url": "https://learn.microsoft.com/en-us/common-data-model/schema/core/operationscommon/tables/supplychain/vendor/main/vendtable"
+  },
+  {
+   "id": "S26",
+   "title": "GeneralJournalAccountEntry in TransactionLine (Common Data Model, finance and operations)",
+   "url": "https://learn.microsoft.com/en-us/common-data-model/schema/core/operationscommon/tables/finance/ledger/transactionline/generaljournalaccountentry"
+  },
+  {
+   "id": "S27",
+   "title": "Overview of Main, finance ledger (Common Data Model, finance and operations)",
+   "url": "https://learn.microsoft.com/en-us/common-data-model/schema/core/operationscommon/tables/finance/ledger/main/overview"
+  },
+  {
+   "id": "S28",
+   "title": "Customer Asset (msdyn_customerasset) table reference, Dynamics 365 Field Service",
+   "url": "https://learn.microsoft.com/en-us/dynamics365/field-service/developer/reference/entities/msdyn_customerasset"
+  },
+  {
+   "id": "S29",
+   "title": "Link your Dataverse environment to Microsoft Fabric",
+   "url": "https://learn.microsoft.com/en-us/power-apps/maker/data-platform/azure-synapse-link-view-in-fabric"
+  },
+  {
+   "id": "S30",
+   "title": "IoT Alert (msdyn_iotalert) table reference",
+   "url": "https://learn.microsoft.com/en-us/dynamics365/developer/reference/entities/msdyn_iotalert"
+  },
+  {
+   "id": "S31",
+   "title": "Dynamics 365 Field Service table/entity reference",
+   "url": "https://learn.microsoft.com/en-us/dynamics365/field-service/developer/reference/about-entity-reference"
+  },
+  {
+   "id": "S32",
+   "title": "Configure your environment and link to Microsoft Fabric",
+   "url": "https://learn.microsoft.com/en-us/power-apps/maker/data-platform/fabric-link-to-data-platform"
+  },
+  {
+   "id": "S33",
+   "title": "Implement medallion lakehouse architecture in Fabric",
+   "url": "https://learn.microsoft.com/en-us/fabric/onelake/onelake-medallion-lakehouse-architecture"
+  },
+  {
+   "id": "S34",
+   "title": "Implement medallion architecture in Real-Time Intelligence",
+   "url": "https://learn.microsoft.com/en-us/fabric/real-time-intelligence/architecture-medallion"
+  },
+  {
+   "id": "S35",
+   "title": "Operational standards for a unified data platform (Cloud Adoption Framework)",
+   "url": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/data/operational-standards-unified-data-platform"
+  },
+  {
+   "id": "S36",
+   "title": "Planning for a unified data platform (Cloud Adoption Framework)",
+   "url": "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/data/planning-unified-data-platform"
+  },
+  {
+   "id": "S37",
+   "title": "Fabric domains",
+   "url": "https://learn.microsoft.com/en-us/fabric/governance/domains"
+  },
+  {
+   "id": "S38",
+   "title": "Data products in Unified Catalog (Microsoft Purview)",
+   "url": "https://learn.microsoft.com/en-us/purview/unified-catalog-data-products"
+  },
+  {
+   "id": "S39",
+   "title": "Governance domains in Unified Catalog (Microsoft Purview)",
+   "url": "https://learn.microsoft.com/en-us/purview/unified-catalog-governance-domains"
+  },
+  {
+   "id": "S40",
+   "title": "Understand star schema and the importance for Power BI",
+   "url": "https://learn.microsoft.com/en-us/power-bi/guidance/star-schema"
+  },
+  {
+   "id": "S41",
+   "title": "Generate an ontology (preview) from semantic models",
+   "url": "https://learn.microsoft.com/en-us/fabric/iq/ontology/how-to-generate-from-semantic-models"
+  },
+  {
+   "id": "S42",
+   "title": "Direct Lake overview",
+   "url": "https://learn.microsoft.com/en-us/fabric/fundamentals/direct-lake-overview"
+  },
+  {
+   "id": "S43",
+   "title": "Common Data Model documentation: finance and operations accounts payable transaction tables",
+   "url": "https://github.com/MicrosoftDocs/common-data-model-and-service/tree/main/common-data-model/schema/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction"
+  },
+  {
+   "id": "S44",
+   "title": "Implement medallion architecture with materialized lake views",
+   "url": "https://learn.microsoft.com/en-us/fabric/data-engineering/materialized-lake-views/tutorial"
+  }
+ ],
+ "data_architecture": {
+  "principle": "Each entity type of the ontology rests on a Microsoft standard entity where one exists: a Common Data Model entity (the Dataverse tables of Dynamics 365 and Power Platform), a Dataverse table of a Dynamics 365 app, or a finance and operations table published in the Common Data Model. Silver tables are conformed to those entities and columns, so every system of record lands in one shared shape; custom extensions only where no standard entity exists.",
+  "layers": [
+   {
+    "id": "bronze",
+    "name": "Bronze",
+    "what": "Raw data as it arrives, in the shape of the source: mirrored databases, shortcuts (Link to Fabric for Dataverse and Dynamics 365), eventstreams into an eventhouse, pipelines. No changes are made here.",
+    "src": [
+     "S33",
+     "S34",
+     "S29"
+    ]
+   },
+   {
+    "id": "silver",
+    "name": "Silver",
+    "what": "Business entities conformed to the Common Data Model: errors fixed, formats standardised, duplicates removed, records matched across systems. One Delta table per entity type in the domain's silver lakehouse; materialized lake views over shortcuts where no copy is needed; live events in the eventhouse. The ontology binds here.",
+    "src": [
+     "S33",
+     "S44",
+     "S18"
+    ]
+   },
+   {
+    "id": "gold",
+    "name": "Gold",
+    "what": "Data products: curated tables and star schemas (facts and dimensions) per journey, served by Power BI semantic models in Direct Lake mode, the ideal storage mode for the gold layer. The semantic models own the DAX measures behind the ontology's metrics.",
+    "src": [
+     "S33",
+     "S40",
+     "S42"
+    ]
+   },
+   {
+    "id": "ontology",
+    "name": "Ontology (Fabric IQ)",
+    "what": "The business vocabulary over silver and gold: entity types, relationships, rules and metrics that data agents, operations agents, Copilot Studio and Foundry agents use.",
+    "src": [
+     "S2",
+     "S41"
+    ]
+   }
+  ],
+  "intake": "Prefer patterns that minimise data movement: shortcuts when the data can stay at its source, mirroring when Fabric needs synchronized access to an external database, data movement only when a copy is required. Make source data available in OneLake only for an approved data product or analytical need.",
+  "intake_src": [
+   "S35"
+  ],
+  "naming": {
+   "silver": "{ns}_silver",
+   "gold": "{ns}_gold",
+   "events": "{ns}_events"
+  },
+  "domains": {
+   "fabric": "One Fabric domain per journey and one for the shared business objects; the domain's workspaces (bronze, silver, gold per environment) are assigned to it, and its admins are the business owners.",
+   "purview": {
+    "core": "Data domain",
+    "journey": "Functional unit"
+   },
+   "purview_what": "Purview Unified Catalog governance domains: a data domain for organization-wide entities such as customers, products and assets; a functional unit per journey. Glossary terms carry the ontology's entity types; critical data elements map the keys that differ between systems to one concept.",
+   "src": [
+    "S37",
+    "S39",
+    "S36"
+   ]
+  },
+  "semantic_models": "One semantic model per journey on its gold lakehouse in Direct Lake on OneLake: fact tables for the journey's events and transactions, conformed dimensions for the shared business objects and a date table; the measures behind the ontology's metrics. Bind the ontology's entity types to lakehouse tables, not to the semantic model, while data agents and operations agents don't support semantic-model bindings (R-ONT-2).",
+  "semantic_models_src": [
+   "S40",
+   "S42",
+   "S41",
+   "S17"
+  ]
+ },
+ "data_product_standard": {
+  "what": "A data product is one or more technical assets that together provide a supported business offering; the owning domain is accountable for it.",
+  "publication": [
+   {
+    "id": "owner",
+    "label": "Accountable owner"
+   },
+   {
+    "id": "purpose",
+    "label": "Business purpose"
+   },
+   {
+    "id": "uses",
+    "label": "Intended uses"
+   },
+   {
+    "id": "access",
+    "label": "Access process"
+   },
+   {
+    "id": "quality",
+    "label": "Quality status"
+   }
+  ],
+  "publication_note": "Every published data product needs an accountable owner, a supported business purpose, intended use, an access process and a quality status; an operational commitment when consumers depend on timely availability; security controls and sensitivity labels before publication; lineage to judge upstream dependencies and downstream impact.",
+  "endorsement": {
+   "promoted": "The owning domain recommends the data product for reuse",
+   "certified": "An authorized reviewer confirmed that the data product meets the organisation's standards"
+  },
+  "consumption": "The owning domain defines the uses each data product supports. Approval for one use doesn't imply approval for another: a data product approved for AI grounding isn't automatically approved for an agent that can take consequential actions, and internal reporting doesn't imply external publication.",
+  "discovery": "OneLake catalog for Fabric-native discovery; Microsoft Purview Unified Catalog when the data product needs enterprise business context or governance across the data estate.",
+  "security": "A consumption path must not weaken the protection the data product needs: Fabric data agents and Power BI keep the user's identity; indexes and service identities need their own authorization boundary.",
+  "uses": {
+   "analytics": "Analytics and reporting",
+   "grounding": "AI grounding (data agent)",
+   "actions": "Agent actions (operations agent): additional review"
+  },
+  "src": [
+   "S35",
+   "S38",
+   "S39"
+  ]
+ }
+}

@@ -70,7 +70,8 @@ test("handover PRD download has model requirement IDs, text and scope verdict", 
 
 test("handover PRD business-value download matches every rendered summary and KPI definition", async ({ page }) => {
   const errors = watch(page);
-  await page.goto("/blueprint.html#/prd");
+  await page.goto("/blueprint-preview.html#/prd");
+  await page.locator("#finops-preview-ack").click();
   const data = await model(page);
   const values = await page.locator("#view ul.clean > li").filter({ hasText: /NPV/ }).allTextContents();
   expect(values).toHaveLength(2);
@@ -183,9 +184,9 @@ test("handover CSV preserves quotes newline Unicode and neutralises spreadsheet 
 test("handover risks live ratings, closed selection, filters and feedback bytes", async ({ page }) => {
   const errors = watch(page);
   await page.goto("/blueprint.html#/risks");
-  await expect(page.locator(".riskrow")).toHaveCount(15);
+  await expect(page.locator(".riskrow")).toHaveCount(22);
   await expect(page.locator(".idstrip")).toContainText("2 high");
-  await expect(page.locator(".idstrip")).toContainText("9 medium");
+  await expect(page.locator(".idstrip")).toContainText("16 medium");
   await expect(page.locator(".idstrip")).toContainText("4 low");
   const risk = await page.locator("#rpanel").getAttribute("data-risk");
   const likelihood = page.locator('#rpanel select[id$="-likelihood"]');
@@ -198,10 +199,10 @@ test("handover risks live ratings, closed selection, filters and feedback bytes"
   await page.locator('#rpanel input[value="closed"]').click();
   await expect(page.locator("#rpanel")).not.toHaveAttribute("data-risk", risk);
   await expect(page.locator("#risk-category")).toBeFocused();
-  await expect(page.locator(".riskrow")).toHaveCount(14);
+  await expect(page.locator(".riskrow")).toHaveCount(21);
   await page.locator("#rk-closed").check();
   await expect(page.locator("#rk-closed")).toBeFocused();
-  await expect(page.locator(".riskrow")).toHaveCount(15);
+  await expect(page.locator(".riskrow")).toHaveCount(22);
   await page.locator("#risk-row-" + risk).click();
   await expect(page.locator("#risk-row-" + risk)).toBeFocused();
   await expect(page.locator("#rpanel textarea")).toHaveValue("Owner confirmed ✓");

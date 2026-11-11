@@ -4,7 +4,7 @@
 import { test, expect } from "@playwright/test";
 
 const VIEWS = ["Overview", "Org model", "Blueprint", "Journeys", "Use cases", "PRD", "Agents", "Agent identity", "Target architecture",
-  "IT readiness", "Roadmap", "Plan", "FinOps", "Attendees", "Discovery", "Risks", "Evidence"];
+  "Ontology", "IT readiness", "Roadmap", "Plan", "Attendees", "Discovery", "Risks", "Evidence"];
 
 function watchProblems(page) {
   const problems = [];

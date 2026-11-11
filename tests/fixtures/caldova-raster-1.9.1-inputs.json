@@ -1,0 +1,9 @@
+{
+  "schema": "frontier-demo-current-inputs/1.0",
+  "version": "1.9.1",
+  "base_profile_sha256": "46d37eef1a55f8655c4d09447b6335e39ec3b356621186339404c813ecfa5d15",
+  "inputs": {
+    "catalog.html": "5eb2902c5ec2e03c3c2d33a883a375347afd3913e89527fb4c22723d9672d63c",
+    "scripts/identity_docs.py": "0add18be32170798c79f2b982c9073bb21ae4b4e1a38562a9cd5d576d62ae959"
+  }
+}

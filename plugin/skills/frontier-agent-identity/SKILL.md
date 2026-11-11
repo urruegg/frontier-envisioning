@@ -14,8 +14,11 @@ license: MIT
 metadata:
   category: productivity
   icon: PaintBrush
-  version: "1.7.1"
+  version: "1.9.1"
   plugin: frontier-envisioning
+  maturity: ga
+  optional: false
+  requires_preview_ack: false
 ---
 
 # Agent identity kit
@@ -47,10 +50,19 @@ Demo: "Build the identity kit demo for Caldova" runs step 5 with `examples/caldo
 
 Every blueprint build already runs steps 3, 5 and 6 as a proposal (frontier-blueprint's `build_with_identity.py`). When the engagement folder has `identity/config/seed-report.md`, start at Step 4 with it.
 
-Agent identity remains in Design in the seventeen-view blueprint; the Build >
+Agent identity remains in Design in the four-part blueprint; the Build >
 Plan cards reuse its icons and names. Vision > PRD/scaffold requirements keep
 canonical IDs when selecting a subset. Plan readiness or a displayed identity
 status does not approve names, provision Entra identities or authorise deployment.
+
+This GA product wrapper works without FinOps. GA is the maintainer's designation,
+not result confidence, provider GA or release/distribution approval. Identity
+does not need cost modelling. For requested costs, first show the full notice
+and obtain actual current-scenario confirmation through
+[frontier-finops](../frontier-finops/SKILL.md). On decline or absent unrequested
+FinOps, continue identity and state the gap; a requested missing module is an
+error. Preserve legacy Preview originals/provenance and use clean core inputs,
+not cached Preview-derived value, on the declined path.
 
 ## When to Use
 
@@ -60,7 +72,7 @@ status does not approve names, provision Entra identities or authorise deploymen
 
 ## When NOT to Use
 
-- What the agents cost: use frontier-finops instead.
+- What the agents cost: load frontier-finops for its Preview notice and confirmation first.
 - What the agents are worth: use frontier-value-case instead.
 - A logo, illustration, poster or picture: use image generation instead.
 - Building or updating the blueprint itself: use frontier-blueprint instead (this skill only adds identity to it).
@@ -101,7 +113,8 @@ Publish the zip and `catalog.html` to output with `CopyArtifact`; save the kit f
 
 ## Guardrails
 
-- The identity is the cost-allocation key: frontier-finops tags every agent resource with agent-id, agent-name, schema, solution and environment from this kit.
+- Identity can supply allocation keys to an acknowledged Preview FinOps model;
+  this kit does not tag deployed resources or validate a budget.
 
 - Never invent brand colours, logos or fonts: every colour has a source and an evidence id, or it is marked as a blueprint colour.
 - Always keep icon contrast at or above 4.5:1; use the brand's dark colour or an accessible shade of the same colour, never a new colour.

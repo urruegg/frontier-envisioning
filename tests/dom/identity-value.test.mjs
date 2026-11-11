@@ -1,7 +1,7 @@
 // DOM tests of the agent identity page, the identity icons across views, the business value and FinOps.
 import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
-import { openBlueprint, txt, wait } from "./helpers.mjs";
+import { openBlueprint, PREVIEW_HTML, acknowledgePreview, txt, wait } from "./helpers.mjs";
 
 describe("Agent identity, business value and FinOps (Caldova demo)", () => {
   let bp;
@@ -53,15 +53,19 @@ describe("Agent identity, business value and FinOps (Caldova demo)", () => {
   });
 
   it("shows the FinOps page with cost per agent, purchase options and guardrails", async () => {
-    await bp.go("#/finops");
-    const v = bp.view();
-    assert.equal(txt(v.querySelector("h2")), "FinOps · what the agents cost");
-    const subs = [...v.querySelectorAll("h3.sub")].map(txt);
-    for (const s of ["Cost per agent and month", "Purchase options for the credits", "Guardrails", "Cost assumptions to clarify in the workshop"]) {
-      assert.ok(subs.includes(s), `section ${s}`);
-    }
-    assert.equal(v.querySelectorAll(".tscroll")[0].querySelectorAll("tbody tr").length, 2, "two modelled agents");
-    assert.equal(v.querySelector(".empty"), null);
-    assert.deepEqual(bp.errors, []);
+    const preview = await openBlueprint(PREVIEW_HTML);
+    try {
+      await preview.go("#/finops");
+      await acknowledgePreview(preview);
+      const v = preview.view();
+      assert.equal(txt(v.querySelector("h2")), "FinOps · what the agents cost");
+      const subs = [...v.querySelectorAll("h3.sub")].map(txt);
+      for (const s of ["Cost per agent and month", "Purchase options for the credits", "Guardrails", "Cost assumptions to clarify in the workshop"]) {
+        assert.ok(subs.includes(s), `section ${s}`);
+      }
+      assert.equal(v.querySelectorAll(".tscroll")[0].querySelectorAll("tbody tr").length, 2, "two modelled agents");
+      assert.equal(v.querySelector(".empty"), null);
+      assert.deepEqual(preview.errors, []);
+    } finally { await preview.close(); }
   });
 });

@@ -229,6 +229,10 @@ class ProductDocumentSplit(unittest.TestCase):
         joined = "\n".join(self.documents.values())
         ids = sorted(set(re.findall(r"\b(?:FR|NFR|AC|D|TD|ADR)-\d+\b", joined)))
         additions = {f"FR-{i:04d}" for i in range(119, 128)} | {f"AC-{i:03d}" for i in range(26, 31)} | {"ADR-0025"}
+        boundaries = tuple(self.headings(text).count("## 1.9.1 development intake") for text in self.documents.values())
+        self.assertIn(boundaries, ((0, 0), (1, 1)), "1.9.1 additions need one explicit boundary in each product document")
+        if boundaries == (1, 1):
+            additions |= {f"FR-{i:04d}" for i in range(128, 142)} | {f"AC-{i:03d}" for i in range(31, 45)} | {"ADR-0026", "ADR-0027"}
         self.assertEqual(ids, sorted(set(self.baseline["identifiers"]) | additions))
         self.assertEqual(ids, sorted(set(ids)))
         self.assertRegex(self.baseline["source_sha256"], r"^[0-9a-f]{64}$")
@@ -393,12 +397,95 @@ class ProductDocumentSplit(unittest.TestCase):
             self.assertIn(f"]({target})", catalogue)
 
 
+class PreviewMaturityDocumentation(unittest.TestCase):
+    def test_current_product_scope_has_bounded_191_requirements_and_acceptance(self) -> None:
+        blocks = {}
+        for name in ("prd.md", "solution-design.md"):
+            text = (ROOT / "docs" / name).read_text(encoding="utf-8")
+            headings = ProductDocumentSplit.headings(text)
+            self.assertEqual(headings.count("## 1.9.1 development intake"), 1, name)
+            self.assertLess(headings.index("## 1.9.1 development intake"), headings.index("## 1.7.1 development intake"))
+            blocks[name] = text.split("## 1.9.1 development intake", 1)[1].split("## 1.7.1 development intake", 1)[0]
+        self.assertEqual(
+            set(re.findall(r"(?m)^\| (FR-\d+) \|", blocks["prd.md"])),
+            {f"FR-{number:04d}" for number in range(128, 142)},
+        )
+        self.assertEqual(
+            set(re.findall(r"(?m)^\| (AC-\d+) \|", blocks["prd.md"])),
+            {f"AC-{number:03d}" for number in range(31, 45)},
+        )
+        scope = "\n".join(blocks.values())
+        for term in ("FinOps", "Preview", "--acknowledge-finops-preview", "devPreview", "ADR-0026", "ADR-0027"):
+            with self.subTest(term=term):
+                self.assertIn(term, scope)
+        self.assertRegex(scope, r"(?i)unreleased")
+
+    def test_finops_notice_and_process_reference_are_available_to_skill_readers(self) -> None:
+        preview = load("plugin/skills/frontier-finops/scripts/finops_preview.py")
+        text = (ROOT / "plugin" / "skills" / "frontier-finops" / "SKILL.md").read_text(encoding="utf-8")
+        prose = " ".join(re.sub(r"(?m)^\s*>\s?", "", text).replace("**", "").split())
+        self.assertIn(preview.NOTICE, prose)
+        self.assertIn("--acknowledge-finops-preview", text)
+        self.assertTrue((ROOT / "plugin" / "skills" / "frontier-process" / "references" / "ontology-method.md").is_file())
+
+    def test_working_agreement_catalogue_names_all_eight_registered_skills(self) -> None:
+        text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        names = set(re.findall(r"(?m)^\| `?(frontier-[a-z-]+)`? \|", text))
+        expected = {path.parent.name for path in (ROOT / "plugin" / "skills").glob("*/SKILL.md")}
+        self.assertEqual(len(expected), 8)
+        self.assertEqual(names, expected)
+        self.assertNotRegex(text, r"(?i)\bseven\s+skills\b")
+
+
 class ProductDocumentPreservationRegressions(unittest.TestCase):
     """Exercise the contracts in memory; never rewrite docs or the migration receipt."""
 
     def setUp(self) -> None:
         self.contract = ProductDocumentSplit()
         self.contract.setUp()
+
+    def test_approved_191_identifiers_are_bounded_without_rewriting_history(self) -> None:
+        original = {}
+        for name, text in self.contract.documents.items():
+            if "## 1.9.1 development intake" in self.contract.headings(text):
+                text, _ = self.contract.split_development_block(
+                    text, "\n\n## 1.9.1 development intake", "\n\n## 1.7.1 development intake"
+                )
+            original[name] = text
+        additions = {
+            "prd.md": "\n".join(
+                [f"| FR-{number:04d} | Planned requirement |" for number in range(128, 142)]
+                + [f"| AC-{number:03d} | Pending verification |" for number in range(31, 45)]
+            ),
+            "solution-design.md": "ADR-0026 and ADR-0027 remain Proposed.",
+        }
+        approved = {
+            name: text.replace(
+                "## 1.7.1 development intake",
+                "## 1.9.1 development intake\n\n" + additions[name] + "\n\n## 1.7.1 development intake",
+                1,
+            )
+            for name, text in original.items()
+        }
+        self.contract.documents = approved
+        self.contract.test_original_identifiers_and_section_headings_are_retained()
+        self.contract.test_substantive_original_section_content_is_unchanged()
+        self.contract.test_original_product_context_unreleased_note_and_inventory_are_retained()
+        for extra in ("FR-0142", "AC-045", "ADR-0028", "NFR-9999"):
+            with self.subTest(unapproved_identifier=extra):
+                self.contract.documents = {**approved, "prd.md": approved["prd.md"] + "\n" + extra}
+                with self.assertRaises(AssertionError):
+                    self.contract.test_original_identifiers_and_section_headings_are_retained()
+        marker = "## 1.9.1 development intake"
+        for name in approved:
+            for replacement in ("## Unnamed development intake", marker + "\n\n" + marker):
+                with self.subTest(document=name, development_boundary=replacement):
+                    self.contract.documents = {
+                        **approved,
+                        name: approved[name].replace(marker, replacement, 1),
+                    }
+                    with self.assertRaises(AssertionError):
+                        self.contract.test_original_identifiers_and_section_headings_are_retained()
 
     def assert_mutation_rejected(
         self, document: str, original: str, replacement: str, check: str

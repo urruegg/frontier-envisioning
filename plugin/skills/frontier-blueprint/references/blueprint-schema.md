@@ -1,12 +1,12 @@
-# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.7.1 — unreleased)
+# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.9.1 — unreleased)
 
 Every field is optional unless marked required. Missing fields render as "To be confirmed". Unknown fields are kept but not shown. `src` is always a list of evidence ids.
 
-## parts (seventeen-view journey)
+## parts (four-part journey; optional views)
 
 Vision: Overview, Org model, Blueprint, Journeys, Use cases, PRD.
-Design: Agents, Agent identity, Target architecture, IT readiness.
-Build: Roadmap, Plan, FinOps. Workshops: Attendees, Discovery, Risks, Evidence.
+Design: Agents, Agent identity, Target architecture, IT readiness, optional Ontology.
+Build: Roadmap, Plan, optional Preview FinOps. Workshops: Attendees, Discovery, Risks, Evidence.
 Views whose optional data is absent may be hidden; existing routes remain usable.
 `parts` overrides labels and one-line purposes:
 `{"vision": {"label": "Part 1 · Vision", "desc": "…"}, "design": {"label": "Part 2 · Design", "desc": "…"}, "build": {"label": "Part 3 · Build", "desc": "…"}, "workshops": {"label": "Part 4 · Workshops", "desc": "…"}}`.
@@ -272,8 +272,39 @@ Per agent (lead, specialist, `data_agent`) `identity`: `display_name`, `names` {
 
 `identity_feedback[]`: workshop feedback from the Agent identity page, added by `merge_feedback.py` (`date`, `topic`, `status`, `note`, `src`).
 
+## ontology (optional process proposal)
+
+Written by frontier-process `apply_ontology.py` or requested through
+`build_with_identity.py --data blueprint.json --ontology ontology.json --out-dir working/core`.
+The process skill owns the model and local normalized/Turtle/design/product/
+data-agent outputs; see its [method](../../frontier-process/references/ontology-method.md).
+The Ontology page is optional in Design. Preserve dated canon, checked/to-verify
+mappings, source visibility and workshop `onto:<id>` verdicts. Native Fabric
+import and tenant agents remain manual Preview checks, not consequences of
+local file generation. This path does not require FinOps.
+
 ## value_case and finops (business value and FinOps)
-Written by frontier-value-case (`apply_value.py`) and frontier-finops (`apply_finops.py`), or by `build_with_identity.py --value --finops`; never by hand. Without them the use cases keep their scores only and the FinOps page is hidden.
+Written by frontier-value-case (`apply_value.py`) and optional frontier-finops
+(`apply_finops.py`), never by hand. Ordinary value-only wrapper use is
+`build_with_identity.py --data blueprint.json --value value.json --out-dir working/core`.
+Only after the [full FinOps notice and actual scenario confirmation](../../frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure),
+the cost form adds `--finops finops.json --acknowledge-finops-preview`.
+Each new invocation/scope/model/rates/grounding needs renewed acknowledgement;
+technical metadata is not independent human approval. Without value data the
+use cases retain their scores; without FinOps data its page is hidden.
+Omitting a flag does not cleanse previously embedded Preview fields. On decline,
+preserve old originals and use clean core/ordinary non-FinOps inputs, not cached
+Preview value. Do not remove provenance or relabel legacy/imported FinOps GA.
+
+`finops_preview` carries technical caller/current-invocation metadata, the
+notice and scenario/model/rate/source fingerprints. Cache/model/rates mismatch
+requires fresh calculation before apply. The browser independently gates flat/
+nested results and linked assumptions, including derived ROI/NPV/unit costs
+and PRD summaries. Viewer acknowledgement is document-local, resets on reload,
+never localStorage consent, and leaves the warning visible. Ordinary own value
+remains; private components/rankings/outcomes are withheld, not zero. Never
+recover `internal_notes`. Viewer acknowledgement is not access control.
+Preview limitations/provenance follow downloads, replies and design exports.
 
 `use_cases[].business_value` (the numeric `value` stays the 1-5 score for the matrix): `status` (hypothesis, partly validated, validated), `confidence`, `open_assumptions`, `range_year` (`low`, `base`, `high`; `weak`, `strong` corners), `economic_year`, `budget_year`, `capacity_year`, `risk_year`, `cost_year`, `build`, `npv`, `npv_budget`, `roi`, `payback_months`, `break_even` (`assumption`, `value` or `always_positive`, `statement`, `unit`), `levers[]` (`name`, `driver`, `category`, `formula`, `annual`, `booked`, `rejected`, `note`, `assumptions`), `assumptions[]` (ids).
 

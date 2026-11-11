@@ -22,6 +22,8 @@ import json
 import sys
 from pathlib import Path
 
+from value_calc import preview_for
+
 MAP = {"validated": "confirmed", "confirmed": "confirmed", "adjusted": "adjusted", "rejected": "rejected"}
 
 
@@ -47,7 +49,10 @@ def bump(v: str) -> str:
         return str(v)
 
 
-def merge(docs: list, verdicts: list, day: str) -> dict:
+def merge(docs: list, verdicts: list, day: str, *, acknowledge_finops_preview: bool = False) -> dict:
+    previews = [preview_for(doc, acknowledge_finops_preview=acknowledge_finops_preview,
+                            fin=docs[1] if len(docs) > 1 else None, operation="feedback")
+                for doc in docs]
     where = {a["id"]: (d, a) for d in docs for a in d.get("assumptions", []) or []}
     changes, unknown, touched = [], [], set()
     for vd in verdicts:
@@ -58,7 +63,7 @@ def merge(docs: list, verdicts: list, day: str) -> dict:
         doc, a = hit
         st = MAP.get(str(vd.get("status") or "").lower())
         val = vd.get("value")
-        before = {"status": a.get("status", "open"), "base": a.get("base")}
+        before = {"status": a.get("status", "open"), "base": a.get("base"), "src": list(a.get("src") or [])}
         if isinstance(val, (int, float)) and not isinstance(val, bool) and st != "rejected":
             if a.get("base") != val:
                 a["previous_base"] = a.get("base")
@@ -76,11 +81,30 @@ def merge(docs: list, verdicts: list, day: str) -> dict:
             a.setdefault("workshop_notes", []).append({"date": when, "note": vd["note"]})
         if vd.get("src"):
             a["src"] = sorted(set(list(a.get("src") or []) + list(vd["src"])))
-        after = {"status": a.get("status", "open"), "base": a.get("base")}
+        after = {"status": a.get("status", "open"), "base": a.get("base"), "src": list(a.get("src") or [])}
         if after != before or vd.get("note"):
             changes.append({"id": a["id"], "statement": a.get("statement"), "from": before, "to": after, "note": vd.get("note"), "date": when})
             touched.add(id(doc))
-    return {"changes": changes, "unknown": unknown, "touched": touched}
+    # The FinOps register also uses value assumptions. Any change in this
+    # explicit action chain invalidates both cost and dependent value caches.
+    invalidated = set(touched)
+    if len(docs) > 1 and touched:
+        invalidated.update(id(doc) for doc in docs)
+    summary = {"changes": changes, "unknown": unknown, "touched": touched, "invalidated": invalidated}
+    for doc, preview in zip(docs, previews):
+        if preview:
+            doc["finops_preview"] = preview
+        if id(doc) in invalidated:
+            doc.pop("results", None)
+    if any(previews):
+        preview = preview_for(docs[0], acknowledge_finops_preview=acknowledge_finops_preview,
+                              fin=docs[1] if len(docs) > 1 else None, operation="feedback")
+        if invalidated:
+            preview["calculation_status"] = "invalidated-recalculate-required"
+        for doc in docs:
+            doc["finops_preview"] = preview
+        summary["finops_preview"] = preview
+    return summary
 
 
 def main(argv=None) -> int:
@@ -90,9 +114,17 @@ def main(argv=None) -> int:
     ap.add_argument("--feedback", required=True, nargs="+")
     ap.add_argument("--date", help="workshop date (default: the export date or today)")
     ap.add_argument("--no-bump", action="store_true")
+    ap.add_argument("--acknowledge-finops-preview", action="store_true")
     a = ap.parse_args(argv)
     paths = [Path(a.value)] + ([Path(a.finops)] if a.finops else [])
-    docs = [json.loads(p.read_text(encoding="utf-8")) for p in paths]
+    try:
+        docs = [json.loads(p.read_text(encoding="utf-8")) for p in paths]
+        for doc in docs:
+            preview_for(doc, acknowledge_finops_preview=a.acknowledge_finops_preview,
+                        fin=docs[1] if a.finops else None, operation="feedback")
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
     verdicts = []
     for f in a.feedback:
         try:
@@ -101,18 +133,41 @@ def main(argv=None) -> int:
             print(f"ERROR: cannot read feedback {f}: {exc}", file=sys.stderr)
             return 2
     day = a.date or _dt.date.today().isoformat()
-    res = merge(docs, verdicts, day)
+    try:
+        res = merge(docs, verdicts, day, acknowledge_finops_preview=a.acknowledge_finops_preview)
+    except (ValueError, KeyError, TypeError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    # Prepare all changed models before writing any, including the new versions.
+    updates = []
     for p, d in zip(paths, docs):
         mine = [c for c in res["changes"] if any(x.get("id") == c["id"] for x in d.get("assumptions", []))]
-        if mine:
+        if mine or id(d) in res["invalidated"]:
             old = d.get("version", "0.1")
             if not a.no_bump:
                 d["version"] = bump(old)
             d.setdefault("changelog", []).append({"date": day, "version": d.get("version"), "from_version": old,
-                                                  "summary": f"{len(mine)} assumption(s) changed in the workshop", "changes": mine})
+                                                  "summary": (f"{len(mine)} assumption(s) changed in the workshop" if mine else
+                                                              "Dependent calculation invalidated after cost/value feedback"),
+                                                  "changes": mine})
             d.pop("results", None)
-            p.write_text(json.dumps(d, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(json.dumps({"verdicts": len(verdicts), "changed": len(res["changes"]), "unknown": res["unknown"],
+            updates.append((p, d))
+    try:
+        for _, d in updates:
+            preview = preview_for(docs[0], acknowledge_finops_preview=a.acknowledge_finops_preview,
+                                  fin=docs[1] if a.finops else None, operation="feedback")
+            if preview:
+                if id(d) in res["invalidated"]:
+                    preview["calculation_status"] = "invalidated-recalculate-required"
+                d["finops_preview"] = preview
+                res["finops_preview"] = preview
+    except (ValueError, KeyError, TypeError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    for p, d in updates:
+        p.write_text(json.dumps(d, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
+    print(json.dumps({**({"finops_preview": res["finops_preview"]} if "finops_preview" in res else {}),
+                      "verdicts": len(verdicts), "changed": len(res["changes"]), "unknown": res["unknown"],
                       "changes": [{"id": c["id"], "from": c["from"], "to": c["to"]} for c in res["changes"]],
                       "next": "recalculate: finops_calc.py, then value_calc.py (or build the blueprint with --value and --finops)"}, indent=1))
     return 0
