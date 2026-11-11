@@ -6,7 +6,7 @@ import axe from "axe-core";
 
 const WCAG = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 const VIEWS = ["Overview", "Org model", "Blueprint", "Journeys", "Use cases", "PRD", "Agents", "Agent identity",
-  "Target architecture", "IT readiness", "Roadmap", "Plan", "FinOps", "Attendees", "Discovery", "Risks", "Evidence"];
+  "Target architecture", "Ontology", "IT readiness", "Roadmap", "Plan", "Attendees", "Discovery", "Risks", "Evidence"];
 const ARCHITECTURE = ["Landing zone", "Layers and integrations", "Flows", "Decisions (ADRs)"];
 test.setTimeout(180_000);
 
@@ -27,9 +27,11 @@ async function open(page, path) {
   expect.soft(response.status(), path).toBe(200);
   const policy = response.headers()["content-security-policy"];
   expect.soft(policy, `${path}: real hosting CSP`).toContain("default-src 'none'");
-  if (path.startsWith("/blueprint.html")) {
+  if (/^\/blueprint(?:-preview)?\.html/.test(path)) {
     expect.soft(policy).toMatch(/script-src 'sha256-[A-Za-z0-9+/=]+'/);
-    await expect(page.locator("#rail button")).toHaveText(VIEWS);
+    const expected = path.startsWith("/blueprint-preview.html")
+      ? [...VIEWS.slice(0, 13), "FinOps", ...VIEWS.slice(13)] : VIEWS;
+    await expect(page.locator("#rail button")).toHaveText(expected);
   }
 }
 
@@ -82,8 +84,12 @@ for (const colorScheme of ["light", "dark"]) {
 
     await open(page, "/blueprint.html#/risks");
     await page.locator("#risk-category").selectOption("cost");
-    await expect(page.locator(".riskrow")).toHaveCount(1);
+    await expect(page.locator(".riskrow")).toHaveCount(2);
+    expect(await page.locator(".riskrow .linkp").evaluateAll((buttons) =>
+      buttons.map((b) => b.textContent).filter((id) => /^R-/.test(id)).sort())).toEqual(["R-C05", "R-ONT-5"]);
     summaries.push(await scan(page, info, `${colorScheme}-risk-category-filter`));
+    await page.locator('#rpanel input[value="closed"]').click();
+    await expect(page.locator(".riskrow")).toHaveCount(1);
     await page.locator('#rpanel input[value="closed"]').click();
     await expect(page.locator("#rpanel")).toHaveCount(0);
     await expect(page.locator("#risk-category")).toBeFocused();
@@ -413,7 +419,8 @@ test("evidence drawer Escape preserves an already inert rail through repeated op
 
 test("drawer replacement preserves the outer trigger and prior inert state through role profile navigation", async ({ page }, info) => {
   const problems = watchProblems(page);
-  await open(page, "/blueprint.html#/finops");
+  await open(page, "/blueprint-preview.html#/finops");
+  await page.locator("#finops-preview-ack").click();
   await page.locator("#rail").evaluate((node) => { node.inert = true; });
   const trigger = page.locator("#view .agentlink").first();
   await trigger.click();

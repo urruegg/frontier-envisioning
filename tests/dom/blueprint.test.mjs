@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { openBlueprint, txt, wait } from "./helpers.mjs";
 
 const VIEWS = ["Overview", "Org model", "Blueprint", "Journeys", "Use cases", "PRD", "Agents", "Agent identity", "Target architecture",
-  "IT readiness", "Roadmap", "Plan", "FinOps", "Attendees", "Discovery", "Risks", "Evidence"];
+  "Ontology", "IT readiness", "Roadmap", "Plan", "Attendees", "Discovery", "Risks", "Evidence"];
 
 describe("Frontier Company Blueprint (Caldova demo)", () => {
   let bp;
@@ -205,7 +205,7 @@ describe("Frontier Company Blueprint (Caldova demo)", () => {
     await bp.go("#/readiness");
     const v = bp.view();
     assert.equal(txt(v.querySelector("h2")), "IT readiness: prepare discovery and design");
-    assert.equal(v.querySelectorAll("details.rgroup").length, 6);
+    assert.equal(v.querySelectorAll("details.rgroup").length, 7, "includes the reviewed ontology readiness group");
     v.querySelector('details.rgroup .assbox input[value="done"]').click();
     await wait(20);
     assert.ok(Object.keys(bp.notes()).some((k) => k.startsWith("val|ready|")), "readiness verdict saved");

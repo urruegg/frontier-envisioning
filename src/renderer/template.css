@@ -96,6 +96,29 @@ table.t th,table.t td{text-align:start;vertical-align:top;padding:8px 10px;borde
 table.t thead th{background:var(--ink);color:var(--bg);font-weight:700;border:0}
 table.t tbody th{font-weight:700;width:22%}
 .tscroll{overflow-x:auto;border:1px solid var(--line-soft);border-radius:6px}
+/* Ontology uses text nodes and local scroll regions, including at 320px. */
+.preview-notice,.ontology-warning{border:2px solid var(--warn);background:var(--warn-soft);color:var(--ink);border-radius:6px;padding:12px;margin-block:14px}
+.preview-notice p{margin:0 0 8px}
+.owrap{max-width:100%;overflow:auto;border:1px solid var(--line);border-radius:6px}
+.osvg{display:block;max-width:none}
+.oedge{stroke:var(--grey);stroke-width:1.5;fill:none}
+.onode{cursor:pointer}
+.onode rect{fill:var(--panel);stroke:var(--ink-2);stroke-width:1.5}
+.onode rect.unbound{stroke-dasharray:4 3}
+.onode text{fill:var(--ink);font-size:12px;font-weight:700;pointer-events:none}
+.onode .osub{fill:var(--muted);font-size:10px;font-weight:400}
+.onode.sel rect{fill:var(--accent-soft);stroke:var(--accent-text);stroke-width:3}
+.onode:focus-visible{outline:none}
+.onode:focus-visible rect{stroke:var(--focus);stroke-width:4}
+.ontology-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:12px}
+.ontology-cards > *, .ont-fields, .ont-fields dd, .opanel{min-width:0;overflow-wrap:anywhere}
+.ont-fields{margin:8px 0}
+.ont-fields dt{font-weight:700;color:var(--ink-2);margin-top:5px}
+.ont-fields dd{margin-inline:12px 0;white-space:pre-wrap}
+.ont-fields .clean{padding-inline-start:16px}
+.olayers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-block:12px}
+.mapping-gap{color:var(--warn);font-weight:700}
+@media(max-width:700px){.olayers{grid-template-columns:minmax(0,1fr)}}
 .btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:6px;border:1px solid var(--line);background:var(--panel);font-weight:700;font-size:12.5px}
 .btn:hover{border-color:var(--accent);color:var(--accent-text)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-on)}

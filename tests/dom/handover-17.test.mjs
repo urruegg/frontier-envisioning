@@ -6,8 +6,8 @@ import path from "node:path";
 import { openBlueprint, DEFAULT_HTML, txt, wait } from "./helpers.mjs";
 
 const VIEWS = ["Overview", "Org model", "Blueprint", "Journeys", "Use cases", "PRD",
-  "Agents", "Agent identity", "Target architecture", "IT readiness",
-  "Roadmap", "Plan", "FinOps", "Attendees", "Discovery", "Risks", "Evidence"];
+  "Agents", "Agent identity", "Target architecture", "Ontology", "IT readiness",
+  "Roadmap", "Plan", "Attendees", "Discovery", "Risks", "Evidence"];
 
 describe("handover 1.7 renderer", () => {
   let bp;
@@ -28,10 +28,10 @@ describe("handover 1.7 renderer", () => {
     assert.equal(bp.view().querySelectorAll(".kbph").length, 4);
   });
 
-  it("renders fifteen risks with the canonical rating totals", async () => {
+  it("renders canonical and ontology risks with the reviewed rating totals", async () => {
     await bp.go("#/risks");
-    assert.match(txt(bp.view().querySelector(".idstrip")).replace(/\s/g, ""), /15risks2high9medium4low/);
-    assert.equal(bp.view().querySelectorAll(".riskrow").length, 15);
+    assert.match(txt(bp.view().querySelector(".idstrip")).replace(/\s/g, ""), /22risks2high16medium4low/);
+    assert.equal(bp.view().querySelectorAll(".riskrow").length, 22);
   });
 
   it("renders the MVP PRD and all semantic requirement IDs", async () => {
