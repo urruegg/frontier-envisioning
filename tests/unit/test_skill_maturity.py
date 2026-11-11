@@ -40,6 +40,11 @@ class SkillMaturity(unittest.TestCase):
     def test_installer_reports_preview_but_does_not_acknowledge_it(self):
         self.install_probe("preview", True)
 
+    def test_existing_finops_update_or_reinstall_never_inherits_cached_consent(self):
+        for version in ("1.7.1", "1.9.1"):
+            with self.subTest(installed_version=version):
+                self.install_probe("preview", True, installed_version=version)
+
     def test_installer_rejects_maturity_metadata_mismatch(self):
         self.install_probe("ga", False)
 
@@ -61,7 +66,7 @@ class SkillMaturity(unittest.TestCase):
             self.assertTrue("frontier-finops" in output.getvalue(), "missing explicit maturity error")
             self.assertFalse((root / "dist").exists())
 
-    def install_probe(self, maturity, valid, requires_ack=True):
+    def install_probe(self, maturity, valid, requires_ack=True, installed_version=None):
         installer = load("plugin/install/prepare_install.py")
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -83,9 +88,19 @@ class SkillMaturity(unittest.TestCase):
             plan = root / "install/plugin-install.json"
             plan.parent.mkdir()
             plan.write_text(json.dumps(spec), encoding="utf-8")
+            installed = root / "installed"
+            previous = installed / "frontier-finops" / "SKILL.md"
+            if installed_version:
+                previous.parent.mkdir(parents=True)
+                previous.write_text(
+                    f'---\nname: frontier-finops\nmetadata:\n  version: "{installed_version}"\n'
+                    '  maturity: ga\n  preview_acknowledged: true\n---\n',
+                    encoding="utf-8",
+                )
+                previous_bytes = previous.read_bytes()
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
-                code = installer.main(["--root", str(root), "--installed", str(root / "empty-installed")])
+                code = installer.main(["--root", str(root), "--installed", str(installed)])
             result = json.loads(output.getvalue())
             self.assertEqual(code, 0 if valid else 1)
             self.assertEqual(result["verified"], valid)
@@ -95,6 +110,10 @@ class SkillMaturity(unittest.TestCase):
                 self.assertIn("not GA", result["preview_notice"])
                 self.assertNotIn("preview_acknowledged", result)
                 self.assertNotIn("--acknowledge-finops-preview", "".join(result["copy_calls"]))
+                if installed_version:
+                    self.assertEqual(result["skills"][0]["installed_version"], installed_version)
+                    self.assertEqual(result["skills"][0]["status"], "reinstall" if installed_version == "1.9.1" else "update")
+                    self.assertEqual(previous.read_bytes(), previous_bytes)
             else:
                 self.assertEqual(result["copy_calls"], [])
                 self.assertTrue(result["problems"])
