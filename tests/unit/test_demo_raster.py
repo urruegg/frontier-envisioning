@@ -335,7 +335,7 @@ class FinishedDemoArchive(unittest.TestCase):
                     summary = {"identity": {
                         "kit": str(kit), "zip": str(archive), "catalogue": str(kit / "catalog.html"),
                         "tests": "passed", "validation": {"errors": []}, "without_identity": [],
-                    }, "value_finops": {"finops": "fixture"}}
+                    }, "value_finops": {"finops": None}}
                     return subprocess.CompletedProcess(cmd, 0, stdout=json.dumps(summary), stderr="")
 
                 def replay(kit, **kwargs):
