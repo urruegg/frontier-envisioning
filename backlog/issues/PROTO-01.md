@@ -1,7 +1,7 @@
 ---
 id: PROTO-01
 title: "Copilot Studio prototype pack from the agent canvas"
-milestone: "1.7.0"
+milestone: "M1"
 labels: [type:feature, area:plugin, priority:P3, size:M]
 ---
 ## Context

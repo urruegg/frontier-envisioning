@@ -12,4 +12,4 @@ The starting point runs ruff with the error rules only (syntax errors, undefined
 
 - [ ] ruff rule set extended (E, F, W, I, B, UP) with the fixes, tools/ and tests/ first
 - [ ] Renderer findings fixed and the warnings turned into errors
-- [ ] Changes to plugin/ or src/renderer/ ship with 1.7.0 (version bump first)
+- [ ] Changes to plugin/ or src/renderer/ ship with the next approved release (version bump first)
