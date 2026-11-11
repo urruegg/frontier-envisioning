@@ -43,7 +43,7 @@ The context pack is a single JSON file. It is the only input the blueprint seed 
 | category | yes | strategy, pain, metric, kpi, system, data, governance, constraint, stakeholder, idea, decision, action, risk, other |
 | statement | yes | One sentence, your words, specific |
 | journey | no | Name of the journey it belongs to (must match `journeys[].name`) |
-| evidence | yes | `[{"source": "E05", "at": "00:12:31", "quote": "…"}]` |
+| evidence | yes | `[{"source": "E05", "at": "00:12:31", "speaker": "Service process owner", "quote": "…"}]`; keep the stated speaker for transcript facts |
 | confidence | no | high (stated by the owner), medium (second-hand or estimate), low (inferred) |
 | visibility | no | inherits the strictest visibility of its sources |
 
@@ -58,6 +58,13 @@ The context pack is a single JSON file. It is the only input the blueprint seed 
 `{"name": "", "role": "CIO", "org": "customer | microsoft | partner", "stance": "sponsor | champion | neutral | sceptic", "interests": "", "src": []}`
 
 Roles first. Names only for people who attended or wrote. Interests and stance relate to the initiative, never to personal performance.
+
+The blueprint seed uses transcript evidence `speaker`, `source` and `at` to
+populate Workshops > Attendees contributions (`{text, src[], at}`), with session
+evidence and journey/use-case focus links. A mention is not attendance or a
+contribution. Preserve visibility; internal-derived contribution/risk/PRD text
+must not survive customer generation merely because source IDs were removed.
+Missing evidence is a flagged gap, not permission to invent a citation.
 
 ## systems, kpis, constraints, ideas, decisions, actions
 

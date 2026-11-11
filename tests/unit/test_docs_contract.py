@@ -228,7 +228,8 @@ class ProductDocumentSplit(unittest.TestCase):
     def test_original_identifiers_and_section_headings_are_retained(self) -> None:
         joined = "\n".join(self.documents.values())
         ids = sorted(set(re.findall(r"\b(?:FR|NFR|AC|D|TD|ADR)-\d+\b", joined)))
-        self.assertEqual(ids, self.baseline["identifiers"])
+        additions = {f"FR-{i:04d}" for i in range(119, 128)} | {f"AC-{i:03d}" for i in range(26, 31)} | {"ADR-0025"}
+        self.assertEqual(ids, sorted(set(self.baseline["identifiers"]) | additions))
         self.assertEqual(ids, sorted(set(ids)))
         self.assertRegex(self.baseline["source_sha256"], r"^[0-9a-f]{64}$")
         for section in self.baseline["sections"]:
@@ -236,6 +237,18 @@ class ProductDocumentSplit(unittest.TestCase):
                 name = "prd.md" if section.startswith("A.") else "solution-design.md"
                 expected_level = "### " if re.match(r"B\.\d+\.\d+", section) else "## "
                 self.assertIn(expected_level + section, self.headings(self.documents[name]))
+
+    def test_integrated_development_scope_is_separate_from_historical_results(self) -> None:
+        prd = self.documents["prd.md"]
+        design = self.documents["solution-design.md"]
+        for text in (prd, design):
+            self.assertTrue("## 1.7.1 development intake" in text, "1.7.1 development section missing")
+            self.assertIn("not a release", text.lower())
+        block = prd.split("## 1.7.1 development intake", 1)[1].split("## Product context and provenance", 1)[0]
+        self.assertEqual(set(re.findall(r"(?m)^\| (FR-\d+) \|", block)), {f"FR-{i:04d}" for i in range(119, 128)})
+        acceptance = re.findall(r"(?m)^\| (AC-\d+) \| (.*)$", block)
+        self.assertEqual({name for name, _ in acceptance}, {f"AC-{i:03d}" for i in range(26, 31)})
+        self.assertTrue(all("Pending" in row and "Passed" not in row for _, row in acceptance))
 
     def test_substantive_original_section_content_is_unchanged(self) -> None:
         actual = {}

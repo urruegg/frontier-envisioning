@@ -1,6 +1,15 @@
-# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.6)
+# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.7.1 — unreleased)
 
 Every field is optional unless marked required. Missing fields render as "To be confirmed". Unknown fields are kept but not shown. `src` is always a list of evidence ids.
+
+## parts (seventeen-view journey)
+
+Vision: Overview, Org model, Blueprint, Journeys, Use cases, PRD.
+Design: Agents, Agent identity, Target architecture, IT readiness.
+Build: Roadmap, Plan, FinOps. Workshops: Attendees, Discovery, Risks, Evidence.
+Views whose optional data is absent may be hidden; existing routes remain usable.
+`parts` overrides labels and one-line purposes:
+`{"vision": {"label": "Part 1 · Vision", "desc": "…"}, "design": {"label": "Part 2 · Design", "desc": "…"}, "build": {"label": "Part 3 · Build", "desc": "…"}, "workshops": {"label": "Part 4 · Workshops", "desc": "…"}}`.
 
 ## meta (required: customer)
 
@@ -140,9 +149,65 @@ The agent's plan as a **Copilot Studio workflow** (the workflow designer, powere
 | lz | One agent landing zone per business journey: `[{id: F1…, domain: D1…, stages {DEV, TEST, PROD: now/next/later}, classes[], mvp: false or a label}]` |
 | common, sources | Shared rules; https links |
 
-## attendees (Part 1 > Attendees)
+## attendees (Part 4 > Attendees)
 
-`{title, date, place, note, people[{name, role, org (the customer's short name or "Microsoft"), where (on site, remote), team, focus[] (journey name, short name or id, or use-case name or id: each becomes a link), contributions[] (sentences), quote, src[]}]}`. Seeded from the named stakeholders of the context pack; name customer people only with their agreement, otherwise by role.
+`{title, intro, date, place, note, src[], people[{name, role, org (the customer's short name or "Microsoft"), where (on site, remote), team, focus[], contributions[], quote, sessions[], src[]}]}`.
+Focus values link journey names/short names/IDs and use-case names/IDs.
+A contribution is `{text, src[], at}`: statement, evidence IDs and transcript
+time (`"01:42:10"`). Plain sentences remain accepted, falling back to the
+person's `src`. `sessions` lists session evidence IDs (defaults to `src`).
+The build flags missing evidence and counts `contributions_with_evidence`.
+The seed uses named stakeholders and transcript facts with
+`facts[].evidence[].speaker`; names require agreement, otherwise use roles.
+
+## prd (Part 1 > PRD)
+
+The build's `scripts/prd_model.py` and the identical solution-design copy derive
+the page, Markdown download and `design/prd.md` from one canonical model.
+
+- Authored, retained fields: `title`, `status` (hypothesis, draft, agreed,
+  adjusted, rejected), `owner`, `version`, `problem`, `goals[]`, `non_goals[]`,
+  `out_of_scope[]`, `exit_test`, `release_plan[[phase, scope, exit criterion]]`,
+  `notes`, `src[]`, `workshop_notes[]`, `internal`.
+- Derived fields include `basis`, `mvp_agents[]`, `vision`, `commitments`,
+  `maturity`, `scope[]`, `use_cases[]`, `problems[]`, `personas[]`, `platform[]`,
+  `agents[{agent, requirements[{id, kind, text, priority, verify}], declarations}]`,
+  `nfr[]`, `acceptance[]`, `kpis[]`, `roles`, `dependencies[]`, `risks[]`,
+  `decisions[]`, `definition_of_ready[]`, `release_plan_default`.
+- Requirement IDs use the complete blueprint's canonical agent order before
+  selection; `--mvp` subsets retain surviving IDs, not a new local sequence.
+  These customer-MVP IDs are not plugin-product requirement IDs.
+- Workshop verdict: `prd:scope` (validated maps to agreed). Owner/status and
+  Definition of Ready text are metadata, not execution approval.
+
+## risks (Part 4 > Risks)
+
+`{title, intro, src[], source_ids{}, items[{id, title, description, category,
+likelihood, impact, owner, mitigation, status, journeys[], use_cases[], agents[],
+src[], content_src[], source_key, canon, origin, derived, workshop_notes[],
+resolution}]}`.
+
+Categories: value, adoption, data, security, rai (Responsible AI), technology,
+cost, delivery, people. Status: open, mitigating, accepted, closed. Likelihood
+and impact must be finite integers 1-5, excluding booleans; score is their
+product, high from 15 and medium from 8. Invalid authored values warn (strict
+mode fails); invalid feedback reports without silently changing ratings.
+
+`risks.py` derives use-case `risk_points` (sentences or
+`{text, likelihood, impact, owner, mitigation, category}`), blocked readiness
+items and canon `risk_canon`, retaining authored/workshop risks. Unknown
+categories, statuses and links warn. Initial IDs use `R-01`… for authored,
+`R-<use case>-<n>` for use-case points, `R-<item id>` for readiness and `R-C01`…
+for canon. Normalised `source_ids` binds source keys to IDs and retains retired
+IDs. Each bound record carries `source_key`; source edits/reordering reserve
+old identities instead of applying old verdicts to new content.
+
+Keep that normalised history with feedback. Discarding source bindings and
+retired-ID history cannot guarantee old ID-only feedback identity.
+`risk:<id>` carries status, likelihood, impact and note; a rated risk becomes
+workshop-owned (`derived: false`). Rejected closes it as `resolution: "not a risk"`.
+Unknown IDs are reported. `content_src` preserves the content's evidence
+independently of a later workshop verdict; a verdict does not declassify it.
 
 ## factory (Agent Factory journey and DevSecOps)
 
@@ -158,6 +223,16 @@ The canon adds one domain with `kind: "factory"` (id `D<n>`, lead and five speci
 | superpowers_note, resources, sources | Notes and https links |
 
 An agent's factory stage is computed in the HTML from `lifecycle` text and the eight handover checks; nothing to store.
+
+`board` (Part 3 > Plan): `{title, intro, phases[{id, name, stages[], what}],
+wip{stage id: limit}}`. Default phases: Idea (hypothesis, validated), Design
+(designed, ready), Build (build), Deploy and operate (release, operate).
+The board shows journey lanes, stage columns, identity/MVP cards, autonomy,
+owner, handover-check share and next step, with journey/MVP filters.
+CSV columns: ID, Title, Work Item Type, State, Area Path, Tags, Description,
+Acceptance Criteria, Owner. Quoting and formula-prefix handling protect the
+download; destination mapping is still required. CSV is handover, not live
+integration or native import certification. WIP/readiness is not permission.
 
 ## it_readiness (Part 2 > IT readiness)
 
@@ -176,6 +251,17 @@ Besides the scoring fields, a use case may carry: `problem` (string, or `[[prove
 - `mvp_options`: `[{option, use_case, domain, why, needs, src}]`
 - `next_steps`: `[{step, owner, when, status}]`
 - `evidence`: `[{id, type, title, date, source, participants, visibility: internal/customer, summary, quote}]`
+
+## Customer-output boundary
+
+Resolve risk content visibility against original sources before scrubbing,
+including promoted legacy workshop risks. Remove internal-only content and
+`internal_notes`, scrub provenance, discard cached derived PRD fields and derive
+final risks/PRD from permitted sources. Attendee contributions follow evidence
+visibility too. Removing an internal source ID alone is not sanitisation:
+check embedded JSON and downloadable Markdown, not only the rendered page.
+Customer export is not external/IP clearance; private/internal distribution
+and icon/copyright terms in the plugin guide still apply.
 
 ## identity (agent identity kit)
 Written by frontier-agent-identity (`apply_identity.py`, or `build_with_identity.py` in this skill); never by hand. Without it the Agent identity page is hidden.

@@ -91,6 +91,10 @@ Follow [references/work-iq-playbook.md](references/work-iq-playbook.md). In shor
 1. Register every source once in `sources` with an id (E01, E02, …), type, title, date, participants and **visibility**: `customer` when the customer said or shared it (their meetings, their documents, public pages), `internal` for Microsoft-only material (account plans, internal emails and chats, pipeline, commercial strategy).
 2. Extract facts into `facts` with category (strategy, pain, metric, kpi, system, data, governance, constraint, stakeholder, idea, decision, action, risk), a one-sentence statement in your own words, the journey it belongs to, evidence (`source`, `at` timestamp for transcripts, a short quote of at most 20 words) and confidence (high = stated by the owner; medium = stated second-hand or estimated; low = inferred).
 3. Fill `journeys` (the end-to-end processes in scope, 3 to 6 for a company, 3 to 5 inside one function), `stakeholders` (roles first; names only for people who attended or wrote), `systems`, `kpis` (baseline and target only when someone said them), `constraints`, `ideas`, `decisions`, `actions` and `open_questions` (category per [references/question-bank.md](references/question-bank.md)).
+   For transcript facts, keep the stated `speaker` with `source` and `at`.
+   The blueprint seed uses these to fill Workshops > Attendees contributions,
+   sessions and focus links. Flag missing evidence; never infer attendance or
+   treat a mention as a contribution. Risk facts also retain their source visibility.
 4. Validate: `python scripts/context_pack.py validate customer-context.json`. Fix every error; close important gaps with one more targeted search or list them as open questions.
 5. Render: `python scripts/context_pack.py render customer-context.json --out "<Customer> - evidence log.md"` (add `--audience customer` for a shareable copy).
 
@@ -112,6 +116,9 @@ Follow [references/work-iq-playbook.md](references/work-iq-playbook.md). In shor
 - Only the requesting user's own mailbox, calendar, chats and files, plus content shared with them. Never read another person's mailbox.
 - Every fact cites a source; anything unsourced is an open question, not a fact. Never invent numbers, names, quotes or dates.
 - Mark Microsoft-internal material `internal`. It never reaches a customer version.
+- Removing source IDs is not enough: internal-derived attendee, risk and PRD
+  content must also be excluded from customer outputs and downloads. Source
+  visibility and consent do not themselves grant external/IP sharing clearance.
 - Real customer data only where an NDA or the customer's consent covers it; when the user says data is NDA-only, keep it in the internal pack.
 - Quotes are short excerpts (at most 20 words); summarise everything else in your own words. Third-party web content is summarised and cited, never copied.
 - Record roles rather than personal details; no sensitive personal data (health, religion, union membership and similar) even when it appears in a transcript.

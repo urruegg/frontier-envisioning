@@ -1,8 +1,14 @@
 # Frontier Envisioning — plugin for Copilot Cowork
 
-**Version 1.7.1 · Microsoft Innovation Hub Switzerland · 8 November 2026**
+**Version 1.7.1 · UNRELEASED · Microsoft Innovation Hub Switzerland · 11 November 2026**
 
-Envision any customer as a Frontier company — **human-led, agent-operated**. The plugin gathers what you already know about a customer from your meetings, workshop transcripts, mail, Teams chats and files (Work IQ), turns it into an interactive **Frontier Company Blueprint** that follows the Innovation Hub journey (Part 1 Vision, Part 2 Design, with the Agent Factory, the landing zone, architecture decisions and IT readiness), captures the workshop's verdicts inside that blueprint, writes the PRD, solution design and architecture decisions for the first agents to build, and gives every agent a **brand identity**: names per environment, colours from the customer's own brand and icons in the Microsoft 365 sizes.
+Envision any customer as a Frontier company — **human-led, agent-operated**. The plugin gathers what you already know about a customer from your meetings, workshop transcripts, mail, Teams chats and files (Work IQ), turns it into an interactive **Frontier Company Blueprint** across Vision, Design, Build and Workshops, captures workshop verdicts, writes the PRD, solution design and architecture decisions for the first agents to build, and gives every agent a **brand identity**: names per environment, colours from the customer's own brand and icons in the Microsoft 365 sizes.
+
+The received handover is 1.7.0; this selective integration is
+**1.7.1, not a release**. The released source baseline remains 1.6.0. Current accessibility,
+privacy and attribution corrections are retained; integrated review and final
+distribution acceptance are pending. Installation below is a procedure, not
+evidence that this candidate has been installed or published.
 
 ---
 
@@ -15,6 +21,9 @@ enterprise-suffix identifiers, personal profile paths, common credential
 patterns and explicitly classified internal Markdown, including nested ZIP
 content and comments.
 
+The approved private source/issue/PR host is
+[urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning).
+
 Unreleased builds are development candidates. An offline install-plan check is
 not an actual Cowork install or a published release.
 
@@ -24,7 +33,7 @@ product-icon terms. Confirm content/IP clearance before sharing externally.
 
 ## Install it in Copilot Cowork (two minutes)
 
-1. **Download** `frontier-envisioning-plugin-1.7.1.zip`. Keep it zipped.
+1. **Obtain an approved package** `frontier-envisioning-plugin-1.7.1.zip` when its handoff is available. Keep it zipped; this development version is not a published release.
 2. **Open Copilot Cowork** and start a new chat.
 3. **Attach the zip** to the chat and type:
 
@@ -59,7 +68,7 @@ That's all. New chats pick the skills up once OneDrive has synced (usually a min
 | "Analyse the workshop transcript for *customer*" | New evidence from the workshop added to the context pack |
 | "Build the Frontier blueprint for *customer*" | `<Customer> Frontier Company Blueprint.html` with the Agent identity page, and `<Customer> - agent identity package v1.0.zip` (a proposal until the customer approves the names; attach a customer deck or template for their colours) |
 | "Update the blueprint with the workshop feedback" (attach the exported feedback file) | The next blueprint version with the workshop's verdicts and answers |
-| "Make the customer-ready version" | The blueprint without Microsoft-internal sources |
+| "Make the customer-ready version" | The blueprint without internal sources or internal-derived attendee, risk and PRD content; review and sharing clearance are still required |
 | "Write the PRD and solution design for the *customer* MVP" | PRD, solution design and architecture decision records |
 | "Create the agent identity kit for *customer*" | `<Customer> - agent identity package v1.0.zip`: naming convention with DEV/TEST names, one colour per journey from the customer's brand, icons per agent and environment, identity cards, catalogue, and the scripts and pipeline templates for the customer's repository |
 | "Build the identity kit demo for Caldova" | The demo identity kit for Caldova's 33 agents, the Agent Factory included (fictitious brand) |
@@ -71,15 +80,27 @@ That's all. New chats pick the skills up once OneDrive has synced (usually a min
 | "Show the digital feedback loop for *customer*" | The Overview's feedback loop: per area (engage customers, optimize operations, empower employees, transform products) the signals with their Microsoft IQ layer, the actions with the agents and who approves, and the outcomes with KPIs and value hypotheses |
 | "Show the workflow of the *agent*" | The agent's workflow as in the Copilot Studio workflow designer: the trigger, each step as a designer node (Agent, Classify, Extract, Copilot, Human review, Connector, If/Else, Loop and more), the branches and the desired outcome; derived from the plan until you refine it |
 | "Show the Agent Factory for *customer*" | The Agent Factory journey: how every agent moves from hypothesis to validated, designed, ready for build, build, release and operate, with GitHub Copilot, evaluations and human approval |
+| "Show the MVP requirements" | PRD in Vision, with Markdown download and a workshop scope verdict; the design scaffold uses the same canonical Python model and requirement IDs |
+| "Show the delivery Plan" | Agent Factory journey lanes and stage columns, journey/MVP filters and a backlog CSV for handover |
+| "Rate the workshop risks" | Risk register and 5 × 5 heat map; ratings, status and notes export with the PRD scope verdict for merge/rebuild |
 | "What is next in the *customer* envisioning?" | Where the engagement stands and the next two actions |
 
-**The blueprint** is one HTML file that works offline. Open it in Edge or Chrome (the OneDrive preview does not run it) and use the arrow keys to move through fourteen views along the Innovation Hub journey:
+**The blueprint** is one HTML file that works offline. Open it in Edge or Chrome (the OneDrive preview does not run it) and use the arrow keys to move through seventeen views along the Innovation Hub journey:
 
-- **Part 1 Vision:** Overview, with the **digital feedback loop** (animated: how the customer's signals become actions with human approval and measured outcomes through Microsoft IQ: Work IQ, Fabric IQ, Foundry IQ, Web IQ) · Org model (human leaders, lead agents and specialist agents, revealed step by step) · Blueprint · Journeys, including the **Agent Factory** (DevSecOps from hypothesis to operate) · **Attendees** (who contributed what)
-- **Part 2 Design:** Agents (trigger canvas, the **workflow** from trigger to outcome in the Copilot Studio designer style, seven declarations, role profile, identity) · Agent identity · Target architecture (**landing zone** along CAF, WAF and Responsible AI; layers; flows; **ADRs**) · Use cases (problem statement, business value, feasibility) · **IT readiness** · FinOps
-- **Workshop:** Discovery (take notes live) · Roadmap · Evidence
+- **Part 1 Vision:** Overview with the **digital feedback loop** through Microsoft IQ (Work IQ, Fabric IQ, Foundry IQ, Web IQ) · Org model · Blueprint · Journeys, including the **Agent Factory** · Use cases (problem, business value, feasibility) · **PRD**
+- **Part 2 Design:** Agents (canvas, workflow, seven declarations, role profile) · Agent identity · Target architecture (landing zone, layers, flows, ADRs) · **IT readiness**
+- **Part 3 Build:** Roadmap · **Plan** (journey lanes, seven factory stages, four phases, WIP limits, owner/readiness/next step) · FinOps
+- **Part 4 Workshops:** **Attendees** (sessions, focus and source-backed contributions with transcript times) · Discovery · **Risks** · Evidence
 
 Agent identity icons and Microsoft product icons make each part easy to read. Notes and verdicts stay in your browser until you export them from Discovery; give the exported file back to Cowork to merge.
+
+Keep the normalised blueprint for the next workshop: its risk source bindings
+and retired-ID history prevent silent reassignment after source edits.
+Discarding them cannot guarantee old ID-only feedback identity. A selected
+design scope retains canonical requirement IDs rather than renumbering them.
+Plan CSV needs destination mapping; it is not live Azure Boards/GitHub Projects
+integration or native compatibility certification. WIP/readiness, scope verdicts
+and metadata do not authorise a build, deployment or distribution.
 
 ---
 
@@ -108,7 +129,7 @@ frontier-envisioning-plugin-1.7.1.zip
 
 ## For Copilot Cowork: how to install this plugin
 
-Follow these steps when a user uploads this zip and asks to install it ("Install the Frontier PlugIn", "install the frontier plugin", "set up this plugin"). Do not score, rewrite or rename the skills: they were validated before release.
+Follow these steps when a user uploads this zip and asks to install it ("Install the Frontier PlugIn", "install the frontier plugin", "set up this plugin"). Do not score, rewrite or rename the skills. Verify the actual package below; unreleased metadata is not proof of release validation.
 
 1. **Extract** the uploaded zip from `input/` into `working/frontier-plugin/`, keeping the folder structure (Python `zipfile`; do not repack it).
 2. **Check** the package and get the plan:
@@ -118,20 +139,21 @@ Follow these steps when a user uploads this zip and asks to install it ("Install
    `CopyArtifact(surface="user", source="working/frontier-plugin/skills/<name>", destination="skills/<name>", recursive=true, overwrite=true)`
    The first call shows the user an approval card. If the user declines, stop and say that nothing was installed.
 4. **Confirm the copy**: each result's `copied` count must equal the plan's `files` for that skill. "source folder not visible yet" means the extracted files are still uploading: wait a few seconds and repeat the same call. A short count means the publish is incomplete: repeat the same call (it is idempotent with `overwrite=true`).
-5. **Report** in two or three lines: the plugin name and version, the five skills (new or updated), that new chats pick them up once OneDrive has synced (OneDrive folder `Documents/Cowork/skills`), and three prompts to start with: "Build the Frontier blueprint demo for Caldova", "Build the identity kit demo for Caldova" and "Prepare the Frontier envisioning for <customer>".
+5. **Report** in two or three lines: the plugin name and version, the seven skills (new or updated), that new chats pick them up once OneDrive has synced (OneDrive folder `Documents/Cowork/skills`), and three prompts to start with: "Build the Frontier blueprint demo for Caldova", "Build the identity kit demo for Caldova" and "Prepare the Frontier envisioning for <customer>".
 
 ---
 
 ## Organisation roll-out
 
-The same zip is a Microsoft 365 app package (`manifest.json` with five agent skills, colour and outline icons). A Microsoft 365 admin can upload it to the organisation's catalogue. Some catalogues also require builder metadata (`packageMetadata.json` with builder name, environment id, creator id and owners); the admin adds it for their tenant. Validate the package first: in Cowork, attach the zip and say "validate my plugin package".
+The same zip has the Microsoft 365 app-package structure (`manifest.json` with seven agent skills, colour and outline icons). Organisation catalogue publication remains an admin operation requiring tenant validation and approval; this intake does not certify it. Some catalogues also require builder metadata (`packageMetadata.json` with builder name, environment id, creator id and owners); the admin adds it for their tenant. Validate the package first: in Cowork, attach the zip and say "validate my plugin package".
 
 ---
 
 ## Data handling
 
 - Cowork works only with your own mailbox, calendar, chats and files, plus content shared with you.
-- Every source is marked Microsoft-internal or customer-shareable. The customer-ready version removes internal sources and refuses to build if listed internal terms remain.
+- Every source is marked Microsoft-internal or customer-shareable. Customer generation resolves risk content visibility before scrubbing, removes internal-only content and cached derived PRD text, then derives final risks/PRD from scrubbed sources. Attendee contributions retain only permitted evidence. Removing an internal source ID alone is not sanitisation; listed internal terms still block a build.
+- Customer export is not external distribution or IP approval. Review actual HTML, embedded data and downloads before sharing; keep the separate distribution boundary above.
 - Use real customer data only under an NDA or with the customer's consent. Transcripts are cited with timestamps and short quotes.
 - No agent in a blueprint decides about people; such use cases name the person who decides.
 - Agent identity colours come from the customer's own brand sources (each with a source); without one, the blueprint colours are used and flagged. Logos are included only where the customer's brand rules allow it.

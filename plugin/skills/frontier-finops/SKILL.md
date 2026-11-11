@@ -68,6 +68,11 @@ Seed with `seed_finops.py`, then review with the user and the agent maker: harne
 ### Step 5: Show it in the blueprint
 `build_with_identity.py --finops --value` renders the FinOps page (cost per agent, where the credits come from, purchase options, sensitivity, guardrails, allocation keys from the agent identity, cost assumptions to clarify, rates and sources). The purchase model stays a hypothesis: no P3 commitment before a usage baseline.
 
+FinOps is in Build beside Roadmap and Plan; open cost assumptions also appear
+in Workshops > Risks. WIP/readiness and owner/status metadata do not authorise
+a purchase or deployment. Plan CSV is handover data requiring destination
+mapping, not live integration or native import certification.
+
 ### Step 6: Guardrails (gate F2)
 Per agent: monthly credit limit with headroom, alerts and hard stop (Power Platform admin center); environment allocations; Microsoft 365 spending policies; Azure budgets and anomaly alerts; the tagging standard keyed to the agent identity; a monthly plan-versus-actual review. Hand them to **frontier-solution-design** as FinOps NFRs and a purchase-model ADR. Gate F2: guardrails designed, each with an owner. Rules: [references/guardrails.md](references/guardrails.md).
 
@@ -89,6 +94,8 @@ Cost assumptions are confirmed, adjusted or rejected on the FinOps page; `merge_
 - Never recommend a P3 commitment before a usage baseline; purchases cannot be refunded.
 - Always show people and build costs next to the credits; a credit-only view misleads.
 - Customer versions never contain discounts, internal pricing guidance or internal milestone helpers.
+- Preserve content provenance in risk/PRD projections: removing an internal
+  source ID alone is not sanitisation. Customer export is not external/IP clearance.
 - Mark preview features (agent dashboards, cost APIs) as preview with the date checked.
 
 ## Failure handling

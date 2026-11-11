@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.6 |
-| Date | 2026-11-10 |
+| Version | 0.7 |
+| Date | 2026-11-11 |
 | Author | Original catalogue author not recorded; Copilot SDK in VS Code, AI-assisted consolidation |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Current and historical implementation plans; specifications live in docs/specs |
@@ -11,7 +11,7 @@
 
 | Plan | Owner during execution | Tracking and delivery evidence |
 |---|---|---|
-| [Selective 1.7 intake](2026-11-10-handover-1.7-intake-plan.md) | Parent plus bounded builder/renderer/docs workers after plan approval | [#22](https://github.com/urruegg/frontier-envisioning/issues/22), [SPRINT-003](../sprints/SPRINT-003-handover-1.7-intake.md); planning only |
+| [Selective 1.7 intake](2026-11-10-handover-1.7-intake-plan.md) | `@urruegg` accountable; parent coordinates bounded builder/renderer/docs workers under approved plan | [#22](https://github.com/urruegg/frontier-envisioning/issues/22), human-merged [#23](https://github.com/urruegg/frontier-envisioning/pull/23), [receipt](../intake/handover-1.7.0.md), [SPRINT-003](../sprints/SPRINT-003-handover-1.7-intake.md); implementation in progress, final gates/distribution pending |
 | [Anonymised distribution](2026-11-10-anonymised-distribution-plan.md) | `@urruegg` accountable; inline AI-assisted maintenance | [#20](https://github.com/urruegg/frontier-envisioning/issues/20), [SPRINT-002](../sprints/SPRINT-002-anonymised-distribution.md); no external clearance inferred |
 | [Plural documentation layout](2026-11-10-documentation-layout-plan.md) | `@urruegg` accountable; scoped AI-assisted cleanup | [#18](https://github.com/urruegg/frontier-envisioning/issues/18); maintainer-directed naming/removal amendment, evidence in [SPRINT-001](../sprints/SPRINT-001-docs-governance-and-accessibility.md) |
 | [Master implementation/delegation plan](2026-11-09-docs-governance-implementation.md) | Parent coordinator; `@urruegg` accountable | [#6](https://github.com/urruegg/frontier-envisioning/issues/6); integration through human-merged [#15](https://github.com/urruegg/frontier-envisioning/pull/15); protected human work remains separate |

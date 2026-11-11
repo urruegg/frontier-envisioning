@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.1 |
-| Date | 2026-11-10 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split and accessibility maintenance) |
+| Version | 1.2 |
+| Date | 2026-11-11 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance and selective intake) |
 | Status | Maintained requirements; no new product or release approval implied |
-| Scope | Shared product context, unreleased 1.6.1 requirements and original Part A |
-| References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md) |
+| Scope | Shared product context, unreleased 1.7.1 intake, preserved 1.6.1 requirements and original Part A |
+| References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [Intake plan](plans/2026-11-10-handover-1.7-intake-plan.md) |
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Current source references are
 anonymised without changing attribution or private historical evidence. Plugin
@@ -23,6 +23,78 @@ The split preserves historical results and claims, including the original
 1.6.0 acceptance and release plan. It does not rerun or extend those claims,
 approve a release, change pricing or alter plugin behaviour. The 1.6.1 note
 below remains unreleased.
+
+## 1.7.1 development intake
+
+**Selective integration of received 1.7.0 as 1.7.1, unreleased; not a release.**
+The [approved design](specs/2026-11-10-handover-1.7-intake-design.md) and
+[written plan](plans/2026-11-10-handover-1.7-intake-plan.md) govern
+[#22](https://github.com/urruegg/frontier-envisioning/issues/22).
+[SPRINT-003](sprints/SPRINT-003-handover-1.7-intake.md) and the
+[intake receipt](intake/handover-1.7.0.md) separate received claims, implementation
+checkpoints and pending integrated acceptance. [ADR-0025](adr/0025-four-part-journey-structure.md)
+remains Proposed; design/plan approval is not release approval.
+
+The current scope is seventeen views in four parts: Vision (Overview, Org model,
+Blueprint, Journeys, Use cases, PRD), Design (Agents, Agent identity, Target
+architecture, IT readiness), Build (Roadmap, Plan, FinOps), and Workshops
+(Attendees, Discovery, Risks, Evidence). Existing routes, workflow, identity,
+value and accessibility behaviour must remain usable with older optional data.
+
+The following requirement rows are selectively received product scope.
+They supplement, rather than rewrite, the historical Part A records below.
+Generated customer-MVP model identifiers are a separate namespace from these
+plugin-product requirements.
+
+| ID | Requirement | Priority | Verify |
+|---|---|---|---|
+| FR-0119 | The blueprint groups its views in four parts along the Innovation Hub journey: Vision (Overview, Org model, Blueprint, Journeys, Use cases, PRD), Design (Agents, Agent identity, Target architecture, IT readiness), Build (Roadmap, Plan, FinOps) and Workshops (Attendees, Discovery, Risks, Evidence); the rail and the breadcrumb name the part and what it is for; labels can be set per blueprint (`parts`) | M | T, D |
+| FR-0120 | The PRD page shows the product requirements of the MVP agents from one model (`prd_model.py`, identical in frontier-blueprint and frontier-solution-design): problem with its provenance, vision, goals, KPIs, the business value of the use cases in scope, scope, personas, functional requirements per agent (FR ids), non-functional requirements (NFR), acceptance criteria (AC), dependencies, top risks, open decisions, release plan and Definition of Ready; it downloads as Markdown and takes a workshop verdict (`prd:scope`) | M | T |
+| FR-0121 | `design/prd.md` uses the same model, so its FR, NFR and AC ids match the PRD page; authored PRD fields (problem, goals, non-goals, out of scope, exit test, release plan, status, owner) are kept on every build, the rest is recomputed | M | T |
+| FR-0122 | The Plan page puts every agent on the Agent Factory board as a DevOps Kanban: swimlanes per journey (the factory included), columns per factory stage under the phases Idea, Design, Build and Deploy, work-in-progress limits, cards with the identity icon, MVP flag, autonomy, owner, the share of handover checks met and the next step; filters by journey and MVP; CSV export for Azure Boards or GitHub Projects | M | T |
+| FR-0123 | The Risks page shows the risk register as a 5 × 5 heat map and a table (category, likelihood, impact, score, owner, mitigation, status) with links to journeys, use cases and agents, the open value and cost assumptions and the open decisions; a risk is rated live in the workshop and exported as `risk:<id>` | M | T |
+| FR-0124 | The build derives risks from the use cases' risk points and blocked IT readiness items, adds the Innovation Hub canon risks, keeps authored risks and never duplicates a derived one; unknown categories, statuses and links warn | M | T |
+| FR-0125 | The Attendees page lists every attendee with organisation, role, focus, sessions and contributions; each contribution cites its source and, from a transcript, the time in the recording; contributions without evidence are flagged; the seed fills contributions from transcript speakers | M | T |
+| FR-0126 | Workshop verdicts on risks (status, likelihood, impact, note) and on the PRD scope merge into the blueprint; a rated derived risk becomes workshop-owned and survives the rebuild; unknown ids are reported | M | T |
+| FR-0127 | Use-case detail pages link to their risks in the register; the Roadmap and the Agent Factory journey link to the Plan | S | T |
+
+### Current acceptance targets
+
+These received acceptance descriptions are **Pending** for final integrated
+acceptance. Their incoming Passed labels are not adopted as historical results.
+
+| ID | Acceptance criterion | Status |
+|---|---|---|
+| AC-026 | The Caldova demo lists the 17 views in the four parts; the breadcrumb names the part and its purpose | Pending |
+| AC-027 | The PRD page of the Caldova demo shows the nine sections, 2 MVP agents, 35 functional and 12 non-functional requirements, the business value of the use cases in scope and the top risks; `design/prd.md` carries the same requirement ids; a verdict on the scope is saved | Pending |
+| AC-028 | The Plan page shows the 29 agents in 5 swimlanes and 7 stage columns under 4 phases with work-in-progress limits; the MVP filter leaves the 2 MVP agents; a card opens the agent | Pending |
+| AC-029 | The Risks page shows 15 risks (2 high, 9 medium, 4 low) on the heat map and in the register; a changed rating moves the score live and is saved; risk and PRD verdicts merge and survive the rebuild without duplicates | Pending |
+| AC-030 | The Attendees page lists the 8 attendees with 13 of 13 contributions backed by evidence and the time in the recording where it comes from a transcript | Pending |
+
+### Integration and distribution constraints
+
+- The shared Python PRD model copies must remain identical. Requirement IDs use
+  the complete blueprint's canonical agent order; selecting an MVP subset must
+  not renumber surviving requirements. Authored fields survive rederivation.
+- Normalised risk source bindings and retired-ID history must be retained with
+  the workshop record. Edited or reordered source points must not silently
+  inherit another risk's verdict. Discarding that history cannot guarantee the
+  identity of old ID-only feedback. Ratings must be finite integers from 1 to 5,
+  excluding booleans; unknown or invalid feedback is reported.
+- Browser notes are local until exported and merged. PRD Markdown and risk/PRD
+  feedback downloads must reflect the displayed scope. Plan CSV is a handover
+  format, not live integration or native import compatibility certification.
+  WIP, computed readiness, owner/status metadata and workshop verdicts grant no
+  execution or distribution permission.
+- Customer generation must resolve risk content provenance before scrubbing,
+  then derive final risks and PRD from scrubbed sources. Internal-derived
+  attendee contributions, risk content and cached PRD text must not survive in
+  embedded JSON or downloads merely because an internal source ID was removed.
+- Preserve the 1.6.1/A6 privacy and accessibility corrections, original icon
+  artwork, copyright and historical release/raster evidence. The approved host
+  is the private `urruegg/frontier-envisioning` repository. Complete-bundle
+  distribution excludes internal analyses and intake records and retains
+  pre-write privacy checks. A customer export is not external/IP approval.
 
 ## Product context and provenance
 

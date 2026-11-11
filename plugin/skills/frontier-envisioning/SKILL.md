@@ -3,8 +3,8 @@ name: frontier-envisioning
 description: |
   Runs a Microsoft Innovation Hub Frontier envisioning engagement end to end: gathers
   context from Work IQ and transcripts, builds the hypothesis Frontier Company Blueprint
-  (HAIRO org model, journeys, Agent Factory, agents, target architecture), updates it after
-  the workshop, prepares the architecture design workshop and IT readiness, then the PRD,
+  (17 views in Vision, Design, Build and Workshops: HAIRO, journeys, PRD, Agent Factory
+  Plan, risks and evidenced attendees), updates it after the workshop, prepares IT readiness,
   solution design and agent identity kit.
   Use when asked to "prepare the Frontier envisioning for <customer>", "run the
   envisioning prep end to end", "Frontier Company Blueprint for <customer> from scratch"
@@ -25,9 +25,9 @@ metadata:
 The Innovation Hub method for helping a customer see itself as a Frontier company: **human-led, agent-operated**. It chains three skills over the life of an engagement and keeps every artefact tied to evidence:
 
 1. **Discover** with **frontier-context-discovery**: Work IQ (meetings, transcripts, mail, chats, files) and public sources become a cited context pack.
-2. **Hypothesise** with **frontier-blueprint**: the context becomes an interactive Frontier Company Blueprint along the Innovation Hub journey. Part 1 Vision: the Overview with Microsoft's digital feedback loop (how the customer's signals become governed actions and measured outcomes through Microsoft IQ), org model, journeys, the Agent Factory with DevSecOps, attendees' contributions. Part 2 Design: lead and specialist agents with identity, target architecture with landing zone and ADRs, use cases with problem and value, IT readiness, FinOps.
+2. **Hypothesise** with **frontier-blueprint**: seventeen views in four parts. Vision: Overview with Microsoft's digital feedback loop, Org model, Blueprint, Journeys (including Agent Factory), Use cases and PRD. Design: Agents, Agent identity, Target architecture and IT readiness. Build: Roadmap, Plan and FinOps. Workshops: Attendees, Discovery, Risks and Evidence.
 3. **Validate** in the workshop: the blueprint is presented and corrected live; notes and verdicts are exported and merged.
-4. **Design** with **frontier-solution-design**: PRD, solution design and ADRs for the MVP agents, grounded in Microsoft's Frontier architecture guidance.
+4. **Design** with **frontier-solution-design**: scaffold the agreed MVP PRD from the same canonical Python model as the page, then solution design and ADRs grounded in Microsoft's Frontier architecture guidance.
 
 The full method, phases, gates and timings are in [references/method.md](references/method.md); the organisation model in [references/hairo-model.md](references/hairo-model.md).
 
@@ -89,14 +89,24 @@ Load **frontier-blueprint**: seed, write the hypothesis, build the blueprint tog
 1. Build the customer version (`--audience customer`) if the file will be shown or shared outside Microsoft.
 2. Draft the workshop agenda from [references/method.md](references/method.md) (section 4) with the customer's journeys and MVP candidates; offer it as a document or a meeting description.
 3. List the ten discovery questions that matter most and who in the room can answer them.
+4. Review the PRD hypothesis before architecture; use Risks to agree ratings,
+   mitigations and owners. Attendees must cite contributions with sources and
+   transcript times, not inferred participation. Plan supports handover planning.
 
 ### Step 5: Consolidate after the workshop
 1. Get the feedback export(s) and the workshop transcript.
 2. Run **frontier-context-discovery** on the transcript (new evidence ids), then **frontier-blueprint** step 5 (merge feedback, update hypothesis, update the attendees' contributions, rebuild). Gate C: MVPs confirmed by the customer, `meta.status` = validated.
 3. Write the workshop summary: decisions, MVPs, owners, next steps (offer email or document).
+4. Merge risk ratings/status/notes and `prd:scope` with the exported feedback.
+   Keep the normalised source bindings and retired-ID history; discarding it
+   cannot guarantee old ID-only feedback identity after a source edit.
 
 ### Step 6: Design
 Load **frontier-solution-design** for the MVP agents. Gate D: PRD Definition of Ready either met or the missing items assigned.
+
+Selecting fewer agents must retain canonical requirement IDs. Computed factory
+readiness and WIP limits display planning state; they do not approve execution.
+Plan CSV is a mapped handover format, not a live connector or native import certification.
 
 ### Step 6a: Value and cost validated (gates V2, F2)
 Merge the workshop's assumption verdicts (`merge_value_feedback.py` in **frontier-value-case**) and rebuild. Gate V2: the five most sensitive assumptions confirmed or adjusted by their owners. Gate F2: guardrails designed with owners (**frontier-finops**) and handed to **frontier-solution-design** as FinOps NFRs and a purchase-model ADR.
@@ -124,6 +134,10 @@ Save the folder to OneDrive with `CopyArtifact(surface="user", source="working/f
 - Never fabricate: hypotheses are labelled, nothing is invented to fill a gap, and open points stay open with an owner.
 - Never let Microsoft-internal context reach a customer version; always build the customer version before anything leaves Microsoft.
 - Always confirm before sharing outside Microsoft: show the user the customer version and review before sending or posting it.
+- Customer generation must remove internal-derived attendee/risk/PRD content,
+  resolving risk provenance before scrubbing and deriving final models afterwards.
+  Customer export is not external/IP approval; private/internal distribution
+  boundaries and actual install/publication/deployment decisions remain separate.
 - Do not use real customer data unless an NDA or the customer's consent covers it; ask when unsure.
 - Never let an agent decide about a person; any use case that shapes decisions about people names the human decision-maker before it starts.
 - Always state product availability with its source date and mark previews.
