@@ -239,11 +239,19 @@ def main() -> int:
         check("solution design lists each MVP workflow (trigger, nodes, branches)", "### Workflow: Service report from voice notes (Service Report Agent)" in sdoc
               and "| 3.1 | Connector | Transcribe the voice note |" in sdoc and "- Trigger: When an agent calls the workflow" in sdoc)
 
-        # Received 1.7 acceptance checks; renderer acceptance awaits the P3 port.
-        check("template has the four parts (Vision, Design, Build, Workshops) with the PRD, Plan and Risks pages",
-              all(f in tplv for f in ('part:"vision"', 'part:"design"', 'part:"build"', 'part:"workshops"', 'id:"prd", label:"PRD"',
-                                      'id:"plan", label:"Plan"', 'id:"risks", label:"Risks"', "function renderPrd", "function renderPlan",
-                                      "function renderRisks", "function planCsv", "function heatMap", "function prdMarkdown")))
+        # DOM/browser tests verify the rendered parts; this check exercises the data flow.
+        part_input = json.loads(json.dumps(bpn))
+        part_input["parts"] = {
+            "vision": {"label": "Synthetic vision", "desc": "Requirements first"},
+            "design": {"label": "Synthetic design"}, "build": {"label": "Synthetic build"},
+            "workshops": {"label": "Synthetic workshop"},
+        }
+        (t / "parts-input.json").write_text(json.dumps(part_input), encoding="utf-8")
+        code, out = run(bb, ["--data", str(t / "parts-input.json"), "--save-normalized", str(t / "parts-output.json")])
+        part_output = json.loads((t / "parts-output.json").read_text(encoding="utf-8")) if code == 0 else {}
+        check("blueprint preserves authored part overrides and PRD/risk data",
+              code == 0 and part_output.get("parts") == part_input["parts"]
+              and bool(part_output.get("prd")) and bool((part_output.get("risks") or {}).get("items")), out[-300:])
         bprd = bpn.get("prd") or {}
         check("risk register, PRD and attendee evidence built from the blueprint", st1.get("risks") == 15 and st1.get("prd_requirements") == 35
               and st1.get("contributions_with_evidence") == 13 and bprd.get("mvp_agents") == ["D2-A01", "D3-A05"]
