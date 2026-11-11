@@ -9,7 +9,7 @@ Runs the plugin's one-step build (frontier-blueprint/scripts/build_with_identity
 examples with the reviewed identity config and palette, the value case and the FinOps model - the same
 inputs as the published 1.4.0 demo, so tools/verify_release.py can compare the results byte for byte.
 Text is written as LF, and identity ZIP entries use stable ordering and Unix creator metadata.
-Received baselines and the finite 1.6.1 correction use verified frozen rasters guarded by every
+Received baselines and the finite 1.6.1/1.7.1 corrections use verified frozen rasters guarded by every
 version-approved non-raster input. Current identity output is verified against its own release
 record after rebuilding and canonicalising, separately from historical raster provenance.
 Other versions require successful card/visual conversion; --no-png is an explicitly SVG-only
