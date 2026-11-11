@@ -27,6 +27,7 @@ summary says why.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import re
@@ -123,18 +124,64 @@ def build_identity(a, out: Path, short: str, slug: str, summary: dict) -> Path:
     return bpi
 
 
-def build_value_finops(a, data: Path, out: Path, summary: dict) -> Path:
+def preview_preflight(a, data: Path, *, acknowledge_finops_preview: bool = False) -> dict | None:
+    """Refuse before identity, output directories or model copies are created."""
+    fin = None
+    if a.finops:
+        helper_path = FIN_SCRIPTS / "finops_preview.py"
+        if not helper_path.is_file():
+            raise ValueError("Requested Preview requires frontier-finops/scripts/finops_preview.py; "
+                             "install the optional frontier-finops skill next to frontier-blueprint")
+        spec = importlib.util.spec_from_file_location("blueprint_finops_preview", helper_path)
+        helper = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(helper)
+        helper.require_preview_ack(acknowledge_finops_preview)
+        for name in ("finops_calc.py", "apply_finops.py"):
+            if not (FIN_SCRIPTS / name).is_file():
+                raise ValueError(f"Requested Preview requires frontier-finops/scripts/{name}; reinstall the optional skill")
+        fin = json.loads(Path(a.finops).read_text(encoding="utf-8"))
+        if not isinstance(fin, dict):
+            raise ValueError("finops input must be an object")
+        preview = helper.preview_metadata(acknowledge_finops_preview, operation="blueprint-chain",
+                                          finops=fin, inherited=fin.get("finops_preview", {}))
+    else:
+        preview = None
+    if a.value:
+        path = VAL_SCRIPTS / "value_calc.py"
+        if not path.is_file():
+            raise ValueError("Requested value case requires frontier-value-case; install the skill next to frontier-blueprint")
+        # Value owns legacy dependency detection. Loading value does not load
+        # FinOps unless that particular value/blueprint actually consumes it.
+        previous = sys.path[:]
+        try:
+            sys.path.insert(0, str(VAL_SCRIPTS))
+            spec = importlib.util.spec_from_file_location("blueprint_value_preview", path)
+            value_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(value_module)
+        finally:
+            sys.path[:] = previous
+        value = json.loads(Path(a.value).read_text(encoding="utf-8"))
+        preview = value_module.preview_for(
+            value, fin=fin, blueprint=json.loads(data.read_text(encoding="utf-8")),
+            acknowledge_finops_preview=acknowledge_finops_preview, operation="blueprint-chain")
+        if fin is None and value_module.has_finops_dependency(value):
+            raise ValueError("Preview-derived value requires --finops with its source cost model; "
+                             "acknowledgement alone cannot replace the missing source")
+    return preview
+
+
+def build_value_finops(a, data: Path, out: Path, summary: dict,
+                       *, acknowledge_finops_preview: bool = False) -> Path:
     """Calculates the FinOps model and the value case on copies and writes both into the blueprint data."""
     import shutil
+    preview = preview_preflight(a, data, acknowledge_finops_preview=acknowledge_finops_preview)
+    flags = ["--acknowledge-finops-preview"] if preview else []
     work = out / "value-finops"
     work.mkdir(parents=True, exist_ok=True)
     fin = val = None
     if a.finops:
-        if not (FIN_SCRIPTS / "finops_calc.py").is_file():
-            summary["notes"].append("FinOps model not built: the frontier-finops skill is not installed next to frontier-blueprint")
-        else:
-            fin = work / Path(a.finops).name
-            shutil.copyfile(a.finops, fin)
+        fin = work / Path(a.finops).name
+        shutil.copyfile(a.finops, fin)
     if a.value:
         if not (VAL_SCRIPTS / "value_calc.py").is_file():
             summary["notes"].append("Value case not built: the frontier-value-case skill is not installed next to frontier-blueprint")
@@ -142,31 +189,36 @@ def build_value_finops(a, data: Path, out: Path, summary: dict) -> Path:
             val = work / Path(a.value).name
             shutil.copyfile(a.value, val)
     if fin:
-        code, so, err = run(FIN_SCRIPTS / "finops_calc.py", "--finops", fin, *(["--value", val] if val else []))
+        code, so, err = run(FIN_SCRIPTS / "finops_calc.py", "--finops", fin, *(["--value", val] if val else []), *flags)
         summary["finops"] = summary_json(so) or {"status": "failed", "detail": err.strip()[-400:]}
         if code:
-            summary["notes"].append("FinOps model not calculated: " + err.strip()[-300:])
-            fin = None
+            raise ValueError("FinOps model not calculated: " + (err.strip() or so.strip()))
     if val:
-        code, so, err = run(VAL_SCRIPTS / "value_calc.py", "--value", val, *(["--finops", fin] if fin else []))
+        code, so, err = run(VAL_SCRIPTS / "value_calc.py", "--value", val, *(["--finops", fin] if fin else []), *flags)
         summary["value"] = summary_json(so) or {"status": "failed", "detail": err.strip()[-400:]}
         if code:
+            if preview:
+                raise ValueError("Preview-dependent value not calculated: " + (err.strip() or so.strip()))
             summary["notes"].append("Value case not calculated: " + err.strip()[-300:])
             val = None
     current, target = data, work / "blueprint-value-finops.json"
     if fin:
-        code, _, err = run(FIN_SCRIPTS / "apply_finops.py", "--blueprint", current, "--finops", fin, *(["--value", val] if val else []), "--out", target)
+        code, _, err = run(FIN_SCRIPTS / "apply_finops.py", "--blueprint", current, "--finops", fin, *(["--value", val] if val else []), "--out", target, *flags)
         if code:
-            summary["notes"].append("FinOps page left out: " + err.strip()[-300:])
+            raise ValueError("FinOps model not applied: " + err.strip())
         else:
             current = target
     if val:
-        code, _, err = run(VAL_SCRIPTS / "apply_value.py", "--blueprint", current, "--value", val, "--out", target)
+        code, _, err = run(VAL_SCRIPTS / "apply_value.py", "--blueprint", current, "--value", val, "--out", target, *flags)
         if code:
+            if preview:
+                raise ValueError("Preview-dependent value not applied: " + err.strip())
             summary["notes"].append("Business value left out: " + err.strip()[-300:])
         else:
             current = target
     summary["value_finops"] = {"folder": str(work), "value": str(val) if val else None, "finops": str(fin) if fin else None}
+    if preview:
+        summary["finops_preview"] = preview
     return current
 
 
@@ -227,8 +279,15 @@ def main(argv=None) -> int:
     ap.add_argument("--no-identity", action="store_true", help="build the blueprint without the identity kit")
     ap.add_argument("--value", help="value case (frontier-value/1.0): business value in Use cases and the matrix")
     ap.add_argument("--finops", help="FinOps model (frontier-finops/1.0): the FinOps page")
+    ap.add_argument("--acknowledge-finops-preview", action="store_true", help="explicit caller assertion for this one action chain, not approval")
     ap.add_argument("--ontology", help="process ontology (frontier-ontology/1.0): local model, Turtle and design artifacts")
     a = ap.parse_args(argv)
+    try:
+        if a.value or a.finops:
+            preview_preflight(a, Path(a.data), acknowledge_finops_preview=a.acknowledge_finops_preview)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
     out = Path(a.out_dir)
     out.mkdir(parents=True, exist_ok=True)
     bp = json.loads(Path(a.data).read_text(encoding="utf-8"))
@@ -243,7 +302,12 @@ def main(argv=None) -> int:
         except IdentityError as exc:
             summary["notes"].append(f"Identity kit not built: {exc}. The blueprint was built without identity.")
     if a.value or a.finops:
-        data = build_value_finops(a, Path(data), out, summary)
+        try:
+            data = build_value_finops(a, Path(data), out, summary,
+                                      acknowledge_finops_preview=a.acknowledge_finops_preview)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 2
     if a.ontology:
         data = build_ontology(a, Path(data), out, summary)
         if summary["ontology"]["status"] == "failed":

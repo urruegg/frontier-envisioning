@@ -19,6 +19,7 @@ end that lowers or raises the NPV. Standard library only.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -27,6 +28,76 @@ from fv_expr import MissingInput, evaluate, names, register_of, resolve
 
 CASH, CAPACITY, RISK = {"cash", "revenue"}, {"capacity"}, {"risk"}
 CONF = {"high": 3, "medium": 2, "low": 1}
+FINOPS_PREVIEW = Path(__file__).resolve().parents[2] / "frontier-finops/scripts/finops_preview.py"
+
+
+def has_finops_dependency(doc) -> bool:
+    """Known model/provenance markers, including legacy and forged GA artifacts."""
+    if isinstance(doc, dict):
+        if str(doc.get("schema", "")).startswith("frontier-finops/"):
+            return True
+        if "finops_preview" in doc or doc.get("finops"):
+            return True
+        if doc.get("agents_costed") or doc.get("cost_modelled") or doc.get("scope") == "finops":
+            return True
+        return any(has_finops_dependency(v) for key, v in doc.items() if key != "vars")
+    if isinstance(doc, list):
+        return any(has_finops_dependency(v) for v in doc)
+    return False
+
+
+def preview_helper():
+    """Load the optional owner only at a requested/consumed Preview boundary."""
+    if not FINOPS_PREVIEW.is_file():
+        raise ValueError("Preview cost data requires frontier-finops/scripts/finops_preview.py; "
+                         "install the optional frontier-finops skill next to frontier-value-case "
+                         "or omit FinOps-derived inputs")
+    spec = importlib.util.spec_from_file_location("frontier_finops_preview", FINOPS_PREVIEW)
+    helper = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(helper)
+    return helper
+
+
+def preview_for(doc: dict, *, acknowledge_finops_preview: bool = False, fin=None,
+                operation="consume-value", blueprint=None) -> dict | None:
+    """Lazy optional boundary: a core value import/run never loads FinOps."""
+    if not isinstance(doc, dict):
+        raise ValueError("value input must be an object")
+    is_finops_model = str(doc.get("schema", "")).startswith("frontier-finops/") or doc is fin
+    if fin is None and is_finops_model:
+        fin = doc
+    if fin is None and not has_finops_dependency(doc) and not has_finops_dependency(blueprint):
+        return None
+    helper = preview_helper()
+    helper.require_preview_ack(acknowledge_finops_preview)
+
+    def markers(obj):
+        if isinstance(obj, dict):
+            if "finops_preview" in obj:
+                yield obj["finops_preview"]
+            for key, child in obj.items():
+                if key not in {"finops_preview", "vars"}:
+                    yield from markers(child)
+        elif isinstance(obj, list):
+            for child in obj:
+                yield from markers(child)
+    inherited = {}
+    for marker in markers([(fin or {}).get("results"), doc.get("results"), fin, doc, blueprint]):
+        # Validate every marker before mutations. Old acknowledgement is not used.
+        helper.preview_metadata(acknowledge_finops_preview, operation=operation, inherited=marker)
+        if not inherited.get("provenance") and marker.get("provenance"):
+            inherited = marker
+    if operation == "calculate-value" and fin is not None:
+        inherited = helper.validate_finops_results(fin, value=doc, register=register_of(doc, fin),
+                                                   acknowledge_finops_preview=acknowledge_finops_preview)
+    if operation == "apply-value" and has_finops_dependency(doc):
+        inherited = helper.validate_value_results(doc, blueprint=blueprint,
+                                                  acknowledge_finops_preview=acknowledge_finops_preview)
+    return helper.preview_metadata(acknowledge_finops_preview, operation=operation,
+                                   finops=fin, value=None if is_finops_model else doc,
+                                   blueprint=blueprint, inherited=inherited,
+                                   consume_finops_results=fin is not None and operation != "feedback",
+                                   consume_value_results=operation == "apply-value")
 
 
 def load(p):
@@ -149,7 +220,14 @@ def totals_of(rows):
     return t
 
 
-def run(doc: dict, fin: dict | None) -> dict:
+def run(doc: dict, fin: dict | None, *, acknowledge_finops_preview: bool = False) -> dict:
+    preview = preview_for(doc, acknowledge_finops_preview=acknowledge_finops_preview,
+                          fin=fin, operation="calculate-value")
+    if preview and fin is None:
+        raise ValueError("Preview-derived value requires --finops with its source cost model to recalculate; "
+                         "acknowledgement alone cannot replace or erase cost provenance")
+    if fin is not None and not fin.get("results"):
+        raise ValueError("FinOps input has no results: run finops_calc.py with --acknowledge-finops-preview first")
     register = register_of(doc, fin or {})
     fin_results = (fin or {}).get("results")
     base_rows, missing = portfolio(doc, register, fin_results)
@@ -205,8 +283,29 @@ def run(doc: dict, fin: dict | None) -> dict:
         ucs.append(r)
     questions = [dict(rank[s["id"]], **{k: register[s["id"]].get(k) for k in ("statement", "question", "owner", "unit", "low", "base", "high", "confidence", "source_type")})
                  for s in [x for x in sens if x["swing"] > 0][:10]]
-    return {"use_cases": ucs, "totals": totals_of(base_rows), "inputs_needed": missing, "sensitivity": sens,
-            "questions": questions, "scenarios": scen, "npv_base": base_npv}
+    result = {"use_cases": ucs, "totals": totals_of(base_rows), "inputs_needed": missing, "sensitivity": sens,
+              "questions": questions, "scenarios": scen, "npv_base": base_npv}
+    if preview:
+        helper = preview_helper()
+        restrictions = helper.privacy_flags(preview)
+        result["finops_preview"] = preview
+        related = {a["id"]: a for a in fin.get("agents", [])}
+        related.update({a["id"]: a for a in fin["results"]["agents"]})
+        related.update({gap["agent"]: gap for gap in fin["results"]["missing"]})
+        aggregate = dict(restrictions)
+        for row in ucs:
+            row["finops_preview"] = preview
+            ancestors = [related[i] for i in row.get("agents", []) if i in related]
+            row_flags = helper.inherit_restrictions(restrictions, *ancestors)
+            row.update(row_flags)
+            if helper.is_private(row):
+                aggregate.update(helper.inherit_restrictions(aggregate, row))
+        result.update(aggregate)
+        result["totals"].update(aggregate)
+        for totals in scen.values():
+            totals.update(aggregate)
+        helper.bind_calculation(result, "value", doc, acknowledge_finops_preview=acknowledge_finops_preview)
+    return result
 
 
 def main(argv=None) -> int:
@@ -214,18 +313,28 @@ def main(argv=None) -> int:
     ap.add_argument("--value", required=True)
     ap.add_argument("--finops", help="finops.json with results (run finops_calc.py first)")
     ap.add_argument("--out", help="defaults to --value (results are written into the file)")
+    ap.add_argument("--acknowledge-finops-preview", action="store_true")
     a = ap.parse_args(argv)
-    doc = load(a.value)
-    fin = load(a.finops) if a.finops else None
     try:
-        res = run(doc, fin)
-    except (ValueError, KeyError) as exc:
+        doc = load(a.value)
+        fin = load(a.finops) if a.finops else None
+        preview = preview_for(doc, fin=fin, operation="prepare-value",
+                              acknowledge_finops_preview=a.acknowledge_finops_preview)
+        if preview:
+            doc.update(preview_helper().privacy_flags(preview))
+        res = run(doc, fin, acknowledge_finops_preview=a.acknowledge_finops_preview)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
     doc["results"] = res
-    Path(a.out or a.value).write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    if "finops_preview" in res:
+        doc["finops_preview"] = res["finops_preview"]
+    Path(a.out or a.value).write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     t = res["totals"]
-    print(json.dumps({"use_cases": len(res["use_cases"]), "inputs_needed": res["inputs_needed"],
+    print(json.dumps({**({**preview_helper().inherit_restrictions(
+                            preview_helper().privacy_flags(res["finops_preview"]), res, t),
+                         "finops_preview": res["finops_preview"]} if "finops_preview" in res else {}),
+                      "use_cases": len(res["use_cases"]), "inputs_needed": res["inputs_needed"],
                       "npv": round(t["npv"], 2), "roi": round(t["roi"], 4) if t["roi"] is not None else None,
                       "economic_per_year": round(t["economic_year"], 2), "budget_per_year": round(t["budget_year"], 2),
                       "top_assumptions": [q["id"] for q in res["questions"][:5]], "out": a.out or a.value}, indent=1))

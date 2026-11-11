@@ -18,6 +18,8 @@ import json
 import sys
 from pathlib import Path
 
+from value_calc import preview_for, preview_helper
+
 KEEP = ("id", "statement", "unit", "low", "base", "high", "source_type", "confidence", "src", "owner", "question", "status", "note")
 DISCIPLINE = [
     "Cash, capacity and risk stay apart: released time is capacity until the customer names a spend that stops.",
@@ -49,10 +51,18 @@ def clean(o):
     return r2(o)
 
 
-def apply(bp: dict, doc: dict) -> dict:
+def apply(bp: dict, doc: dict, *, acknowledge_finops_preview: bool = False) -> dict:
+    preview = preview_for(doc, acknowledge_finops_preview=acknowledge_finops_preview,
+                          operation="apply-value", blueprint=bp)
+    global_restrictions = preview_helper().privacy_flags(preview) if preview else {}
+    restrictions = dict(global_restrictions)
     res = doc.get("results") or {}
     if not res:
         raise ValueError("value.json has no results: run value_calc.py first")
+    if res.get("internal") is True:
+        restrictions["internal"] = True
+    if str(res.get("visibility", "")).lower() == "internal":
+        restrictions["visibility"] = "internal"
     reg = {a["id"]: a for a in doc.get("assumptions", [])}
     sens = {s["id"]: s for s in res.get("sensitivity", [])}
     where = {}
@@ -82,6 +92,9 @@ def apply(bp: dict, doc: dict) -> dict:
             "levers": [{"name": x["name"], "driver": x["driver"], "category": x["category"], "formula": x["formula"], "annual": x["monthly"] * 12,
                         "booked": x["booked"], "rejected": x["rejected"], "note": x.get("note") or None, "assumptions": x["assumptions"]} for x in r["levers"]],
             "assumptions": r["assumptions"], "agents_missing_cost": r.get("agents_missing_cost") or None})
+        if preview:
+            u["business_value"]["finops_preview"] = preview
+            u["business_value"].update(preview_helper().inherit_restrictions(global_restrictions, r))
         applied.append(r["id"])
     ass = []
     for aid, a in reg.items():
@@ -96,7 +109,13 @@ def apply(bp: dict, doc: dict) -> dict:
                               "realisation_default": doc.get("realisation_default"), "totals": res.get("totals"), "scenarios": res.get("scenarios"),
                               "assumptions": ass, "questions": [q["id"] for q in res.get("questions", [])], "inputs_needed": res.get("inputs_needed"),
                               "discipline": doc.get("discipline") or DISCIPLINE, "sources": doc.get("sources") or SOURCES})
-    return {"applied": applied, "unknown_use_cases": unknown, "assumptions": len(ass)}
+    summary = {"applied": applied, "unknown_use_cases": unknown, "assumptions": len(ass)}
+    if preview:
+        bp["value_case"]["finops_preview"] = preview
+        bp["value_case"].update(restrictions)
+        summary["finops_preview"] = preview
+        summary.update(restrictions)
+    return summary
 
 
 def main(argv=None) -> int:
@@ -104,15 +123,16 @@ def main(argv=None) -> int:
     ap.add_argument("--blueprint", required=True)
     ap.add_argument("--value", required=True)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--acknowledge-finops-preview", action="store_true")
     a = ap.parse_args(argv)
-    bp = json.loads(Path(a.blueprint).read_text(encoding="utf-8"))
-    doc = json.loads(Path(a.value).read_text(encoding="utf-8"))
     try:
-        summary = apply(bp, doc)
-    except ValueError as exc:
+        bp = json.loads(Path(a.blueprint).read_text(encoding="utf-8"))
+        doc = json.loads(Path(a.value).read_text(encoding="utf-8"))
+        summary = apply(bp, doc, acknowledge_finops_preview=a.acknowledge_finops_preview)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
-    Path(a.out).write_text(json.dumps(bp, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    Path(a.out).write_text(json.dumps(bp, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(dict(summary, out=a.out), indent=1))
     return 0
 

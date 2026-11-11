@@ -50,7 +50,7 @@
     "references/authoring-guide.md": "dee2fab505334af2dd75e911b6b10e09fb1ab973bc3b020baa9091a625a5a317",
     "references/blueprint-schema.md": "4cf7e72fe1a4e411906f245a40dea2c1206bfa13a9ac1e124cfa84090895f6b1",
     "scripts/build_blueprint.py": "4c0efdebf4105928800c5afe32e4cc79b32f5cb1725dab73ef9cdb0aea2ea4e0",
-    "scripts/build_with_identity.py": "09ff31245c8b02ccd91514c4226a4f43acc39e36e2b0aa98423ea081c4af73ee",
+    "scripts/build_with_identity.py": "d8ad025dbdd7c4699258dbeaaa2604babe023c1b0367d050fb16a16a559c9ef8",
     "scripts/canon.py": "025d8adad751805c6bd02d317c56332468176f323437a0824302f6b0b54880c9",
     "scripts/merge_feedback.py": "af300a6434e4ae2d5909c1e585aa9b0bcb33502a8aa8d8fcce970b0a61446b18",
     "scripts/prd_model.py": "a8105006d4a9ffd7698537716d98539cc9d9dc05a08c6b8256e07ab98abd5d97",
@@ -120,11 +120,11 @@
     "examples/caldova-value.json": "9319597e130d4eaf34e7f18d1b9da231dc2c8f896028f8c50fadc9e5b222a11a",
     "examples/reference-hr-assistant.value.json": "47601641c0fea73af45037d95d2b2e9eb514a77ac98d3062a6947040a817eb09",
     "references/value-method.md": "a8a77151977ad1246625513d02bd387b5a2b78826529b3634469c40ec4c35604",
-    "scripts/apply_value.py": "a256c0f897fcb2e7298fa3849ff9186f8fff5d847589eea5130ec5443a53c66e",
+    "scripts/apply_value.py": "0249e4f2be361d83201f2527427500ef22cd214bcfa27e97f2bc708367daaf1d",
     "scripts/fv_expr.py": "fb7c40ead407d88d3680f1cdb1ab8647de7884df2ad6fc0f53379270550109fb",
-    "scripts/merge_value_feedback.py": "eac6418022ce9779fbfa445439f2adfafd49728f056be225af40ae6738b820eb",
+    "scripts/merge_value_feedback.py": "76c22f173f8712c75baabe13b689aad2d1afe048af19277bf2180973414e4a8c",
     "scripts/seed_value.py": "3c9e51da8df5775e5463388a5ae9001b05afb151220e86053fdba25865cbeaf1",
-    "scripts/value_calc.py": "20c11202dddd19ef9142bae9390cf46a7877c643d253c482a8b0a649577984bf"
+    "scripts/value_calc.py": "80cf80de8aed6d6359af8dfd1057188e05cda79ec6ff91115112fe491f739a55"
    },
    "maturity": "ga",
    "optional": false,
@@ -140,10 +140,11 @@
     "rates/rates-2026-11.json": "674bfbce4e85d5a6336460436b2a2d4093f830e70d72ef42b2c52e28a383542a",
     "references/finops-for-agents.md": "6ddbfda55bb8baf7cc3d1e972782327adb90409adc26dbca30fbf0ed5878a126",
     "references/guardrails.md": "73a30014385122fdad7e47376b944368f4adf4a4ce70797c639c6cbaafd5fb66",
-    "scripts/apply_finops.py": "fb1ea64330cc56042e4f4fe5f0c518e9dcccdb7c5e18f56d6d1b5754b01c29a0",
-    "scripts/finops_calc.py": "dec9ddc86605a3d3c5487198c0228a2816cb3c6cdd0f157274e618c3afef4b88",
+    "scripts/apply_finops.py": "17ebf7ca35f7f2f30414114d6d8c84cc44b762a104b8dc5c2716a32a93306817",
+    "scripts/finops_calc.py": "d7eb09ac7c5c64a5144b0e7178a96390b6685a6bc1a898b79b47fb83652e23d5",
+    "scripts/finops_preview.py": "be9f643f9a08fb2d69c2b4de8791d9a916b2a01672d7dc04e1035b9b20b446c2",
     "scripts/fv_expr.py": "fb7c40ead407d88d3680f1cdb1ab8647de7884df2ad6fc0f53379270550109fb",
-    "scripts/seed_finops.py": "338c10e7df77874027c880f5232e1327fdfca2ec8993182d8d5db68799eb4650"
+    "scripts/seed_finops.py": "5b8f610d8d58933957b20257a1410a927ea9a967b8bb2f04846c68db97099675"
    },
    "maturity": "preview",
    "optional": true,

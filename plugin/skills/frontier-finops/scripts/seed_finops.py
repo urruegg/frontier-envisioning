@@ -24,6 +24,8 @@ import re
 import sys
 from pathlib import Path
 
+from finops_preview import inherit_restrictions, preview_metadata, require_preview_ack
+
 CALLED = re.compile(r"\b(called by|triggered by|started by|autonomous)\b", re.I)
 HUMAN = re.compile(r"\b(employee|user|technician|manager|agent boss|customer|person|people|asks?|describes?|requests?|uploads?|opens?|types?)\b", re.I)
 GRAPH = re.compile(r"\b(sharepoint|onedrive|teams|microsoft graph|outlook|mailbox)\b", re.I)
@@ -37,22 +39,23 @@ def text(*parts) -> str:
     return " ".join(str(x) for x in out if x)
 
 
-def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--blueprint", required=True)
-    ap.add_argument("--out", required=True)
-    ap.add_argument("--value")
-    ap.add_argument("--agents")
-    ap.add_argument("--licensed-share", type=float, default=0.4)
-    a = ap.parse_args(argv)
-    bp = json.loads(Path(a.blueprint).read_text(encoding="utf-8"))
-    value = json.loads(Path(a.value).read_text(encoding="utf-8")) if a.value else {}
+def seed(bp: dict, value: dict | None = None, agents: str | None = None, licensed_share: float = 0.4,
+         *, acknowledge_finops_preview: bool = False) -> dict:
+    require_preview_ack(acknowledge_finops_preview)
+    if not isinstance(bp, dict) or (value is not None and not isinstance(value, dict)):
+        raise ValueError("blueprint and value inputs must be objects")
+    if not 0 <= licensed_share <= 1:
+        raise ValueError("--licensed-share must be between 0 and 1")
+    selected = agents
+    value = value if value is not None else {}
     agents = {}
+    ancestry = {}
     for d in bp.get("domains", []):
         for ag in ([d["orchestrator"]] if isinstance(d.get("orchestrator"), dict) else []) + list(d.get("agents", [])):
             agents[ag.get("id")] = ag
-    if a.agents:
-        ids = [x.strip() for x in a.agents.split(",")]
+            ancestry[ag.get("id")] = inherit_restrictions(ag, d)
+    if selected:
+        ids = [x.strip() for x in selected.split(",")]
     elif value.get("use_cases"):
         ids = [i for u in value["use_cases"] for i in u.get("agents", [])]
     else:
@@ -73,8 +76,8 @@ def main(argv=None) -> int:
                 break
         return dict({"id": i, "source_type": "hypothesis", "confidence": "low", "status": "open", "scope": "finops"}, **kw)
 
-    lic = new(statement="Employees with a Microsoft 365 Copilot licence", unit="share", low=round(a.licensed_share / 2, 2), base=a.licensed_share,
-              high=min(1.0, round(a.licensed_share * 1.75, 2)), owner="Microsoft 365 workplace team",
+    lic = new(statement="Employees with a Microsoft 365 Copilot licence", unit="share", low=round(licensed_share / 2, 2), base=licensed_share,
+              high=min(1.0, round(licensed_share * 1.75, 2)), owner="Microsoft 365 workplace team",
               question="How many employees will hold Microsoft 365 Copilot when the agents go live?")
     rate = new(statement="Loaded rate for run effort", unit="CHF/h", low=100, base=120, high=140, owner="Finance", confidence="medium",
                question="Which internal rate applies to the agent boss and maker?")
@@ -123,6 +126,7 @@ def main(argv=None) -> int:
             vars_["licensed_share"] = lic["id"]
         ass += extra
         out.append({"id": i, "name": (ag.get("identity") or {}).get("display_name") or name, "harness": harness, "audience": audience,
+                    **ancestry[i],
                     "coverage": "licensed users included" if covered else ("none: started by a workflow or schedule, every run is billed" if autonomous else "none: billed"),
                     "owner": ag.get("owner"), "vars": vars_,
                     "usage": {"sessions": "sessions", "billable_share": "1 - licensed_share" if covered else 1, "events_per_session": ev},
@@ -135,13 +139,38 @@ def main(argv=None) -> int:
            "title": f"Cost model for {meta.get('short') or meta.get('customer')} (seed)", "version": "0.1", "date": _dt.date.today().isoformat(),
            "status": "hypothesis", "currency": "CHF",
            "fx": {"policy": "swiss-list-ratio", "chf_per_usd": None, "source": "rates file (ratio implied by Swiss list prices); replace with the billing rate"},
-           "purchase": {"option": "payg", "note": "Hypothesis: start on pay-as-you-go; decide on packs or P3 after a usage baseline"},
+           "purchase": {"option": "payg", "note": "Provisional comparison only, not a recommendation: evaluate pay-as-you-go, packs or P3 after independently verifying a usage baseline"},
            "assumptions": ass, "agents": out,
            "credit_scenarios": ([{"name": "No Microsoft 365 Copilot licences", "kind": "licences", "set": {"licensed_share": 0}}] if need_lic else [])
                                + [{"name": "Twice the sessions per case", "kind": "usage", "set": {"per_case": 2}}]}
-    Path(a.out).write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    doc["unknown_agents"] = unknown
+    doc["finops_preview"] = preview_metadata(acknowledge_finops_preview, operation="seed", finops=doc,
+                                             value=value, blueprint=bp)
+    return doc
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--blueprint", required=True)
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--value")
+    ap.add_argument("--agents")
+    ap.add_argument("--licensed-share", type=float, default=0.4)
+    ap.add_argument("--acknowledge-finops-preview", action="store_true")
+    a = ap.parse_args(argv)
+    try:
+        require_preview_ack(a.acknowledge_finops_preview)
+        bp = json.loads(Path(a.blueprint).read_text(encoding="utf-8"))
+        value = json.loads(Path(a.value).read_text(encoding="utf-8")) if a.value else None
+        doc = seed(bp, value, a.agents, a.licensed_share,
+                   acknowledge_finops_preview=a.acknowledge_finops_preview)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    Path(a.out).write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
+    out, ass, unknown = doc["agents"], doc["assumptions"], doc["unknown_agents"]
     print(json.dumps({"agents": [x["id"] for x in out], "assumptions": len(ass), "to_collect": sum(1 for x in ass if x.get("base") is None),
-                      "unknown_agents": unknown, "out": a.out}, indent=1))
+                      "finops_preview": doc["finops_preview"], "unknown_agents": unknown, "out": a.out}, indent=1))
     return 0
 
 
