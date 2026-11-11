@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-11 |
 | Author | Copilot SDK in VS Code; AI-assisted sprint planning and evidence maintenance |
-| Status | Design/plan approved; D0–D3 returned evidence, D4 prose for parent review, D5 pending |
-| Scope | Selective process/ontology intake and seven GA skills plus acknowledged optional Preview FinOps |
-| References | [Catalogue](README.md), [Parent #25](https://github.com/urruegg/frontier-envisioning/issues/25), [Idea](../ideas/2026-11-11-handover-1.9-preview-finops.md), [Design](../specs/2026-11-11-handover-1.9-preview-finops-design.md), [Plan](../plans/2026-11-11-handover-1.9-preview-finops-plan.md) |
+| Status | Design/plan approved; D0–D4 SPEC/QUALITY clear; D5 local technical verification complete, PR/CI handoff pending |
+| Scope | Unreleased private 1.9.1 engineering evidence: process/ontology intake, seven GA skills and acknowledged optional Preview FinOps |
+| References | [Catalogue](README.md), [Parent #25](https://github.com/urruegg/frontier-envisioning/issues/25), [Idea](../ideas/2026-11-11-handover-1.9-preview-finops.md), [Design](../specs/2026-11-11-handover-1.9-preview-finops-design.md), [Plan](../plans/2026-11-11-handover-1.9-preview-finops-plan.md), [Receipt](../intake/handover-1.9.0.md) |
 
 ## Outcome and work items
 
@@ -18,10 +18,10 @@ mapping confidence, release, deployment and external clearance.
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#25](https://github.com/urruegg/frontier-envisioning/issues/25) | [Idea](../ideas/2026-11-11-handover-1.9-preview-finops.md) | [Design](../specs/2026-11-11-handover-1.9-preview-finops-design.md) | [D0-D5](../plans/2026-11-11-handover-1.9-preview-finops-plan.md) | `@urruegg`; parent coordinator | Actual written-plan approval recorded | D4 prose for review; D5 pending | D0 `e7e4db5`; pre-D4 strict L1 at `c64a815`, not final post-doc validation |
+| [#25](https://github.com/urruegg/frontier-envisioning/issues/25) | [Idea](../ideas/2026-11-11-handover-1.9-preview-finops.md) | [Design](../specs/2026-11-11-handover-1.9-preview-finops-design.md) | [D0-D5](../plans/2026-11-11-handover-1.9-preview-finops-plan.md) | `@urruegg`; parent coordinator | Actual written-plan approval recorded | D0–D4 clear/committed; D5 local technical verification complete, PR/CI handoff pending | D4 `afd6cd4`; canonical `d614979`: strict L1/L2 exit 0; final C1/C2 handoff in [receipt](../intake/handover-1.9.0.md#final-canonical-handoff) |
 | [#28 process](https://github.com/urruegg/frontier-envisioning/issues/28) | [Idea](../ideas/2026-11-11-handover-1.9-preview-finops.md) | [Design](../specs/2026-11-11-handover-1.9-preview-finops-design.md) | [D1](../plans/2026-11-11-handover-1.9-preview-finops-plan.md#d1-process-models-and-deterministic-artifacts) | `@urruegg`; bounded builder | D0 and plan approval | SPEC PASS / QUALITY CLEAR returned | `f5e08f2`; local process/privacy/determinism evidence, not tenant import |
 | [#26 FinOps](https://github.com/urruegg/frontier-envisioning/issues/26) | [Idea](../ideas/2026-11-11-handover-1.9-preview-finops.md) | [Design](../specs/2026-11-11-handover-1.9-preview-finops-design.md) | [D2](../plans/2026-11-11-handover-1.9-preview-finops-plan.md#d2-operational-finops-preview-gating) | `@urruegg`; bounded builder | D1; single wrapper writer | SPEC PASS / QUALITY CLEAR returned | `d763833`; operational acknowledgement/lazy-core/provenance checks, not human pricing approval |
-| [#27 renderer](https://github.com/urruegg/frontier-envisioning/issues/27) | [Idea](../ideas/2026-11-11-handover-1.9-preview-finops.md) | [Design](../specs/2026-11-11-handover-1.9-preview-finops-design.md) | [D3](../plans/2026-11-11-handover-1.9-preview-finops-plan.md#d3-ontology-and-preview-aware-ui) | `@urruegg`; bounded renderer | D1-D2 and built fixtures | SPEC PASS / QUALITY CLEAR returned | `c64a815`; qualified 75 DOM/61 browser checkpoint; broader AA matrix and final gates remain D5 |
+| [#27 renderer](https://github.com/urruegg/frontier-envisioning/issues/27) | [Idea](../ideas/2026-11-11-handover-1.9-preview-finops.md) | [Design](../specs/2026-11-11-handover-1.9-preview-finops-design.md) | [D3](../plans/2026-11-11-handover-1.9-preview-finops-plan.md#d3-ontology-and-preview-aware-ui) | `@urruegg`; bounded renderer | D1-D2 and built fixtures | SPEC PASS / QUALITY CLEAR returned | `c64a815`: historical 75 DOM/61 browser; `4cb4d4e` measured controls; `d614979`: 67 browser, bounded 32-state Preview matrix, not AT certification |
 
 ## Approval and readiness
 
@@ -60,10 +60,19 @@ the later implementation evidence below is separately qualified.
 
 ## Returned implementation evidence — 11 November 2026 (+01:00)
 
-The parent supplied these results. The D4 prose worker used read-only files and
-prose patches, with no terminal/runtime execution, nested agents or validation
-runs. See the [design verification](../solution-design.md#191-development-intake)
-for current architecture, profiles and evidence detail.
+The parent supplied these results. This D5 record-only update follows committed
+D4 `afd6cd4`; it is not new product prose. The prose worker used file reads and
+patches, with no terminal/runtime execution, nested agents or validation runs.
+Checked source: canonical `d614979` on `feat/25-handover191`; 1.9.1 remains
+unreleased and private. These two evidence records are excluded from both ZIPs;
+no packaged input is changed. See the
+[receipt](../intake/handover-1.9.0.md#d5-final-local-technical-evidence) for final
+measurements and the
+[design verification](../solution-design.md#191-development-intake) for the
+earlier architecture/profile checkpoint.
+This is a source-qualified verification checkpoint, not a live PR tracker.
+Use the PR linked from [parent #25](https://github.com/urruegg/frontier-envisioning/issues/25)
+for current CI and maintainer-review status.
 
 | Stage | Commit/evidence | Qualification |
 |---|---|---|
@@ -73,16 +82,23 @@ for current architecture, profiles and evidence detail.
 | D3 | `c64a815`: 75 DOM/61 browser reported on frozen source; independent review 16 new DOM/two hosted checks plus 31 old DOM/three Turtle variations | Byte parity/determinism, real CSP/axe, no new WCAG waiver; four light/dark 1440/320 screenshots reported; not exhaustive Preview AA or manual AT certification |
 | Parent pre-D4 L1 | At `c64a815`, `python tools/dev.py check --strict` ended `ALL GATES PASSED`: 394 tests, one expected unreleased-manifest skip, 1337 subtests, 48 self-tests, 75 DOM; six existing ESLint warnings, zero errors | Before prose edits, not final post-doc L1/L2 |
 | Parent runner | `ecdfdc8` / `e61bc6a`: 39 tools/site tests/four subtests pass, HTTP 200/CSP verified and helper stopped | DOM explicit technical-ack Preview fixture and isolated core/Preview browser site with real hashed CSP; normal site stays core |
-| Candidate, not final handoff | Eight verified copy plans, seven GA/one optional Preview, fifteen complete entries, nested guard clear and matching embedded bytes | Skill-file count was measured before the new process reference; final D5 count/digests and rebuilds still needed |
+| Candidate before D4 (historical) | Eight verified copy plans, seven GA/one optional Preview, fifteen complete entries, nested guard clear and matching embedded bytes | Measured before the new process reference; superseded by final D5 handoff below |
+| D4 | `afd6cd4`: SPEC PASS / QUALITY CLEAR; all D0–D4 clear and committed | Four document-only A–D scenarios: six baseline gaps → GREEN after D4; not live Cowork routing validation |
+| Final L1 | `d614979`: `python tools/dev.py check --strict`, `ALL GATES PASSED`, exit 0; 399 unit/pipeline tests passed, one expected unreleased-manifest skip, 1440 subtests passed, 48 self-test checks, 75 DOM tests | 586 repository files/zero errors; docs zero errors; neutrality zero findings; Ruff pass; ESLint zero errors/six existing warnings. Ignored summary: `build/evidence/final-l1.log`. Pre-canonical 398/1349 proof is superseded |
+| Final L2 | `d614979`: `python tools/dev.py site e2e --strict`, `ALL GATES PASSED`, exit 0; 67 browser tests passed | Actual real-CSP core/Preview routes; 32 unique Preview axe/layout states and 168 other logged core/identity axe states, with qualifications below; local, not CI |
+| Final bounded review | `74251a45`: no Critical/Important/Minor integration-contract findings | Final C2/gate proof supplied; review closure turn pending; advisory, not human sign-off |
 
-Parent reports 205 verified identity inputs/223 PNGs for core and explicit
+Parent reports the full 205 verified identity inputs/223 PNGs for core and explicit
 Preview profiles; both actual A6 ZIPs have SHA-256
 `e40b132d2e1d396ad7ee681d09931b3e35cd5728081cb01235b17396059cfdf9`.
 The finite current 1.9.1 profile pin is
 `d91044f03bb34f6559eddc8debf035a5d3aa697d7800d723a700528b23004453`;
-original profile/assets remain unchanged.
+original profile/assets remain unchanged, with no golden/profile broadening.
+All 241 original protected/fixture files and five pre-existing intake JSON files
+are byte-unchanged; the actual 279 received paths/hashes match the frozen
+inventory above.
 
-### D4 reference/pressure gap closure awaiting rerun
+### D4 document-only reference/pressure closure
 
 Before editing, the parent ran four read-only scenarios A–D at `c64a815`.
 Actual documents contradicted maturity metadata: unconditional orchestration/
@@ -93,29 +109,81 @@ The simulated assistant safely flagged these gaps rather than inventing flags;
 it did not execute unsafe operations. This is RED reference/behavioural evidence,
 not live Cowork validation.
 
-D4 prose now addresses those paths in all eight skills and relevant references,
+D4 prose addressed those paths in all eight skills and relevant references,
 root/plugin guides, bounded product sections, Proposed process/CDM ADRs and
 catalogues. The exact notice/flag/API default, renewed scenario acknowledgement,
 clean declined core/legacy handling, independent viewer gate and provenance are
-documented. Parent must rerun the same A–D cases and strict local contracts;
-no post-edit GREEN or actual Cowork behaviour is claimed here.
+documented. Parent returned GREEN for all four A–D scenarios after D4, closing
+the six baseline gaps. The flag is upstream FinOps acknowledgement, not a
+scaffold CLI flag; stale labels cannot pass F1, and the scaffold does not
+automatically generate financial tables. No actual Cowork installation,
+live routing validation or Fabric import is claimed.
 
-### Remaining D5 and human checks
+### D5 measured accessibility and shared controls
 
-- Parent owns strict docs/local links/traceability, checkrepo, description limits,
-  maturity/installer/product/history contracts and the post-edit pressure rerun.
-- Run final strict L1/L2 against the reviewed head, including isolated core/
-  Preview fixtures. The 61-browser checkpoint lacked direct acknowledged PRD/
-  use-case-detail axe and narrow portfolio coverage; parent reports a tests-only
-  32-state Preview AA/layout matrix in progress. Do not infer its results or final
-  counts from D3, and keep manual AT certification separate.
-- Rebuild final core handoff twice, compare ZIP bytes/digests, measure current
-  source-file count, verify fifteen-entry allowlist/exclusions/nested privacy,
-  original protected/received hashes and eight-skill offline install plans.
-- Final advisory/spec/quality review, feature push/draft PR and maintainer review
-  remain parent/human handoff work, not done by this prose worker.
-- Actual Cowork validators/behavioural prompts, native Fabric import/data-agent
-  tenant tests, content/IP clearance and AT certification remain manual/unproven.
+The final 32 unique Preview states cover four views × before/after genuine
+acknowledgement × light/dark × 1440/320 widths: zero applicable WCAG violations,
+undersized controls, document overflow or bad local scroll. The other 168 logged
+core/identity axe states had zero WCAG findings. This is not all possible AA
+coverage; colour-contrast incompletes/manual AT remain unproven.
+
+The measured target regression went from 20/32 bad states RED to 0/32:
+radio/`ucag` 24 × 24 CSS px, labels/agent links at least 24, mobile bubble at
+least 27.9 through bounded local scroll. Labels/groups are unique; shared
+widgets reflect one feedback key without DOM rerender/caret loss, and hidden
+numeric inputs stay hidden. Two focused RED → GREEN checks plus the parent's
+independent six-browser-test/32-state run and eight post-fix screenshots support
+the fix. Evidence is under `build/evidence/d5-preview-target-{red,green}/` and
+`build/evidence/d5-shared-assumption-{red,green}/`. Manual checks are not waived.
+
+### D5 canonical handoff and offline preparation
+
+C1 isolated package/core build, independent full-L1 core deletion/rebuild and
+C2 package/complete/checksum rebuild yielded identical hashes/sizes for all
+three files. The exact three-file `dist/distribution-1.9.1` inventory, byte
+sizes and final SHA-256 values are in the
+[canonical handoff receipt](../intake/handover-1.9.0.md#final-canonical-handoff).
+The plugin has 93 entries, all raw-byte equal to working source and Git HEAD
+`d614979`: eight skills, 85 skill files, seven GA/one optional Preview.
+The complete bundle has exactly fifteen allowlisted entries including four
+ontology documents; embedded plugin/docs/core HTML/identity catalogue and ZIP
+match actual outputs. Explicit Preview demo/JSON, analysis, intake and arbitrary
+sources are excluded. Both archives passed defined whole/nested privacy scans,
+checksum-content and fixed-date/Unix-metadata checks, not exhaustive secret/IP
+clearance or external publication permission.
+
+Actual final-ZIP read-only install preparation returned `verified=true`,
+no problems and eight new clean-target plans. Legacy 1.7.1 seven-skill/
+forged-GA/cached-ack simulation returned seven updates plus new process,
+eight plans/85 files, seven GA/one optional acknowledgement-required Preview.
+No implicit acknowledgement/cost call, no actual copies and no existing
+temporary-file changes occurred. Separate two-version update/reinstall unit
+checks passed; no real OneDrive/Cowork installation occurred.
+
+The parent corrected an initial archive-root manifest mapping assumption, then
+observed two real source-LF RED checks: two new physical CRLF working files
+(FinOps guard, 412 lines; process method, 133) differed from committed LF.
+Only those named files were normalised to already-committed bytes; two generated
+inventory hashes and regression evidence were corrected in `d614979`.
+The [receipt](../intake/handover-1.9.0.md#preserved-inputs-and-verification-correction)
+names the files. No semantic change or historical asset rewrite occurred;
+earlier Windows-only ZIP hashes are superseded. Legacy regression `8208155`
+and measured controls `4cb4d4e` precede this canonical head.
+
+### Remaining record/PR/CI handoff and human checks
+
+- Parent owns post-record strict docs/header/local-link/traceability and
+  product-contract checks, unchanged handoff-hash verification, the record
+  commit, feature-only push, draft PR creation and new-head CI checks.
+  These post-record checks were not run by this prose worker.
+- Bounded integration review closed the actual C2/gate proof with technical
+  CLEAR at `d614979`, with no Critical, Important or Minor findings.
+  No draft PR number/link is known. D5 is locally technically verified,
+  not fully closed, merged, published or released.
+- Sole-maintainer sign-off against the final head remains pending, not formal
+  self-approval. Human label state is not inferred.
+- Live Cowork validators/behavioural prompts, native Fabric import/data-agent
+  tenant tests, manual AT and external/IP clearance remain separate/unproven.
 
 Keep the repository private. Protected #8 routing, approvals/labels, licences/
 releases/workflows, merge/tag/release/deploy and external/public clearance remain
