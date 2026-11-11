@@ -32,6 +32,7 @@ import os
 import re
 import subprocess  # nosec B404 - runs the plugin's own scripts with fixed arguments, never a shell
 import sys
+import tempfile
 import unicodedata
 from pathlib import Path
 
@@ -39,6 +40,7 @@ HERE = Path(__file__).resolve().parent
 ID_SCRIPTS = HERE.parents[1] / "frontier-agent-identity" / "scripts"
 FIN_SCRIPTS = HERE.parents[1] / "frontier-finops" / "scripts"
 VAL_SCRIPTS = HERE.parents[1] / "frontier-value-case" / "scripts"
+ONT_SCRIPTS = HERE.parents[1] / "frontier-process" / "scripts"
 
 
 class IdentityError(Exception):
@@ -168,6 +170,44 @@ def build_value_finops(a, data: Path, out: Path, summary: dict) -> Path:
     return current
 
 
+def build_ontology(a, data: Path, out: Path, summary: dict) -> Path:
+    """Build requested process artifacts without invoking value or FinOps."""
+    if not (ONT_SCRIPTS / "apply_ontology.py").is_file():
+        summary["notes"].append("Ontology left out: frontier-process is not installed next to frontier-blueprint")
+        summary["ontology"] = {"status": "failed"}
+        return data
+    work = out / "ontology"
+    audience = a.audience or str((json.loads(data.read_text(encoding="utf-8")).get("meta") or {}).get("audience") or "internal")
+    code, so, err = run(ONT_SCRIPTS / "build_ontology.py", "--ontology", a.ontology, "--blueprint", data,
+                        "--out-dir", work, "--audience", audience)
+    res = summary_json(so) or {"status": "failed", "detail": err.strip()[-400:]}
+    summary["ontology"] = {"folder": str(work), "status": res.get("status"), "stats": res.get("stats"),
+                           "errors": res.get("errors"), "warnings": res.get("warnings") or []}
+    if code:
+        summary["notes"].append("Ontology not built: see ontology.errors and warnings")
+        return data
+    target = work / "blueprint-ontology.json"
+    with tempfile.TemporaryDirectory() as directory:
+        if audience == "customer":
+            # The apply intermediate is also an exported JSON file. Project its
+            # blueprint source now, not only when the final HTML is rendered.
+            projected = Path(directory) / "customer-blueprint.json"
+            code, _, err = run(HERE / "build_blueprint.py", "--data", data, "--audience", "customer",
+                                "--save-normalized", projected, "--no-product-icons")
+            if code:
+                summary["ontology"]["status"] = "failed"
+                summary["notes"].append("Customer blueprint projection failed: " + err.strip()[-300:])
+                return data
+            data = projected
+        code, _, err = run(ONT_SCRIPTS / "apply_ontology.py", "--blueprint", data,
+                            "--ontology", work / "ontology.normalized.json", "--out", target)
+    if code:
+        summary["ontology"]["status"] = "failed"
+        summary["notes"].append("Ontology not applied: " + err.strip()[-300:])
+        return data
+    return target
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--data", required=True, help="blueprint JSON")
@@ -187,6 +227,7 @@ def main(argv=None) -> int:
     ap.add_argument("--no-identity", action="store_true", help="build the blueprint without the identity kit")
     ap.add_argument("--value", help="value case (frontier-value/1.0): business value in Use cases and the matrix")
     ap.add_argument("--finops", help="FinOps model (frontier-finops/1.0): the FinOps page")
+    ap.add_argument("--ontology", help="process ontology (frontier-ontology/1.0): local model, Turtle and design artifacts")
     a = ap.parse_args(argv)
     out = Path(a.out_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -203,6 +244,11 @@ def main(argv=None) -> int:
             summary["notes"].append(f"Identity kit not built: {exc}. The blueprint was built without identity.")
     if a.value or a.finops:
         data = build_value_finops(a, Path(data), out, summary)
+    if a.ontology:
+        data = build_ontology(a, Path(data), out, summary)
+        if summary["ontology"]["status"] == "failed":
+            print(json.dumps(summary, indent=1, ensure_ascii=False))
+            return 1
     args = ["--data", data, "--out", html] + (["--audience", a.audience] if a.audience else [])
     for flag, value in (("--save-normalized", a.save_normalized), ("--report", a.report)):
         if value:

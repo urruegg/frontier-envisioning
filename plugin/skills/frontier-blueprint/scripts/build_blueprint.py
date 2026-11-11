@@ -491,7 +491,7 @@ def normalise(bp: dict, rep: Report) -> dict:
             for sid in src_ids(value):
                 if sid not in eids:
                     rep.warn(f"{path} cites {sid}, which is not in the evidence register")
-        if isinstance(value, str) and URL.search(value) and key not in ("source",) and not (key == "url" and path.startswith(("$.identity.rules", "$.value_case.sources", "$.finops.sources", "$.factory.resources", "$.factory.sources", "$.architecture.landing_zone.sources", "$.feedback_loop.sources", "$.logos_note"))) and path != "$.logos_note":
+        if isinstance(value, str) and URL.search(value) and key not in ("source",) and not (key == "url" and path.startswith(("$.identity.rules", "$.value_case.sources", "$.finops.sources", "$.factory.resources", "$.factory.sources", "$.architecture.landing_zone.sources", "$.feedback_loop.sources", "$.logos_note", "$.ontology.sources_doc"))) and path != "$.logos_note":
             rep.warn(f"{path} contains a URL; links are not rendered (keep sources in the evidence register)")
     clean_identity_block(bp, rep)
     clean_value_finops(bp, rep)
@@ -502,8 +502,47 @@ def normalise(bp: dict, rep: Report) -> dict:
     return bp
 
 
+def process_library():
+    """Load the optional process model only for a blueprint that has one."""
+    process = Path(__file__).resolve().parents[2] / "frontier-process" / "scripts"
+    sys.path.insert(0, str(process))
+    import ontology_lib
+    return ontology_lib
+
+
+def prepare_ontology_privacy(bp: dict, rep: Report | None = None) -> None:
+    """Re-evaluate root/target provenance before projecting promoted content."""
+    onto = bp.get("ontology")
+    if not isinstance(onto, dict) and not bp.get("ontology_feedback"):
+        return
+    onto = onto if isinstance(onto, dict) else {}
+    lib = process_library()
+    lib.inherit_privacy(onto, bp)
+    rd = bp.get("it_readiness") if isinstance(bp.get("it_readiness"), dict) else {}
+    rows = {r.get("id"): r for r in as_list(onto.get("readiness")) if isinstance(r, dict)}
+    for group in as_list(rd.get("groups")):
+        if not isinstance(group, dict) or group.get("id") != "fabric-iq":
+            continue
+        if lib.private_content(onto, bp):
+            group["internal"] = True
+        for item in as_list(group.get("items")):
+            if isinstance(item, dict) and lib.private_content(rows.get(item.get("id"), {}), bp):
+                item["internal"] = True
+    for verdict in as_list(bp.get("ontology_feedback")):
+        if isinstance(verdict, dict):
+            restricted, unresolved = lib.feedback_privacy(onto, verdict, bp)
+            if restricted:
+                verdict["internal"] = True
+            if unresolved:
+                verdict["ancestry_status"] = "unresolved"
+                message = f"ontology feedback {verdict.get('id')}: ancestry unresolved ({', '.join(unresolved)}); retained internally"
+                if rep is not None and message not in rep.warnings:
+                    rep.warn(message)
+
+
 def customer_version(bp: dict, rep: Report) -> dict:
     out = copy.deepcopy(bp)
+    prepare_ontology_privacy(out, rep)
     internal_ids = {e["id"] for e in as_list(out.get("evidence")) if str(e.get("visibility", "")).lower() == "internal"}
     out["evidence"] = [e for e in as_list(out.get("evidence")) if e["id"] not in internal_ids]
     if internal_ids:
@@ -515,7 +554,7 @@ def customer_version(bp: dict, rep: Report) -> dict:
         # A workshop verdict may add a public src without making the content
         # it discusses public. content_src retains that independent provenance.
         refs = src_ids(obj.get("content_src", obj.get("src")))
-        return obj.get("internal") is True or bool(refs and all(s in internal_ids for s in refs))
+        return obj.get("internal") is True or str(obj.get("visibility", "")).lower() == "internal" or bool(refs and all(s in internal_ids for s in refs))
 
     def scrub(obj, path="$"):
         if isinstance(obj, dict):
@@ -546,6 +585,18 @@ def customer_version(bp: dict, rep: Report) -> dict:
                 keep.append(v)
             obj[:] = keep
     scrub(out)
+    if isinstance(out.get("ontology"), dict):
+        lib = process_library()
+        authored = lib.customer_ontology(out["ontology"], out)
+        if authored is None:
+            out.pop("ontology")
+        else:
+            onto = lib.normalize(authored, out, rep)
+            entities = {e["id"]: e for e in onto["entity_types"]}
+            for agent in onto["data_agents"]:
+                if not agent.get("instructions"):
+                    agent["instructions_default"] = lib.default_instructions(agent, onto, entities)
+            out["ontology"] = onto
     # Evaluate block visibility before projecting retained fields. Discard
     # cached PRD copies afterwards; derive them again from scrubbed sources.
     if isinstance(out.get("prd"), dict):
@@ -581,6 +632,7 @@ def stats(bp: dict) -> dict:
                              if isinstance(a, dict) and isinstance(a.get("canvas"), dict) and isinstance(a["canvas"].get("workflow"), dict)),
             "product_icons": len(bp.get("logos") or {}) if isinstance(bp.get("logos"), dict) else 0,
             "risks": len(as_list((bp.get("risks") or {}).get("items"))) if isinstance(bp.get("risks"), dict) else 0,
+            "ontology_entity_types": len(as_list((bp.get("ontology") or {}).get("entity_types"))) if isinstance(bp.get("ontology"), dict) else 0,
             "prd_requirements": (len(as_list((bp.get("prd") or {}).get("platform")))
                                  + sum(len(as_list(x.get("requirements"))) for x in as_list((bp.get("prd") or {}).get("agents")) if isinstance(x, dict)))
             if isinstance(bp.get("prd"), dict) else 0,
@@ -640,6 +692,7 @@ def main(argv=None) -> int:
     fill_workflows(bp, rep)
     audience = a.audience or str(bp.get("meta", {}).get("audience", "internal")).lower()
     if audience == "customer":
+        prepare_ontology_privacy(bp, rep)
         # Resolve bound content privacy while the original source still exists.
         # Scrubbing it first loses new flags and legacy provenance recovery.
         fill_risks(bp, rep)

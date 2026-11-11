@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -128,17 +129,26 @@ def main(argv=None) -> int:
             print(f"ERROR: feedback is for blueprint {fb['blueprint']!r}, not {bid!r}", file=sys.stderr)
             return 1
         day = a.workshop_date or str(fb.get("exported", ""))[:10] or _dt.date.today().isoformat()
-        n = 1
-        while f"W{n:02d}" in existing:
-            n += 1
-        wid = f"W{n:02d}"
-        existing.add(wid)
-        evidence.append({"id": wid, "type": "workshop", "title": f"{a.workshop_title} ({day})", "date": day,
-                         "source": "Workshop notes exported from the blueprint", "visibility": "customer",
-                         "summary": "Validation and answers captured live during the workshop."})
+        validations = fb.get("validations") or {}
+        process_only = bool(validations) and all(key.startswith("onto:") for key in validations)
+        fingerprint = hashlib.sha256(json.dumps(fb, sort_keys=True, separators=(",", ":")).encode()).hexdigest() if process_only else None
+        prior = next((e for e in evidence if fingerprint and e.get("ontology_feedback_hash") == fingerprint), None)
+        if prior:
+            wid = prior["id"]
+        else:
+            n = 1
+            while f"W{n:02d}" in existing:
+                n += 1
+            wid = f"W{n:02d}"
+            existing.add(wid)
+            entry = {"id": wid, "type": "workshop", "title": f"{a.workshop_title} ({day})", "date": day,
+                     "source": "Workshop notes exported from the blueprint", "visibility": "customer",
+                     "summary": "Validation and answers captured live during the workshop."}
+            if fingerprint:
+                entry["ontology_feedback_hash"] = fingerprint
+            evidence.append(entry)
         summary["files"].append({"file": fpath, "evidence_id": wid})
 
-        validations = fb.get("validations") or {}
         ambiguous = set()
         if any(key.startswith("risk:") for key in validations):
             reg = bp.get("risks") if isinstance(bp.get("risks"), dict) else {}
@@ -149,6 +159,39 @@ def main(argv=None) -> int:
             fill_risks(bp)
         for key, val in validations.items():
             kind, _, ident = key.partition(":")
+            if kind == "onto":
+                onto = bp.get("ontology") if isinstance(bp.get("ontology"), dict) else {}
+                targets = {x.get("id"): x for pool in ("entity_types", "relationship_types", "data_agents", "operations_agents", "data_products")
+                           for x in as_list(onto.get(pool)) if isinstance(x, dict)}
+                if ident != "model" and ident not in targets:
+                    summary["unknown"].append(key)
+                    continue
+                reason = verdict_error(val, VALID | {"agreed"})
+                if reason:
+                    summary.setdefault("invalid", []).append({"id": key, "reason": reason})
+                    continue
+                # Record verdicts for the source-model merger, never interpreting
+                # workshop text as instructions or making content public.
+                row = {k: v for k, v in {"date": day, "id": ident,
+                       "status": str(val.get("status", "")).lower(), "note": val.get("note"), "src": [wid]}.items() if v}
+                target = targets.get(ident, onto)
+                row["content_src"] = list(as_list(target.get("content_src", target.get("src"))))
+                sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "frontier-process" / "scripts"))
+                from ontology_lib import feedback_ancestry, feedback_privacy
+                row["target_ancestry"] = feedback_ancestry(onto, ident, bp)
+                restricted, unresolved = feedback_privacy(onto, row, bp)
+                if restricted:
+                    row["internal"] = True
+                if unresolved:
+                    row["ancestry_status"] = "unresolved"
+                    summary.setdefault("ontology_ancestry_unresolved", []).append(ident)
+                if onto.get("internal") is True or target.get("internal") is True or str(onto.get("visibility", "")).lower() == "internal" or str(target.get("visibility", "")).lower() == "internal":
+                    row["internal"] = True
+                rows = bp.setdefault("ontology_feedback", [])
+                if not any(all(old.get(field) == row.get(field) for field in ("date", "id", "status", "note", "src")) for old in rows):
+                    rows.append(row)
+                    summary["ontology_feedback"] = summary.get("ontology_feedback", 0) + 1
+                continue
             if kind == "ready":
                 # IT readiness: status and note of a preparation item, readiness check, workstation check, question or decision
                 rd = bp.get("it_readiness") if isinstance(bp.get("it_readiness"), dict) else {}

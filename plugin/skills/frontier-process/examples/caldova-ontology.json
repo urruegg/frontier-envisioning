@@ -1,0 +1,3718 @@
+{
+ "schema": "frontier-ontology/1.0",
+ "meta": {
+  "customer": "Caldova Industrial AG",
+  "short": "Caldova",
+  "blueprint": "caldova-industrial-frontier",
+  "version": "0.1",
+  "status": "hypothesis",
+  "date": "2026-11-11",
+  "namespace_uri": "https://example.org/frontier/caldova/ontology#"
+ },
+ "title": "Caldova process ontology",
+ "intro": "Caldova Industrial AG is fictitious. The ontology names the business objects the four business journeys run on (customers, opportunities, quotes and orders; suppliers, contracts and invoices; the installed base, work orders and service reports; ledger accounts and close tasks), binds them to SAP S/4HANA, Dynamics 365 and the IoT platform in OneLake and grounds one data agent per journey and an operations agent for the installed base in the same vocabulary.",
+ "namespaces": [
+  {
+   "id": "core",
+   "name": "Shared business objects",
+   "journey": null,
+   "owner": "Data platform owner"
+  },
+  {
+   "id": "commercial",
+   "name": "Commercial",
+   "journey": "D1",
+   "pattern": "lead-to-order",
+   "owner": "Chief Commercial Officer"
+  },
+  {
+   "id": "procurement",
+   "name": "Procurement",
+   "journey": "D2",
+   "pattern": "source-to-pay",
+   "owner": "Chief Procurement Officer"
+  },
+  {
+   "id": "service",
+   "name": "Service",
+   "journey": "D3",
+   "pattern": "request-to-resolution",
+   "owner": "Head of Service Operations"
+  },
+  {
+   "id": "finance",
+   "name": "Finance",
+   "journey": "D4",
+   "pattern": "record-to-report",
+   "owner": "Chief Financial Officer"
+  }
+ ],
+ "entity_types": [
+  {
+   "id": "Customer",
+   "name": "Customer",
+   "description": "An organisation that buys products or services; one record per sold-to party.",
+   "synonyms": [
+    "Account",
+    "Client",
+    "Sold-to party"
+   ],
+   "key": [
+    "customerId"
+   ],
+   "properties": [
+    {
+     "name": "customerId",
+     "type": "string"
+    },
+    {
+     "name": "customerName",
+     "type": "string"
+    },
+    {
+     "name": "segment",
+     "type": "string"
+    },
+    {
+     "name": "country",
+     "type": "string"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "core",
+   "journeys": [
+    "D1",
+    "D3"
+   ],
+   "status": "hypothesis",
+   "origin": "core",
+   "src": [
+    "E04"
+   ],
+   "source": "src-dynamics-365-sales",
+   "standard": {
+    "standard": "cdm",
+    "entity": "Account",
+    "folder": "core/applicationCommon/foundationCommon/crmCommon",
+    "table": "account",
+    "key": "accountid",
+    "business_key": "accountnumber",
+    "match": "exact",
+    "role": "dimension",
+    "attributes": {
+     "customerId": "accountnumber",
+     "customerName": "name",
+     "segment": "customertypecode",
+     "country": "address1_country",
+     "status": "statecode"
+    },
+    "src": [
+     "S20",
+     "S22"
+    ],
+    "checked": true,
+    "note": "Business that represents a customer or potential customer; the company that is billed in business transactions.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "core_silver.customer",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "Product",
+   "name": "Product",
+   "description": "A sellable or purchasable item, machine type or service product; one record per material number.",
+   "synonyms": [
+    "Material",
+    "Article",
+    "Item",
+    "Catalogue item"
+   ],
+   "key": [
+    "productId"
+   ],
+   "properties": [
+    {
+     "name": "productId",
+     "type": "string"
+    },
+    {
+     "name": "productName",
+     "type": "string"
+    },
+    {
+     "name": "productGroup",
+     "type": "string"
+    },
+    {
+     "name": "unitOfMeasure",
+     "type": "string"
+    },
+    {
+     "name": "listPrice",
+     "type": "double"
+    }
+   ],
+   "namespace": "core",
+   "journeys": [
+    "D1",
+    "D2",
+    "D3"
+   ],
+   "status": "hypothesis",
+   "origin": "core",
+   "source": "src-sap-s-4hana",
+   "standard": {
+    "standard": "cdm",
+    "entity": "Product",
+    "folder": "core/applicationCommon/foundationCommon",
+    "table": "product",
+    "key": "productid",
+    "business_key": "productnumber",
+    "match": "exact",
+    "role": "dimension",
+    "attributes": {
+     "productId": "productnumber",
+     "productName": "name",
+     "productGroup": "parentproductid",
+     "unitOfMeasure": "defaultuomid",
+     "listPrice": "price"
+    },
+    "src": [
+     "S21"
+    ],
+    "checked": true,
+    "note": "Information about products and their pricing; the parent product is the product family.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "core_silver.product",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "Employee",
+   "name": "Employee",
+   "description": "A person working for the company in a role that the process needs (owner, approver, technician). Bound to the HR system once it is named (to confirm in the IT readiness workshop).",
+   "synonyms": [
+    "Worker",
+    "Staff member",
+    "Technician"
+   ],
+   "key": [
+    "employeeId"
+   ],
+   "properties": [
+    {
+     "name": "employeeId",
+     "type": "string"
+    },
+    {
+     "name": "role",
+     "type": "string"
+    },
+    {
+     "name": "orgUnit",
+     "type": "string"
+    },
+    {
+     "name": "site",
+     "type": "string"
+    }
+   ],
+   "namespace": "core",
+   "journeys": [
+    "D1",
+    "D2",
+    "D3",
+    "D4"
+   ],
+   "status": "hypothesis",
+   "origin": "core",
+   "standard": {
+    "standard": "cdm",
+    "entity": "BookableResource",
+    "folder": "core/applicationCommon/foundationCommon",
+    "table": "bookableresource",
+    "key": "bookableresourceid",
+    "business_key": "name",
+    "match": "related",
+    "role": "dimension",
+    "attributes": {},
+    "src": [
+     "S21",
+     "S24"
+    ],
+    "checked": true,
+    "related": [
+     "User (service)",
+     "Worker in the HR system of record"
+    ],
+    "note": "People who do the work are bookable resources in Dataverse; the HR system of record stays the master for employment data (to confirm with HR). Model people only in the roles the process needs.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "core_silver.employee",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "Site",
+   "name": "Site",
+   "description": "A physical location: customer site, plant, warehouse or office.",
+   "synonyms": [
+    "Location",
+    "Plant"
+   ],
+   "key": [
+    "siteId"
+   ],
+   "properties": [
+    {
+     "name": "siteId",
+     "type": "string"
+    },
+    {
+     "name": "siteName",
+     "type": "string"
+    },
+    {
+     "name": "country",
+     "type": "string"
+    },
+    {
+     "name": "siteType",
+     "type": "string"
+    }
+   ],
+   "namespace": "core",
+   "journeys": [
+    "D1",
+    "D3"
+   ],
+   "status": "hypothesis",
+   "origin": "core",
+   "source": "src-sap-s-4hana",
+   "standard": {
+    "standard": "cdm",
+    "entity": "Site",
+    "folder": "core/applicationCommon/foundationCommon/crmCommon/service",
+    "table": "site",
+    "key": "siteid",
+    "business_key": "name",
+    "match": "exact",
+    "role": "dimension",
+    "attributes": {
+     "siteName": "name"
+    },
+    "src": [
+     "S24",
+     "S31"
+    ],
+    "checked": true,
+    "related": [
+     "Functional location (msdyn_functionallocation) for where an asset is installed"
+    ],
+    "note": "Location or branch office where an organization does business.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "core_silver.site",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "Lead",
+   "name": "Lead",
+   "description": "A sales signal not yet qualified: inbound request, event contact or tender notice.",
+   "synonyms": [
+    "Inquiry",
+    "Prospect"
+   ],
+   "key": [
+    "leadId"
+   ],
+   "properties": [
+    {
+     "name": "leadId",
+     "type": "string"
+    },
+    {
+     "name": "source",
+     "type": "string"
+    },
+    {
+     "name": "receivedAt",
+     "type": "datetime"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    },
+    {
+     "name": "respondedAt",
+     "type": "datetime"
+    }
+   ],
+   "namespace": "commercial",
+   "journeys": [
+    "D1"
+   ],
+   "status": "hypothesis",
+   "origin": "lead-to-order",
+   "source": "src-dynamics-365-sales",
+   "standard": {
+    "standard": "cdm",
+    "entity": "Lead",
+    "folder": "core/applicationCommon/foundationCommon/crmCommon",
+    "table": "lead",
+    "key": "leadid",
+    "business_key": "leadid",
+    "match": "exact",
+    "role": "fact",
+    "attributes": {
+     "leadId": "leadid",
+     "source": "leadsourcecode",
+     "receivedAt": "createdon",
+     "status": "statecode"
+    },
+    "src": [
+     "S22"
+    ],
+    "checked": true,
+    "note": "Prospect or potential sales opportunity; converted into accounts, contacts or opportunities when qualified. The first response time is a custom attribute.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "commercial_silver.lead",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "Opportunity",
+   "name": "Opportunity",
+   "description": "A qualified chance to sell, with value, stage and expected close date.",
+   "synonyms": [
+    "Deal",
+    "Pipeline item"
+   ],
+   "key": [
+    "opportunityId"
+   ],
+   "properties": [
+    {
+     "name": "opportunityId",
+     "type": "string"
+    },
+    {
+     "name": "stage",
+     "type": "string"
+    },
+    {
+     "name": "estimatedValue",
+     "type": "double"
+    },
+    {
+     "name": "expectedClose",
+     "type": "datetime"
+    },
+    {
+     "name": "probability",
+     "type": "double"
+    }
+   ],
+   "namespace": "commercial",
+   "journeys": [
+    "D1"
+   ],
+   "status": "hypothesis",
+   "origin": "lead-to-order",
+   "src": [
+    "E04"
+   ],
+   "source": "src-dynamics-365-sales",
+   "standard": {
+    "standard": "cdm",
+    "entity": "Opportunity",
+    "folder": "core/applicationCommon/foundationCommon/crmCommon/sales",
+    "table": "opportunity",
+    "key": "opportunityid",
+    "business_key": "opportunityid",
+    "match": "exact",
+    "role": "fact",
+    "attributes": {
+     "opportunityId": "opportunityid",
+     "stage": "stepname",
+     "estimatedValue": "estimatedvalue",
+     "expectedClose": "estimatedclosedate",
+     "probability": "closeprobability"
+    },
+    "src": [
+     "S23"
+    ],
+    "checked": true,
+    "note": "Potential revenue-generating event or sale to an account, tracked through a sales process.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "commercial_silver.opportunity",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "Quote",
+   "name": "Quote",
+   "description": "A priced offer to a customer, with lines, discounts and validity.",
+   "synonyms": [
+    "Offer",
+    "Proposal"
+   ],
+   "key": [
+    "quoteId"
+   ],
+   "properties": [
+    {
+     "name": "quoteId",
+     "type": "string"
+    },
+    {
+     "name": "quoteValue",
+     "type": "double"
+    },
+    {
+     "name": "discountPct",
+     "type": "double"
+    },
+    {
+     "name": "createdAt",
+     "type": "datetime"
+    },
+    {
+     "name": "sentAt",
+     "type": "datetime"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "commercial",
+   "journeys": [
+    "D1"
+   ],
+   "status": "hypothesis",
+   "origin": "lead-to-order",
+   "src": [
+    "E04"
+   ],
+   "source": "src-product-configurator",
+   "standard": {
+    "standard": "cdm",
+    "entity": "Quote",
+    "folder": "core/applicationCommon/foundationCommon/crmCommon/sales",
+    "table": "quote",
+    "key": "quoteid",
+    "business_key": "quotenumber",
+    "match": "exact",
+    "role": "fact",
+    "attributes": {
+     "quoteId": "quotenumber",
+     "quoteValue": "totalamount",
+     "discountPct": "discountpercentage",
+     "createdAt": "createdon",
+     "status": "statecode"
+    },
+    "src": [
+     "S23"
+    ],
+    "checked": true,
+    "note": "Formal offer for products and services at specific prices and payment terms. The sent date is a custom attribute.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "commercial_silver.quote",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "SalesOrder",
+   "name": "Sales order",
+   "description": "A confirmed customer order, handed over to fulfilment.",
+   "synonyms": [
+    "Order",
+    "Customer order"
+   ],
+   "key": [
+    "salesOrderId"
+   ],
+   "properties": [
+    {
+     "name": "salesOrderId",
+     "type": "string"
+    },
+    {
+     "name": "orderValue",
+     "type": "double"
+    },
+    {
+     "name": "orderedAt",
+     "type": "datetime"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "commercial",
+   "journeys": [
+    "D1"
+   ],
+   "status": "hypothesis",
+   "origin": "lead-to-order",
+   "src": [
+    "E04"
+   ],
+   "source": "src-sap-s-4hana",
+   "standard": {
+    "standard": "cdm",
+    "entity": "Order",
+    "folder": "core/applicationCommon/foundationCommon/crmCommon/sales",
+    "table": "salesorder",
+    "key": "salesorderid",
+    "business_key": "ordernumber",
+    "match": "exact",
+    "role": "fact",
+    "attributes": {
+     "salesOrderId": "ordernumber",
+     "orderValue": "totalamount",
+     "orderedAt": "submitdate",
+     "status": "statecode"
+    },
+    "src": [
+     "S23"
+    ],
+    "checked": true,
+    "note": "Quote that has been accepted; when the ERP owns the order, the silver layer conforms it to this shape.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "commercial_silver.sales_order",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "Supplier",
+   "name": "Supplier",
+   "description": "An organisation the company buys from; one record per vendor number.",
+   "synonyms": [
+    "Vendor"
+   ],
+   "key": [
+    "supplierId"
+   ],
+   "properties": [
+    {
+     "name": "supplierId",
+     "type": "string"
+    },
+    {
+     "name": "supplierName",
+     "type": "string"
+    },
+    {
+     "name": "country",
+     "type": "string"
+    },
+    {
+     "name": "riskRating",
+     "type": "string"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "core",
+   "journeys": [
+    "D2"
+   ],
+   "status": "hypothesis",
+   "origin": "core",
+   "src": [
+    "E06"
+   ],
+   "source": "src-sap-s-4hana",
+   "standard": {
+    "standard": "operations",
+    "entity": "VendTable (Vendors)",
+    "folder": "core/operationsCommon/Tables/SupplyChain/Vendor/Main",
+    "table": "VendTable",
+    "key": "RecId",
+    "business_key": "AccountNum",
+    "match": "exact",
+    "role": "dimension",
+    "attributes": {
+     "supplierId": "AccountNum",
+     "status": "Blocked"
+    },
+    "src": [
+     "S25"
+    ],
+    "checked": true,
+    "note": "Name and addresses come from the party the vendor references; an ERP other than finance and operations is conformed to this shape in the silver layer.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "core_silver.supplier",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "LegalEntity",
+   "name": "Legal entity",
+   "description": "A company code that books, reports and pays.",
+   "synonyms": [
+    "Company code"
+   ],
+   "key": [
+    "companyCode"
+   ],
+   "properties": [
+    {
+     "name": "companyCode",
+     "type": "string"
+    },
+    {
+     "name": "legalName",
+     "type": "string"
+    },
+    {
+     "name": "currency",
+     "type": "string"
+    },
+    {
+     "name": "country",
+     "type": "string"
+    }
+   ],
+   "namespace": "core",
+   "journeys": [
+    "D2",
+    "D4"
+   ],
+   "status": "hypothesis",
+   "origin": "core",
+   "source": "src-sap-s-4hana",
+   "standard": {
+    "standard": "operations",
+    "entity": "CompanyInfo (Legal entity)",
+    "folder": "core/operationsCommon/Tables/Finance/Ledger/Main",
+    "table": "CompanyInfo",
+    "key": "RecId",
+    "business_key": "DataArea",
+    "match": "exact",
+    "role": "dimension",
+    "attributes": {},
+    "src": [
+     "S27"
+    ],
+    "checked": true,
+    "note": "Attribute names to verify in the table definition.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "core_silver.legal_entity",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "Requisition",
+   "name": "Purchase requisition",
+   "description": "A request to buy, with requester, category and amount.",
+   "synonyms": [
+    "Purchase request",
+    "PR",
+    "Request"
+   ],
+   "key": [
+    "requisitionId"
+   ],
+   "properties": [
+    {
+     "name": "requisitionId",
+     "type": "string"
+    },
+    {
+     "name": "category",
+     "type": "string"
+    },
+    {
+     "name": "amount",
+     "type": "double"
+    },
+    {
+     "name": "requestedAt",
+     "type": "datetime"
+    },
+    {
+     "name": "channel",
+     "type": "string"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "procurement",
+   "journeys": [
+    "D2"
+   ],
+   "status": "hypothesis",
+   "origin": "source-to-pay",
+   "source": "src-sap-s-4hana",
+   "standard": {
+    "standard": "operations",
+    "entity": "PurchReqTable (Purchase requisitions)",
+    "folder": "core/operationsCommon/Tables (procurement)",
+    "table": "PurchReqTable",
+    "key": "RecId",
+    "business_key": "PurchReqId",
+    "match": "exact",
+    "role": "fact",
+    "attributes": {
+     "requisitionId": "PurchReqId"
+    },
+    "src": [
+     "S19"
+    ],
+    "checked": false,
+    "note": "Table and attribute names to verify in the Common Data Model reference.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "procurement_silver.requisition",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "PurchaseOrder",
+   "name": "Purchase order",
+   "description": "A commitment to a supplier for goods or services.",
+   "synonyms": [
+    "PO",
+    "Spend line",
+    "Order"
+   ],
+   "key": [
+    "purchaseOrderId"
+   ],
+   "properties": [
+    {
+     "name": "purchaseOrderId",
+     "type": "string"
+    },
+    {
+     "name": "orderValue",
+     "type": "double"
+    },
+    {
+     "name": "orderedAt",
+     "type": "datetime"
+    },
+    {
+     "name": "onContract",
+     "type": "boolean"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "procurement",
+   "journeys": [
+    "D2"
+   ],
+   "status": "hypothesis",
+   "origin": "source-to-pay",
+   "src": [
+    "E06"
+   ],
+   "source": "src-sap-s-4hana",
+   "standard": {
+    "standard": "operations",
+    "entity": "PurchTable (Purchase orders)",
+    "folder": "core/operationsCommon/Tables (procurement)",
+    "table": "PurchTable",
+    "key": "RecId",
+    "business_key": "PurchId",
+    "match": "exact",
+    "role": "fact",
+    "attributes": {
+     "purchaseOrderId": "PurchId"
+    },
+    "src": [
+     "S19"
+    ],
+    "checked": false,
+    "note": "Table and attribute names to verify in the Common Data Model reference.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "procurement_silver.purchase_order",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "Contract",
+   "name": "Contract",
+   "description": "An agreement with a supplier: prices, terms, validity and renewal date.",
+   "synonyms": [
+    "Framework agreement",
+    "Agreement"
+   ],
+   "key": [
+    "contractId"
+   ],
+   "properties": [
+    {
+     "name": "contractId",
+     "type": "string"
+    },
+    {
+     "name": "validFrom",
+     "type": "datetime"
+    },
+    {
+     "name": "validTo",
+     "type": "datetime"
+    },
+    {
+     "name": "contractValue",
+     "type": "double"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "procurement",
+   "journeys": [
+    "D2"
+   ],
+   "status": "hypothesis",
+   "origin": "source-to-pay",
+   "src": [
+    "E06"
+   ],
+   "source": "src-sap-ariba",
+   "standard": {
+    "standard": "operations",
+    "entity": "AgreementHeader (Purchase agreements)",
+    "folder": "core/operationsCommon/Tables (procurement)",
+    "table": "AgreementHeader",
+    "key": "RecId",
+    "business_key": "DocumentTitle",
+    "match": "related",
+    "role": "dimension",
+    "attributes": {},
+    "src": [
+     "S19",
+     "S24"
+    ],
+    "checked": false,
+    "related": [
+     "Contract (service) for customer service contracts"
+    ],
+    "note": "Purchase agreements in finance and operations; a contract management system stays the master for the document itself. To verify.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "procurement_silver.contract",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "GoodsReceipt",
+   "name": "Goods receipt",
+   "description": "The confirmed receipt of goods or services against an order.",
+   "synonyms": [
+    "GR",
+    "Goods received",
+    "Delivery"
+   ],
+   "key": [
+    "goodsReceiptId"
+   ],
+   "properties": [
+    {
+     "name": "goodsReceiptId",
+     "type": "string"
+    },
+    {
+     "name": "receivedAt",
+     "type": "datetime"
+    },
+    {
+     "name": "quantity",
+     "type": "double"
+    }
+   ],
+   "namespace": "procurement",
+   "journeys": [
+    "D2"
+   ],
+   "status": "hypothesis",
+   "origin": "source-to-pay",
+   "source": "src-sap-s-4hana",
+   "standard": {
+    "standard": "operations",
+    "entity": "VendPackingSlipJour (Product receipts)",
+    "folder": "core/operationsCommon/Tables/Finance/AccountsPayable",
+    "table": "VendPackingSlipJour",
+    "key": "RecId",
+    "business_key": "PackingSlipId",
+    "match": "exact",
+    "role": "fact",
+    "attributes": {
+     "goodsReceiptId": "PackingSlipId"
+    },
+    "src": [
+     "S43"
+    ],
+    "checked": false,
+    "note": "Table and attribute names to verify in the Common Data Model reference.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "procurement_silver.goods_receipt",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "SupplierInvoice",
+   "name": "Supplier invoice",
+   "description": "An invoice from a supplier, matched against order and receipt.",
+   "synonyms": [
+    "Invoice",
+    "AP invoice"
+   ],
+   "key": [
+    "invoiceId"
+   ],
+   "properties": [
+    {
+     "name": "invoiceId",
+     "type": "string"
+    },
+    {
+     "name": "invoiceAmount",
+     "type": "double"
+    },
+    {
+     "name": "invoiceDate",
+     "type": "datetime"
+    },
+    {
+     "name": "blocked",
+     "type": "boolean"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "procurement",
+   "journeys": [
+    "D2"
+   ],
+   "status": "hypothesis",
+   "origin": "source-to-pay",
+   "src": [
+    "E06"
+   ],
+   "source": "src-sap-s-4hana",
+   "standard": {
+    "standard": "operations",
+    "entity": "VendInvoiceJour (Vendor invoices)",
+    "folder": "core/operationsCommon/Tables/Finance/AccountsPayable/Transaction",
+    "table": "VendInvoiceJour",
+    "key": "RecId",
+    "business_key": "InvoiceId",
+    "match": "exact",
+    "role": "fact",
+    "attributes": {
+     "invoiceId": "InvoiceId",
+     "invoiceAmount": "InvoiceAmount",
+     "invoiceDate": "InvoiceDate"
+    },
+    "src": [
+     "S43"
+    ],
+    "checked": true,
+    "note": "Attribute names to verify in the table definition.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "procurement_silver.supplier_invoice",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "Asset",
+   "name": "Asset",
+   "description": "A machine or installation at a customer or plant, tracked over its life (installed base).",
+   "synonyms": [
+    "Installed base",
+    "Equipment",
+    "Machine"
+   ],
+   "key": [
+    "assetId"
+   ],
+   "properties": [
+    {
+     "name": "assetId",
+     "type": "string"
+    },
+    {
+     "name": "serialNumber",
+     "type": "string"
+    },
+    {
+     "name": "model",
+     "type": "string"
+    },
+    {
+     "name": "installedAt",
+     "type": "datetime"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "timeseries": [
+    {
+     "name": "temperature",
+     "type": "double",
+     "unit": "°C"
+    },
+    {
+     "name": "vibration",
+     "type": "double",
+     "unit": "mm/s"
+    },
+    {
+     "name": "alarmCode",
+     "type": "string",
+     "unit": ""
+    }
+   ],
+   "namespace": "core",
+   "journeys": [
+    "D3",
+    "D1"
+   ],
+   "status": "hypothesis",
+   "origin": "core",
+   "src": [
+    "E05"
+   ],
+   "source": "src-dynamics-365-field-service",
+   "secondary": [
+    "src-iot-platform"
+   ],
+   "standard": {
+    "standard": "dataverse",
+    "entity": "Customer Asset",
+    "folder": "Dynamics 365 Field Service",
+    "table": "msdyn_customerasset",
+    "key": "msdyn_customerassetid",
+    "business_key": "msdyn_name",
+    "match": "exact",
+    "role": "dimension",
+    "attributes": {
+     "assetId": "msdyn_name",
+     "model": "msdyn_product",
+     "status": "statecode"
+    },
+    "src": [
+     "S28"
+    ],
+    "checked": true,
+    "note": "Extends the Dynamics 365 customer asset; msdyn_deviceid links the asset to its IoT device and msdyn_parentasset builds the asset hierarchy.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "core_silver.asset",
+    "origin": "default",
+    "timeseries_table": "service_events.asset_telemetry"
+   }
+  },
+  {
+   "id": "ServiceRequest",
+   "name": "Service request",
+   "description": "A request for service from a customer, an alarm or a planned maintenance plan.",
+   "synonyms": [
+    "Case",
+    "Ticket",
+    "Service call"
+   ],
+   "key": [
+    "serviceRequestId"
+   ],
+   "properties": [
+    {
+     "name": "serviceRequestId",
+     "type": "string"
+    },
+    {
+     "name": "channel",
+     "type": "string"
+    },
+    {
+     "name": "priority",
+     "type": "string"
+    },
+    {
+     "name": "raisedAt",
+     "type": "datetime"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "service",
+   "journeys": [
+    "D3"
+   ],
+   "status": "hypothesis",
+   "origin": "request-to-resolution",
+   "source": "src-dynamics-365-field-service",
+   "standard": {
+    "standard": "cdm",
+    "entity": "Case",
+    "folder": "core/applicationCommon/foundationCommon/crmCommon/service",
+    "table": "incident",
+    "key": "incidentid",
+    "business_key": "ticketnumber",
+    "match": "exact",
+    "role": "fact",
+    "attributes": {
+     "serviceRequestId": "ticketnumber",
+     "channel": "caseorigincode",
+     "priority": "prioritycode",
+     "raisedAt": "createdon",
+     "status": "statecode"
+    },
+    "src": [
+     "S24"
+    ],
+    "checked": true,
+    "note": "Service request case associated with a contract.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "service_silver.service_request",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "WorkOrder",
+   "name": "Work order",
+   "description": "The planned job to fix or maintain an asset: skills, parts and schedule.",
+   "synonyms": [
+    "Job",
+    "Service order",
+    "Repair"
+   ],
+   "key": [
+    "workOrderId"
+   ],
+   "properties": [
+    {
+     "name": "workOrderId",
+     "type": "string"
+    },
+    {
+     "name": "workType",
+     "type": "string"
+    },
+    {
+     "name": "scheduledAt",
+     "type": "datetime"
+    },
+    {
+     "name": "completedAt",
+     "type": "datetime"
+    },
+    {
+     "name": "firstTimeFix",
+     "type": "boolean"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "service",
+   "journeys": [
+    "D3"
+   ],
+   "status": "hypothesis",
+   "origin": "request-to-resolution",
+   "src": [],
+   "source": "src-dynamics-365-field-service",
+   "standard": {
+    "standard": "dataverse",
+    "entity": "Work Order",
+    "folder": "Dynamics 365 Field Service",
+    "table": "msdyn_workorder",
+    "key": "msdyn_workorderid",
+    "business_key": "msdyn_name",
+    "match": "exact",
+    "role": "fact",
+    "attributes": {
+     "workOrderId": "msdyn_name",
+     "workType": "msdyn_workordertype",
+     "scheduledAt": "msdyn_datewindowstart",
+     "completedAt": "msdyn_completedon",
+     "status": "msdyn_systemstatus"
+    },
+    "src": [
+     "S31"
+    ],
+    "checked": true,
+    "note": "Stores the work done for an account: incident details, resources, tasks, billing; links to the customer asset and the IoT alert. First-time fix is derived.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "service_silver.work_order",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "ServiceReport",
+   "name": "Service report",
+   "description": "The technician's report of a visit: findings, work done, parts used, confirmed by the technician.",
+   "synonyms": [
+    "Visit report",
+    "Field report",
+    "Report"
+   ],
+   "key": [
+    "serviceReportId"
+   ],
+   "properties": [
+    {
+     "name": "serviceReportId",
+     "type": "string"
+    },
+    {
+     "name": "visitedAt",
+     "type": "datetime"
+    },
+    {
+     "name": "confirmedAt",
+     "type": "datetime"
+    },
+    {
+     "name": "followUpNeeded",
+     "type": "boolean"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "service",
+   "journeys": [
+    "D3"
+   ],
+   "status": "hypothesis",
+   "origin": "request-to-resolution",
+   "source": "src-dynamics-365-field-service",
+   "standard": {
+    "standard": "custom",
+    "entity": "Service report",
+    "folder": "custom extension",
+    "table": null,
+    "key": null,
+    "business_key": null,
+    "match": "custom",
+    "role": "fact",
+    "attributes": {},
+    "src": [
+     "S21",
+     "S31"
+    ],
+    "checked": true,
+    "related": [
+     "BookableResourceBooking (the visit)",
+     "Work order (msdyn_workorder) summary"
+    ],
+    "note": "No standard table: the technician's confirmed report is a custom table in the service domain, linked to the work order and the booking.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "service_silver.service_report",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "SparePart",
+   "name": "Spare part",
+   "description": "A part used or needed on a job, with availability.",
+   "synonyms": [
+    "Part",
+    "Component"
+   ],
+   "key": [
+    "partId"
+   ],
+   "properties": [
+    {
+     "name": "partId",
+     "type": "string"
+    },
+    {
+     "name": "partName",
+     "type": "string"
+    },
+    {
+     "name": "stockLevel",
+     "type": "double"
+    }
+   ],
+   "base": "Product",
+   "namespace": "service",
+   "journeys": [
+    "D3"
+   ],
+   "status": "hypothesis",
+   "origin": "request-to-resolution",
+   "source": "src-dynamics-365-field-service",
+   "standard": {
+    "standard": "cdm",
+    "entity": "Product",
+    "folder": "core/applicationCommon/foundationCommon",
+    "table": "product",
+    "key": "productid",
+    "business_key": "productnumber",
+    "match": "extends",
+    "role": "dimension",
+    "attributes": {
+     "partId": "productnumber",
+     "partName": "name"
+    },
+    "src": [
+     "S21"
+    ],
+    "checked": true,
+    "note": "A spare part is a product held in stock; stock levels come from the ERP or warehouse inventory.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "service_silver.spare_part",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "AlarmEvent",
+   "name": "Alarm event",
+   "description": "A live alarm or telemetry event from an asset (time series).",
+   "synonyms": [
+    "Alarm",
+    "Telemetry event"
+   ],
+   "key": [
+    "alarmEventId"
+   ],
+   "properties": [
+    {
+     "name": "alarmEventId",
+     "type": "string"
+    },
+    {
+     "name": "alarmCode",
+     "type": "string"
+    },
+    {
+     "name": "severity",
+     "type": "string"
+    },
+    {
+     "name": "occurredAt",
+     "type": "datetime"
+    }
+   ],
+   "event": true,
+   "namespace": "service",
+   "journeys": [
+    "D3"
+   ],
+   "status": "hypothesis",
+   "origin": "request-to-resolution",
+   "src": [
+    "E05"
+   ],
+   "source": "src-iot-platform",
+   "standard": {
+    "standard": "dataverse",
+    "entity": "IoT Alert",
+    "folder": "Dynamics 365 Field Service",
+    "table": "msdyn_iotalert",
+    "key": "msdyn_iotalertid",
+    "business_key": "msdyn_alerttoken",
+    "match": "exact",
+    "role": "fact",
+    "attributes": {
+     "alarmCode": "msdyn_alerttype",
+     "occurredAt": "msdyn_alerttime"
+    },
+    "src": [
+     "S30"
+    ],
+    "checked": true,
+    "note": "Only actionable alerts reach Dataverse (with msdyn_customerasset, msdyn_case and msdyn_workorder links); raw telemetry stays in the eventhouse. msdyn_alertpriorityscore (0 to 100) carries the priority.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "eventhouse",
+    "table": "service_events.alarm_event",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "LedgerAccount",
+   "name": "Ledger account",
+   "description": "A general ledger account in the chart of accounts.",
+   "synonyms": [
+    "GL account",
+    "General ledger account",
+    "Account"
+   ],
+   "key": [
+    "accountNumber"
+   ],
+   "properties": [
+    {
+     "name": "accountNumber",
+     "type": "string"
+    },
+    {
+     "name": "accountName",
+     "type": "string"
+    },
+    {
+     "name": "accountType",
+     "type": "string"
+    }
+   ],
+   "namespace": "finance",
+   "journeys": [
+    "D4"
+   ],
+   "status": "hypothesis",
+   "origin": "record-to-report",
+   "src": [
+    "E06"
+   ],
+   "source": "src-sap-s-4hana",
+   "standard": {
+    "standard": "operations",
+    "entity": "MainAccount (Main accounts)",
+    "folder": "core/operationsCommon/Tables/Finance/Ledger",
+    "table": "MainAccount",
+    "key": "RecId",
+    "business_key": "MainAccountId",
+    "match": "exact",
+    "role": "dimension",
+    "attributes": {
+     "accountNumber": "MainAccountId",
+     "accountName": "Name"
+    },
+    "src": [
+     "S27"
+    ],
+    "checked": false,
+    "note": "Table and attribute names to verify in the Common Data Model reference.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "finance_silver.ledger_account",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "JournalEntry",
+   "name": "Journal entry",
+   "description": "A posting to the ledger, with amount, period and source.",
+   "synonyms": [
+    "Posting",
+    "Journal",
+    "Subledger entry"
+   ],
+   "key": [
+    "journalEntryId"
+   ],
+   "properties": [
+    {
+     "name": "journalEntryId",
+     "type": "string"
+    },
+    {
+     "name": "amount",
+     "type": "double"
+    },
+    {
+     "name": "postingDate",
+     "type": "datetime"
+    },
+    {
+     "name": "period",
+     "type": "string"
+    },
+    {
+     "name": "source",
+     "type": "string"
+    }
+   ],
+   "namespace": "finance",
+   "journeys": [
+    "D4"
+   ],
+   "status": "hypothesis",
+   "origin": "record-to-report",
+   "src": [
+    "E06"
+   ],
+   "source": "src-sap-s-4hana",
+   "standard": {
+    "standard": "operations",
+    "entity": "GeneralJournalAccountEntry",
+    "folder": "core/operationsCommon/Tables/Finance/Ledger/TransactionLine",
+    "table": "GeneralJournalAccountEntry",
+    "key": "RecId",
+    "business_key": "RecId",
+    "match": "exact",
+    "role": "fact",
+    "attributes": {
+     "amount": "AccountingCurrencyAmount",
+     "source": "PostingType"
+    },
+    "src": [
+     "S26"
+    ],
+    "checked": true,
+    "note": "Line level; the posting date and period come from the general journal entry header (GeneralJournalEntry), the account from MainAccount.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "finance_silver.journal_entry",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "Reconciliation",
+   "name": "Reconciliation",
+   "description": "The reconciliation of an account for a period, with open items and preparer.",
+   "synonyms": [
+    "Account reconciliation",
+    "Reconcile"
+   ],
+   "key": [
+    "reconciliationId"
+   ],
+   "properties": [
+    {
+     "name": "reconciliationId",
+     "type": "string"
+    },
+    {
+     "name": "period",
+     "type": "string"
+    },
+    {
+     "name": "openItems",
+     "type": "integer"
+    },
+    {
+     "name": "difference",
+     "type": "double"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "finance",
+   "journeys": [
+    "D4"
+   ],
+   "status": "hypothesis",
+   "origin": "record-to-report",
+   "source": "src-excel-close-checklists",
+   "standard": {
+    "standard": "custom",
+    "entity": "Reconciliation",
+    "folder": "custom extension",
+    "table": null,
+    "key": null,
+    "business_key": null,
+    "match": "custom",
+    "role": "fact",
+    "attributes": {},
+    "src": [],
+    "checked": true,
+    "note": "Held in the close or reconciliation tool; model as a custom table in the finance domain.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "finance_silver.reconciliation",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "CloseTask",
+   "name": "Close task",
+   "description": "A task in the period-end close calendar with owner, due date and status.",
+   "synonyms": [
+    "Close activity",
+    "Close calendar task"
+   ],
+   "key": [
+    "closeTaskId"
+   ],
+   "properties": [
+    {
+     "name": "closeTaskId",
+     "type": "string"
+    },
+    {
+     "name": "period",
+     "type": "string"
+    },
+    {
+     "name": "dueAt",
+     "type": "datetime"
+    },
+    {
+     "name": "completedAt",
+     "type": "datetime"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "namespace": "finance",
+   "journeys": [
+    "D4"
+   ],
+   "status": "hypothesis",
+   "origin": "record-to-report",
+   "source": "src-excel-close-checklists",
+   "standard": {
+    "standard": "custom",
+    "entity": "Close task",
+    "folder": "custom extension",
+    "table": null,
+    "key": null,
+    "business_key": null,
+    "match": "custom",
+    "role": "fact",
+    "attributes": {},
+    "src": [],
+    "checked": true,
+    "note": "Held in the close calendar or checklist; model as a custom table in the finance domain.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "finance_silver.close_task",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "CostCenter",
+   "name": "Cost center",
+   "description": "An organisational unit that collects costs.",
+   "synonyms": [
+    "Cost centre"
+   ],
+   "key": [
+    "costCenterId"
+   ],
+   "properties": [
+    {
+     "name": "costCenterId",
+     "type": "string"
+    },
+    {
+     "name": "costCenterName",
+     "type": "string"
+    },
+    {
+     "name": "responsible",
+     "type": "string"
+    }
+   ],
+   "namespace": "finance",
+   "journeys": [
+    "D4"
+   ],
+   "status": "hypothesis",
+   "origin": "record-to-report",
+   "source": "src-sap-s-4hana",
+   "standard": {
+    "standard": "operations",
+    "entity": "Financial dimension value (cost center)",
+    "folder": "core/operationsCommon/Tables/Finance/FinancialDimensions",
+    "table": "DimensionAttributeValue",
+    "key": "RecId",
+    "business_key": "DisplayValue",
+    "match": "related",
+    "role": "dimension",
+    "attributes": {},
+    "src": [
+     "S26"
+    ],
+    "checked": false,
+    "note": "Cost centers are values of a financial dimension; to verify.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "finance_silver.cost_center",
+    "origin": "default"
+   }
+  },
+  {
+   "id": "ServiceContract",
+   "name": "Service contract",
+   "namespace": "service",
+   "description": "A customer agreement for service on assets: coverage, response time (SLA) and validity.",
+   "synonyms": [
+    "Service agreement",
+    "SLA"
+   ],
+   "key": [
+    "serviceContractId"
+   ],
+   "properties": [
+    {
+     "name": "serviceContractId",
+     "type": "string"
+    },
+    {
+     "name": "coverage",
+     "type": "string"
+    },
+    {
+     "name": "slaHours",
+     "type": "integer"
+    },
+    {
+     "name": "validFrom",
+     "type": "datetime"
+    },
+    {
+     "name": "validTo",
+     "type": "datetime"
+    },
+    {
+     "name": "status",
+     "type": "string"
+    }
+   ],
+   "journeys": [
+    "D3",
+    "D1"
+   ],
+   "source": "src-dynamics-365-field-service",
+   "status": "hypothesis",
+   "origin": "workshop",
+   "src": [
+    "E05"
+   ],
+   "standard": {
+    "standard": "cdm",
+    "entity": "Contract",
+    "folder": "core/applicationCommon/foundationCommon/crmCommon/service",
+    "table": "contract",
+    "key": "contractid",
+    "business_key": "title",
+    "match": "related",
+    "role": "dimension",
+    "attributes": {
+     "serviceContractId": "contractid",
+     "validFrom": "activeon",
+     "status": "statecode"
+    },
+    "src": [
+     "S24"
+    ],
+    "checked": true,
+    "related": [
+     "Entitlement (support terms and SLA)",
+     "Field Service agreement for recurring maintenance"
+    ],
+    "note": "Agreement to provide customer service during a specified time or number of cases.",
+    "origin": "map"
+   },
+   "binding": {
+    "layer": "silver",
+    "item": "lakehouse",
+    "table": "service_silver.service_contract",
+    "origin": "default"
+   }
+  }
+ ],
+ "relationship_types": [
+  {
+   "id": "Lead_converts_to_Opportunity",
+   "name": "converts_to",
+   "from": "Lead",
+   "to": "Opportunity",
+   "cardinality": "1:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Customer_has_opportunity_Opportunity",
+   "name": "has_opportunity",
+   "from": "Customer",
+   "to": "Opportunity",
+   "cardinality": "1:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Opportunity_results_in_Quote",
+   "name": "results_in",
+   "from": "Opportunity",
+   "to": "Quote",
+   "cardinality": "1:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Quote_becomes_SalesOrder",
+   "name": "becomes",
+   "from": "Quote",
+   "to": "SalesOrder",
+   "cardinality": "1:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Customer_places_SalesOrder",
+   "name": "places",
+   "from": "Customer",
+   "to": "SalesOrder",
+   "cardinality": "1:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Quote_quotes_Product",
+   "name": "quotes",
+   "from": "Quote",
+   "to": "Product",
+   "cardinality": "n:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Employee_owns_Opportunity",
+   "name": "owns",
+   "from": "Employee",
+   "to": "Opportunity",
+   "cardinality": "1:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Employee_requests_Requisition",
+   "name": "requests",
+   "from": "Employee",
+   "to": "Requisition",
+   "cardinality": "1:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Requisition_becomes_PurchaseOrder",
+   "name": "becomes",
+   "from": "Requisition",
+   "to": "PurchaseOrder",
+   "cardinality": "1:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "PurchaseOrder_orders_from_Supplier",
+   "name": "orders_from",
+   "from": "PurchaseOrder",
+   "to": "Supplier",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "PurchaseOrder_references_Contract",
+   "name": "references",
+   "from": "PurchaseOrder",
+   "to": "Contract",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Contract_with_supplier_Supplier",
+   "name": "with_supplier",
+   "from": "Contract",
+   "to": "Supplier",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "GoodsReceipt_receives_PurchaseOrder",
+   "name": "receives",
+   "from": "GoodsReceipt",
+   "to": "PurchaseOrder",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "SupplierInvoice_bills_PurchaseOrder",
+   "name": "bills",
+   "from": "SupplierInvoice",
+   "to": "PurchaseOrder",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "PurchaseOrder_buys_Product",
+   "name": "buys",
+   "from": "PurchaseOrder",
+   "to": "Product",
+   "cardinality": "n:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Customer_owns_Asset",
+   "name": "owns",
+   "from": "Customer",
+   "to": "Asset",
+   "cardinality": "1:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Asset_located_at_Site",
+   "name": "located_at",
+   "from": "Asset",
+   "to": "Site",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "ServiceRequest_concerns_Asset",
+   "name": "concerns",
+   "from": "ServiceRequest",
+   "to": "Asset",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "AlarmEvent_raised_by_Asset",
+   "name": "raised_by",
+   "from": "AlarmEvent",
+   "to": "Asset",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "AlarmEvent_triggers_ServiceRequest",
+   "name": "triggers",
+   "from": "AlarmEvent",
+   "to": "ServiceRequest",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "ServiceRequest_resolved_by_WorkOrder",
+   "name": "resolved_by",
+   "from": "ServiceRequest",
+   "to": "WorkOrder",
+   "cardinality": "1:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "WorkOrder_assigned_to_Employee",
+   "name": "assigned_to",
+   "from": "WorkOrder",
+   "to": "Employee",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "WorkOrder_documented_in_ServiceReport",
+   "name": "documented_in",
+   "from": "WorkOrder",
+   "to": "ServiceReport",
+   "cardinality": "1:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "WorkOrder_uses_SparePart",
+   "name": "uses",
+   "from": "WorkOrder",
+   "to": "SparePart",
+   "cardinality": "n:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "JournalEntry_posted_to_LedgerAccount",
+   "name": "posted_to",
+   "from": "JournalEntry",
+   "to": "LedgerAccount",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "JournalEntry_booked_by_LegalEntity",
+   "name": "booked_by",
+   "from": "JournalEntry",
+   "to": "LegalEntity",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "JournalEntry_charged_to_CostCenter",
+   "name": "charged_to",
+   "from": "JournalEntry",
+   "to": "CostCenter",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Reconciliation_reconciles_LedgerAccount",
+   "name": "reconciles",
+   "from": "Reconciliation",
+   "to": "LedgerAccount",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "CloseTask_owned_by_Employee",
+   "name": "owned_by",
+   "from": "CloseTask",
+   "to": "Employee",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Reconciliation_prepared_by_Employee",
+   "name": "prepared_by",
+   "from": "Reconciliation",
+   "to": "Employee",
+   "cardinality": "n:1",
+   "status": "hypothesis"
+  },
+  {
+   "id": "Customer_holds_ServiceContract",
+   "name": "holds",
+   "from": "Customer",
+   "to": "ServiceContract",
+   "cardinality": "1:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "ServiceContract_covers_Asset",
+   "name": "covers",
+   "from": "ServiceContract",
+   "to": "Asset",
+   "cardinality": "n:n",
+   "status": "hypothesis"
+  },
+  {
+   "id": "SalesOrder_includes_ServiceContract",
+   "name": "includes_service",
+   "from": "SalesOrder",
+   "to": "ServiceContract",
+   "cardinality": "1:n",
+   "description": "The service attach of a machine order.",
+   "status": "hypothesis"
+  }
+ ],
+ "rules": [
+  {
+   "text": "Approval seam (Commercial): Every quote, every discount outside guidelines and every contractual commitment is approved by a person before it reaches the customer.",
+   "applies_to": [
+    "Quote"
+   ],
+   "src": [],
+   "id": "RU-01"
+  },
+  {
+   "text": "Approval seam (Procurement): Every requisition is confirmed by the requester; every award, contract deviation and purchase above the delegation of authority is approved by a person.",
+   "applies_to": [
+    "Requisition",
+    "Contract"
+   ],
+   "src": [],
+   "id": "RU-02"
+  },
+  {
+   "text": "Approval seam (Service): The technician confirms every report; the planner approves every dispatch; nothing changes a customer contract without a person.",
+   "applies_to": [
+    "ServiceReport"
+   ],
+   "src": [],
+   "id": "RU-03"
+  },
+  {
+   "text": "Approval seam (Finance): No posting, payment or published figure without a person signing it off.",
+   "applies_to": [
+    "JournalEntry"
+   ],
+   "src": [],
+   "id": "RU-04"
+  },
+  {
+   "text": "A service report is complete only when the technician has confirmed it; an unconfirmed report never triggers an invoice.",
+   "applies_to": [
+    "ServiceReport",
+    "WorkOrder"
+   ],
+   "src": [
+    "E05"
+   ],
+   "id": "RU-05"
+  },
+  {
+   "text": "A purchase order counts as on contract only if it references a contract valid on the order date with the same supplier.",
+   "applies_to": [
+    "PurchaseOrder",
+    "Contract",
+    "Supplier"
+   ],
+   "src": [
+    "E06"
+   ],
+   "id": "RU-06"
+  },
+  {
+   "text": "A supplier invoice is blocked when price or quantity differ from the order and the goods receipt by more than the agreed tolerance.",
+   "applies_to": [
+    "SupplierInvoice",
+    "PurchaseOrder",
+    "GoodsReceipt"
+   ],
+   "src": [
+    "E06"
+   ],
+   "id": "RU-07"
+  },
+  {
+   "text": "Lead response time runs from the first customer contact to the first qualified answer, in working hours.",
+   "applies_to": [
+    "Lead"
+   ],
+   "src": [
+    "E01"
+   ],
+   "id": "RU-08"
+  }
+ ],
+ "metrics": [
+  {
+   "id": "M-01",
+   "name": "Lead response time",
+   "kpi": "Lead response time",
+   "journey": "D1",
+   "entity": "Lead",
+   "definition": "Hours from first signal to qualified response",
+   "baseline": "2–3 days (estimate)",
+   "target": "< 1 business day",
+   "measure": null,
+   "semantic_model": null,
+   "status": "to define"
+  },
+  {
+   "id": "M-02",
+   "name": "Quote cycle time",
+   "kpi": "Quote cycle time",
+   "journey": "D1",
+   "entity": "Quote",
+   "definition": "Days from qualified need to sent quote",
+   "baseline": "5–8 days",
+   "target": "2 days",
+   "measure": null,
+   "semantic_model": null,
+   "status": "to define"
+  },
+  {
+   "id": "M-03",
+   "name": "Quote accuracy",
+   "kpi": "Quote accuracy",
+   "journey": "D1",
+   "entity": "Quote",
+   "definition": "Share of quotes sent without later correction",
+   "baseline": null,
+   "target": "> 95%",
+   "measure": null,
+   "semantic_model": null,
+   "status": "to define"
+  },
+  {
+   "id": "M-04",
+   "name": "Service attach rate",
+   "kpi": "Service attach rate",
+   "journey": "D1",
+   "entity": "SalesOrder",
+   "definition": "Share of new installations sold with a service contract",
+   "baseline": null,
+   "target": null,
+   "measure": null,
+   "semantic_model": null,
+   "status": "to define"
+  },
+  {
+   "id": "M-05",
+   "name": "Spend under management",
+   "kpi": "Spend under management",
+   "journey": "D2",
+   "entity": "PurchaseOrder",
+   "definition": "Share of spend through negotiated channels",
+   "baseline": "about 70% (estimate)",
+   "target": "> 90%",
+   "measure": null,
+   "semantic_model": null,
+   "status": "to define"
+  },
+  {
+   "id": "M-06",
+   "name": "Maverick buying rate",
+   "kpi": "Maverick buying rate",
+   "journey": "D2",
+   "entity": "PurchaseOrder",
+   "definition": "Share of indirect spend outside catalogues and contracts",
+   "baseline": "about 25%",
+   "target": "< 10%",
+   "measure": null,
+   "semantic_model": null,
+   "status": "to define"
+  },
+  {
+   "id": "M-07",
+   "name": "Requisition cycle time",
+   "kpi": "Requisition cycle time",
+   "journey": "D2",
+   "entity": "Requisition",
+   "definition": "Hours from need to approved requisition",
+   "baseline": null,
+   "target": "< 4 hours",
+   "measure": null,
+   "semantic_model": null,
+   "status": "to define"
+  },
+  {
+   "id": "M-08",
+   "name": "Tail spend negotiated",
+   "kpi": "Tail spend negotiated",
+   "journey": "D2",
+   "entity": "PurchaseOrder",
+   "definition": "Share of tail spend under negotiated terms",
+   "baseline": null,
+   "target": null,
+   "measure": null,
+   "semantic_model": null,
+   "status": "to define"
+  },
+  {
+   "id": "M-09",
+   "name": "Second-visit rate",
+   "kpi": "Second-visit rate",
+   "journey": "D3",
+   "entity": "WorkOrder",
+   "definition": "Share of cases needing more than one visit",
+   "baseline": "about 12%",
+   "target": "< 7%",
+   "measure": null,
+   "semantic_model": null,
+   "status": "to define"
+  },
+  {
+   "id": "M-10",
+   "name": "Time to confirmed report",
+   "kpi": "Time to confirmed report",
+   "journey": "D3",
+   "entity": "ServiceReport",
+   "definition": "Minutes from job end to confirmed report",
+   "baseline": "next day (typical)",
+   "target": "< 15 minutes",
+   "measure": null,
+   "semantic_model": null,
+   "status": "to define"
+  },
+  {
+   "id": "M-11",
+   "name": "Invoice lead time",
+   "kpi": "Invoice lead time",
+   "journey": "D3",
+   "entity": "WorkOrder",
+   "definition": "Days from job end to invoice",
+   "baseline": null,
+   "target": null,
+   "measure": null,
+   "semantic_model": null,
+   "status": "to define"
+  },
+  {
+   "id": "M-12",
+   "name": "First-time fix rate",
+   "kpi": "First-time fix rate",
+   "journey": "D3",
+   "entity": "WorkOrder",
+   "definition": "Share of cases fixed on the first visit",
+   "baseline": null,
+   "target": null,
+   "measure": null,
+   "semantic_model": null,
+   "status": "to define"
+  },
+  {
+   "id": "M-13",
+   "name": "Days to close",
+   "kpi": "Days to close",
+   "journey": "D4",
+   "entity": "CloseTask",
+   "definition": "Working days from period end to closed books",
+   "baseline": null,
+   "target": null,
+   "measure": "[Days to Close]",
+   "semantic_model": "Finance close (Power BI)",
+   "status": "from semantic model"
+  },
+  {
+   "id": "M-14",
+   "name": "Open reconciling items",
+   "kpi": "Open reconciling items",
+   "journey": "D4",
+   "entity": "Reconciliation",
+   "definition": "Items older than 30 days",
+   "baseline": null,
+   "target": null,
+   "measure": "[Open Reconciling Items]",
+   "semantic_model": "Finance close (Power BI)",
+   "status": "from semantic model"
+  }
+ ],
+ "sources": [
+  {
+   "id": "src-dynamics-365-sales",
+   "name": "Dynamics 365 Sales",
+   "system": "Dynamics 365 Sales",
+   "path": "shortcut",
+   "item": "lakehouse",
+   "journeys": [
+    "D1"
+   ],
+   "data_class": "confidential",
+   "status": "next",
+   "owner": "CRM product owner"
+  },
+  {
+   "id": "src-sap-s-4hana",
+   "name": "SAP S/4HANA",
+   "system": "SAP S/4HANA (SD, MM, service billing, FI/CO)",
+   "path": "mirroring",
+   "item": "mirrored database",
+   "journeys": [
+    "D1",
+    "D2",
+    "D3",
+    "D4"
+   ],
+   "data_class": "confidential",
+   "status": "now",
+   "owner": "SAP competence center"
+  },
+  {
+   "id": "src-product-configurator",
+   "name": "Product configurator",
+   "system": "Product configurator (CPQ)",
+   "path": "pipeline",
+   "item": "lakehouse",
+   "journeys": [
+    "D1"
+   ],
+   "data_class": "internal",
+   "status": "next",
+   "owner": null
+  },
+  {
+   "id": "src-sap-ariba",
+   "name": "SAP Ariba",
+   "system": "SAP Ariba",
+   "path": "pipeline",
+   "item": "lakehouse",
+   "journeys": [
+    "D2"
+   ],
+   "data_class": "confidential",
+   "status": "next",
+   "owner": null
+  },
+  {
+   "id": "src-supplier-risk-feed",
+   "name": "Supplier risk feed",
+   "system": "Supplier risk feed",
+   "path": "pipeline",
+   "item": "lakehouse",
+   "journeys": [
+    "D2"
+   ],
+   "data_class": "internal",
+   "status": "later",
+   "owner": null
+  },
+  {
+   "id": "src-dynamics-365-field-service",
+   "name": "Dynamics 365 Field Service",
+   "system": "Dynamics 365 Field Service",
+   "path": "shortcut",
+   "item": "lakehouse",
+   "journeys": [
+    "D3"
+   ],
+   "data_class": "confidential",
+   "status": "next",
+   "owner": "Service applications lead"
+  },
+  {
+   "id": "src-iot-platform",
+   "name": "IoT platform",
+   "system": "IoT platform",
+   "path": "eventstream",
+   "item": "eventhouse",
+   "journeys": [
+    "D3"
+   ],
+   "data_class": "internal",
+   "status": "later",
+   "owner": "Service technology lead"
+  },
+  {
+   "id": "src-power-bi",
+   "name": "Power BI",
+   "system": "Power BI",
+   "path": "semantic model",
+   "item": "semantic model",
+   "journeys": [
+    "D4"
+   ],
+   "data_class": "confidential",
+   "status": "next",
+   "owner": "Finance controlling"
+  },
+  {
+   "id": "src-excel-close-checklists",
+   "name": "Excel close checklists",
+   "system": "Excel close checklists",
+   "path": "pipeline",
+   "item": "lakehouse",
+   "journeys": [
+    "D4"
+   ],
+   "data_class": "confidential",
+   "status": "next",
+   "owner": "Group accounting"
+  }
+ ],
+ "data_agents": [
+  {
+   "name": "Commercial Data Agent",
+   "journey": "D1",
+   "scope": "the Lead-to-Order Journey",
+   "description": "Answers questions about the Lead-to-Order Journey in business terms: Customer, Product, Employee, Site, Lead, Opportunity, Quote, Sales order, Asset.",
+   "journeys": [
+    "D1"
+   ],
+   "entities": [
+    "Customer",
+    "Product",
+    "Employee",
+    "Site",
+    "Lead",
+    "Opportunity",
+    "Quote",
+    "SalesOrder",
+    "Asset"
+   ],
+   "sources": [
+    "ontology"
+   ],
+   "products": [
+    {
+     "name": "Customer 360",
+     "entities": [
+      "Customer"
+     ],
+     "note": null
+    },
+    {
+     "name": "Installed base",
+     "entities": [
+      "Asset"
+     ],
+     "note": null
+    },
+    {
+     "name": "Opportunity pipeline",
+     "entities": [
+      "Opportunity"
+     ],
+     "note": null
+    },
+    {
+     "name": "Price book & discounts",
+     "entities": [],
+     "note": "to model"
+    },
+    {
+     "name": "Win/loss history",
+     "entities": [],
+     "note": "to model"
+    }
+   ],
+   "audience": "Sales Representative, Sales Engineer, Head of Sales Region",
+   "consumers": [
+    {
+     "kind": "copilot_studio",
+     "agents": [
+      "D1-LEAD",
+      "D1-A01",
+      "D1-A02",
+      "D1-A03",
+      "D1-A04",
+      "D1-A05"
+     ]
+    },
+    {
+     "kind": "m365_copilot",
+     "agents": []
+    }
+   ],
+   "questions": [
+    {
+     "q": "Which leads received this week have no response yet, and who owns them?"
+    },
+    {
+     "q": "What is the average quote cycle time by product group over the last 12 weeks?"
+    },
+    {
+     "q": "Which open opportunities above the deal-desk threshold have had no activity for 14 days?"
+    },
+    {
+     "q": "Which customers ordered machines last quarter without a service contract?"
+    },
+    {
+     "q": "How did lead response time develop by month over the last six months?"
+    },
+    {
+     "q": "How did quote cycle time develop by month over the last six months?"
+    }
+   ],
+   "status": "hypothesis",
+   "id": "DA-01"
+  },
+  {
+   "name": "Procurement Data Agent",
+   "journey": "D2",
+   "scope": "the Source-to-Pay Journey",
+   "description": "Answers questions about the Source-to-Pay Journey in business terms: Supplier, Product, Employee, Legal entity, Purchase requisition, Purchase order, Contract, Goods receipt, Supplier invoice.",
+   "journeys": [
+    "D2"
+   ],
+   "entities": [
+    "Supplier",
+    "Product",
+    "Employee",
+    "LegalEntity",
+    "Requisition",
+    "PurchaseOrder",
+    "Contract",
+    "GoodsReceipt",
+    "SupplierInvoice"
+   ],
+   "sources": [
+    "ontology"
+   ],
+   "products": [
+    {
+     "name": "Spend cube",
+     "entities": [],
+     "note": "to model"
+    },
+    {
+     "name": "Supplier 360",
+     "entities": [
+      "Supplier"
+     ],
+     "note": null
+    },
+    {
+     "name": "Contracts & prices",
+     "entities": [
+      "Contract"
+     ],
+     "note": null
+    },
+    {
+     "name": "Catalogues",
+     "entities": [],
+     "note": "to model"
+    },
+    {
+     "name": "Risk signals",
+     "entities": [],
+     "note": "to model"
+    }
+   ],
+   "audience": "Requester (any employee), Buyer, Category Manager",
+   "consumers": [
+    {
+     "kind": "copilot_studio",
+     "agents": [
+      "D2-LEAD",
+      "D2-A01",
+      "D2-A02",
+      "D2-A03",
+      "D2-A04",
+      "D2-A05"
+     ]
+    }
+   ],
+   "questions": [
+    {
+     "q": "Which purchase orders last month were placed outside a contract, by category?"
+    },
+    {
+     "q": "What is the requisition-to-order cycle time by channel this quarter?"
+    },
+    {
+     "q": "Which contracts expire in the next 90 days and how much spend runs through them?"
+    },
+    {
+     "q": "Which supplier invoices are blocked for more than five days, and why?"
+    },
+    {
+     "q": "How did spend under management develop by month over the last six months?"
+    },
+    {
+     "q": "How did maverick buying rate develop by month over the last six months?"
+    }
+   ],
+   "status": "hypothesis",
+   "id": "DA-02"
+  },
+  {
+   "name": "Service Data Agent",
+   "journey": "D3",
+   "scope": "the Request-to-Resolution Journey",
+   "description": "Answers questions about the Request-to-Resolution Journey in business terms: Customer, Asset, Employee, Product, Site, Service request, Work order, Service report, Spare part, Alarm event.",
+   "journeys": [
+    "D3"
+   ],
+   "entities": [
+    "Customer",
+    "Asset",
+    "Employee",
+    "Product",
+    "Site",
+    "ServiceRequest",
+    "WorkOrder",
+    "ServiceReport",
+    "SparePart",
+    "AlarmEvent",
+    "ServiceContract"
+   ],
+   "sources": [
+    "ontology",
+    "src-iot-platform"
+   ],
+   "products": [
+    {
+     "name": "Installed base & telemetry",
+     "entities": [
+      "Asset"
+     ],
+     "note": null
+    },
+    {
+     "name": "Work orders",
+     "entities": [
+      "WorkOrder"
+     ],
+     "note": null
+    },
+    {
+     "name": "Knowledge articles",
+     "entities": [],
+     "note": "documents: Foundry IQ"
+    },
+    {
+     "name": "Parts & stock",
+     "entities": [
+      "SparePart"
+     ],
+     "note": null
+    },
+    {
+     "name": "Contracts & SLAs",
+     "entities": [
+      "ServiceContract"
+     ],
+     "note": null
+    }
+   ],
+   "audience": "Field Service Technician, Service Planner / Dispatcher, Remote Expert",
+   "consumers": [
+    {
+     "kind": "copilot_studio",
+     "agents": [
+      "D3-LEAD",
+      "D3-A01",
+      "D3-A02",
+      "D3-A03",
+      "D3-A04",
+      "D3-A05"
+     ]
+    }
+   ],
+   "questions": [
+    {
+     "q": "Which assets had more than two alarms in the last 30 days and no open work order?"
+    },
+    {
+     "q": "What is the first-time fix rate by region and work type this quarter?"
+    },
+    {
+     "q": "Which confirmed service reports from last week still have no invoice?",
+     "language": "T-SQL (to verify)",
+     "query": "SELECT r.serviceReportId, w.workOrderId, r.confirmedAt FROM fs_servicereport r JOIN fs_workorder w ON w.workOrderId = r.workOrderId LEFT JOIN sap_billing b ON b.workOrderId = w.workOrderId WHERE r.confirmedAt >= DATEADD(day, -7, CAST(GETDATE() AS date)) AND b.invoiceId IS NULL"
+    },
+    {
+     "q": "Which technicians are certified for the asset models with the most open requests?"
+    },
+    {
+     "q": "How did second-visit rate develop by month over the last six months?"
+    },
+    {
+     "q": "How did time to confirmed report develop by month over the last six months?"
+    }
+   ],
+   "status": "hypothesis",
+   "id": "DA-03"
+  },
+  {
+   "name": "Finance Data Agent",
+   "journey": "D4",
+   "scope": "the Record-to-Report Journey",
+   "description": "Answers questions about the Record-to-Report Journey in business terms: Legal entity, Employee, Ledger account, Journal entry, Reconciliation, Close task, Cost center.",
+   "journeys": [
+    "D4"
+   ],
+   "entities": [
+    "LegalEntity",
+    "Employee",
+    "LedgerAccount",
+    "JournalEntry",
+    "Reconciliation",
+    "CloseTask",
+    "CostCenter"
+   ],
+   "sources": [
+    "ontology"
+   ],
+   "products": [
+    {
+     "name": "General ledger",
+     "entities": [
+      "LedgerAccount"
+     ],
+     "note": null
+    },
+    {
+     "name": "Subledgers",
+     "entities": [],
+     "note": "to model"
+    },
+    {
+     "name": "Management reporting cube",
+     "entities": [],
+     "note": "to model"
+    },
+    {
+     "name": "Close calendar",
+     "entities": [
+      "CloseTask"
+     ],
+     "note": null
+    }
+   ],
+   "audience": "Controller, Accountant, Chief Financial Officer",
+   "consumers": [
+    {
+     "kind": "copilot_studio",
+     "agents": [
+      "D4-LEAD",
+      "D4-A01",
+      "D4-A02",
+      "D4-A03",
+      "D4-A04"
+     ]
+    }
+   ],
+   "questions": [
+    {
+     "q": "Which close tasks for this period are overdue, and who owns them?"
+    },
+    {
+     "q": "Which accounts have reconciling items older than 60 days?"
+    },
+    {
+     "q": "What explains the variance above 5% on the top ten cost centers this month?"
+    },
+    {
+     "q": "How did days to close develop by month over the last six months?"
+    },
+    {
+     "q": "How did open reconciling items develop by month over the last six months?"
+    }
+   ],
+   "status": "hypothesis",
+   "id": "DA-04"
+  }
+ ],
+ "operations_agents": [
+  {
+   "name": "Service watch",
+   "journeys": [
+    "D3"
+   ],
+   "entities": [
+    "Asset",
+    "AlarmEvent",
+    "ServiceRequest"
+   ],
+   "goal": "Act on live signals before the customer notices: Machine alarms and telemetry from the installed base as live events (IoT platform to confirm)",
+   "rules": [
+    "When an asset raises an alarm of high severity and has no open service request, recommend opening one with the alarm context.",
+    "When the same alarm repeats three times within 24 hours, recommend a remote diagnosis before a visit."
+   ],
+   "actions": [
+    {
+     "name": "CreateServiceRequest",
+     "params": [
+      "assetId",
+      "alarmCode"
+     ],
+     "approver": "Planner"
+    }
+   ],
+   "notify": "Microsoft Teams",
+   "status": "hypothesis",
+   "id": "OA-01"
+  }
+ ],
+ "data_products": [
+  {
+   "name": "Customer 360",
+   "journey": "D1",
+   "entities": [
+    "Customer"
+   ],
+   "kind": "data product",
+   "agents": [
+    "DA-01"
+   ],
+   "origin": "data agent",
+   "id": "DP-01",
+   "domain": "Commercial",
+   "status": "hypothesis",
+   "owner": "Chief Commercial Officer",
+   "purpose": "Trusted customer 360 for the Lead-to-Order Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-01"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "commercial_gold.customer_360",
+    "Commercial model (semantic model)",
+    "Ontology: Customer"
+   ],
+   "sensitivity": "confidential",
+   "endorsement": "promoted",
+   "glossary": [
+    "Customer"
+   ],
+   "cde": [
+    "Customer ID"
+   ],
+   "quality": "Customers matched across SAP S/4HANA and Dynamics 365 Sales (target: 98 % match rate); duplicates below 1 %",
+   "access": "Request in the OneLake catalog; the commercial data steward approves",
+   "commitment": "Refreshed daily by 06:00",
+   "src": [
+    "E01"
+   ]
+  },
+  {
+   "name": "Installed base",
+   "journey": "D1",
+   "entities": [
+    "Asset"
+   ],
+   "kind": "data product",
+   "agents": [
+    "DA-01"
+   ],
+   "origin": "data agent",
+   "id": "DP-02",
+   "domain": "Commercial",
+   "status": "hypothesis",
+   "owner": "Chief Commercial Officer",
+   "purpose": "Trusted installed base for the Lead-to-Order Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-01"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "commercial_gold.installed_base",
+    "Commercial model (semantic model)",
+    "Ontology: Asset"
+   ],
+   "sensitivity": "confidential",
+   "endorsement": "promoted",
+   "glossary": [
+    "Asset"
+   ],
+   "cde": [
+    "Asset ID"
+   ]
+  },
+  {
+   "name": "Opportunity pipeline",
+   "journey": "D1",
+   "entities": [
+    "Opportunity"
+   ],
+   "kind": "data product",
+   "agents": [
+    "DA-01"
+   ],
+   "origin": "data agent",
+   "id": "DP-03",
+   "domain": "Commercial",
+   "status": "hypothesis",
+   "owner": "Chief Commercial Officer",
+   "purpose": "Trusted opportunity pipeline for the Lead-to-Order Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-01"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "commercial_gold.opportunity_pipeline",
+    "Commercial model (semantic model)",
+    "Ontology: Opportunity"
+   ],
+   "sensitivity": "confidential",
+   "endorsement": "promoted",
+   "glossary": [
+    "Opportunity"
+   ],
+   "cde": [
+    "Opportunity ID"
+   ]
+  },
+  {
+   "name": "Price book & discounts",
+   "journey": "D1",
+   "entities": [],
+   "kind": "data product",
+   "agents": [
+    "DA-01"
+   ],
+   "origin": "data agent",
+   "id": "DP-04",
+   "domain": "Commercial",
+   "status": "hypothesis",
+   "owner": "Chief Commercial Officer",
+   "purpose": "Trusted price book & discounts for the Lead-to-Order Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-01"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "commercial_gold.price_book_discounts",
+    "Commercial model (semantic model)"
+   ],
+   "sensitivity": null,
+   "endorsement": "promoted",
+   "glossary": [],
+   "cde": []
+  },
+  {
+   "name": "Win/loss history",
+   "journey": "D1",
+   "entities": [],
+   "kind": "data product",
+   "agents": [
+    "DA-01"
+   ],
+   "origin": "data agent",
+   "id": "DP-05",
+   "domain": "Commercial",
+   "status": "hypothesis",
+   "owner": "Chief Commercial Officer",
+   "purpose": "Trusted win/loss history for the Lead-to-Order Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-01"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "commercial_gold.win_loss_history",
+    "Commercial model (semantic model)"
+   ],
+   "sensitivity": null,
+   "endorsement": "promoted",
+   "glossary": [],
+   "cde": []
+  },
+  {
+   "name": "Spend cube",
+   "journey": "D2",
+   "entities": [],
+   "kind": "data product",
+   "agents": [
+    "DA-02"
+   ],
+   "origin": "data agent",
+   "id": "DP-06",
+   "domain": "Procurement",
+   "status": "hypothesis",
+   "owner": "Chief Procurement Officer",
+   "purpose": "Trusted spend cube for the Source-to-Pay Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-02"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "procurement_gold.spend_cube",
+    "Procurement model (semantic model)"
+   ],
+   "sensitivity": null,
+   "endorsement": "promoted",
+   "glossary": [],
+   "cde": []
+  },
+  {
+   "name": "Supplier 360",
+   "journey": "D2",
+   "entities": [
+    "Supplier"
+   ],
+   "kind": "data product",
+   "agents": [
+    "DA-02"
+   ],
+   "origin": "data agent",
+   "id": "DP-07",
+   "domain": "Procurement",
+   "status": "hypothesis",
+   "owner": "Chief Procurement Officer",
+   "purpose": "Trusted supplier 360 for the Source-to-Pay Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-02"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "procurement_gold.supplier_360",
+    "Procurement model (semantic model)",
+    "Ontology: Supplier"
+   ],
+   "sensitivity": "confidential",
+   "endorsement": "promoted",
+   "glossary": [
+    "Supplier"
+   ],
+   "cde": [
+    "Supplier ID"
+   ]
+  },
+  {
+   "name": "Contracts & prices",
+   "journey": "D2",
+   "entities": [
+    "Contract"
+   ],
+   "kind": "data product",
+   "agents": [
+    "DA-02"
+   ],
+   "origin": "data agent",
+   "id": "DP-08",
+   "domain": "Procurement",
+   "status": "hypothesis",
+   "owner": "Chief Procurement Officer",
+   "purpose": "Trusted contracts & prices for the Source-to-Pay Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-02"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "procurement_gold.contracts_prices",
+    "Procurement model (semantic model)",
+    "Ontology: Contract"
+   ],
+   "sensitivity": "confidential",
+   "endorsement": "promoted",
+   "glossary": [
+    "Contract"
+   ],
+   "cde": [
+    "Contract ID"
+   ]
+  },
+  {
+   "name": "Catalogues",
+   "journey": "D2",
+   "entities": [],
+   "kind": "data product",
+   "agents": [
+    "DA-02"
+   ],
+   "origin": "data agent",
+   "id": "DP-09",
+   "domain": "Procurement",
+   "status": "hypothesis",
+   "owner": "Chief Procurement Officer",
+   "purpose": "Trusted catalogues for the Source-to-Pay Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-02"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "procurement_gold.catalogues",
+    "Procurement model (semantic model)"
+   ],
+   "sensitivity": null,
+   "endorsement": "promoted",
+   "glossary": [],
+   "cde": []
+  },
+  {
+   "name": "Risk signals",
+   "journey": "D2",
+   "entities": [],
+   "kind": "data product",
+   "agents": [
+    "DA-02"
+   ],
+   "origin": "data agent",
+   "id": "DP-10",
+   "domain": "Procurement",
+   "status": "hypothesis",
+   "owner": "Chief Procurement Officer",
+   "purpose": "Trusted risk signals for the Source-to-Pay Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-02"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "procurement_gold.risk_signals",
+    "Procurement model (semantic model)"
+   ],
+   "sensitivity": null,
+   "endorsement": "promoted",
+   "glossary": [],
+   "cde": []
+  },
+  {
+   "name": "Installed base & telemetry",
+   "journey": "D3",
+   "entities": [
+    "Asset"
+   ],
+   "kind": "data product",
+   "agents": [
+    "DA-03"
+   ],
+   "origin": "data agent",
+   "id": "DP-11",
+   "domain": "Service",
+   "status": "hypothesis",
+   "owner": "Head of Service Operations",
+   "purpose": "Trusted installed base & telemetry for the Request-to-Resolution Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-03"
+     ]
+    },
+    {
+     "use": "actions",
+     "via": [
+      "OA-01"
+     ],
+     "review": true
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "service_gold.installed_base_telemetry",
+    "Service model (semantic model)",
+    "Ontology: Asset"
+   ],
+   "sensitivity": "confidential",
+   "endorsement": "promoted",
+   "glossary": [
+    "Asset"
+   ],
+   "cde": [
+    "Asset ID"
+   ],
+   "quality": "Every asset has a serial number, a model and an installation site; telemetry arrives within five minutes",
+   "access": "Request in the OneLake catalog; the service data steward approves; agent actions need the review of the Head of Service Operations",
+   "commitment": "Telemetry within five minutes; asset master daily",
+   "src": [
+    "E05"
+   ]
+  },
+  {
+   "name": "Work orders",
+   "journey": "D3",
+   "entities": [
+    "WorkOrder"
+   ],
+   "kind": "data product",
+   "agents": [
+    "DA-03"
+   ],
+   "origin": "data agent",
+   "id": "DP-12",
+   "domain": "Service",
+   "status": "hypothesis",
+   "owner": "Head of Service Operations",
+   "purpose": "Trusted work orders for the Request-to-Resolution Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-03"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "service_gold.work_orders",
+    "Service model (semantic model)",
+    "Ontology: Work order"
+   ],
+   "sensitivity": "confidential",
+   "endorsement": "promoted",
+   "glossary": [
+    "Work order"
+   ],
+   "cde": [
+    "Work order ID"
+   ]
+  },
+  {
+   "name": "Knowledge articles",
+   "journey": "D3",
+   "entities": [],
+   "kind": "knowledge",
+   "agents": [
+    "DA-03"
+   ],
+   "origin": "data agent",
+   "id": "DP-13",
+   "domain": "Service",
+   "status": "hypothesis",
+   "purpose": "Documents for grounding: they stay in Microsoft 365 or SharePoint and reach the agents through Foundry IQ, not through OneLake"
+  },
+  {
+   "name": "Parts & stock",
+   "journey": "D3",
+   "entities": [
+    "SparePart"
+   ],
+   "kind": "data product",
+   "agents": [
+    "DA-03"
+   ],
+   "origin": "data agent",
+   "id": "DP-14",
+   "domain": "Service",
+   "status": "hypothesis",
+   "owner": "Head of Service Operations",
+   "purpose": "Trusted parts & stock for the Request-to-Resolution Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-03"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "service_gold.parts_stock",
+    "Service model (semantic model)",
+    "Ontology: Spare part"
+   ],
+   "sensitivity": "confidential",
+   "endorsement": "promoted",
+   "glossary": [
+    "Spare part"
+   ],
+   "cde": [
+    "Spare part ID"
+   ]
+  },
+  {
+   "name": "Contracts & SLAs",
+   "journey": "D3",
+   "entities": [
+    "ServiceContract"
+   ],
+   "kind": "data product",
+   "agents": [
+    "DA-03"
+   ],
+   "origin": "data agent",
+   "id": "DP-15",
+   "domain": "Service",
+   "status": "hypothesis",
+   "owner": "Head of Service Operations",
+   "purpose": "Trusted contracts & slas for the Request-to-Resolution Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-03"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "service_gold.contracts_slas",
+    "Service model (semantic model)",
+    "Ontology: Service contract"
+   ],
+   "sensitivity": "confidential",
+   "endorsement": "promoted",
+   "glossary": [
+    "Service contract"
+   ],
+   "cde": [
+    "Service contract ID"
+   ]
+  },
+  {
+   "name": "General ledger",
+   "journey": "D4",
+   "entities": [
+    "LedgerAccount"
+   ],
+   "kind": "data product",
+   "agents": [
+    "DA-04"
+   ],
+   "origin": "data agent",
+   "id": "DP-16",
+   "domain": "Finance",
+   "status": "hypothesis",
+   "owner": "Chief Financial Officer",
+   "purpose": "Trusted general ledger for the Record-to-Report Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-04"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "finance_gold.general_ledger",
+    "Finance close (Power BI) (semantic model)",
+    "Ontology: Ledger account"
+   ],
+   "sensitivity": "confidential",
+   "endorsement": "promoted",
+   "glossary": [
+    "Ledger account"
+   ],
+   "cde": [
+    "Ledger account ID"
+   ]
+  },
+  {
+   "name": "Subledgers",
+   "journey": "D4",
+   "entities": [],
+   "kind": "data product",
+   "agents": [
+    "DA-04"
+   ],
+   "origin": "data agent",
+   "id": "DP-17",
+   "domain": "Finance",
+   "status": "hypothesis",
+   "owner": "Chief Financial Officer",
+   "purpose": "Trusted subledgers for the Record-to-Report Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-04"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "finance_gold.subledgers",
+    "Finance close (Power BI) (semantic model)"
+   ],
+   "sensitivity": null,
+   "endorsement": "promoted",
+   "glossary": [],
+   "cde": []
+  },
+  {
+   "name": "Management reporting cube",
+   "journey": "D4",
+   "entities": [],
+   "kind": "data product",
+   "agents": [
+    "DA-04"
+   ],
+   "origin": "data agent",
+   "id": "DP-18",
+   "domain": "Finance",
+   "status": "hypothesis",
+   "owner": "Chief Financial Officer",
+   "purpose": "Trusted management reporting cube for the Record-to-Report Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-04"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "finance_gold.management_reporting_cube",
+    "Finance close (Power BI) (semantic model)"
+   ],
+   "sensitivity": null,
+   "endorsement": "promoted",
+   "glossary": [],
+   "cde": []
+  },
+  {
+   "name": "Close calendar",
+   "journey": "D4",
+   "entities": [
+    "CloseTask"
+   ],
+   "kind": "data product",
+   "agents": [
+    "DA-04"
+   ],
+   "origin": "data agent",
+   "id": "DP-19",
+   "domain": "Finance",
+   "status": "hypothesis",
+   "owner": "Chief Financial Officer",
+   "purpose": "Trusted close calendar for the Record-to-Report Journey: reports and the journey's agents",
+   "uses": [
+    {
+     "use": "analytics"
+    },
+    {
+     "use": "grounding",
+     "via": [
+      "DA-04"
+     ]
+    }
+   ],
+   "layer": "gold",
+   "outputs": [
+    "finance_gold.close_calendar",
+    "Finance close (Power BI) (semantic model)",
+    "Ontology: Close task"
+   ],
+   "sensitivity": "confidential",
+   "endorsement": "promoted",
+   "glossary": [
+    "Close task"
+   ],
+   "cde": [
+    "Close task ID"
+   ]
+  }
+ ]
+}
