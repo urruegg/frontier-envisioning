@@ -4,6 +4,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import os
 import tempfile
 import threading
 import unittest
@@ -11,6 +12,7 @@ import urllib.error
 import urllib.request
 from http.server import ThreadingHTTPServer
 from pathlib import Path
+from unittest import mock
 
 from tests.unit._util import load
 
@@ -111,6 +113,18 @@ class BuildSite(unittest.TestCase):
 
 
 class ServeSite(unittest.TestCase):
+    def test_explicit_test_site_environment_selects_only_the_local_server_root(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "site-e2e"
+            out.mkdir()
+            (out / "index.html").write_text("test site", encoding="utf-8")
+            with mock.patch.dict(os.environ, {"FRONTIER_SITE_DIR": str(out)}), \
+                    mock.patch.object(serve_site, "make_handler") as handler, \
+                    mock.patch.object(serve_site, "ThreadingHTTPServer") as server:
+                server.return_value.serve_forever.side_effect = KeyboardInterrupt
+                self.assertEqual(serve_site.main(["--port", "0"]), 0)
+            handler.assert_called_once_with(out)
+
     def test_headers_and_status_codes_follow_the_config(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp) / "site"
