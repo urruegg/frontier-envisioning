@@ -15,6 +15,9 @@ metadata:
   icon: Money
   version: "1.9.1"
   plugin: frontier-envisioning
+  maturity: preview
+  optional: true
+  requires_preview_ack: true
 ---
 
 # FinOps for Frontier agents

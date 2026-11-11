@@ -51,6 +51,15 @@ def frontmatter(p: Path) -> dict:
     ver = re.search(r"(?m)^\s+version:\s*['\"]?([0-9][\w.\-]*)['\"]?\s*$", block)
     if ver:
         out["version"] = ver.group(1)
+    metadata = False
+    for line in block.splitlines():
+        if line and not line[0].isspace():
+            metadata = line.startswith("metadata:")
+        elif metadata:
+            field = re.match(r"^\s+(maturity|optional|requires_preview_ack):\s*(.*?)\s*$", line)
+            if field:
+                value = field[2].strip("'\"")
+                out[field[1]] = value == "true" if value in {"true", "false"} else value
     return out
 
 
@@ -112,6 +121,20 @@ def main(argv=None) -> int:
         fm = frontmatter(base / "SKILL.md") if (base / "SKILL.md").is_file() else {}
         if fm.get("name") != name:
             problems.append(f"{folder}/SKILL.md name {fm.get('name')!r} does not match {name!r}")
+        maturity = {}
+        for key in ("maturity", "optional", "requires_preview_ack"):
+            if key in sk:
+                maturity[key] = sk[key]
+                if key == "maturity" and sk[key] not in ("ga", "preview"):
+                    problems.append(f"{folder}: unknown product maturity")
+                elif key != "maturity" and type(sk[key]) is not bool:
+                    problems.append(f"{folder}: {key} must be a boolean")
+                if sk[key] != fm.get(key):
+                    problems.append(f"{folder}: {key} metadata differs from SKILL.md")
+        if name == "frontier-finops" and maturity != {
+            "maturity": "preview", "optional": True, "requires_preview_ack": True,
+        }:
+            problems.append(f"{folder}: current FinOps must be optional Preview with acknowledgement required")
         status, inst_ver = "new", None
         inst = installed_dir / name / "SKILL.md"
         try:
@@ -121,7 +144,7 @@ def main(argv=None) -> int:
         except OSError:
             status = "unknown"
         skills_out.append({"name": name, "source": f"{rel_root}/{folder}", "destination": f"skills/{name}",
-                           "files": len(files), "status": status, "installed_version": inst_ver})
+                           "files": len(files), "status": status, "installed_version": inst_ver, **maturity})
 
     verified = not problems and bool(skills_out)
     calls = [f'CopyArtifact(surface="user", source="{s["source"]}", destination="{s["destination"]}", recursive=true, overwrite=true)  # expect copied={s["files"]}'
@@ -130,6 +153,10 @@ def main(argv=None) -> int:
         "plugin": spec.get("plugin"), "display_name": spec.get("display_name"), "version": spec.get("version"),
         "verified": verified, "problems": problems, "skills": skills_out,
         "copy_calls": calls if verified else [],
+        "preview_notice": (
+            "Frontier FinOps is Preview; its grounding and model are not GA and need refinement. "
+            "Installation is not acknowledgement of use; explicit acknowledgement is required before cost operations."
+        ) if any(s.get("requires_preview_ack") is True for s in skills_out) else "",
         "after_install": ("Installed. Start a new Cowork chat (after OneDrive has synced) and try: "
                           + " | ".join(spec.get("start_prompts", []))) if verified else
                          "Do not install: re-download the original zip and upload it again without unpacking or repacking it.",

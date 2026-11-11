@@ -27,7 +27,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from fe_lib import PLUGIN, ROOT, SKILLS, frontmatter, tracked_files, utf16_units  # noqa: E402
+from fe_lib import PLUGIN, ROOT, SKILLS, frontmatter, maturity_errors, maturity_fields, tracked_files, utf16_units  # noqa: E402
 
 HOOK_EVENTS = {"sessionStart", "sessionEnd", "userPromptSubmitted", "preToolUse", "postToolUse", "postToolUseFailure",
                "agentStop", "subagentStart", "subagentStop", "errorOccurred", "preCompact", "permissionRequest",
@@ -95,6 +95,9 @@ def check_skills(r: Report):
             r.err("skills", f"manifest lists {f}, which does not exist")
     for d in sorted(p for p in SKILLS.iterdir() if p.is_dir()):
         _skill_frontmatter(r, d, limit_units=900)
+        fields = frontmatter((d / "SKILL.md").read_text(encoding="utf-8"))
+        for error in maturity_errors(d.name, maturity_fields(fields)):
+            r.err("skills", error)
     if (SKILLS / "frontier-finops/scripts/fv_expr.py").read_bytes() != (SKILLS / "frontier-value-case/scripts/fv_expr.py").read_bytes():
         r.err("skills", "fv_expr.py differs between frontier-finops and frontier-value-case (keep one shared copy)")
 

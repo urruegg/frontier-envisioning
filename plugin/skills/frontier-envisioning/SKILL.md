@@ -18,6 +18,9 @@ metadata:
   icon: Rocket
   version: "1.9.1"
   plugin: frontier-envisioning
+  maturity: ga
+  optional: false
+  requires_preview_ack: false
 ---
 
 # Frontier solution envisioning (end to end)
