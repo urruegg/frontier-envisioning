@@ -279,6 +279,11 @@ class PreviewGateFixtures(unittest.TestCase):
         workflow = yaml.safe_load((fe_lib.ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8"))
         browser_step = next(step for step in workflow["jobs"]["l2"]["steps"] if step.get("name") == "Browser tests")
         self.assertEqual(browser_step["run"], "python tools/dev.py e2e --strict")
+        self.assertEqual(
+            workflow["jobs"]["l2"].get("env", {}).get("PLAYWRIGHT_BROWSERS_PATH"),
+            "${{ github.workspace }}/build/playwright-browsers",
+            "Chromium installation and the task runner must use the same explicit cache",
+        )
 
     def test_dom_prepares_explicit_preview_and_passes_both_fixtures(self):
         dev = load("tools/dev.py")
