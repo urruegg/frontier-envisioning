@@ -1,0 +1,1056 @@
+{
+  "version": "1.7.0",
+  "received_date": "2026-11-10",
+  "repository": "urruegg/frontier-envisioning",
+  "classification": "received-private-evidence-not-release-approval",
+  "files": [
+    {
+      "path": ".devcontainer/devcontainer.json",
+      "sha256": "aee6debe7811acad8b93fc1e7d7a515b86d7c13770d76601b6ecff5568f44bbb"
+    },
+    {
+      "path": ".editorconfig",
+      "sha256": "027541f0ae0da87426a3117ed8386d9c0c8d91c86dcad4aac0c3f360e42fd141"
+    },
+    {
+      "path": ".gitattributes",
+      "sha256": "efb948dbd158b2981375c8cff7d3c06fe1a92e8c11444914d292323f50dc1cca"
+    },
+    {
+      "path": ".github/CODEOWNERS",
+      "sha256": "9724b70a63b05a56f3f980fda88f716abb94b4f15d9dbd8b992a2d156f90f5bf"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug.yml",
+      "sha256": "693b9c054c0db92e8a42dd90adbf271cc145a255f37d0620485434e2287a8069"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "sha256": "f57a2e19e2f1b7c2d920a6d7f818394c4d281b402ef434bfa91d45388ceb9c42"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/decision.yml",
+      "sha256": "87a0f4f0e5e9c8343f033ab661a136de0c9f25d11e718834a9b8f9e801ba3698"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature.yml",
+      "sha256": "83ba7bf8fa98adfdf21cd486df129998f1c9d9d2617b1058114768a62730290a"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "sha256": "b5d9f515909f45182bd03ae3e73ff1165758c9484f0f3ba99d3c8a94b4894e98"
+    },
+    {
+      "path": ".github/agents/frontier-builder.agent.md",
+      "sha256": "e103cce57910e22749d6337be2de655095899d51a7b9a51e53856d7d439ce69d"
+    },
+    {
+      "path": ".github/agents/frontier-planner.agent.md",
+      "sha256": "b9e8ab1a25cdebe1d63d9640f052efb6d1b457c6816a1b1d2104bc114842bc5e"
+    },
+    {
+      "path": ".github/agents/frontier-release-manager.agent.md",
+      "sha256": "fadf4736d2d60c0599e2731b2952bcc6377aeee0ca9af7b2af55b95d3f86bee0"
+    },
+    {
+      "path": ".github/agents/frontier-renderer.agent.md",
+      "sha256": "bcab0a7bc496585a26a404dbd2cd0037bab0890a1548bb0373caa37771f450c4"
+    },
+    {
+      "path": ".github/agents/frontier-reviewer.agent.md",
+      "sha256": "66e85002757e82a2e22ceee8d2118b650be87fb36bf365fb34efce238c47d8da"
+    },
+    {
+      "path": ".github/copilot-instructions.md",
+      "sha256": "a02d2d2621fd2e0a5338bac3cb9abcc61e6383feb1e8c6d7c9ffd48dd870f3a8"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "sha256": "ef3811b82a3d3c7052e1387c647e1093f075aa5b2796b07350f8bccaa03e1ae4"
+    },
+    {
+      "path": ".github/hooks/guardrails.json",
+      "sha256": "06a2ab7c9cc31cc52b9eed24c44f393f3c3f02641e5462ffceceaf660f2b7583"
+    },
+    {
+      "path": ".github/hooks/scripts/guard.py",
+      "sha256": "df68221e0375b451ae906429220a8ebb1c87342e049c16dd0766d1f552065768"
+    },
+    {
+      "path": ".github/hooks/scripts/session_start.py",
+      "sha256": "cabed9f37dcf1647a960b1b4d26c2042ef41e0a94a4aebaf505ce1ccaf292e16"
+    },
+    {
+      "path": ".github/instructions/docs.instructions.md",
+      "sha256": "34e7a98d7b7cc848fbc07e521b130da0fc4674feb5022b588a3d5a94512e3e61"
+    },
+    {
+      "path": ".github/instructions/infra.instructions.md",
+      "sha256": "32e7caeb9173ef151464fed346a7e93ab0458ae2de2333047d6846c61ecb38dd"
+    },
+    {
+      "path": ".github/instructions/plugin-skills.instructions.md",
+      "sha256": "f3a06bbd0307e7f66bd93cde002882b8d2fc42e557428721e0222a5ddcce07bf"
+    },
+    {
+      "path": ".github/instructions/python-tools.instructions.md",
+      "sha256": "e8fe586cbd143a1dbc120b97ccba62cf187b843760ab06e101a69326e614ccd0"
+    },
+    {
+      "path": ".github/instructions/renderer.instructions.md",
+      "sha256": "1ee9de1ede01caf2826b2c7cc0bae1bdffcf128c42a280d0b6c468535778eb34"
+    },
+    {
+      "path": ".github/instructions/workflows.instructions.md",
+      "sha256": "32d80d161ad935abace95564746fe596eaca2018c3632904c3876a771feaf32e"
+    },
+    {
+      "path": ".github/skills/frontier-dev-loop/SKILL.md",
+      "sha256": "baef149f301ff73dfd275f0b8f181744a888914bab1d992e90f21aa2eaadf8d0"
+    },
+    {
+      "path": ".github/skills/frontier-intake/SKILL.md",
+      "sha256": "8737a6e344d09975f24ea7500f9175fcf56b4cd6f6fa7f2ea03d40cd97535dbb"
+    },
+    {
+      "path": ".github/skills/frontier-release/SKILL.md",
+      "sha256": "11ab4b8f2531d46fe04cba96cdb5be7478d62b809c36de22e5e9627e513334bc"
+    },
+    {
+      "path": ".github/skills/frontier-renderer-change/SKILL.md",
+      "sha256": "38614cac4e5c3f08b2699ec33d67859ceb588c1d3491d5ed2892bb34e2913dd9"
+    },
+    {
+      "path": ".github/skills/frontier-skill-authoring/SKILL.md",
+      "sha256": "092b443f72d8555c7dc45b9d139f5fe124a6daa90d2d832c5acf44344fa3bbbd"
+    },
+    {
+      "path": ".github/workflows/azure-dev.yml",
+      "sha256": "8447cacba3cee8ead7b9b15321d285a8514f95bb9b1988c9cf14a68d177d72a2"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "ddeb3c909964fb09c809dae0ee7ff8e6ff787d66658bbacb630f4a6a2a09b235"
+    },
+    {
+      "path": ".github/workflows/codeql.yml",
+      "sha256": "6a6ba524947d13e65a5c53a14e1174a0e4af997aa8fae0fd7c7fcc42c00caa0c"
+    },
+    {
+      "path": ".github/workflows/copilot-setup-steps.yml",
+      "sha256": "2adc18b08f4d2cee6eca4947a95b3ab4b7d510b194cd33ddbba8a3bcec746832"
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "sha256": "61193d47b3f9d4558c17c07360c73b1e40364bfd714c73f67b560d68c839cd60"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "f5c20c7d6635a8f24e04f29bc11b59be1a92a983ffab734dbbb1399dbabd93c6"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "sha256": "25ba10facb30abc97a7d17d748ba1da0b80c2a83e29fd933f74503e5d835e22a"
+    },
+    {
+      "path": ".vscode/extensions.json",
+      "sha256": "a8f9594c01d7df8aa4c4af827f945f16044ea2fba0496c8cecccf7825d0cdff7"
+    },
+    {
+      "path": ".vscode/mcp.json",
+      "sha256": "367b24911e081e6f64e10873d55f2ba137617551e0b0357dd643c76ac24825b9"
+    },
+    {
+      "path": ".vscode/settings.json",
+      "sha256": "29754e751dc1463043b7ebb147d7bf4cbc69aeb57b3731c90bacf086807c0ba4"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "sha256": "23520fa277543f741b2cd740e034b6e145db97272182829efb4e7abe5d98ce6b"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "1725ab64b77dd6889a86bb5fceadcf552ced662a44a04b9e145ce5a99da82260"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "a208fb77640e3ebd3bf62d8c841d7435417a73e4c8a4b85eee386646364c69c5"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "sha256": "4dc540fd194736b3015ab718643764605b2f88bfc1574b1e7ec82d73406ea521"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "29c4e3cda059b5ca94293cafac121328e5612ff6b42b150f5a8b0a288c112068"
+    },
+    {
+      "path": "README.md",
+      "sha256": "04b162cfc0020a3f9e98b5f46016ba870927bfdd5a5370ef8e79d3e0d4ae237a"
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "c014c430c36e7a34c84f473fc6a5222f271c1ba75068879a2e3623f903b19464"
+    },
+    {
+      "path": "azure.yaml",
+      "sha256": "57a65655178cd026a394b4d2c63d9ce300d2a92e04b6195cbabd98efb9c9da65"
+    },
+    {
+      "path": "backlog/README.md",
+      "sha256": "7c4cf36e745dbf61f9aa01fee0f3dfd97657ad3de1e9cd3790f47dddc466ccb9"
+    },
+    {
+      "path": "backlog/backlog.json",
+      "sha256": "e8055f4bc1c869bf2a11b9729d3dbbea15100e66243d951ef024a44115c365dd"
+    },
+    {
+      "path": "backlog/issues/BUILD-01.md",
+      "sha256": "2b8655133bb09c68dac2825a6177229e9326aa11d16722cf4f51bf27838e97bf"
+    },
+    {
+      "path": "backlog/issues/D-01.md",
+      "sha256": "69da0c498a83a70494926afc976791d2b7c30081fdafc58442abc1b8bad9c950"
+    },
+    {
+      "path": "backlog/issues/D-02.md",
+      "sha256": "ee12182b34de5ff21f0ccef43661d8d8567388658b830f075aab29aeb1b9de25"
+    },
+    {
+      "path": "backlog/issues/D-03.md",
+      "sha256": "37c430d225bab6b3b018a52205d5243b6a1843fc29a33165519cb595abd40fb3"
+    },
+    {
+      "path": "backlog/issues/D-04.md",
+      "sha256": "f02177bd8e27276239713fd661cdb299b4e5857532833d4a17434bacb1019765"
+    },
+    {
+      "path": "backlog/issues/D-05.md",
+      "sha256": "e92eca8c5a57e5c8ba19e2eda72414a13895cb5436ac9d91f799eaa6c6a10660"
+    },
+    {
+      "path": "backlog/issues/D-06.md",
+      "sha256": "96941cbeae616771e3fb3ec08101f599fbf6151bd67e5014dc99892906ed696f"
+    },
+    {
+      "path": "backlog/issues/D-07.md",
+      "sha256": "96e0b9b1ccbcd70137e725d14633b4a9212c10538be1ab738895fab52a1486d5"
+    },
+    {
+      "path": "backlog/issues/D-08.md",
+      "sha256": "9cd8446f60922851600d0977e522dc340a04d9d1ac095f91010a85ecddab31c9"
+    },
+    {
+      "path": "backlog/issues/E-01.md",
+      "sha256": "4548557e1967e7304905770731a0aa6652dea96e65acb1b4e1919a7e160c4cfb"
+    },
+    {
+      "path": "backlog/issues/E-02.md",
+      "sha256": "6baa261cf02c4bd8a8face285fe6b015d5d7debd96350f10b67cfff923114149"
+    },
+    {
+      "path": "backlog/issues/E-05.md",
+      "sha256": "4204a34eb57c047f43329ce139261e7f98a5030167f192fbadcedd5f25fc1b6d"
+    },
+    {
+      "path": "backlog/issues/ENG-D1.md",
+      "sha256": "bf05ae7b3c8a8b453818c49d7d0eac829c17d317ab8c3a92f324d83cb657342a"
+    },
+    {
+      "path": "backlog/issues/ENG-D3.md",
+      "sha256": "b24bf9810ff25893a6eacb9449f6bfdb0d1c365b32e94cc98f80a02ed6406fa8"
+    },
+    {
+      "path": "backlog/issues/ENG-D4.md",
+      "sha256": "65c9cc7c158b92a7dd3938505c69e46161467b670ea40800f51e747a399bd8fd"
+    },
+    {
+      "path": "backlog/issues/EPIC-HW.md",
+      "sha256": "528b15da4bf294ee0462f86163d4fe7baf3f44c018b2dfd6cd974df33647c6f0"
+    },
+    {
+      "path": "backlog/issues/EPIC-OPS.md",
+      "sha256": "9921206e0a1cae823a88ded55c3c87b2286fd7e26a16ff4005daf64634e329a7"
+    },
+    {
+      "path": "backlog/issues/F-01.md",
+      "sha256": "df251efc08764593ae7d6606eb42afa265f62d6e2ba05e6d3dd2a5866629e467"
+    },
+    {
+      "path": "backlog/issues/F-02.md",
+      "sha256": "7e597fef89dbc64d0662d023f1fad1e60430a31fa1339aa59a216e376aa01928"
+    },
+    {
+      "path": "backlog/issues/F-03.md",
+      "sha256": "b8dae15c2a2407044033888487ff81c1f4f86e0e46945a64b29df9963be4367b"
+    },
+    {
+      "path": "backlog/issues/F-04.md",
+      "sha256": "f605ece5ec0117faaf396ddd8d2895d76bfe585c32741898dfe53e75b5832159"
+    },
+    {
+      "path": "backlog/issues/F-05.md",
+      "sha256": "232e3226eef0a62b0a5ecaa67ba56883d6f02c66c4be4cdc289bd5b17ca34c62"
+    },
+    {
+      "path": "backlog/issues/F-06.md",
+      "sha256": "93f10a2419bb120d1ccb71afd06ce7510a5a4d70da5ee28a9c16f99d901a5d4e"
+    },
+    {
+      "path": "backlog/issues/F-07.md",
+      "sha256": "98f713846df9a7bcdbd1ba7343b659647c3653e68e65bbd5aeb3a9cfa1a9613f"
+    },
+    {
+      "path": "backlog/issues/F-08.md",
+      "sha256": "ccdd3cda99dce296938c791de97f9d8fd76cd1aff0143bb8fa5fa83955514696"
+    },
+    {
+      "path": "backlog/issues/FOCUS-01.md",
+      "sha256": "6316df422fd12453f547791b4bb19605b5888de120dd5a155e8a33d9ab85d4dc"
+    },
+    {
+      "path": "backlog/issues/INT-01.md",
+      "sha256": "00d4a7167d09d7e965b7711e674aff519c70a78f6dded57b386cffb60ff7d6c6"
+    },
+    {
+      "path": "backlog/issues/INT-02.md",
+      "sha256": "25610e13823d218721731c008e0ae1d50a5de5f0cf50c7665dbe88b843604c38"
+    },
+    {
+      "path": "backlog/issues/INT-03.md",
+      "sha256": "2707f9cba2bb0a25b0cfeab3eeba54a0c79d3b95ed84786c6d9c3a594b2973ff"
+    },
+    {
+      "path": "backlog/issues/INT-04.md",
+      "sha256": "089d03b10d87817444b696838756332a1d231dea4c7ec160c2580f85ec017ac7"
+    },
+    {
+      "path": "backlog/issues/INT-05.md",
+      "sha256": "74b5c4ff1b87f9e2a45ee12393dcfc3a7a5710e67fc32239a925896d1baaba3f"
+    },
+    {
+      "path": "backlog/issues/INT-06.md",
+      "sha256": "9043c86c4d7065b7bf5e2d613061882480a871b10f5578de9c212e7e62aa898f"
+    },
+    {
+      "path": "backlog/issues/INT-07.md",
+      "sha256": "96fa5c8ace76dcb0f0c9c895dbed94e0a2216938dbf4386030dc50e59e7f0e3d"
+    },
+    {
+      "path": "backlog/issues/INT-08.md",
+      "sha256": "e09b013762ba92d8df20250cec56fe75edc3918199acc769811ef43c920415bb"
+    },
+    {
+      "path": "backlog/issues/INT-09.md",
+      "sha256": "70a65256c385b354eab202318508099ed52c455d6c355a6fd406aa15c505e97c"
+    },
+    {
+      "path": "backlog/issues/INT-10.md",
+      "sha256": "5d397083ed051d2776131e96e68e9df258304fee02bf4c378ad41efac050fd44"
+    },
+    {
+      "path": "backlog/issues/INT-11.md",
+      "sha256": "3b9102c9572ef97aaaa1dd990abde7893447adaaebb8bc5abbf2ac50af699184"
+    },
+    {
+      "path": "backlog/issues/INT-12.md",
+      "sha256": "3629c0cbb58a2e2191e0f7b67872211eed7f77d79562018e2905b4349fdab94e"
+    },
+    {
+      "path": "backlog/issues/INT-13.md",
+      "sha256": "f4ec8668bebce098d7d1487d6b472139eef92ff4db2e02a45ff5bdf86c417dc9"
+    },
+    {
+      "path": "backlog/issues/INT-14.md",
+      "sha256": "6cce29fc2e4005588793fa2feaf8b5268d8d1597c5eaa79f230d258f0b35a84b"
+    },
+    {
+      "path": "backlog/issues/INT-15.md",
+      "sha256": "b514031fb01a5e1a6a0909dcf1ad9d6a30a735df34ca829e7b2afd8f8fabc803"
+    },
+    {
+      "path": "backlog/issues/L10N-01.md",
+      "sha256": "5bde7db7ead95065d7164a41d349eb14fa24616d0e41f18b64e8af7cddf82068"
+    },
+    {
+      "path": "backlog/issues/OPS-01.md",
+      "sha256": "65890b1c164b7350eab605d21a728fe88027cda8e9a99919e7c704852c6947d2"
+    },
+    {
+      "path": "backlog/issues/OPS-02.md",
+      "sha256": "0a298155524d24bc5225d4d9b5d41a23295fda30a40e9d629f7f050781562c17"
+    },
+    {
+      "path": "backlog/issues/PROTO-01.md",
+      "sha256": "7fa186eee90bfa0b21543a6c8cfff61bcb8a072bb5fe5e6eb8f186060f7f1844"
+    },
+    {
+      "path": "backlog/issues/REG-01.md",
+      "sha256": "defa2ec8054ac190b99fb12e80f163a51dca8467816a662302d6b57fa25104fa"
+    },
+    {
+      "path": "backlog/issues/TD-01.md",
+      "sha256": "af469c264fd7a4b2f24d00e6646cba664e8636533ded60749deaf48d533d9ce0"
+    },
+    {
+      "path": "backlog/issues/TD-02.md",
+      "sha256": "43eeb1d5baf34b0c80e4624743dfe94fd68e7136f234006e5a3b51efb3fa3633"
+    },
+    {
+      "path": "backlog/issues/TD-03.md",
+      "sha256": "c74b6212b442fd91ebd565d25425dd5639411b3e58cdc84df9bf3cd1a4b3a491"
+    },
+    {
+      "path": "backlog/issues/TD-05.md",
+      "sha256": "4c24050da26486a37fac0b15506509cc91f851bea7d35535e15e3d856f1d44e9"
+    },
+    {
+      "path": "docs/README.md",
+      "sha256": "7b95f397e08544b05b7ec88048889b2ff0990fd02bc8f12364af282e49842274"
+    },
+    {
+      "path": "docs/adr/0017-repository-layout.md",
+      "sha256": "113ac83b80c7ee1016d5fd500c1583ac855018171fcf19f0f62607ec24367333"
+    },
+    {
+      "path": "docs/adr/0018-quality-gates-and-release-reproduction.md",
+      "sha256": "509e7845527fa5077374671467d689c631a8b83346c47c22a833a69bfb275550"
+    },
+    {
+      "path": "docs/adr/0019-versioning-and-releases.md",
+      "sha256": "7e736c25d1f2ee934bd70f5b264424209420d5dfa335211e06747de6d6c1318f"
+    },
+    {
+      "path": "docs/adr/0020-showcase-hosting.md",
+      "sha256": "1b4126518da767a14907682e52bc51e77566805574721af8243eee7cc868ded2"
+    },
+    {
+      "path": "docs/adr/0021-ai-assisted-engineering.md",
+      "sha256": "8258c41c01ba0d7a00e4afbb097b062a78245d1f2e881353896b71abf4b6afd2"
+    },
+    {
+      "path": "docs/adr/0022-deterministic-guardrails.md",
+      "sha256": "b721589a0e74988fe007b3173f67ea7eefc23abec9f076957d31d574280281f4"
+    },
+    {
+      "path": "docs/adr/0023-digital-feedback-loop.md",
+      "sha256": "7606aaf36e341e73520ec1d4a025410cb05aa65c745d2897e3a5caef3d45febb"
+    },
+    {
+      "path": "docs/adr/0024-agent-workflow-view.md",
+      "sha256": "06467a43d92777ac34b079e781957eb371c212627ddc340bffd3e5dd819541dd"
+    },
+    {
+      "path": "docs/adr/0025-four-part-journey-structure.md",
+      "sha256": "5ca46042994124be01414123bf6060bea219f7f78c763242532672393e6c496f"
+    },
+    {
+      "path": "docs/adr/README.md",
+      "sha256": "d1add36879e18ddc600f1539b26b981634bddac17e9bae6f0d15248f54551f47"
+    },
+    {
+      "path": "docs/analysis/hubworks-integration-analysis.md",
+      "sha256": "322b30988b2a00e751ab838a8aa11139675e63d5c80eaf8a0b1f6d9b358cdd19"
+    },
+    {
+      "path": "docs/analysis/visualisation-and-reuse-evaluation.md",
+      "sha256": "148756189db58ede1098573eb5ad624166330fa8fd8bd55406d6534c81e29df7"
+    },
+    {
+      "path": "docs/engineering/copilot-and-superpowers.md",
+      "sha256": "5de9e8760402ab9496e0ca813a86f005bd71adac8a4adb14c3822d441affb637"
+    },
+    {
+      "path": "docs/engineering/deployment.md",
+      "sha256": "60df9f2bd479a8a8b2e4717972b9ee76a88e9b59bf53b4c0d633db52f5db6cd5"
+    },
+    {
+      "path": "docs/engineering/github-setup.md",
+      "sha256": "ebbea05e0f263047a407e14ddc75c7cb592c58830206ea0b3fc3e1b661d13595"
+    },
+    {
+      "path": "docs/engineering/handbook.md",
+      "sha256": "0ef17162abb862943ae95152010ab4f704432c3b7bc3b957cdc612c96913335d"
+    },
+    {
+      "path": "docs/engineering/intake-plan.md",
+      "sha256": "e303b300c7797d7844311677cb1ca551e5e0cba561db3122f2028e358759076b"
+    },
+    {
+      "path": "docs/engineering/testing-strategy.md",
+      "sha256": "b18de86a5f08f16a2ef7b5e2fab4ba0a34b1f6f1690017840a3c4a16d444de3d"
+    },
+    {
+      "path": "docs/engineering/workstation-setup.md",
+      "sha256": "97aa9b9d6f8dd7be987ca5d08d69e48eb87f0a450856f4a2a29e2580b97cd1df"
+    },
+    {
+      "path": "docs/plans/README.md",
+      "sha256": "46304da150f56c3f6044cc3cefab5cbe351f60075ec0636daa3f6054992e0aac"
+    },
+    {
+      "path": "docs/prd-and-solution-design.md",
+      "sha256": "9416effb46b50d399cfdd4aea960b109e43aec3d1628b759d569225e7e1536e3"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "sha256": "04fcf4c449d370522fd43ca7904eea77a7122e229d3a1cccfc1265057c5298c4"
+    },
+    {
+      "path": "infra/README.md",
+      "sha256": "cad95e294c39a030d28ff69a6865794f0f6ca7c719b511f397fb38f0ed1a8491"
+    },
+    {
+      "path": "infra/main.bicep",
+      "sha256": "f52a6e367236a5ed6f88c20db2d4555da45d4fd003761a88068f82c76b4a2481"
+    },
+    {
+      "path": "infra/main.parameters.json",
+      "sha256": "23c91329350cbd5aeaa9213888427f7a5d13458a07a9d450595ab96f003219ef"
+    },
+    {
+      "path": "infra/modules/static-site.bicep",
+      "sha256": "ab108c4f33d5bccd66435035b3cb441bf6e45e69b2f18d2d75b8feefc29dfb0c"
+    },
+    {
+      "path": "package.json",
+      "sha256": "05b5468dc1c843c018fa8fe2740ae743bb510550898b0246d2f4bafe90a5c86a"
+    },
+    {
+      "path": "playwright.config.mjs",
+      "sha256": "16c24ceea00eb663fd6d943bbc5d91809fecd2e2b2a293b73bb9b047221202f8"
+    },
+    {
+      "path": "plugin/.claude-plugin/plugin.json",
+      "sha256": "db940a757e569b32f39944ff6402923ab4b0a4f0350a76dc9cd60de766c38546"
+    },
+    {
+      "path": "plugin/MIT.md",
+      "sha256": "033cc0bec012c2aa19746b784a3211092fdd6b6f5ac406686a1afc618eb21b09"
+    },
+    {
+      "path": "plugin/README.md",
+      "sha256": "8ac1479af3d6aab7fa39771cd42bf0bda20752d0ffa7c71264b6ffc40928142e"
+    },
+    {
+      "path": "plugin/THIRD-PARTY-NOTICES.md",
+      "sha256": "123c231c6cc9560d178bae0716d19f04ea1762a1fb7693917e2b753fe15f9927"
+    },
+    {
+      "path": "plugin/install/plugin-install.json",
+      "sha256": "c58b39f826e17663cae2d012dde403b579f96bc9f3f10292eead8f58a1470035"
+    },
+    {
+      "path": "plugin/install/prepare_install.py",
+      "sha256": "9adfb9765e856c3f6a5bddf82b3eb87aa9126a9858e3431386d2050135eb1484"
+    },
+    {
+      "path": "plugin/package/color.png",
+      "sha256": "9b5ce28bdb7c186fd86a0e0867919722fa7ad6b327222bdd1a3ff327773347a6"
+    },
+    {
+      "path": "plugin/package/icon-512.png",
+      "sha256": "91b9e327d13c10899912c361cbdc15709ee6a87a8486c780fa64a070134d1e48"
+    },
+    {
+      "path": "plugin/package/manifest.json",
+      "sha256": "1cdeabbc13c469e79001d7ebf5d93edec293b8fa100c513cc1d2bc8466258e4f"
+    },
+    {
+      "path": "plugin/package/outline.png",
+      "sha256": "ddebbe92c25b942059b29d747070caf97f8413c75a593fbc69b65c94f9da6453"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/SKILL.md",
+      "sha256": "dffb57058d585a535f455b8a4c9a9d5a4fb6c9ade75a9613a7f6c6ba2dc26064"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/examples/caldova-agent-identity.json",
+      "sha256": "33af4a468f58c6888e6b3c3ed619ab85f187d63a310da76853744b481a113e96"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/examples/caldova-brand.json",
+      "sha256": "8700f47ec17390427752a99d8f066a32d5c042406d3ba18f0f33392ccac42a1c"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/examples/caldova-palette.json",
+      "sha256": "da88e80c31333f8abe3e0df537ca564a88f066f1202bb8afee4125c3b5e874d3"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/config/agent-identity.schema.json",
+      "sha256": "2321f3ffcf61cbaafcaeb2ca3ae2fdb4d12d29051ae4d745b9aae5f4310b96ab"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/pipelines/azure-pipelines/stamp-identity.yml",
+      "sha256": "aa03afdc1ee7358cec075f3f98fe5a2e944297d40dd41991ca9535ceb045460d"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/pipelines/github-actions/identity-validate.yml",
+      "sha256": "cb080a5afe121d390d54382b1ed5896150407f6ec7926d7d9b5841560ddf1822"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/build_identity_assets.py",
+      "sha256": "beb26444eccf5c044bc50588b32cb078b142e69c11036be431074e50a54ae59c"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/glyphs/glyphs.json",
+      "sha256": "240bb59535f325a0e10a028b6d21983aeb18a141a51e06f24d53875e6446a35f"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/identity_docs.py",
+      "sha256": "1a654de9139d61642ab89eeb350d50d33a8b239d8040c9607ec8576e9bf81372"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/identity_lib.py",
+      "sha256": "71ab5ec7b6751802e811ac053c4b0ff58aab123665aebd3747b7a84f655a834c"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/identity_visuals.py",
+      "sha256": "f3af61977051401c51d1c839545cc590877ed5534698f9911eaa386462641337"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/import_fluent_glyphs.py",
+      "sha256": "61545789a612deda3ff682c3ce3f047de1068a6132a715c7e889088b6c4e2b7f"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/raster.py",
+      "sha256": "6bc11136fba2a6743ac66654e33fdf3f66a84c28450f74e61789bbca353a6830"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/stamp_identity.py",
+      "sha256": "6d233e42b4ebe520e8a04df1ad04d80ee8333616d1c8be099033eb66edd9d307"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/tests/test_identity.py",
+      "sha256": "5de736c500a2d23d503b6b99be6a37e409835a170e8c3486b9c6eed50f3e5054"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/kit/scripts/validate_identity.py",
+      "sha256": "fd27fe757277f56de47e1b88477bc993ef27eac39a647d4df0960357b4953387"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/references/brand-discovery.md",
+      "sha256": "b688f59b045f47f91484ce0aa85730c799b773560404b32be2575ace6137cc64"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/references/identity-method.md",
+      "sha256": "5cc06aad9c8a084569607f8a66a030b13678eb931cdddd0d98f8fc159dc97f2e"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/references/kit-reference.md",
+      "sha256": "6fedcea03e04f1f5aa042d754a0fa0797ce6c22cdd4e2f9ba02d4b593ee6cdee"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/scripts/apply_identity.py",
+      "sha256": "3964ac70c270abd1b4091e551e3391135ced923e5ac64b5766525c4e94431736"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/scripts/make_kit.py",
+      "sha256": "de6919a0acc07ae7e67ae25def48b995f4ca5ddaba16ac1150603b9cd3cb447f"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/scripts/read_office_theme.py",
+      "sha256": "b272cbbfbd3cb8b22b9b32513ef7c4d2138e5990fa48ead0181bf9e989c59154"
+    },
+    {
+      "path": "plugin/skills/frontier-agent-identity/scripts/seed_identity.py",
+      "sha256": "b63cea7ba198141a60305fd3ea18863fdd91a540aae23d00865466641276816a"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/SKILL.md",
+      "sha256": "eca50dcbb29acfdd147feffb73afcef00aac8a6127a01020e0ac53058c0e877a"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/examples/caldova-blueprint.json",
+      "sha256": "be23c5ce214b5410543d84540bb674ad0f74ad2df696b6f794cee1882d298ab8"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/references/authoring-guide.md",
+      "sha256": "844e31ca515bbabecdd412098b7ca299c195bacce3fb481292b0256aa42d11db"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/references/blueprint-schema.md",
+      "sha256": "50d20f9a02bd3d462ea35a83a8d98ae6d42e8ea065a0b0c9ea9345a80f51633d"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/build_blueprint.py",
+      "sha256": "dc05f52d5d7328474eb8de55742fe3d32e7c4018dc84d0cf44e6888d60d050cc"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/build_with_identity.py",
+      "sha256": "867dbc7fd35842741de44700ed0bb70aa46726e66c9899c71fd6c6a080bc78ea"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/canon.py",
+      "sha256": "d5c97d2d8e5c31e9d927dc3bf1e2cede25aadcba16177d44596d2aa3eccbcb86"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/merge_feedback.py",
+      "sha256": "4e16c10c4683e7204186e17b414af51e8caf2a23015ba30b4c6b49856f04da2f"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/prd_model.py",
+      "sha256": "d29fc50fb6bb2321f9d58a4d35772fd88cc27bb9c90a55bffa235b211549bf94"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/risks.py",
+      "sha256": "ee24f2f5546bc5144eb49560895abfd317f8f84dcec721478d3572d776458380"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/seed_blueprint.py",
+      "sha256": "522b84f3d4f659fba49cccc4de2d0cabaad21947235bf9ab6e892985de33711a"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/scripts/workflow.py",
+      "sha256": "354b70925f3db24f6a5a2ff03d32d612dab56c3d68a90d1ee82ade35e02605bc"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/templates/blueprint-defaults.json",
+      "sha256": "60c86b817feafd0865d61ebee799d0e20af394e6270fe6d1f4f3a66cb5c267db"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/templates/frontier-blueprint-template.html",
+      "sha256": "e75567c2f46657e42a27506b5d6e3f06e685b8b21bd87b6bd572784c109be4eb"
+    },
+    {
+      "path": "plugin/skills/frontier-blueprint/templates/product-icons.json",
+      "sha256": "2526d3563ca4214ece1e00fdeb553438e6f6938491d0da2f102e73705c88fd92"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/SKILL.md",
+      "sha256": "45c6da4f7ad681b99957dae1bc0ddb55f46c7d99bca779d44bdf880d8bc743ea"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/examples/caldova-context.json",
+      "sha256": "bc087b0c059ae4644709f251dbe4596f7ecca3c9f8a7cb675d9b4cf8a6483db6"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/references/context-pack.md",
+      "sha256": "b9a217b8f82ab851592c2f696837a6f07a5c6c5dbec354898ce71d0b7b29eb92"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/references/question-bank.md",
+      "sha256": "9faa1fd3da70e43c9d246916350a967f99a23a960b2e61487fee0984f6dda63f"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/references/work-iq-playbook.md",
+      "sha256": "d6837aae48e66d0d28204e761b2e948aa38505e6822666db90d196e5154fb5ab"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/scripts/context_pack.py",
+      "sha256": "2ddb8fed75ae04cd6a6189103f68654dc725f7263c812453ae5e40a009ad8796"
+    },
+    {
+      "path": "plugin/skills/frontier-context-discovery/scripts/parse_transcript.py",
+      "sha256": "86077d2f5954edd933c00cb48100eb0d3d014c81fa6634f8cc17202d0ff6df2c"
+    },
+    {
+      "path": "plugin/skills/frontier-envisioning/SKILL.md",
+      "sha256": "7ab6b24fc9b7394b1d50adceb5501ba6a451d16b1daf0f37069ce4ca19c6c3f9"
+    },
+    {
+      "path": "plugin/skills/frontier-envisioning/references/hairo-model.md",
+      "sha256": "0d06a2ab5f1c1ef1e8db4d6354aedf907ea6a7048b81c1595bced230000e8bfb"
+    },
+    {
+      "path": "plugin/skills/frontier-envisioning/references/method.md",
+      "sha256": "cf72289cc4f00cd5782720b66bc0ac8aa0caec0fcb47ae8d496dac4cb657955b"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/SKILL.md",
+      "sha256": "c5266a512b988cf51b0ed88d19fb6401282368d2f98fb6dfa5e0a64c4749a167"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/examples/caldova-finops.json",
+      "sha256": "15a2f676f1382dd058776d574ad72b9e8e2ffd38677487facb99f5007ebc2214"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/examples/reference-hr-assistant.finops.json",
+      "sha256": "730a7d08da1f77ba89776e5d3650b6967d08d0eea3305cab89d86301bfaf3e95"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/rates/rates-2026-11.json",
+      "sha256": "674bfbce4e85d5a6336460436b2a2d4093f830e70d72ef42b2c52e28a383542a"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/references/finops-for-agents.md",
+      "sha256": "6ddbfda55bb8baf7cc3d1e972782327adb90409adc26dbca30fbf0ed5878a126"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/references/guardrails.md",
+      "sha256": "73a30014385122fdad7e47376b944368f4adf4a4ce70797c639c6cbaafd5fb66"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/scripts/apply_finops.py",
+      "sha256": "fb1ea64330cc56042e4f4fe5f0c518e9dcccdb7c5e18f56d6d1b5754b01c29a0"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/scripts/finops_calc.py",
+      "sha256": "dec9ddc86605a3d3c5487198c0228a2816cb3c6cdd0f157274e618c3afef4b88"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/scripts/fv_expr.py",
+      "sha256": "fb7c40ead407d88d3680f1cdb1ab8647de7884df2ad6fc0f53379270550109fb"
+    },
+    {
+      "path": "plugin/skills/frontier-finops/scripts/seed_finops.py",
+      "sha256": "338c10e7df77874027c880f5232e1327fdfca2ec8993182d8d5db68799eb4650"
+    },
+    {
+      "path": "plugin/skills/frontier-solution-design/SKILL.md",
+      "sha256": "3f1caf5194e5c94c35386d1afab6cb41783e6192cc84eee2482f235d4c22ac8c"
+    },
+    {
+      "path": "plugin/skills/frontier-solution-design/references/design-rules.md",
+      "sha256": "d95ffb55cb40c5dfaee1d10bbcf765dda0d8e20ef102b7e54421aef5eb762132"
+    },
+    {
+      "path": "plugin/skills/frontier-solution-design/references/frontier-reference-architecture.md",
+      "sha256": "e74967bfa982f542b4716a8a2de4963536d1757a48b1a09db69645e46b11eb44"
+    },
+    {
+      "path": "plugin/skills/frontier-solution-design/scripts/prd_model.py",
+      "sha256": "d29fc50fb6bb2321f9d58a4d35772fd88cc27bb9c90a55bffa235b211549bf94"
+    },
+    {
+      "path": "plugin/skills/frontier-solution-design/scripts/scaffold_design_docs.py",
+      "sha256": "79a5c5cdf6db63795093c0c4b99f3394ef52ad0b334e7ebd06c45219ce2e244a"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/SKILL.md",
+      "sha256": "a824ffcd68f70d8d92e7e53516565b7f053d3a2deece279e09fc8d4bbba4e7b0"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/examples/caldova-value.json",
+      "sha256": "9319597e130d4eaf34e7f18d1b9da231dc2c8f896028f8c50fadc9e5b222a11a"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/examples/reference-hr-assistant.value.json",
+      "sha256": "47601641c0fea73af45037d95d2b2e9eb514a77ac98d3062a6947040a817eb09"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/references/value-method.md",
+      "sha256": "a8a77151977ad1246625513d02bd387b5a2b78826529b3634469c40ec4c35604"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/scripts/apply_value.py",
+      "sha256": "a256c0f897fcb2e7298fa3849ff9186f8fff5d847589eea5130ec5443a53c66e"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/scripts/fv_expr.py",
+      "sha256": "fb7c40ead407d88d3680f1cdb1ab8647de7884df2ad6fc0f53379270550109fb"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/scripts/merge_value_feedback.py",
+      "sha256": "eac6418022ce9779fbfa445439f2adfafd49728f056be225af40ae6738b820eb"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/scripts/seed_value.py",
+      "sha256": "3c9e51da8df5775e5463388a5ae9001b05afb151220e86053fdba25865cbeaf1"
+    },
+    {
+      "path": "plugin/skills/frontier-value-case/scripts/value_calc.py",
+      "sha256": "20c11202dddd19ef9142bae9390cf46a7877c643d253c482a8b0a649577984bf"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "beb6e59850ecb527addea5e0a42dde5bea17306697ecbc2b743c303f3414d153"
+    },
+    {
+      "path": "releases/1.4.0/manifest.json",
+      "sha256": "cd48c100f4fd3af26c3f267ff9251e9712b0f8bcdf17920dfe0d535be9085116"
+    },
+    {
+      "path": "releases/1.5.0/manifest.json",
+      "sha256": "dc19e3a17ac5b3988f8b098ea4c1d55df6e4669e6e06b73a4206995ce9f6a41f"
+    },
+    {
+      "path": "releases/1.6.0/manifest.json",
+      "sha256": "44840147fe21202510be7c74d0e16df72c034b7ee79440ec54770317f605387c"
+    },
+    {
+      "path": "releases/1.7.0/manifest.json",
+      "sha256": "13393df7407bacdef4fb8f543c5049f6201bd15f428f6a45a0bcc40ae47037a0"
+    },
+    {
+      "path": "releases/README.md",
+      "sha256": "309b3f91c45b952771e05109e0e4ee4c2922a23914b0882a9a0684d756aad125"
+    },
+    {
+      "path": "requirements-dev.txt",
+      "sha256": "14f56b18cd4f597a4ecc46fcc9829d9f29ae9a6e56a3fe6a4e36c3632175854f"
+    },
+    {
+      "path": "site/README.md",
+      "sha256": "ba7b04fc8d482d927846298921786322de965eebe0beca35aae9ec4237a1e2f4"
+    },
+    {
+      "path": "site/index.html",
+      "sha256": "d9aa05afcd412f7eef3bccfae13225403021bfc05eeb891a03504a8405a0c906"
+    },
+    {
+      "path": "src/renderer/README.md",
+      "sha256": "425602d39f8339c1c56f70dc5c6bfcdf10af234a2c3f70fbbc1bd7e8cdb3c33b"
+    },
+    {
+      "path": "src/renderer/skeleton.html",
+      "sha256": "640c80f442d7100925f4540adc18410e121835c963cacdae6b5dc9c55359ac01"
+    },
+    {
+      "path": "src/renderer/template.css",
+      "sha256": "a70e9058791b61fe83e7f63dbbb6ce427cb7a1c4eb9b9d412c7cfe1322354a2e"
+    },
+    {
+      "path": "src/renderer/template.js",
+      "sha256": "a8af0b63845aaefc8744fcd3776135270ba5c015278593f3c0a457870139b25d"
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "d88f9b10eb8b5a4e7c5cf2099ceae453e98eda043f50cad92eba9699d3155da7"
+    },
+    {
+      "path": "tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/dom/blueprint.test.mjs",
+      "sha256": "8db1f38e0cb639d5d422738c0724b813a2feb941f481b0d5efd33b6dcbc288bd"
+    },
+    {
+      "path": "tests/dom/helpers.mjs",
+      "sha256": "4857e1fa6108bdab31cf8512b7bb500b8c0dd6d58de61ac5a45b9b41dabe1a40"
+    },
+    {
+      "path": "tests/dom/identity-value.test.mjs",
+      "sha256": "cc98e021fb29927b2871269a0c7ce92d0109efb264bd26c11357f5355b074679"
+    },
+    {
+      "path": "tests/e2e/blueprint.spec.mjs",
+      "sha256": "f1112cc230583b0310640b0716dd8f9f462d3e9701c5a070a1b5d180dffd16fe"
+    },
+    {
+      "path": "tests/pipeline/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/pipeline/test_release_reproduction.py",
+      "sha256": "07717a177cf3b5a70264f79fb937018deeeaa07aec8fdd576e725afbb5c67615"
+    },
+    {
+      "path": "tests/pipeline/test_selftest.py",
+      "sha256": "cdec0cf0c27c49f756e017ecd0291b2faeaf1c3d29cd3eb904dbfa85bc3f38b6"
+    },
+    {
+      "path": "tests/unit/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/unit/_util.py",
+      "sha256": "f7e39160b7b41cf834e7f81a1df2716c62f5b88ef4aa6079e2501027b8f92cbe"
+    },
+    {
+      "path": "tests/unit/test_feedback_loop.py",
+      "sha256": "57fe671338454e30b8d9e5beb2437873a9d08e7e7dd98610e4d99e18e6612031"
+    },
+    {
+      "path": "tests/unit/test_guard_hook.py",
+      "sha256": "694225434ac932e703dd72fadff2242e896ed8cfcd6957721f202c64e0bd5577"
+    },
+    {
+      "path": "tests/unit/test_release_tools.py",
+      "sha256": "80b8c2b8e96a083db941dd283684aa224cfe1d4ccfe087bc5dc1fb66b89fe697"
+    },
+    {
+      "path": "tests/unit/test_risks_prd.py",
+      "sha256": "0013ce0ab8c90ac07c31195a3cff3522ff1a6c0e4258eafb58fe04a30a5e7281"
+    },
+    {
+      "path": "tests/unit/test_site.py",
+      "sha256": "ef6cc13fb74206e73f33de00f643e93bfa45bcf10f33b75dd46255951465d233"
+    },
+    {
+      "path": "tests/unit/test_tools_core.py",
+      "sha256": "2b5ad47e391c1636b59a32bcded73788f604246d4635febc8f2c76d437e67edf"
+    },
+    {
+      "path": "tests/unit/test_workflow.py",
+      "sha256": "156d675f49b5e07b6a3f6f1726e282ae371ffaa62d86ae743c278f3568894fab"
+    },
+    {
+      "path": "tools/Initialize-GitHubRepo.ps1",
+      "sha256": "ac9248470c67758eaaad71f34ac764933f4abbea471f13ffa80ea0e76c76f8cf"
+    },
+    {
+      "path": "tools/assemble_template.py",
+      "sha256": "50d085c05016286334ec8aa2ccc561f1b0514be2ec3b0f7a9a0c9575319e20a4"
+    },
+    {
+      "path": "tools/bootstrap_github.py",
+      "sha256": "0be85935a8a7e41cde62f1120c866040952e7b067912adc8fb1cba62bb76ff31"
+    },
+    {
+      "path": "tools/build_demo.py",
+      "sha256": "5dc80e55ff2d259f9a25af49e70a616f050e41c1c87194adc7ee470dbce416bc"
+    },
+    {
+      "path": "tools/build_package.py",
+      "sha256": "bec5ec38bc625be2752d5d594447c84d08fd9a61b9822b4faee3730b7b4e0e9a"
+    },
+    {
+      "path": "tools/build_release.py",
+      "sha256": "397a1500fa93fc3fb84588deb301b3c3530c7378359cf7588888091c38a2ba90"
+    },
+    {
+      "path": "tools/build_site.py",
+      "sha256": "ebf8b8e529a0d7270a05cc9eeb7f471068090044dc92d410b709dcc45629f66a"
+    },
+    {
+      "path": "tools/bump_version.py",
+      "sha256": "1f2e22fa2f7cb76438ed3ff8456fbeec871a7aaebae54fdcaf5a53ba152ef7a5"
+    },
+    {
+      "path": "tools/check_repo.py",
+      "sha256": "275b5d422a3bed0183436c215e3a76eb119fc5374de0946a4a7b51ea66a12dd4"
+    },
+    {
+      "path": "tools/dev.py",
+      "sha256": "3d0fc48c91e19df01dd584df97a399ce8bef923437fda91ce5ef2edade3127cf"
+    },
+    {
+      "path": "tools/fe_lib.py",
+      "sha256": "59d1825e51dcbc0f7020965454e0aaef18ae24d19aa6c36a9ce939a84b0ccc56"
+    },
+    {
+      "path": "tools/neutrality-denylist.txt",
+      "sha256": "d7d23074a6d4618436c4ad0758f9f5b6dbd71390178a5c358082e0306210351c"
+    },
+    {
+      "path": "tools/neutrality.py",
+      "sha256": "86df7d59cc2e71dea0a2d4acefbe85d88025dfd719c1e1ae4cc9a897e3d604d0"
+    },
+    {
+      "path": "tools/release_notes.py",
+      "sha256": "0b1613d52e9570c15aed2342f747577b35177dfa4943b10c6e80c66865254035"
+    },
+    {
+      "path": "tools/selftest.py",
+      "sha256": "ca93be58330569c8aba23997094df4163d6889bc57a515a606571bf865333681"
+    },
+    {
+      "path": "tools/serve_site.py",
+      "sha256": "6783a0d280c8eea4813ef3ff4d8f7f278ef954a7b875837df0fc5f837b33bf4d"
+    },
+    {
+      "path": "tools/smoke_site.py",
+      "sha256": "2af3ae9d2af7a3e9f2a27aaffcbbe2761df3ae6bfbd9fa95a14869d042c8416d"
+    },
+    {
+      "path": "tools/superpowers.py",
+      "sha256": "2437e6351e6570ca4ce9455903d603079b2ae051802da948e749729fba90a72a"
+    },
+    {
+      "path": "tools/verify_release.py",
+      "sha256": "8556f62246fbe69b6279bff22bb76ff8b9d267222f02e8774d047063f99141fb"
+    }
+  ]
+}

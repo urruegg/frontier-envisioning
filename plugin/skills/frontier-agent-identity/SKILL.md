@@ -14,7 +14,7 @@ license: MIT
 metadata:
   category: productivity
   icon: PaintBrush
-  version: "1.6.1"
+  version: "1.7.1"
   plugin: frontier-envisioning
 ---
 

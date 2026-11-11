@@ -1,0 +1,40 @@
+{
+ "schema": "frontier-release-manifest/1.0",
+ "version": "1.7.0",
+ "date": "2026-11-10",
+ "provenance": "Built and validated in Copilot Cowork and published on 10 November 2026 (self-test 39 of 39, unit tests 66 of 66, DOM tests 17 of 17, pipeline tests passed, skill validation 0 failures and scores 96 to 100, security scan and package validation passed, HTML validator 0 findings, customer-neutrality scan 0 findings). Restructures the blueprint into four parts along the Innovation Hub journey and engagement (Vision, Design, Build, Workshops) and adds the PRD, Plan and Risks pages and evidence-based attendees to 1.6.0. Imported into the repository as the engineering baseline; the repository reproduces the artefacts below.",
+ "artefacts": [
+  {
+   "name": "frontier-envisioning-plugin-1.7.0.zip",
+   "build_path": "dist/frontier-envisioning-plugin-1.7.0.zip",
+   "bytes": 602366,
+   "sha256": "366868258e21825fbba0960fa4ab55cef15f7625a625ecd52627ff8a80180e3f"
+  },
+  {
+   "name": "Frontier Company Blueprint - Template (Caldova sample).html",
+   "build_path": "build/demo/Frontier Company Blueprint - Template (Caldova sample).html",
+   "bytes": 843689,
+   "sha256": "7c015f24b7cd5a4a0385a21be1e2271417dbe0cc32b87f8e681bcbb4bfbcf892",
+   "normalise": "generated-date",
+   "sha256_normalised": "4909111d33a4e12dd9149683e77d9da103ff8007460c6a3d157d5a2a441e1503"
+  },
+  {
+   "name": "Caldova - agent identity package v1.0.zip",
+   "build_path": "build/demo/identity/Caldova - agent identity package v1.0.zip",
+   "bytes": 3308707,
+   "sha256": "2026c84c5806e0b8c2003e837f15e635fb78f2fa79f247164c47c1a5b51a5400"
+  },
+  {
+   "name": "Caldova - agent identity catalogue.html",
+   "build_path": "build/demo/identity/caldova-agent-identity/catalog.html",
+   "bytes": 299998,
+   "sha256": "08e2da864f13575d0a630d90954e81a06283a1082a32cf10adfd30d038fa20f1"
+  }
+ ],
+ "not_reproduced": [
+  {
+   "name": "frontier-envisioning-github-repo-1.7.0.zip",
+   "reason": "the repository starting point itself; it contains this manifest, so its hash cannot be recorded here"
+  }
+ ]
+}

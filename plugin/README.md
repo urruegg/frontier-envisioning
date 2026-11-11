@@ -1,6 +1,6 @@
 # Frontier Envisioning — plugin for Copilot Cowork
 
-**Version 1.6.1 · Microsoft Innovation Hub Switzerland · 8 November 2026**
+**Version 1.7.1 · Microsoft Innovation Hub Switzerland · 8 November 2026**
 
 Envision any customer as a Frontier company — **human-led, agent-operated**. The plugin gathers what you already know about a customer from your meetings, workshop transcripts, mail, Teams chats and files (Work IQ), turns it into an interactive **Frontier Company Blueprint** that follows the Innovation Hub journey (Part 1 Vision, Part 2 Design, with the Agent Factory, the landing zone, architecture decisions and IT readiness), captures the workshop's verdicts inside that blueprint, writes the PRD, solution design and architecture decisions for the first agents to build, and gives every agent a **brand identity**: names per environment, colours from the customer's own brand and icons in the Microsoft 365 sizes.
 
@@ -24,7 +24,7 @@ product-icon terms. Confirm content/IP clearance before sharing externally.
 
 ## Install it in Copilot Cowork (two minutes)
 
-1. **Download** `frontier-envisioning-plugin-1.6.1.zip`. Keep it zipped.
+1. **Download** `frontier-envisioning-plugin-1.7.1.zip`. Keep it zipped.
 2. **Open Copilot Cowork** and start a new chat.
 3. **Attach the zip** to the chat and type:
 
@@ -86,7 +86,7 @@ Agent identity icons and Microsoft product icons make each part easy to read. No
 ## What is in the package
 
 ```
-frontier-envisioning-plugin-1.6.1.zip
+frontier-envisioning-plugin-1.7.1.zip
 ├── README.md                         this guide
 ├── MIT.md                            the licence (MIT)
 ├── THIRD-PARTY-NOTICES.md            Microsoft product icons and other material not covered by MIT
@@ -149,7 +149,7 @@ The Microsoft product icons in the blueprint template are Microsoft trademarks a
 
 ## For developers
 
-The repository starting point (`frontier-envisioning-github-repo-1.6.1.zip`, to import into GitHub) holds the plugin, the blueprint renderer sources (`src/renderer/`), the tools, the tests and the separate `docs/prd.md` (product requirements) and `docs/solution-design.md` (solution design of this plugin). One task runner covers the quality gates: `check` runs the template drift check, lint, the customer-neutrality scan, the unit tests, the self-test (every script end to end against the Caldova examples), the package build, the Caldova demo, the release reproduction and the browser DOM tests; `package` builds this zip and writes `install/plugin-install.json`.
+The repository starting point (`frontier-envisioning-github-repo-1.7.1.zip`, to import into GitHub) holds the plugin, the blueprint renderer sources (`src/renderer/`), the tools, the tests and the separate `docs/prd.md` (product requirements) and `docs/solution-design.md` (solution design of this plugin). One task runner covers the quality gates: `check` runs the template drift check, lint, the customer-neutrality scan, the unit tests, the self-test (every script end to end against the Caldova examples), the package build, the Caldova demo, the release reproduction and the browser DOM tests; `package` builds this zip and writes `install/plugin-install.json`.
 
 ```
 python tools/dev.py check

@@ -2,6 +2,13 @@
 
 Releases of the Frontier Envisioning plugin. Engineering changes to the repository are recorded in the pull requests.
 
+## 1.7.1 — unreleased
+
+- Selective intake of the received 1.7.0 four-part blueprint, shared PRD model,
+  Plan board, risk register and evidence-backed contributions. Integration is
+  in progress; existing accessibility, private-distribution and provenance
+  safeguards are retained. No release or external clearance is implied.
+
 ## 1.6.1 — 2026-11-09
 
 - **Anonymised distribution (2026-11-10, #20).** Current enterprise-account references and machine-specific examples are redacted; original intake file hashes and private history remain intact. Plugin and complete-bundle builds validate text, filenames and nested ZIP content/comments before writing output. The complete bundle excludes internal repository analyses. Distribution is assumed Microsoft internal, not public/customer clearance.
