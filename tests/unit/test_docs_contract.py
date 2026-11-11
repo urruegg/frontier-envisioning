@@ -229,6 +229,10 @@ class ProductDocumentSplit(unittest.TestCase):
         joined = "\n".join(self.documents.values())
         ids = sorted(set(re.findall(r"\b(?:FR|NFR|AC|D|TD|ADR)-\d+\b", joined)))
         additions = {f"FR-{i:04d}" for i in range(119, 128)} | {f"AC-{i:03d}" for i in range(26, 31)} | {"ADR-0025"}
+        boundaries = tuple(self.headings(text).count("## 1.9.1 development intake") for text in self.documents.values())
+        self.assertIn(boundaries, ((0, 0), (1, 1)), "1.9.1 additions need one explicit boundary in each product document")
+        if boundaries == (1, 1):
+            additions |= {f"FR-{i:04d}" for i in range(128, 142)} | {f"AC-{i:03d}" for i in range(31, 45)} | {"ADR-0026", "ADR-0027"}
         self.assertEqual(ids, sorted(set(self.baseline["identifiers"]) | additions))
         self.assertEqual(ids, sorted(set(ids)))
         self.assertRegex(self.baseline["source_sha256"], r"^[0-9a-f]{64}$")
@@ -399,6 +403,41 @@ class ProductDocumentPreservationRegressions(unittest.TestCase):
     def setUp(self) -> None:
         self.contract = ProductDocumentSplit()
         self.contract.setUp()
+
+    def test_approved_191_identifiers_are_bounded_without_rewriting_history(self) -> None:
+        original = dict(self.contract.documents)
+        additions = {
+            "prd.md": "\n".join(
+                [f"| FR-{number:04d} | Planned requirement |" for number in range(128, 142)]
+                + [f"| AC-{number:03d} | Pending verification |" for number in range(31, 45)]
+            ),
+            "solution-design.md": "ADR-0026 and ADR-0027 remain Proposed.",
+        }
+        approved = {
+            name: text.replace(
+                "## 1.7.1 development intake",
+                "## 1.9.1 development intake\n\n" + additions[name] + "\n\n## 1.7.1 development intake",
+                1,
+            )
+            for name, text in original.items()
+        }
+        self.contract.documents = approved
+        self.contract.test_original_identifiers_and_section_headings_are_retained()
+        self.contract.test_substantive_original_section_content_is_unchanged()
+        self.contract.test_original_product_context_unreleased_note_and_inventory_are_retained()
+        for extra in ("FR-0142", "AC-045", "ADR-0028", "NFR-9999"):
+            with self.subTest(unapproved_identifier=extra):
+                self.contract.documents = {**approved, "prd.md": approved["prd.md"] + "\n" + extra}
+                with self.assertRaises(AssertionError):
+                    self.contract.test_original_identifiers_and_section_headings_are_retained()
+        for name in approved:
+            with self.subTest(missing_development_boundary=name):
+                self.contract.documents = {
+                    **approved,
+                    name: approved[name].replace("## 1.9.1 development intake", "## Unnamed development intake", 1),
+                }
+                with self.assertRaises(AssertionError):
+                    self.contract.test_original_identifiers_and_section_headings_are_retained()
 
     def assert_mutation_rejected(
         self, document: str, original: str, replacement: str, check: str
