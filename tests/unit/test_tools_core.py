@@ -273,6 +273,13 @@ class BrowserCache(unittest.TestCase):
 
 
 class PreviewGateFixtures(unittest.TestCase):
+    def test_ci_browser_job_uses_the_isolated_fixture_runner(self):
+        import yaml
+
+        workflow = yaml.safe_load((fe_lib.ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8"))
+        browser_step = next(step for step in workflow["jobs"]["l2"]["steps"] if step.get("name") == "Browser tests")
+        self.assertEqual(browser_step["run"], "python tools/dev.py e2e --strict")
+
     def test_dom_prepares_explicit_preview_and_passes_both_fixtures(self):
         dev = load("tools/dev.py")
         with mock.patch.object(dev, "which", return_value="node"), \
