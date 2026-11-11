@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-11 |
 | Author | Copilot SDK in VS Code; AI-assisted planning and evidence maintenance |
-| Status | Design and written plan human-approved; implementation in progress; final acceptance pending |
+| Status | Design and plan human-approved; implementation locally verified; PR review/merge and release acceptance separate |
 | Scope | Governed 1.7.1 feature intake with subagent checkpoints and build/distribution acceptance |
 | References | [Catalogue](README.md), [Issue #22](https://github.com/urruegg/frontier-envisioning/issues/22), [Idea](../ideas/2026-11-10-handover-1.7-intake.md), [Spec](../specs/2026-11-10-handover-1.7-intake-design.md), [Plan](../plans/2026-11-10-handover-1.7-intake-plan.md), [Receipt](../intake/handover-1.7.0.md), [PRD intake](../prd.md#171-development-intake), [Design intake](../solution-design.md#171-development-intake) |
 
@@ -16,7 +16,7 @@ without losing current accessibility, privacy, provenance and governance.
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#22](https://github.com/urruegg/frontier-envisioning/issues/22) | [Idea](../ideas/2026-11-10-handover-1.7-intake.md) | [Spec](../specs/2026-11-10-handover-1.7-intake-design.md) | [P0-P5 plan](../plans/2026-11-10-handover-1.7-intake-plan.md) | `@urruegg` accountable; parent coordinates bounded builder/renderer/docs workers | Actual plan approval recorded; original raster/receipt and protected controls retained; P5 final gates/review/distribution pending | Implementation in progress; P1 review PASS; P3 completed with read-only review pending; P4 prose handoff | Human-merged [PR #23](https://github.com/urruegg/frontier-envisioning/pull/23), 11 November approval and [checkpoint receipt](../intake/handover-1.7.0.md) |
+| [#22](https://github.com/urruegg/frontier-envisioning/issues/22) | [Idea](../ideas/2026-11-10-handover-1.7-intake.md) | [Spec](../specs/2026-11-10-handover-1.7-intake-design.md) | [P0-P5 plan](../plans/2026-11-10-handover-1.7-intake-plan.md) | `@urruegg` accountable; parent coordinates bounded builder/renderer/docs workers | Actual plan approval recorded; all original provenance/protected controls retained | Local implementation, reviewed corrections, strict L1/L2 and distribution/install checks pass; human PR review/merge separate | Human-merged [PR #23](https://github.com/urruegg/frontier-envisioning/pull/23); [final receipt](../intake/handover-1.7.0.md#final-local-integration-verification--11-november); #22 records delivery PR/head |
 
 ## Readiness and real approval evidence
 
@@ -84,10 +84,11 @@ or version was changed. Save/push the planning branch for the maintainer to revi
 resume P0 only after actual written-plan approval. That validation proves the
 preserved 1.6.1 baseline plus planning documents, not an integrated 1.7.1 product.
 
-## Implementation checkpoints — 11 November 2026
+## Initial implementation checkpoints — 11 November 2026
 
-These results were returned by the parent/worker loop for the P4 handoff; the
-docs worker did not execute commands or independently rerun them.
+These historical results were returned by the parent/worker loop for the P4
+handoff; the docs worker did not execute commands or independently rerun them.
+The final local verification below supersedes these pending checkpoint states.
 
 | Phase | Returned evidence | Limits/current state |
 |---|---|---|
@@ -99,11 +100,39 @@ docs worker did not execute commands or independently rerun them.
 | P5 | No final integrated result supplied | Final strict L1, integrated review, finished ZIP/privacy/checksum/rebuild and offline seven-skill install-plan acceptance pending |
 
 New acceptance rows in the [PRD intake](../prd.md#171-development-intake) remain
-Pending until final integrated acceptance. There is no new **ALL GATES PASSED**
-claim here; the earlier planning result remains historical.
+Pending for human product/release acceptance; actual local verification is
+recorded below. They are not rewritten into historical passed release claims.
 
 The parent runs document/header/link/traceability and contract tests and handles
 any gaps. No docs-worker terminal command, commit, push, generated/fixture/test
 edit or protected action was performed. Actual Cowork install/publication,
 deployment, release/external-IP clearance and protected routing
 [#8](https://github.com/urruegg/frontier-envisioning/issues/8) remain human-only.
+
+## Final local verification
+
+- [x] P0 source receipt/version and actual plan approval recorded.
+- [x] P1 shared models, risk/feedback/PRD scope and privacy corrections pass
+  real red/green regressions and advisory spec/quality re-review.
+- [x] P2 finite 1.7.1 profile verifies every original input/raster and preserves A6.
+- [x] P3 all seventeen views, actual downloads, note/badge/focus/reflow and
+  retained accessibility passed; reported renderer findings fixed and re-reviewed.
+- [x] P4 separate product documents, Proposed ADR, seven skill guides and
+  named milestone seeds validated without changing historical receipts.
+- [x] P5 strict L1: **ALL GATES PASSED**, 228 tests, 729 subtests, 59 DOM tests,
+  39 self-checks; one expected unreleased-1.7.1 manifest skip.
+- [x] Full strict L2: **ALL GATES PASSED**, 52 browser tests; 168 axe states
+  with zero applicable violations; all seventeen views reflow at 320px.
+- [x] Exact two-build handoff: same ZIP digests, eleven complete entries,
+  nested privacy checks, no analysis/intake files and matching checksums.
+- [x] Offline install preparation verifies seven skills and 73 files;
+  task-owned extraction removed, no actual user installation.
+- [x] Original 240 protected/fixture files and received 262-file source are unchanged.
+- [ ] Human review/merge of the implementation PR; cloud results tracked separately.
+- [ ] Real Cowork pilot/release acceptance and external content/IP clearance if requested.
+
+The [final receipt](../intake/handover-1.7.0.md#final-local-integration-verification--11-november)
+contains output hashes and generated screenshots. The coordinator publishes the
+scoped feature branch/draft PR and records the exact head on #22. These local
+passes do not grant formal approval, protected-label mutation, release, deployment
+or public distribution.
