@@ -1,4 +1,4 @@
-"""Contract-only checkpoint: explicit gaps, typed inputs and material lineage."""
+"""Baseline contract and pure Decimal calculator checkpoint tests."""
 from __future__ import annotations
 
 import copy
@@ -640,6 +640,500 @@ class BaselineContractTests(unittest.TestCase):
             self.assertTrue(source["supported_claim"])
             self.assertTrue(source["limitations"])
             self.assertNotIn("amount", source)
+
+
+class BaselineCalculationTests(unittest.TestCase):
+    def setUp(self):
+        self.assertTrue((FIN / "scripts" / "baseline_calc.py").is_file(),
+                        "Task2 calculate/validate_receipt have not been implemented")
+        self.calc = baseline_module("baseline_calc")
+        self.assertTrue(callable(getattr(self.calc, "calculate", None)), "Task2 calculate API is absent")
+        self.assertTrue(callable(getattr(self.calc, "validate_receipt", None)), "Task2 receipt API is absent")
+        self.model = example()
+
+    def calculate(self, model=None, **kwargs):
+        return self.calc.calculate(self.model if model is None else model, as_of=DAY,
+                                   acknowledge_finops_preview=True, **kwargs)
+
+    def expected(self, model=None):
+        return self.calculate(model)["results"]["scenarios"]["expected"]
+
+    def verified_test_data(self):
+        """Simulated unit-test evidence only; never real commercial approval."""
+        self.model["mode"] = "planning"
+        for source in self.model["sources"]:
+            source.update(type="internal-evidence", validationStatus="validated",
+                          evidence_ref="testdata:not-real-commercial-verification")
+        for rate in self.model["rates"]:
+            rate["verification"]["status"] = "verified"
+
+    def add_fx(self, *, status="synthetic", amount="0.9"):
+        self.model["rates"][0]["currency"] = "USD"
+        self.model["fx"] = [{
+            "id": "FX-TEST", "version": 1, "from_currency": "USD", "to_currency": "CHF",
+            "rate": amount, "date": "2026-11-12", "method": "spot", "source_id": "SYN-ENGINEERING",
+            "verification": {"status": status, "verified_at": "2026-11-12"},
+            "freshness_policy": {"max_age_days": 30}, "sharingClassification": "customer-shareable",
+        }]
+
+    def test_known_answers_and_period_bases(self):
+        result = self.calculate()["results"]
+        expected = result["scenarios"]["expected"]
+        self.assertEqual(expected["months"][0]["total"]["amount"], "110.00")
+        self.assertEqual(expected["annual_recurring"]["amount"], "1320.00")
+        self.assertEqual(expected["one_time"]["amount"], "200.00")
+        self.assertEqual(expected["first_year"]["amount"], "1520.00")
+        self.assertEqual(expected["months"][0]["per_success"]["amount"], "2.200000")
+        self.assertEqual(expected["months"][0]["per_run"]["basis"], "recurring")
+        self.assertEqual(expected["unit_metrics"]["first_year"]["per_run"]["basis"], "first-year")
+        self.assertEqual(expected["unit_metrics"]["first_year"]["per_run"]["amount"], "1.266667")
+        self.assertEqual(expected["unit_metrics"]["annual_recurring"]["per_success"]["amount"], "2.200000")
+        for key, monthly, yearly in (("low", "35.00", "620.00"), ("high", "410.00", "5120.00")):
+            self.assertEqual(result["scenarios"][key]["months"][0]["total"]["amount"], monthly)
+            self.assertEqual(result["scenarios"][key]["first_year"]["amount"], yearly)
+        self.assertEqual(len(expected["months"]), 12)
+        self.assertEqual(expected["months"][0]["period"], "2026-12")
+        self.assertEqual(expected["months"][-1]["period"], "2027-11")
+        self.assertEqual(expected["months"][0]["total"]["status"], "provisional")
+        self.assertEqual(expected["months"][0]["total"]["reason"], "pricing-evidence-incomplete")
+        self.assertTrue(result["internal"])
+        self.assertEqual(result["forecast_kind"], "estimate")
+        self.assertTrue(result["handover_blocked"])
+        self.assertIn("synthetic-evidence", {g["code"] for g in result["gaps"]})
+        json.dumps(result, allow_nan=False)
+
+    def test_missing_rate_keeps_known_subtotal_not_full_unit_cost(self):
+        self.model["rates"][0]["amount"] = None
+        document = self.calculate()
+        month = document["results"]["scenarios"]["expected"]["months"][0]
+        self.assertIsNone(month["total"]["amount"])
+        self.assertEqual(month["total"]["status"], "incomplete")
+        self.assertEqual(month["known_priced_subtotal"]["amount"], "10.00")
+        self.assertIsNone(month["verified_subtotal"]["amount"])
+        self.assertIsNone(month["per_run"]["amount"])
+        self.assertEqual(month["per_run"]["reason"], "incomplete-cost")
+        self.assertIn("unpriced", {g["code"] for g in document["results"]["gaps"]})
+
+    def test_current_actual_true_ack_is_required_before_any_work(self):
+        result = self.calculate()
+        for operation, model in ((self.calc.calculate, self.model), (self.calc.validate_receipt, result)):
+            before = copy.deepcopy(model)
+            for value in (False, None, 1, "true", {}, result["finops_preview"]):
+                with self.subTest(operation=operation.__name__, value=type(value).__name__):
+                    with self.assertRaisesRegex(ValueError, "Explicit"):
+                        operation(model, as_of=DAY, acknowledge_finops_preview=value)
+            with self.assertRaisesRegex(ValueError, "Explicit"):
+                operation(object(), as_of=None)
+            self.assertEqual(model, before)
+
+    def test_receipt_recomputes_and_rejects_rehashed_fabricated_amount(self):
+        document = self.calculate()
+        receipt = self.calc.validate_receipt(document, as_of=DAY, acknowledge_finops_preview=True)
+        self.assertEqual(receipt["kind"], "baseline")
+        self.assertEqual(receipt["scenario_ids"], ["expected", "high", "low"])
+        self.assertEqual(receipt["as_of"], DAY.isoformat())
+        self.assertEqual(receipt["model_fingerprint"], baseline_module().model_fingerprint(self.model))
+        bad = copy.deepcopy(document)
+        bad["results"]["scenarios"]["expected"]["months"][0]["total"]["amount"] = "999999.00"
+        bad["finops_preview"]["calculations"]["baseline"]["results_fingerprint"] = (
+            baseline_module("finops_preview").fingerprint(bad["results"]))
+        with self.assertRaisesRegex(ValueError, "recalculate"):
+            self.calc.validate_receipt(bad, as_of=DAY, acknowledge_finops_preview=True)
+        receipt["kind"] = "mutated-return"
+        self.assertEqual(document["finops_preview"]["calculations"]["baseline"]["kind"], "baseline")
+
+    def test_authored_monthly_variation_sums_twelve_not_first_times_twelve(self):
+        self.model["baseline"]["annualisation"]["demand_profile"] = "authored-monthly"
+        self.model["baseline"]["scenarios"][1]["monthly_runs"] = [str(n) for n in range(1, 13)]
+        result = self.expected()
+        self.assertEqual(result["months"][0]["total"]["amount"], "11.00")
+        self.assertEqual(result["months"][-1]["total"]["amount"], "22.00")
+        self.assertEqual(result["annual_recurring"]["amount"], "198.00")
+        self.assertEqual(result["first_year"]["amount"], "398.00")
+        self.assertEqual(result["unit_metrics"]["annual_recurring"]["per_run"]["denominator"], "78")
+
+    def test_pricing_block_explicit_fx_and_raw_precision(self):
+        self.add_fx(amount="0.9")
+        self.model["rates"][0].update(amount="1.23456789", pricing_block="100")
+        result = self.expected()
+        self.assertEqual(result["months"][0]["total"]["amount"], "1121.11")
+        self.assertEqual(result["annual_recurring"]["amount"], "13453.33")
+        self.assertEqual(self.model["rates"][0]["amount"], "1.23456789")
+        self.assertIn("FX-TEST", result["months"][0]["lines"][0]["cost"]["fx_refs"])
+
+    def test_rounding_is_half_up_on_final_period_not_each_component(self):
+        self.model["rates"][0]["amount"] = "0.00005"  # expected tokens cost .005
+        self.model["rates"][1]["amount"] = "0.005"
+        result = self.expected()
+        self.assertEqual(result["months"][0]["total"]["amount"], "0.01")
+        self.assertEqual(result["months"][0]["lines"][0]["cost"]["amount"], "0.01")
+        self.assertEqual(result["annual_recurring"]["amount"], "0.12")
+
+    def test_fixed_and_per_run_one_time_and_explicit_allocation(self):
+        line = self.model["baseline"]["lines"][2]
+        line.update(quantity_mode="per-run", shared=True, allocation_policy={
+            "id": "ALLOC-TEST", "method": "explicit test share", "share": "0.25",
+            "source_id": "SYN-ENGINEERING", "sharingClassification": "customer-shareable",
+        })
+        result = self.expected()
+        self.assertEqual(result["one_time"]["amount"], "5000.00")
+        self.assertEqual(result["first_year"]["amount"], "6320.00")
+        self.assertEqual(len(result["one_time_lines"]), 1)
+        del line["allocation_policy"]
+        result = self.expected()
+        self.assertIsNone(result["one_time"]["amount"])
+        self.assertEqual(result["annual_recurring"]["amount"], "1320.00")
+        self.assertIsNone(result["first_year"]["amount"])
+
+    def test_zero_rate_and_numerator_are_real_zero(self):
+        for rate in self.model["rates"]:
+            rate["amount"] = "0"
+        result = self.expected()
+        self.assertEqual(result["annual_recurring"]["amount"], "0.00")
+        self.assertEqual(result["months"][0]["per_run"]["amount"], "0.000000")
+        self.assertEqual(result["months"][0]["per_outcome"]["amount"], "0.000000")
+
+    def test_missing_and_zero_denominators_are_independent(self):
+        scenario = self.model["baseline"]["scenarios"][1]
+        for key in ("success_share", "outcomes_per_success"):
+            for value in (None, "0"):
+                scenario["success_share"] = "0.5"
+                scenario["outcomes_per_success"] = "2"
+                scenario[key] = value
+                with self.subTest(key=key, value=value):
+                    month = self.expected()["months"][0]
+                    self.assertEqual(month["total"]["amount"], "110.00")
+                    self.assertEqual(month["per_run"]["amount"], "1.100000")
+                    if key == "outcomes_per_success":
+                        self.assertEqual(month["per_success"]["amount"], "2.200000")
+                    else:
+                        self.assertIsNone(month["per_success"]["amount"])
+                    self.assertIsNone(month["per_outcome"]["amount"])
+                    self.assertEqual(month["per_outcome"]["reason"], "no-denominator")
+
+    def test_zero_runs_do_not_invent_denominators_or_erase_fixed_cost(self):
+        self.model["baseline"]["scenarios"][1]["monthly_runs"] = ["0"] * 12
+        month = self.expected()["months"][0]
+        self.assertEqual(month["total"]["amount"], "10.00")
+        for metric in ("per_run", "per_success", "per_outcome"):
+            self.assertIsNone(month[metric]["amount"])
+            self.assertEqual(month[metric]["reason"], "no-denominator")
+
+    def test_missing_outcome_metadata_leaves_independent_cost_and_run_metrics(self):
+        for path in (("profile", "outcome", "unit"), ("profile", "outcome", "definition"),
+                     ("baseline", "scenarios", 1, "driver_evidence", "outcomes_per_success", "unit")):
+            for value in (None, "", "   "):
+                model = example()
+                put(model, path, value)
+                with self.subTest(path=path, value=value):
+                    month = self.expected(model)["months"][0]
+                    self.assertEqual(month["total"]["amount"], "110.00")
+                    self.assertEqual(month["per_run"]["amount"], "1.100000")
+                    self.assertEqual(month["per_success"]["amount"], "2.200000")
+                    self.assertIsNone(month["per_outcome"]["amount"])
+
+    def test_missing_runs_only_affect_the_authored_period_and_dependent_line(self):
+        self.model["baseline"]["scenarios"][1]["monthly_runs"][3] = None
+        result = self.expected()
+        self.assertEqual(result["months"][0]["total"]["amount"], "110.00")
+        month = result["months"][3]
+        self.assertIsNone(month["total"]["amount"])
+        self.assertIsNone(month["lines"][0]["quantity"])
+        self.assertEqual(month["known_priced_subtotal"]["amount"], "10.00")
+        self.assertIsNone(result["annual_recurring"]["amount"])
+        self.assertEqual(result["one_time"]["amount"], "200.00")
+
+    def test_missing_driver_or_unit_never_defaults_to_zero(self):
+        for path in (("baseline", "scenarios", 1, "drivers", "tokens_per_run"),
+                     ("baseline", "scenarios", 1, "driver_evidence", "tokens_per_run", "unit"),
+                     ("rates", 0, "unit"), ("rates", 0, "currency"), ("rates", 0, "pricing_block"),
+                     ("baseline", "lines", 0, "quantity_unit")):
+            model = example()
+            put(model, path, None)
+            with self.subTest(path=path):
+                month = self.expected(model)["months"][0]
+                self.assertIsNone(month["total"]["amount"])
+                self.assertEqual(month["known_priced_subtotal"]["amount"], "10.00")
+
+    def test_missing_fx_never_uses_inverse_or_ratio(self):
+        self.model["rates"][0]["currency"] = "USD"
+        month = self.expected()["months"][0]
+        self.assertIsNone(month["total"]["amount"])
+        self.assertEqual(month["known_priced_subtotal"]["amount"], "10.00")
+        self.add_fx()
+        self.model["fx"][0].update(from_currency="CHF", to_currency="USD")
+        self.assertIsNone(self.expected()["months"][0]["total"]["amount"])
+
+    def test_all_unpriced_and_empty_groups_are_null_not_zero(self):
+        for rate in self.model["rates"]:
+            rate["amount"] = None
+        result = self.expected()
+        for key in ("total", "known_priced_subtotal", "verified_subtotal", "provisional_subtotal"):
+            self.assertIsNone(result["months"][0][key]["amount"])
+        self.assertIsNone(result["first_year"]["amount"])
+        self.model["baseline"]["lines"] = []
+        result = self.expected()
+        self.assertIsNone(result["annual_recurring"]["amount"])
+        self.assertIsNone(result["one_time"]["amount"])
+
+    def test_uncovered_scope_does_not_label_partial_cost_as_full(self):
+        self.model["baseline"]["scope"].append({
+            "cost_driver_id": "test-missing", "description": "Unrepresented test scope",
+            "sharingClassification": "customer-shareable"})
+        result = self.expected()
+        self.assertIsNone(result["months"][0]["total"]["amount"])
+        self.assertEqual(result["months"][0]["known_priced_subtotal"]["amount"], "110.00")
+        self.assertIsNone(result["months"][0]["per_run"]["amount"])
+
+    def test_stale_unverified_rates_keep_provisional_figures_and_dated_gaps(self):
+        self.verified_test_data()
+        for status, day in (("unverified", "2026-11-12"), ("verified", "2026-01-01")):
+            self.model["rates"][0]["verification"].update(status=status, verified_at=day)
+            result = self.calculate()["results"]
+            month = result["scenarios"]["expected"]["months"][0]
+            self.assertEqual(month["total"]["amount"], "110.00")
+            self.assertEqual(month["total"]["status"], "provisional")
+            self.assertEqual(month["per_run"]["status"], "provisional")
+            self.assertTrue(result["handover_blocked"])
+            evidence = month["lines"][0]["pricing_evidence"]
+            self.assertEqual(evidence["as_of"], DAY.isoformat())
+            self.assertTrue(evidence["gaps"])
+            self.assertEqual(evidence["records"][0]["verified_at"], day)
+
+    def test_mixed_verified_provisional_contributions_never_silently_mix(self):
+        self.verified_test_data()
+        self.model["rates"][0]["verification"]["status"] = "unverified"
+        result = self.expected()
+        month = result["months"][0]
+        self.assertEqual(month["verified_subtotal"]["amount"], "10.00")
+        self.assertEqual(month["provisional_subtotal"]["amount"], "100.00")
+        self.assertEqual(month["known_priced_subtotal"]["amount"], "110.00")
+        self.assertEqual(month["known_priced_subtotal"]["status"], "provisional")
+        self.assertEqual(month["total"]["status"], "provisional")
+        self.assertEqual(result["annual_recurring"]["verified_subtotal"]["amount"], "120.00")
+        self.assertEqual(result["annual_recurring"]["provisional_subtotal"]["amount"], "1200.00")
+
+    def test_provisional_fx_and_synthetic_sources_cannot_be_promoted(self):
+        self.verified_test_data()
+        self.add_fx(status="unverified")
+        month = self.expected()["months"][0]
+        self.assertEqual(month["total"]["amount"], "100.00")
+        self.assertEqual(month["total"]["status"], "provisional")
+        self.assertEqual(month["provisional_subtotal"]["amount"], "90.00")
+        self.model = example()
+        for rate in self.model["rates"]:
+            rate["verification"]["status"] = "verified"
+        self.assertEqual(self.expected()["months"][0]["total"]["status"], "provisional")
+
+    def test_simulated_verified_price_is_not_financial_approval(self):
+        self.verified_test_data()
+        document = self.calculate()
+        month = document["results"]["scenarios"]["expected"]["months"][0]
+        self.assertEqual(month["total"]["status"], "available")
+        self.assertEqual(month["verified_subtotal"]["amount"], "110.00")
+        self.assertIsNone(month["provisional_subtotal"]["amount"])
+        self.assertTrue(document["results"]["handover_blocked"])
+        self.assertFalse(document["results"]["financial_approval"])
+
+    def test_inapplicable_sources_and_periods_are_not_rescued_by_provisional_policy(self):
+        for path, value in ((("sources", 0, "applicability"), ["concept"]),
+                            (("sources", 0, "type"), "public-reference"),
+                            (("rates", 0, "effective_to"), "2026-12-31")):
+            model = example()
+            put(model, path, value)
+            with self.subTest(path=path):
+                result = self.expected(model)
+                if path[-1] == "effective_to":
+                    self.assertEqual(result["months"][0]["total"]["amount"], "110.00")
+                    self.assertIsNone(result["months"][1]["total"]["amount"])
+                else:
+                    self.assertIsNone(result["months"][0]["total"]["amount"])
+                self.assertIsNone(result["annual_recurring"]["amount"])
+
+    def test_inactive_at_as_of_and_ambiguous_fx_are_refused(self):
+        self.model["rates"][0]["effective_from"] = "2026-12-01"
+        self.assertIsNone(self.expected()["months"][0]["total"]["amount"])
+        self.model = example()
+        self.add_fx()
+        other = copy.deepcopy(self.model["fx"][0])
+        other["id"] = "FX-OTHER"
+        self.model["fx"].append(other)
+        with self.assertRaisesRegex(ValueError, "ambiguous"):
+            self.calculate()
+
+    def test_metadata_only_gaps_do_not_erase_numbers(self):
+        for path in (("profile", "name"), ("profile", "owners", "finance"),
+                     ("baseline", "lines", 0, "category"),
+                     ("rates", 0, "source_id"), ("rates", 0, "verification"),
+                     ("sources", 0, "supported_claim")):
+            model = example()
+            put(model, path, None)
+            with self.subTest(path=path):
+                self.assertEqual(self.expected(model)["months"][0]["total"]["amount"], "110.00")
+
+    def test_no_input_mutation_stale_outputs_replaced_and_calls_deterministic(self):
+        self.model.update(results={"bad": "stale"}, finops_preview={"approved": True},
+                          review_records=[{"approved": True}], handover={"approved": True})
+        original = copy.deepcopy(self.model)
+        first = self.calculate()
+        self.assertEqual(self.model, original)
+        self.assertEqual(first, self.calculate())
+        self.assertNotIn("review_records", first)
+        self.assertNotIn("handover", first)
+        self.assertNotIn("approved", first["finops_preview"])
+        self.assertFalse(first["results"]["financial_approval"])
+
+    def test_receipt_input_date_nested_maturity_and_fp_binding(self):
+        document = self.calculate()
+        for path, value in ((("baseline", "assumptions", 0, "maturity"), "reviewed"),
+                            (("rates", 0, "amount"), "9"),
+                            (("sources", 0, "internal"), True),
+                            (("baseline", "scenarios", 1, "drivers", "tokens_per_run"), "42"),
+                            (("finops_preview", "calculations", "baseline", "model_fingerprint"), "forged")):
+            bad = copy.deepcopy(document)
+            put(bad, path, value)
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, "recalculate"):
+                self.calc.validate_receipt(bad, as_of=DAY, acknowledge_finops_preview=True)
+        with self.assertRaisesRegex(ValueError, "recalculate"):
+            self.calc.validate_receipt(document, as_of=date(2026, 11, 13), acknowledge_finops_preview=True)
+
+    def test_malformed_receipts_results_scenario_coverage_and_nonfinite_amounts(self):
+        document = self.calculate()
+        cases = [(("finops_preview",), None), (("results",), []),
+                 (("finops_preview", "calculations", "baseline"), []),
+                 (("results", "scenarios", "expected"), None),
+                 (("finops_preview", "calculations", "baseline", "scenario_ids"), ["expected"])]
+        for value in ("NaN", "Infinity", True, 110.0, None, "999"):
+            cases.append((("results", "scenarios", "expected", "months", 0, "total", "amount"), value))
+        for path, value in cases:
+            bad = copy.deepcopy(document)
+            put(bad, path, value)
+            with self.subTest(path=path, value=value), self.assertRaisesRegex(ValueError, "recalculate"):
+                self.calc.validate_receipt(bad, as_of=DAY, acknowledge_finops_preview=True)
+        bad = copy.deepcopy(document)
+        del bad["results"]["scenarios"]["low"]
+        with self.assertRaisesRegex(ValueError, "recalculate"):
+            self.calc.validate_receipt(bad, as_of=DAY, acknowledge_finops_preview=True)
+
+    def test_private_rate_source_fx_and_nested_policy_ancestry_stays_on_derived_values(self):
+        self.add_fx()
+        self.model["fx"][0].update(internal=True, visibility="internal")
+        self.model["rates"][0]["sharingClassification"] = "internal-only"
+        month = self.expected()["months"][0]
+        tokens, operations = month["lines"][:2]
+        self.assertTrue(tokens["cost"]["internal"])
+        self.assertEqual(tokens["cost"]["sharingClassification"], "internal-only")
+        self.assertNotIn("internal", operations["cost"])
+        self.assertTrue(month["total"]["internal"])
+        self.assertTrue(month["per_run"]["internal"])
+        self.assertIn("/profile", tokens["cost"]["dependency_refs"])
+        self.assertIn("/baseline/scenarios/1/driver_evidence/tokens_per_run",
+                      tokens["cost"]["dependency_refs"])
+        self.assertIn("SYN-ENGINEERING", tokens["cost"]["source_refs"])
+
+    def test_consumed_legacy_sources_transitive_private_restrictions_and_unused_sources(self):
+        source = copy.deepcopy(self.model["sources"][0])
+        source.update(id="TEST-PRIVATE", internal=True, visibility="internal",
+                      sharingClassification="internal-only", content_src=["SYN-CONTEXT"])
+        self.model["sources"].append(source)
+        month = self.expected()["months"][0]
+        self.assertNotIn("TEST-PRIVATE", month["total"]["source_refs"])
+        self.assertNotIn("internal", month["total"])
+        self.model["rates"][0].update(src=["TEST-PRIVATE"], content_src=["SYN-ENGINEERING"])
+        month = self.expected()["months"][0]
+        self.assertTrue(month["lines"][0]["cost"]["internal"])
+        self.assertIn("TEST-PRIVATE", month["lines"][0]["cost"]["source_refs"])
+        self.assertIn("SYN-CONTEXT", month["lines"][0]["cost"]["source_refs"])
+        self.assertNotIn("internal", month["lines"][1]["cost"])
+
+    def test_private_outcome_does_not_taint_independent_costs_or_per_run(self):
+        self.model["profile"]["outcome"]["internal"] = True
+        month = self.expected()["months"][0]
+        self.assertNotIn("internal", month["total"])
+        self.assertNotIn("internal", month["per_run"])
+        self.assertTrue(month["per_outcome"]["internal"])
+
+    def test_arithmetic_representation_errors_are_field_safe_and_nondestructive(self):
+        for value in ("1e999999999", "1e-999999999"):
+            model = example()
+            model["rates"][0]["amount"] = value
+            before = copy.deepcopy(model)
+            with self.subTest(value=value), self.assertRaisesRegex(ValueError, "arithmetic|representation") as caught:
+                self.calculate(model)
+            self.assertNotIn(value, str(caught.exception))
+            self.assertEqual(model, before)
+
+    def test_blank_source_metadata_never_becomes_a_derived_source_identity(self):
+        for value in (None, "", "   "):
+            self.model["rates"][0]["source_id"] = value
+            month = self.expected()["months"][0]
+            self.assertEqual(month["total"]["amount"], "110.00")
+            self.assertNotIn("   ", month["total"]["source_refs"])
+
+    def test_nested_line_and_scenario_restrictions_reach_actual_derived_costs(self):
+        for path in (("baseline", "lines", 0), ("baseline", "scenarios", 1)):
+            model = example()
+            parent = model
+            for key in path:
+                parent = parent[key]
+            parent["supporting_note"] = {"internal": True, "sharingClassification": "internal-only"}
+            month = self.expected(model)["months"][0]
+            with self.subTest(path=path):
+                self.assertTrue(month["lines"][0]["cost"].get("internal"))
+                self.assertTrue(month["total"].get("internal"))
+                if path[1] == "lines":
+                    self.assertNotIn("internal", month["lines"][1]["cost"])
+
+    def test_all_four_sharing_classes_and_customer_scope_reach_dependencies(self):
+        for sharing in ("customer-shareable", "customer-specific", "internal-only", "validation-required"):
+            self.model["rates"][0].update(sharingClassification=sharing, customer_scope="test-scope")
+            line = self.expected()["months"][0]["lines"][0]
+            self.assertIn(sharing, line["cost"]["sharing_classes"])
+            self.assertIn("test-scope", line["cost"]["customer_scopes"])
+            self.assertEqual(line["cost"]["sharingClassification"], sharing)
+
+    def test_missing_sharing_on_consumed_records_remains_validation_required(self):
+        for path in (("rates", 0), ("baseline", "lines", 0),
+                     ("baseline", "scenarios", 1, "driver_evidence", "tokens_per_run"),
+                     ("profile",)):
+            model = example()
+            row = model
+            for key in path:
+                row = row[key]
+            row["sharingClassification"] = None
+            with self.subTest(path=path):
+                month = self.expected(model)["months"][0]
+                self.assertEqual(month["total"]["amount"], "110.00")
+                self.assertEqual(month["lines"][0]["cost"]["sharingClassification"], "validation-required")
+
+    def test_future_fx_evidence_is_not_a_stale_price_amendment(self):
+        self.add_fx()
+        self.model["fx"][0]["date"] = "2026-11-13"
+        month = self.expected()["months"][0]
+        self.assertIsNone(month["total"]["amount"])
+        self.assertEqual(month["known_priced_subtotal"]["amount"], "10.00")
+
+    def test_synthetic_consumed_quantity_is_labelled_even_with_verified_test_prices(self):
+        self.verified_test_data()
+        source = copy.deepcopy(example()["sources"][0])
+        source["id"] = "TEST-SYNTHETIC-QUANTITY"
+        self.model["sources"].append(source)
+        self.model["baseline"]["scenarios"][1]["driver_evidence"]["tokens_per_run"]["source_id"] = source["id"]
+        line = self.expected()["months"][0]["lines"][0]
+        self.assertTrue(line["cost"].get("synthetic"))
+        self.assertEqual(line["cost"]["status"], "provisional")
+
+    def test_forged_hash_cannot_hide_missing_scenario_or_invalid_amount_type(self):
+        document = self.calculate()
+        for path, value in ((("results", "scenarios", "expected", "months", 0, "per_success", "amount"), 2.2),
+                            (("results", "scenarios", "expected"), {}),
+                            (("finops_preview", "acknowledgement", "scope"), "cached-approval")):
+            bad = copy.deepcopy(document)
+            put(bad, path, value)
+            bad["finops_preview"]["calculations"]["baseline"]["results_fingerprint"] = (
+                baseline_module("finops_preview").fingerprint(bad["results"]))
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, "recalculate"):
+                self.calc.validate_receipt(bad, as_of=DAY, acknowledge_finops_preview=True)
 
 
 if __name__ == "__main__":
