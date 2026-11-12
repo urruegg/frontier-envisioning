@@ -15,6 +15,7 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from datetime import date
 from pathlib import Path
+from unittest import mock
 
 from tests.unit.test_finops_baseline import DAY, FIN, baseline_module, example
 
@@ -1183,6 +1184,54 @@ class ProjectionTests(IOCase):
         self.assertEqual(report["scenarios"]["expected"]["months"][0]["total"]["status"], "withheld")
         self.assertEqual(report["scenarios"]["expected"]["months"][0]["lines"][1]["cost"]["amount"], "10.00")
 
+    def test_reports_keep_all_current_calculator_diagnostics_including_period_coverage(self):
+        for kind in ("period", "applicability"):
+            model = simulated()
+            if kind == "period":
+                model["rates"][0]["effective_to"] = "2026-12-31"
+            else:
+                model["sources"][0]["applicability"].remove("rate")
+            calculated = self.calculated(model)
+            before = copy.deepcopy(calculated)
+            calc_gaps = calculated["results"]["gaps"]
+            authored_gaps = self.model.validate_model(model, as_of=DAY)
+            extra = [gap for gap in calc_gaps if gap not in authored_gaps]
+            self.assertTrue(extra, "Fixture must exercise calculator-only diagnostics")
+            for audience in ("internal", "customer"):
+                with self.subTest(kind=kind, audience=audience):
+                    report = self.projection.project(calculated, **ACK, audience=audience)
+                    self.assertTrue(report["gaps"])
+                    self.assertTrue({g["code"] for g in extra} <= {g["code"] for g in report["gaps"]})
+                    if audience == "internal":
+                        self.assertEqual(report["gaps"], calc_gaps)
+                    self.assertIsNone(report["scenarios"]["expected"]["annual_recurring"]["amount"])
+                    self.assertFalse(report["handover"]["ready"])
+                    self.assertIn(extra[0]["code"], self.projection.render_markdown(report))
+                    self.assertEqual(calculated, before)
+
+    def test_report_gap_merge_keeps_period_and_block_context_with_consumer_cycles(self):
+        model = simulated()
+        model["rates"][0]["effective_to"] = "2026-12-31"
+        model["sources"].extend([
+            {**model["sources"][0], "id": "GAP-CYCLE-A", "src": ["GAP-CYCLE-B"]},
+            {**model["sources"][0], "id": "GAP-CYCLE-B", "content_src": ["GAP-CYCLE-A"]},
+        ])
+        calculated = self.calculated(model)
+        period_gaps = [g for g in calculated["results"]["gaps"] if g["code"] == "rate-period-unavailable"]
+        self.assertGreater(len(period_gaps), 1)
+        report = self.projection.project(calculated, **ACK, audience="internal")
+        for gap in period_gaps:
+            self.assertIn(gap, report["gaps"])
+        self.assertIn("source-ancestry-cycle", {g["code"] for g in report["gaps"]})
+        duplicate = copy.deepcopy(period_gaps[0])
+        different_blocks = {**duplicate, "blocks": ["handover", "customer-export"]}
+        with mock.patch.object(self.projection, "_source_cycle_gaps",
+                               return_value=[duplicate, different_blocks]):
+            merged = self.projection.project(calculated, **ACK, audience="internal")["gaps"]
+        self.assertEqual(merged.count(duplicate), 1)
+        self.assertIn(different_blocks, merged)
+        self.assertTrue(all(g in merged for g in period_gaps))
+
     def test_singular_plural_technical_registry_families_share_one_privacy_policy(self):
         digest = "faced123" * 8
         families = ("fingerprint", "fingerprints", "hash", "hashes", "digest", "digests",
@@ -1494,6 +1543,23 @@ class CLITests(IOCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         for path in (out / "report.json", out / "report.md"):
             self.assertNotIn(digest, path.read_text(encoding="utf-8"))
+
+    def test_cli_json_and_markdown_keep_forecast_rate_coverage_diagnostics(self):
+        model = simulated()
+        model["rates"][0]["effective_to"] = "2026-12-31"
+        source = self.write("coverage.json", self.calculated(model))
+        before = source.read_bytes()
+        for audience in ("internal", "customer"):
+            out = self.dir / f"coverage-{audience}"
+            result = self.run_cli("export", "--baseline", source, "--out-dir", out, "--audience", audience,
+                                  "--as-of", DAY, "--acknowledge-finops-preview")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            report = json.loads((out / "report.json").read_text(encoding="utf-8"))
+            self.assertIn("rate-period-unavailable", {g["code"] for g in report["gaps"]})
+            self.assertIn("rate-period-unavailable", (out / "report.md").read_text(encoding="utf-8"))
+            self.assertIsNone(report["scenarios"]["expected"]["annual_recurring"]["amount"])
+            self.assertFalse(report["handover"]["ready"])
+        self.assertEqual(source.read_bytes(), before)
 
     def test_cli_exports_contract_accepted_null_containers_without_tracebacks(self):
         for kind in ("scenarios", "sources", "rates", "fx", "lines", "baseline", "profile"):

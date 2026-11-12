@@ -12,8 +12,8 @@ from __future__ import annotations
 import copy
 import html
 import re
-from baseline_calc import calculate, validate_receipt
-from baseline_model import _mapping, _rows, _text, material_payload, model_fingerprint, validate_model
+from baseline_calc import _canonical_gaps, calculate, validate_receipt
+from baseline_model import _mapping, _rows, _text, material_payload, model_fingerprint
 from baseline_records import BOUNDARY, SNAPSHOT_SCHEMA, _day, _refs, _snapshot, _source_cycle_gaps, handover
 from finops_preview import NOTICE, is_private, require_preview_ack
 
@@ -370,8 +370,12 @@ def project(model, reviews=(), *, as_of, audience, customer_scope=None, acknowle
         model, _, _ = _snapshot(snapshot, as_of=as_of)
     else:
         validate_receipt(model, as_of=as_of, acknowledge_finops_preview=True)
-    gaps = [*validate_model(model, as_of=as_of), *_source_cycle_gaps(model)]
     current = calculate(model, as_of=as_of, acknowledge_finops_preview=True)
+    gaps = []
+    for gap in [*current["results"]["gaps"], *_source_cycle_gaps(model)]:
+        if gap not in gaps:  # Whole-record equality preserves blocks/period context.
+            gaps.append(copy.deepcopy(gap))
+    gaps = _canonical_gaps(gaps)
     material = material_payload(model)
     projector = _Projection(material, audience, customer_scope, gaps)
     if audience == "customer":

@@ -198,6 +198,11 @@ independent public cost rows (and amounts unrelated to an unused cycle) remain.
 Customer diagnostics may be reduced to the existing withheld-context marker;
 internal dated handover/report gaps carry the explicit cycle code. Frozen
 calculation receipts/results are not rewritten to add these consumer diagnostics.
+Report diagnostics merge the current recomputation's complete result gap list
+(including calculator-only period coverage and pricing applicability gaps) with
+consumer cycle gaps. Exact whole-record duplicates are removed before canonical
+ordering and audience redaction; different periods or blocking contexts are
+retained. Structural validation alone is not the report's diagnostic source.
 
 Readiness rechecks every model gap, required unit metrics, unknown legacy
 visibility, synthetic review and unresolved review sharing. Missing, provisional,
