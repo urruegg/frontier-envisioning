@@ -54,6 +54,15 @@ validation gaps; they are not complete zero-cost forecasts. Caller source
 context is unverified, customer-specific when a scope is supplied, otherwise
 validation-required. Unresolved existing Blueprint source references refuse.
 
+Seed merges actual root/domain/agent and copied descendant sharing classes,
+legacy flags and scope declarations through the calculator's existing lineage
+merger. Customer-specific defaults never replace internal-only or
+validation-required ancestry. Conflicting scopes retain the declared scope set,
+leave the new scalar scope unknown and require validation; no customer is picked.
+Unconsumed unrelated domains do not taint the selected Canvas. The complete
+Blueprint fingerprint still binds them and is not customer-report content.
+Migration uses the same merger for new and consumed legacy restrictions.
+
 Every in-scope driver needs a typed, quantified line and applicable evidence.
 Rate and FX records identify units, pricing blocks, currencies, sources,
 verification dates and declared freshness policies. No licence coverage, price,
@@ -143,6 +152,13 @@ The local output directory is the history boundary, not a global version registr
 | Optional `synthetic` | Actual boolean; `true` prevents planning readiness |
 | Optional `source_id`, `src`, `content_src` | Must resolve to frozen model sources; parent restrictions remain binding |
 
+Known structured review markers also prevent readiness: `type`, `status`,
+`validationStatus` or `mode` equal to `synthetic`, anywhere in review ancestry,
+including nested evidence/verification records. A `false` boolean, planning mode
+or raw approved status elsewhere does not cancel these markers. Ordinary prose
+mentioning the word synthetic is not such a marker. Top-level review mode must
+still match the frozen target.
+
 The exclusive review file is
 `<baseline-id>.v<version>.<review-id>.json`. It retains the explicit review
 fields and adds `schema: frontier-finops-owner-review/1.0`, `recorded_as_of`,
@@ -188,9 +204,17 @@ scenario data while unrelated public profile context can remain.
 Private line, quantity, rate, FX, source, outcome or review dependencies withhold
 affected money, evidence, formula/unit/readiness context and identities. Public
 independent rows may remain; aggregate totals are not rebuilt from them.
-Protected reference keys use neutral `withheld-N` placeholders. Technical
-material and calculation hashes are omitted from customer reports, including copied review
-aliases, even when an amount has public dependencies. Internal reports retain
+Protected reference keys use neutral `withheld-N` placeholders. Projection
+collects known material/calculation and Blueprint/legacy/source/rate/FX ancestry
+digests, plus private source/review identities and opaque evidence/URL references.
+It checks dictionary keys and embedded strings, not only named fields or
+whole-string equality. Aliases and redaction paths cannot expose those tokens.
+Labelled external digest values remain withheld regardless of representation;
+recognising them for redaction does not validate or authenticate those digests.
+Validated monetary/quantity/unit/currency/date scalars are governed by dependency
+classification instead of accidental textual collisions with an identifier.
+Independent public amounts and rows remain, even when unused private context
+means the complete model hash must be hidden. Internal reports retain
 private context and are labelled `private-context-not-shareable`. This is not
 encryption or access control; the caller still governs file handling and truthful
 classification.

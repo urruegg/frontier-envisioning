@@ -34,8 +34,55 @@ class _Projection:
         self.unresolved = {g["field"].removesuffix(".sharingClassification")
                            for g in gaps if g["code"] == "sharing-validation"}
         self.private_ids = set()
+        self.private_refs = set()
         self.technical_hashes = {model_fingerprint(model)} if audience == "customer" else set()
+        self._collect_digests(model)
         self._collect_private_ids(model)
+
+    def _collect_digests(self, value, digest_context=False):
+        """Recognise known technical/ancestry digest values, not just output keys."""
+        if self.audience != "customer":
+            return
+        if isinstance(value, dict):
+            for key, child in value.items():
+                name = key.lower()
+                known = (name in {"fingerprint", "hash", "digest", "sha256", "hashes", "digests"}
+                         or name.endswith(("_fingerprint", "_hash", "_digest", "_sha256",
+                                           "_fingerprints", "_hashes", "_digests")))
+                self._collect_digests(child, digest_context or known)
+        elif isinstance(value, list):
+            for child in value:
+                self._collect_digests(child, digest_context)
+        elif digest_context and isinstance(value, str):
+            # A labelled external digest remains sensitive even when its
+            # representation is not our SHA256 format. This is redaction,
+            # not hash validation or financial receipt trust.
+            if value.strip():
+                self.technical_hashes.add(value.casefold())
+            match = re.fullmatch(r"(?:sha256:)?([0-9a-f]{64})", value, re.IGNORECASE)
+            if match:
+                self.technical_hashes.add(match[1].lower())
+
+    def _hidden_token(self, value):
+        if self.audience != "customer" or not isinstance(value, str):
+            return False
+        folded = value.casefold()
+        return (any(token.casefold() in folded for token in self.private_ids | self.private_refs)
+                or any(digest.lower() in folded for digest in self.technical_hashes))
+
+    @staticmethod
+    def _financial_scalar(field):
+        """Only validated schema positions, never arbitrary prose/digest fields."""
+        return any(re.fullmatch(pattern, field) for pattern in (
+            r"rates\[\d+\]\.(amount|pricing_block|currency|unit|effective_from|effective_to)",
+            r"rates\[\d+\]\.verification\.verified_at",
+            r"fx\[\d+\]\.(rate|from_currency|to_currency|date)",
+            r"fx\[\d+\]\.verification\.verified_at",
+            r"sources\[\d+\]\.lastValidatedAt",
+            r"baseline\.(currency|as_of|start_month)",
+            r"profile\.outcome\.unit",
+            r"baseline\.scenarios\[\d+\]\.(monthly_runs\[\d+\]|success_share|outcomes_per_success|drivers\..+)",
+        ))
 
     def _collect_private_ids(self, value, field="model", scope=None, parent_private=False, dynamic_key=None):
         if isinstance(value, dict):
@@ -44,6 +91,8 @@ class _Projection:
                 # Foreign keys to independently public entities do not make
                 # those entities private. Gather protected identity definitions.
                 self.private_ids.update(value[k] for k in ("id", "cost_driver_id") if isinstance(value.get(k), str))
+                self.private_refs.update(value[k] for k in ("evidence_ref", "url", "delegation_evidence_ref")
+                                         if isinstance(value.get(k), str) and value[k].strip())
                 if dynamic_key is not None:
                     self.private_ids.add(dynamic_key)
             scope = value.get("customer_scope", scope)
@@ -102,16 +151,17 @@ class _Projection:
                 v = value[k]
                 if k in _TECHNICAL or k in {"finops_preview", "review_records", "handover", "results"}:
                     continue
-                if k in self.private_ids:
+                child_field = f"{field}.{k}" if field else k
+                # Dynamic driver keys are identifiers, not numeric scalar names.
+                fixed_financial_key = self._financial_scalar(child_field) and not field.endswith(".drivers")
+                if not fixed_financial_key and self._hidden_token(k):
                     output[f"withheld-{len(output) + 1}"] = {"status": "withheld"}
                 else:
-                    output[k] = self.raw(v, f"{field}.{k}" if field else k, scope)
+                    output[k] = self.raw(v, child_field, scope)
             return output
         if isinstance(value, list):
             return [self.raw(v, f"{field}[{i}]", inherited_scope) for i, v in enumerate(value)]
-        if isinstance(value, str) and value in self.private_ids:
-            return {"status": "withheld"}
-        if isinstance(value, str) and any(target in value for target in self.technical_hashes):
+        if not self._financial_scalar(field) and self._hidden_token(value):
             return {"status": "withheld"}
         return copy.deepcopy(value)
 
@@ -165,10 +215,17 @@ class _Projection:
                 if "cost" in value:  # withhold identity, quantity, evidence AND money
                     return {"status": "withheld", "quantity": None, "cost": dict(_WITHHELD)}
                 return dict(_WITHHELD) if "amount" in value else {"status": "withheld"}
-            return {k: self.derived(v) for k, v in value.items() if k not in _TECHNICAL}
+            # Recomputed result keys are fixed schema, not authored dictionary
+            # aliases. Monetary/unit scalars are governed by dependency privacy,
+            # never by coincident text tokens (e.g. private source ID "10").
+            financial = {"amount", "currency", "quantity", "quantity_unit", "denominator",
+                         "denominator_unit", "period", "basis", "status", "reason",
+                         "date", "effective_from", "effective_to", "verified_at", "source_date"}
+            return {k: copy.deepcopy(v) if k in financial else self.derived(v)
+                    for k, v in value.items() if k not in _TECHNICAL}
         if isinstance(value, list):
             return [self.derived(v) for v in value]
-        return copy.deepcopy(value)
+        return {"status": "withheld"} if self._hidden_token(value) else copy.deepcopy(value)
 
     def any_restricted(self, value, field="model", scope=None):
         if isinstance(value, dict):
@@ -258,6 +315,11 @@ def project(model, reviews=(), *, as_of, audience, customer_scope=None, acknowle
                      "gaps": [*gaps, {"code": "unfrozen-draft", "field": "review",
                                      "message": "Freeze and obtain externally evidenced owner review.", "blocks": ["handover"]}],
                      "owner_review": None, "financial_permission": False, "limitations": BOUNDARY}
+    # Snapshot/review validation above must precede collecting externally
+    # asserted ancestry. These tokens govern redaction, never receipt trust.
+    for review in reviews:
+        projector._collect_digests(review)
+        projector._collect_private_ids(review, "review")
     # Do not expose even the link/version when the whole baseline envelope is private.
     if (projector.restricted(material, field="model") or
             projector.restricted(material.get("profile", {}), field="profile",

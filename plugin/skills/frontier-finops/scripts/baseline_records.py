@@ -13,9 +13,9 @@ import re
 from datetime import date
 from pathlib import Path
 
-from baseline_calc import calculate, validate_receipt
+from baseline_calc import _combine, calculate, validate_receipt
 from baseline_model import _date, _gap, _integer, _object, _text, material_payload, model_fingerprint, validate_model
-from finops_preview import NOTICE, fingerprint, inherit_restrictions, is_private, require_preview_ack
+from finops_preview import NOTICE, fingerprint, require_preview_ack
 
 SNAPSHOT_SCHEMA = "frontier-finops-snapshot/1.0"
 REVIEW_SCHEMA = "frontier-finops-owner-review/1.0"
@@ -25,6 +25,9 @@ BOUNDARY = (
 )
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,119}\Z")
 _RESERVED = {"CON", "PRN", "AUX", "NUL", *(f"COM{i}" for i in range(10)), *(f"LPT{i}" for i in range(10))}
+_CLASSES = {"customer-shareable", "customer-specific", "internal-only", "validation-required"}
+_RESTRICTIONS = ("sharingClassification", "sharing_classes", "customer_scopes",
+                 "internal", "visibility", "src", "content_src")
 
 
 def _day(as_of):
@@ -133,16 +136,82 @@ def _context(value):
     return copy.deepcopy(value)
 
 
+def _merged_ancestry(contexts, scope):
+    """Adapt authored ancestry to the existing calculator's class/flag merger.
+
+    Do not duplicate dominance/union rules. Conflicting scope declarations add
+    validation-required to that merger; they never choose a winning customer.
+    """
+    records = [{"sharing_classes": ["customer-specific" if scope else "validation-required"],
+                "customer_scopes": [scope] if scope else []}]
+
+    def visit(value, inherited_scope):
+        if isinstance(value, dict):
+            row = {key: copy.deepcopy(value[key]) for key in ("internal", "visibility", "src", "content_src")
+                   if key in value}
+            if "internal" in row and type(row["internal"]) is not bool:
+                raise ValueError("ancestry.internal must be an actual boolean")
+            visibility = _text(value.get("visibility"), "ancestry.visibility")
+            classes = []
+            if "sharingClassification" in value:
+                classification = _text(value["sharingClassification"], "ancestry.sharingClassification")
+                classes.append(classification if classification in _CLASSES else "validation-required")
+            if "sharing_classes" in value:
+                supplied = value["sharing_classes"]
+                if not isinstance(supplied, list):
+                    raise ValueError("ancestry.sharing_classes must be a list")
+                for item in supplied:
+                    item = _text(item, "ancestry.sharing_classes")
+                    classes.append(item if item in _CLASSES else "validation-required")
+            scopes = []
+            supplied_scope = _text(value.get("customer_scope", inherited_scope), "ancestry.customer_scope")
+            if supplied_scope:
+                scopes.append(supplied_scope)
+            if "customer_scopes" in value:
+                supplied = value["customer_scopes"]
+                if not isinstance(supplied, list):
+                    raise ValueError("ancestry.customer_scopes must be a list")
+                for item in supplied:
+                    item = _text(item, "ancestry.customer_scopes")
+                    if item is None:
+                        classes.append("validation-required")
+                    else:
+                        scopes.append(item)
+            if visibility is not None and visibility not in {"internal", "customer", "public"}:
+                classes.append("validation-required")
+            if "customer-specific" in classes and not scopes:
+                classes.append("validation-required")
+            row.update(sharing_classes=classes, customer_scopes=scopes)
+            _refs(value)
+            records.append(row)
+            for child in value.values():
+                visit(child, supplied_scope)
+        elif isinstance(value, list):
+            for child in value:
+                visit(child, inherited_scope)
+
+    inherited = scope
+    for context in contexts:
+        visit(context, inherited)
+        if isinstance(context, dict):
+            inherited = _text(context.get("customer_scope", inherited), "ancestry.customer_scope")
+    merged = _combine(*records)
+    if len(merged.get("customer_scopes", [])) > 1:
+        merged = _combine(merged, {"sharing_classes": ["validation-required"]})
+    return {key: merged[key] for key in _RESTRICTIONS if key in merged}
+
+
 def _source(identity, raw=None, scope=None):
     raw = raw or {}
+    restrictions = _merged_ancestry([raw], scope)
+    scopes = restrictions.get("customer_scopes", [])
     return {
         "id": identity, "type": "customer-evidence", "title": raw.get("title"),
         "url": None, "evidence_ref": None, "supported_claim": None,
         "applicability": [], "lastValidatedAt": None, "validationStatus": "unverified",
         "freshness_policy": {"max_age_days": None},
-        "sharingClassification": raw.get("sharingClassification", "customer-specific" if scope else "validation-required"),
-        "customer_scope": raw.get("customer_scope", scope),
-        **inherit_restrictions(raw), "original_context": _context(raw),
+        "customer_scope": scopes[0] if len(scopes) == 1 else None,
+        **restrictions, "original_context": _context(raw),
     }
 
 
@@ -152,9 +221,12 @@ def seed(blueprint, agent_id, *, as_of, acknowledge_finops_preview=False):
     today = _day(as_of)
     domain, agent = _agent(blueprint, agent_id)
     scope = _text(blueprint.get("customer_scope"), "blueprint.customer_scope")
-    ancestry = [_context({k: v for k, v in blueprint.items() if k not in {"domains", "evidence", "sources"}}),
-                _context({k: v for k, v in domain.items() if k not in {"agents", "lead", "orchestrator"}}),
-                _context(agent)]
+    actual_ancestry = [{k: v for k, v in blueprint.items() if k not in {"domains", "evidence", "sources"}},
+                       {k: v for k, v in domain.items() if k not in {"agents", "lead", "orchestrator"}}, agent]
+    restrictions = _merged_ancestry(actual_ancestry, scope)
+    scopes = restrictions.get("customer_scopes", [])
+    scope = scopes[0] if len(scopes) == 1 else None
+    ancestry = [_context(context) for context in actual_ancestry]
     raw_sources = blueprint.get("sources", blueprint.get("evidence", []))
     if not isinstance(raw_sources, list):
         raise ValueError("blueprint source register must be a list")
@@ -171,8 +243,7 @@ def seed(blueprint, agent_id, *, as_of, acknowledge_finops_preview=False):
     if referenced - set(indexed):
         raise ValueError("unresolved Blueprint source reference")
     sources = [_source(identity, indexed[identity], scope) for identity in sorted(indexed)]
-    sharing = "customer-specific" if scope else "validation-required"
-    restrictions = inherit_restrictions(*[row for context in ancestry for row in _walk(context)])
+    sharing = restrictions["sharingClassification"]
     draft = {
         "schema": "frontier-finops-baseline/1.0", "mode": "planning", "forecast_kind": "estimate",
         "preview_notice": NOTICE, "sharingClassification": sharing, "customer_scope": scope, **restrictions,
@@ -180,19 +251,20 @@ def seed(blueprint, agent_id, *, as_of, acknowledge_finops_preview=False):
             "agent_id": agent_id, "name": agent.get("name"), "canvas": copy.deepcopy(agent.get("canvas", {})),
             "owners": dict.fromkeys(("business", "technical", "finance")),
             "outcome": {"definition": agent.get("outcome"), "unit": None, "source_id": None,
-                        "sharingClassification": sharing, "customer_scope": scope},
+                        "sharingClassification": sharing, "customer_scope": scope, **restrictions},
             "demand_context": None, "target_context": None, "measurement_plan": None, "guardrails": [],
-            "sharingClassification": sharing, "customer_scope": scope,
+            "sharingClassification": sharing, "customer_scope": scope, **restrictions,
         },
         "baseline": {
             "id": f"{agent_id}-BASELINE", "version": 1, "agent_id": agent_id, "as_of": today,
             "start_month": None, "currency": None, "annualisation": {},
             "scope": [], "assumptions": [], "exclusions": [], "risks": [], "confidence": {},
-            "scenarios": [], "lines": [], "sharingClassification": sharing, "customer_scope": scope,
+            "scenarios": [], "lines": [], "sharingClassification": sharing, "customer_scope": scope, **restrictions,
         },
         "rates": [], "fx": [], "sources": sources,
         "provenance": {"blueprint_fingerprint": fingerprint(blueprint), "consumed_context": ancestry,
-                       "validationStatus": "unverified", "sharingClassification": sharing, "customer_scope": scope},
+                       "validationStatus": "unverified", "sharingClassification": sharing, "customer_scope": scope,
+                       **restrictions},
     }
     validate_model(draft, as_of=as_of, blueprint=blueprint)
     return draft
@@ -215,12 +287,11 @@ def migrate(legacy, blueprint, agent_id, *, as_of, acknowledge_finops_preview=Fa
     restrictions = [record for record in restrictions if record]
     draft["provenance"]["legacy_restrictions"] = restrictions
     draft["provenance"]["migration"] = "context-only; typed quantities, rates, FX and scenarios require new evidence"
-    draft.update(inherit_restrictions(*restrictions, draft))
-    # Classification on ANY consumed legacy context dominates even if legacy flags
-    # exist only under technical/usage/outcome/source nodes.
-    classes = {_text(r.get("sharingClassification"), "legacy.sharingClassification") for r in restrictions}
-    if any(is_private(r) for r in restrictions) or "internal-only" in classes:
-        draft["sharingClassification"] = "internal-only"
+    seed_flags = {key: draft[key] for key in (*_RESTRICTIONS, "customer_scope") if key in draft}
+    merged = _merged_ancestry([seed_flags, legacy], draft.get("customer_scope"))
+    draft.update(merged)
+    scopes = merged.get("customer_scopes", [])
+    draft["customer_scope"] = scopes[0] if len(scopes) == 1 else None
     existing = {s["id"] for s in draft["sources"]}
     for identity in sorted({ref for r in _walk(draft["provenance"]) for ref in _refs(r)} - existing):
         draft["sources"].append(_source(identity))
@@ -333,7 +404,8 @@ def handover(snapshot, reviews, *, as_of, acknowledge_finops_preview=False):
     for review in checked:
         if _text(review.get("sharingClassification"), "review.sharingClassification") is None:
             _gap(gaps, "sharing-validation", "review", "Review sharing/provenance validation remains outstanding.")
-        if any(record.get("synthetic") is True or record.get("mode") == "synthetic"
+        if any(record.get("synthetic") is True or
+               any(record.get(key) == "synthetic" for key in ("mode", "type", "status", "validationStatus"))
                for record in _walk(review)):
             _gap(gaps, "synthetic-evidence", "review", "Synthetic review cannot satisfy financial handover.")
         for record in _walk(review):

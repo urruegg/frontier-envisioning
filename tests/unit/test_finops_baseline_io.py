@@ -28,6 +28,16 @@ def blueprint():
     return json.loads(BP.read_text(encoding="utf-8"))
 
 
+def seed_blueprint():
+    """Simulated shareable control; avoid unrelated stock internal evidence taint."""
+    bp = blueprint()
+    bp.update(customer_scope="caldova-scope", sharingClassification="customer-shareable")
+    for source in bp["evidence"]:
+        source.update(internal=False, visibility="customer", sharingClassification="customer-specific",
+                      customer_scope="caldova-scope")
+    return bp
+
+
 def simulated():
     """Fully evidenced ONLY within this test; never a persisted commercial claim."""
     model = example()
@@ -371,6 +381,107 @@ class LifecycleTests(IOCase):
         self.records.migrate(legacy, blueprint(), "D3-A05", **ACK)
         self.assertEqual(legacy, before)
 
+    def test_seed_merges_actual_ancestor_classes_before_copying_canvas(self):
+        for location in ("root", "domain", "agent", "meta", "nested"):
+            for classification in ("internal-only", "validation-required", "unknown", None):
+                bp = seed_blueprint()
+                bp.update(customer_scope="caldova-scope", sharingClassification="customer-shareable")
+                domain = next(d for d in bp["domains"] if any(a["id"] == "D3-A05" for a in d["agents"]))
+                agent = next(a for a in domain["agents"] if a["id"] == "D3-A05")
+                agent["canvas"]["instructions"] = "SEED-PRIVATE-SENTINEL"
+                agent["canvas"]["copied_context"] = {}
+                private = (bp if location == "root" else domain if location == "domain" else agent
+                           if location == "agent" else bp["meta"] if location == "meta"
+                           else agent["canvas"]["copied_context"])
+                private["sharingClassification"] = classification
+                with self.subTest(location=location, classification=classification):
+                    draft = self.records.seed(bp, "D3-A05", **ACK)
+                    report = self.projection.project(self.calculated(draft), **ACK, audience="customer",
+                                                     customer_scope="caldova-scope")
+                    for text in (json.dumps(report), self.projection.render_markdown(report),
+                                 json.dumps({"schema": "frontier-agent-finops-view/1.0", "records": [report]})):
+                        self.assertNotIn("SEED-PRIVATE-SENTINEL", text)
+                    self.assertIn(draft["sharingClassification"], {"internal-only", "validation-required"})
+
+    def test_seed_conflicting_scope_ancestry_never_picks_a_customer(self):
+        for location in ("domain", "agent", "meta", "nested", "scope-list"):
+            bp = seed_blueprint()
+            bp.update(customer_scope="caldova-scope", sharingClassification="customer-specific")
+            domain = next(d for d in bp["domains"] if any(a["id"] == "D3-A05" for a in d["agents"]))
+            agent = next(a for a in domain["agents"] if a["id"] == "D3-A05")
+            agent["canvas"]["instructions"] = "SCOPE-CONFLICT-SENTINEL"
+            agent["canvas"]["copied_context"] = {}
+            conflicting = (domain if location == "domain" else agent if location == "agent"
+                           else bp["meta"] if location == "meta" else agent["canvas"]["copied_context"])
+            if location == "scope-list":
+                conflicting["customer_scopes"] = ["caldova-scope", "other-scope"]
+            else:
+                conflicting.update(sharingClassification="customer-specific", customer_scope="other-scope")
+            draft = self.records.seed(bp, "D3-A05", **ACK)
+            for scope in ("caldova-scope", "other-scope"):
+                with self.subTest(location=location, scope=scope):
+                    report = self.projection.project(self.calculated(draft), **ACK, audience="customer",
+                                                     customer_scope=scope)
+                    self.assertNotIn("SCOPE-CONFLICT-SENTINEL", json.dumps(report))
+            self.assertEqual(draft["sharingClassification"], "validation-required")
+            self.assertEqual(set(draft["customer_scopes"]), {"caldova-scope", "other-scope"})
+
+    def test_seed_public_canvas_control_and_unrelated_private_domain(self):
+        bp = seed_blueprint()
+        bp.update(customer_scope="caldova-scope", sharingClassification="customer-shareable")
+        domain = next(d for d in bp["domains"] if any(a["id"] == "D3-A05" for a in d["agents"]))
+        agent = next(a for a in domain["agents"] if a["id"] == "D3-A05")
+        domain["sharingClassification"] = agent["sharingClassification"] = "customer-shareable"
+        agent["canvas"]["instructions"] = "PUBLIC-CANVAS-CONTROL"
+        next(d for d in bp["domains"] if d is not domain)["sharingClassification"] = "internal-only"
+        draft = self.records.seed(bp, "D3-A05", **ACK)
+        report = self.projection.project(self.calculated(draft), **ACK, audience="customer",
+                                         customer_scope="caldova-scope")
+        self.assertIn("PUBLIC-CANVAS-CONTROL", json.dumps(report))
+        self.assertIn("PUBLIC-CANVAS-CONTROL", self.projection.render_markdown(report))
+
+    def test_migration_scope_conflict_cannot_declassify_new_blueprint_context(self):
+        bp = seed_blueprint()
+        bp.update(customer_scope="caldova-scope", sharingClassification="customer-specific")
+        legacy = {"schema": "frontier-finops/1.0", "sharingClassification": "customer-specific",
+                  "customer_scope": "other-scope"}
+        draft = self.records.migrate(legacy, bp, "D3-A05", **ACK)
+        self.assertEqual(draft["sharingClassification"], "validation-required")
+        self.assertEqual(set(draft["customer_scopes"]), {"caldova-scope", "other-scope"})
+
+    def test_structured_synthetic_review_ancestry_never_passes_planning_handover(self):
+        markers = [
+            {"type": "synthetic"}, {"validationStatus": "synthetic"}, {"status": "synthetic"},
+            {"context": {"synthetic": True}}, {"context": {"mode": "synthetic"}},
+            {"context": {"type": "synthetic"}}, {"context": {"status": "synthetic"}},
+            {"context": {"validationStatus": "synthetic"}}, {"verification": {"status": "synthetic"}},
+            {"evidence": [{"type": "synthetic"}]},
+            {"type": "synthetic", "synthetic": False, "status": "approved", "validationStatus": "validated"},
+            {"synthetic": False, "evidence": [{"type": "synthetic", "mode": "planning", "synthetic": False}]},
+        ]
+        for mode in ("planning", "synthetic"):
+            for verification in ("verified", "unverified", "synthetic"):
+                model = simulated()
+                model["mode"] = mode
+                for rate in model["rates"]:
+                    rate["verification"]["status"] = verification
+                _, snapshot = self.snapshot(model, f"{mode}-{verification}")
+                for i, marker in enumerate(markers):
+                    with self.subTest(mode=mode, verification=verification, marker=marker):
+                        review = self.review(snapshot, id=f"MARKER-{mode}-{verification}-{i}", **marker)
+                        result = self.records.handover(snapshot, [review], **ACK)
+                        self.assertFalse(result["ready"])
+                        self.assertFalse(result["financial_permission"])
+                        self.assertIn("synthetic-evidence", {g["code"] for g in result["gaps"]})
+
+    def test_arbitrary_synthetic_prose_is_not_a_structured_review_assertion(self):
+        _, snapshot = self.snapshot(simulated())
+        review = self.review(snapshot, synthetic=False, note="synthetic",
+                             context={"description": "This prose mentions synthetic, not a structured assertion."})
+        result = self.records.handover(snapshot, [review], **ACK)
+        self.assertTrue(result["ready"])  # simulated verified-input test only
+        self.assertFalse(result["financial_permission"])
+
 
 class ProjectionTests(IOCase):
     def serialisations(self, report):
@@ -648,6 +759,100 @@ class ProjectionTests(IOCase):
         ordered = json.loads(json.dumps(model, sort_keys=True))
         first, second = self.project(model), self.project(ordered)
         self.assertEqual(json.dumps(first, sort_keys=True), json.dumps(second, sort_keys=True))
+
+    def test_customer_redacts_known_ancestry_digest_aliases_in_keys_and_strings(self):
+        for field in ("blueprint_fingerprint", "legacy_fingerprint", "source_fingerprint",
+                      "rate_hash", "fx_digest", "sha256"):
+            model = example()
+            digest = "abcdef1234567890" * 4
+            model["provenance"] = {"inputs": {field: digest}}
+            model["sources"].append({**model["sources"][0], "id": "UNUSED-PRIVATE-SOURCE", "internal": True})
+            model["sources"][0]["annotations"] = {
+                "copied_blueprint_digest": digest,
+                "embedded": f"prefix/{digest.upper()}/suffix",
+                f"digest-key-{digest}": "must not expose the original key",
+            }
+            report = self.project(model)
+            with self.subTest(field=field):
+                for text in self.serialisations(report):
+                    self.assertNotIn(digest, text.lower())
+                self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+
+    def test_customer_redacts_material_and_result_hashes_used_as_review_dictionary_keys(self):
+        _, snapshot = self.snapshot(simulated())
+        hashes = [snapshot["target"]["material_hash"],
+                  snapshot["model"]["finops_preview"]["calculations"]["baseline"]["results_fingerprint"]]
+        review = self.review(snapshot, annotations={hashes[0]: "target alias",
+                                                   f"embedded-key/{hashes[1]}/suffix": "result alias"})
+        report = self.projection.project(snapshot, [review], **ACK, audience="customer")
+        for text in self.serialisations(report):
+            for digest in hashes:
+                self.assertNotIn(digest, text.lower())
+        self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+
+    def test_customer_redacts_private_source_and_evidence_references_embedded_or_as_keys(self):
+        model = example()
+        private = {**model["sources"][0], "id": "PRIVATE-SOURCE-TOKEN", "internal": True,
+                   "evidence_ref": "private:evidence/reference", "url": "https://example.invalid/private/evidence"}
+        model["sources"].append(private)
+        tokens = [private["id"], private["evidence_ref"], private["url"]]
+        model["sources"][0]["public_annotations"] = {
+            f"key-prefix/{token}/suffix": f"note mentions prefix/{token}/suffix" for token in tokens}
+        model["profile"]["demand_context"] = f"Public sentence quotes [{private['id']}] as an embedded reference."
+        report = self.project(model)
+        for text in self.serialisations(report):
+            for token in tokens:
+                self.assertNotIn(token, text)
+        month = report["scenarios"]["expected"]["months"][0]
+        self.assertEqual(month["lines"][1]["cost"]["amount"], "10.00")
+        self.assertEqual(month["total"]["amount"], "110.00")
+
+    def test_reference_token_collisions_do_not_redact_dependency_approved_financial_values(self):
+        model = example()
+        model["sources"].append({**model["sources"][0], "id": "10", "internal": True, "evidence_ref": "0.5"})
+        model["sources"][0]["note"] = "Reference token 10 and private evidence 0.5 are not public annotations."
+        report = self.project(model)
+        self.assertEqual(report["evidence"]["sources"][0]["note"], {"status": "withheld"})
+        self.assertEqual(report["evidence"]["rates"][1]["amount"], "10")
+        expected = report["scenario_inputs"][1]
+        self.assertEqual(expected["monthly_runs"], ["100"] * 12)
+        self.assertEqual(expected["success_share"], "0.5")
+        month = report["scenarios"]["expected"]["months"][0]
+        self.assertEqual(month["lines"][1]["cost"]["amount"], "10.00")
+        self.assertEqual(month["total"]["amount"], "110.00")
+
+    def test_review_ancestry_digest_aliases_are_known_before_serialising_public_review(self):
+        _, snapshot = self.snapshot(simulated())
+        digest = "fedcba0123456789" * 4
+        review = self.review(snapshot, external_context={"source_fingerprint": digest,
+                                                         f"alias/{digest}/key": f"embedded/{digest}/value"})
+        report = self.projection.project(snapshot, [review], **ACK, audience="customer")
+        for text in self.serialisations(report):
+            self.assertNotIn(digest, text)
+        self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+
+    def test_known_external_digest_values_are_not_declassified_by_format(self):
+        for digest in ("0123456789abcdef" * 2, "opaque:external-source-digest", "sha256:" + "abcd1234" * 8):
+            model = example()
+            model["provenance"] = {"inputs": {"source_fingerprint": digest}}
+            model["sources"][0]["alias_context"] = {f"embedded/{digest}/key": f"prefix/{digest}/value"}
+            report = self.project(model)
+            with self.subTest(digest=digest):
+                for text in self.serialisations(report):
+                    self.assertNotIn(digest, text)
+                self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+
+    def test_private_review_id_and_evidence_aliases_in_public_notes_are_withheld(self):
+        model = simulated()
+        model["sources"][0]["annotation"] = "Quoted PRIVATE-REVIEW-TOKEN and private:review/evidence references."
+        _, snapshot = self.snapshot(model)
+        review = self.review(snapshot, id="PRIVATE-REVIEW-TOKEN", sharingClassification="internal-only",
+                             evidence_ref="private:review/evidence")
+        report = self.projection.project(snapshot, [review], **ACK, audience="customer")
+        for text in self.serialisations(report):
+            self.assertNotIn("PRIVATE-REVIEW-TOKEN", text)
+            self.assertNotIn("private:review/evidence", text)
+        self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
 
     def test_link_and_currency_dto_scalars_are_null_not_withheld_objects_on_id_collision(self):
         model = example()
