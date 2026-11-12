@@ -218,6 +218,9 @@ It checks dictionary keys and embedded strings, not only named fields or
 whole-string equality. Aliases and redaction paths cannot expose those tokens.
 Recognised digest registries include keys as well as values, lists and nested
 entries; a digest used as a key with a boolean value is still protected.
+Bare and qualified singular/plural fingerprint, hash and digest names share
+one registry-family policy; `fingerprints` is not less protected than
+`source_fingerprints`. Registry context propagates through nested structures.
 Labelled external digest values remain withheld regardless of representation;
 recognising them for redaction does not validate or authenticate those digests.
 Validated monetary/quantity/unit/currency/date scalars are governed by dependency
@@ -227,6 +230,11 @@ IDs and annotation/mapping keys remain redactable even when they spell the same
 word, such as `drivers`. Literal dotted/bracketed keys do not create trusted
 schema paths. Missing or withheld nested containers are guarded; they do not
 produce traceback-shaped CLI failures or reconstructed inputs.
+Required customer-export gaps constrain their intended paths even when a
+metadata record is null or absent. Pointer lookup continues along the intended
+path after a missing intermediate. Null, absent, empty and blank required
+sharing/evidence records therefore fail closed equivalently. Only affected
+dependencies are withheld; independent public rows are not globally removed.
 Independent public amounts and rows remain, even when unused private context
 means the complete model hash must be hidden. Internal reports retain
 private context and are labelled `private-context-not-shareable`. This is not

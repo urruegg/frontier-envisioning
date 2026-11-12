@@ -987,6 +987,89 @@ class ProjectionTests(IOCase):
         self.assertIsNone(report["scenarios"]["expected"]["months"][0]["total"]["amount"])
         self.assertFalse(report["handover"]["ready"])
 
+    def test_required_evidence_null_absent_empty_and_blank_are_equally_fail_closed(self):
+        for key in ("tokens_per_run", "operations_units", "monthly_runs", "success_share", "outcomes_per_success"):
+            for shape in ("null", "absent", "empty", "blank", "missing-container"):
+                model = example()
+                scenario = model["baseline"]["scenarios"][1]
+                secret = "0.987654321" if key == "success_share" else "987654.321"
+                if key == "monthly_runs":
+                    scenario[key] = [secret] * 12
+                elif key in ("success_share", "outcomes_per_success"):
+                    scenario[key] = secret
+                else:
+                    scenario["drivers"][key] = secret
+                evidence = scenario["driver_evidence"]
+                if shape == "absent":
+                    del evidence[key]
+                elif shape == "missing-container":
+                    scenario["driver_evidence"] = None
+                else:
+                    evidence[key] = {"null": None, "empty": {},
+                                     "blank": {"unit": " ", "source_id": " ", "sharingClassification": " "}}[shape]
+                with self.subTest(key=key, shape=shape):
+                    report = self.project(model)
+                    for text in self.serialisations(report):
+                        self.assertNotIn(secret, text)
+                        self.assertNotIn(self.model.model_fingerprint(model), text)
+                    self.assertFalse(report["handover"]["ready"])
+                    self.assertEqual(report["handover"]["status"], "withheld")
+                    month = report["scenarios"]["expected"]["months"][0]
+                    if key in ("tokens_per_run", "monthly_runs") and shape != "missing-container":
+                        self.assertEqual(month["lines"][1]["cost"]["amount"], "10.00")
+                    if key in ("success_share", "outcomes_per_success") and shape != "missing-container":
+                        self.assertEqual(month["total"]["amount"], "110.00")
+
+    def test_required_outcome_and_rate_sharing_gaps_are_not_public_metadata(self):
+        for kind in ("outcome", "rate"):
+            for shape in ("null", "absent", "empty", "blank"):
+                model = example()
+                if kind == "outcome":
+                    model["baseline"]["scenarios"][1]["outcomes_per_success"] = "987654.321"
+                    if shape == "absent":
+                        del model["profile"]["outcome"]
+                    else:
+                        model["profile"]["outcome"] = {"null": None, "empty": {}, "blank": {
+                            "definition": " ", "unit": " ", "source_id": " ", "sharingClassification": " "}}[shape]
+                else:
+                    model["rates"][0]["amount"] = "987654.321"
+                    if shape == "absent":
+                        del model["rates"][0]["sharingClassification"]
+                    else:
+                        model["rates"][0]["sharingClassification"] = None if shape in ("null", "empty") else " "
+                with self.subTest(kind=kind, shape=shape):
+                    report = self.project(model)
+                    for text in self.serialisations(report):
+                        self.assertNotIn("987654.321", text)
+                    month = report["scenarios"]["expected"]["months"][0]
+                    self.assertEqual(month["lines"][1]["cost"]["amount"], "10.00")
+                    if kind == "outcome":
+                        self.assertEqual(month["total"]["amount"], "110.00")
+
+    def test_missing_customer_scope_export_gap_withholds_only_affected_dependencies(self):
+        model = example()
+        model["rates"][0].update(sharingClassification="customer-specific", customer_scope=None)
+        report = self.project(model)
+        self.assertEqual(report["handover"]["status"], "withheld")
+        self.assertEqual(report["scenarios"]["expected"]["months"][0]["total"]["status"], "withheld")
+        self.assertEqual(report["scenarios"]["expected"]["months"][0]["lines"][1]["cost"]["amount"], "10.00")
+
+    def test_singular_plural_technical_registry_families_share_one_privacy_policy(self):
+        digest = "faced123" * 8
+        families = ("fingerprint", "fingerprints", "hash", "hashes", "digest", "digests",
+                    "sha256", "source_fingerprint", "source_fingerprints", "source_hashes", "source_digests")
+        for family in families:
+            for shape in ({digest: True}, [digest], {"nested": [{"value": digest}]}, {"nested": {digest: False}}):
+                model = example()
+                model["provenance"] = {family: shape}
+                model["sources"][0]["annotations"] = {f"embedded-key/{digest}": f"copied/{digest}/value"}
+                report = self.project(model)
+                with self.subTest(family=family, shape=shape):
+                    for text in self.serialisations(report):
+                        self.assertNotIn(digest, text)
+                    self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+                    self.assertEqual(report["evidence"]["rates"][1]["amount"], "10")
+
     def test_private_review_id_and_evidence_aliases_in_public_notes_are_withheld(self):
         model = simulated()
         model["sources"][0]["annotation"] = "Quoted PRIVATE-REVIEW-TOKEN and private:review/evidence references."
@@ -1247,6 +1330,38 @@ class CLITests(IOCase):
                     report = json.loads((out / "report.json").read_text(encoding="utf-8"))
                     self.assertIn("drivers", report["scenario_inputs"][1])
                     self.assertEqual(report["scenarios"]["expected"]["months"][0]["lines"][1]["cost"]["amount"], "10.00")
+
+    def test_cli_customer_export_withholds_quantities_with_null_or_absent_evidence(self):
+        for i, shape in enumerate(("null", "absent", "empty", "missing-container")):
+            model = example()
+            scenario = model["baseline"]["scenarios"][1]
+            scenario["drivers"]["tokens_per_run"] = "987654.321"
+            if shape == "absent":
+                del scenario["driver_evidence"]["tokens_per_run"]
+            elif shape == "missing-container":
+                del scenario["driver_evidence"]
+            else:
+                scenario["driver_evidence"]["tokens_per_run"] = None if shape == "null" else {}
+            source = self.write(f"missing-{i}.json", self.calculated(model))
+            out = self.dir / f"export-{i}"
+            result = self.run_cli("export", "--baseline", source, "--out-dir", out, "--audience", "customer",
+                                  "--as-of", DAY, "--acknowledge-finops-preview")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            for path in (out / "report.json", out / "report.md"):
+                self.assertNotIn("987654.321", path.read_text(encoding="utf-8"))
+
+    def test_cli_customer_export_recognises_bare_plural_fingerprints_registry(self):
+        digest = "deaf1234" * 8
+        model = example()
+        model["provenance"] = {"fingerprints": {digest: True}}
+        model["sources"][0]["annotation"] = f"embedded digest {digest}"
+        source = self.write("plural.json", self.calculated(model))
+        out = self.dir / "plural-export"
+        result = self.run_cli("export", "--baseline", source, "--out-dir", out, "--audience", "customer",
+                              "--as-of", DAY, "--acknowledge-finops-preview")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for path in (out / "report.json", out / "report.md"):
+            self.assertNotIn(digest, path.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

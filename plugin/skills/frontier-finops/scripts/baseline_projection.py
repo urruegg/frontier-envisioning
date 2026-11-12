@@ -25,14 +25,24 @@ _TECHNICAL = {"dependency_refs", "source_refs", "fx_refs", "src", "content_src",
               "material_hash", "blueprint_fingerprint", "legacy_fingerprint"}
 _WITHHELD = {"amount": None, "status": "withheld", "reason": "restricted-dependency"}
 LIMITATIONS = BOUNDARY + " Customer scope is not authorisation. Internal output is private context, not shareable."
+_DIGEST_FAMILIES = {
+    "fingerprint": ("fingerprint", "fingerprints"),
+    "hash": ("hash", "hashes"),
+    "digest": ("digest", "digests"),
+    "sha256": ("sha256",),
+}
 
 
 class _Projection:
     def __init__(self, model, audience, customer_scope, gaps):
         self.model, self.audience, self.scope = model, audience, customer_scope
         self.sources = {s["id"]: s for s in model.get("sources", []) if s.get("id")}
-        self.unresolved = {g["field"].removesuffix(".sharingClassification")
-                           for g in gaps if g["code"] == "sharing-validation"}
+        # Required export policy is a property of the intended location, even
+        # when its record is absent/null. Do not infer public from nonexistence.
+        self.unresolved = {
+            re.sub(r"\.(sharingClassification|customer_scope)$", "", g["field"])
+            for g in gaps if "customer-export" in g["blocks"]
+        }
         self.private_ids = set()
         self.private_refs = set()
         self.technical_hashes = {model_fingerprint(model)} if audience == "customer" else set()
@@ -49,10 +59,11 @@ class _Projection:
                     # Recognised registries may encode digest identifiers as
                     # keys with boolean/metadata values, not only as values.
                     self.technical_hashes.add(key.casefold())
-                name = key.lower()
-                known = (name in {"fingerprint", "hash", "digest", "sha256", "hashes", "digests"}
-                         or name.endswith(("_fingerprint", "_hash", "_digest", "_sha256",
-                                           "_fingerprints", "_hashes", "_digests")))
+                # Bare and qualified registry names use the SAME family rule.
+                # Descendants inherit that structural context for keys, values,
+                # lists and nested maps; arbitrary prose is not a registry.
+                term = key.casefold().rsplit("_", 1)[-1]
+                known = any(term in forms for forms in _DIGEST_FAMILIES.values())
                 self._collect_digests(child, digest_context or known)
         elif isinstance(value, list):
             for child in value:
@@ -159,6 +170,8 @@ class _Projection:
 
     def restricted(self, record, *, field=None, inherited_scope=None, visited=None):
         """Classify actual source-parent ancestry, never an approval flag."""
+        if self.audience == "customer" and field in self.unresolved:
+            return True
         if not isinstance(record, dict):
             return False
         sharing = _text(record.get("sharingClassification"), "projection.sharingClassification")
@@ -168,7 +181,7 @@ class _Projection:
             raise ValueError("projection.internal must be an actual boolean")
         if self.audience == "internal":
             return False
-        if is_private(record) or (field in self.unresolved):
+        if is_private(record):
             return True
         if "sharingClassification" in record and sharing is None:
             return True
@@ -202,9 +215,9 @@ class _Projection:
             # the trusted path ("profile", "outcome", "unit").
             path = tuple(int(part[1:-1]) if part.startswith("[") else part
                          for part in re.findall(r"\[\d+\]|[^.\[\]]+", field))
+        if self.restricted(value, field=field, inherited_scope=inherited_scope):
+            return {"status": "withheld"}
         if isinstance(value, dict):
-            if self.restricted(value, field=field, inherited_scope=inherited_scope):
-                return {"status": "withheld"}
             scope = value.get("customer_scope", inherited_scope)
             output = {}
             for k in sorted(value):
@@ -227,22 +240,26 @@ class _Projection:
         if not isinstance(pointer, str) or (pointer and not pointer.startswith("/")):
             return True
         parts = pointer[1:].split("/") if pointer else []
-        value, field, scope = self.model, "model", None
+        value, field, scope, path = self.model, "model", None, ()
         if self.restricted(value, field=field):
             return True
         for encoded in parts:
             part = encoded.replace("~1", "/").replace("~0", "~")
             if isinstance(value, dict):
                 scope = value.get("customer_scope", scope)
-                value = value.get(part)
-                field = part if field == "model" else f"{field}.{part}"
-            elif isinstance(value, list) and part.isdigit() and int(part) < len(value):
-                value = value[int(part)]
+            array_location = (path in {("sources",), ("rates",), ("fx",)}
+                              or (len(path) == 2 and path[0] == "baseline" and path[1] in {
+                                  "scenarios", "lines", "scope", "assumptions", "exclusions", "risks"}))
+            if part.isdigit() and (isinstance(value, list) or array_location):
                 field += f"[{int(part)}]"
+                value = value[int(part)] if isinstance(value, list) and int(part) < len(value) else None
+                path = (*path, int(part))
             else:
-                # Optional absent allocation policies are known explicit unknowns,
-                # not a reason to declassify any present ancestor.
-                value = None
+                field = part if field == "model" else f"{field}.{part}"
+                value = value.get(part) if isinstance(value, dict) else None
+                path = (*path, part)
+            # Keep advancing the INTENDED path after a missing intermediate.
+            # Optional missing data stays optional unless an export gap says so.
             if self.restricted(value, field=field, inherited_scope=scope):
                 return True
         return False
@@ -286,9 +303,9 @@ class _Projection:
         return {"status": "withheld"} if self._hidden_token(value) else copy.deepcopy(value)
 
     def any_restricted(self, value, field="model", scope=None):
+        if self.restricted(value, field=field, inherited_scope=scope):
+            return True
         if isinstance(value, dict):
-            if self.restricted(value, field=field, inherited_scope=scope):
-                return True
             scope = value.get("customer_scope", scope)
             return any(self.any_restricted(v, k if field == "model" else f"{field}.{k}", scope)
                        for k, v in value.items())
@@ -389,7 +406,7 @@ def project(model, reviews=(), *, as_of, audience, customer_scope=None, acknowle
             projector.restricted(material.get("profile", {}), field="profile",
                                  inherited_scope=material.get("customer_scope"))):
         return _withheld_report(base)
-    private_context = projector.any_restricted(material)
+    private_context = (audience == "customer" and bool(projector.unresolved)) or projector.any_restricted(material)
     private_review = any(not r.get("sharingClassification") or projector.any_restricted(r, "review")
                          or not str(r.get("sharingClassification")).strip() for r in reviews)
     if audience == "customer":
