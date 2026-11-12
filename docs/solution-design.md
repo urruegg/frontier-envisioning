@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.3 |
-| Date | 2026-11-11 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake and 1.9.1 prose) |
+| Version | 1.4 |
+| Date | 2026-11-12 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes) |
 | Status | Maintained design; no new product or release approval implied |
-| Scope | Unreleased 1.9.1 architecture/verification, historical 1.7.1 design, preserved Part B and original 1.6.0 inventory |
-| References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md) |
+| Scope | Current unreleased 1.9.2 candidate, preserved 1.9.1 architecture/verification, historical 1.7.1 design, Part B and original 1.6.0 inventory |
+| References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md) |
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Both builders reuse the package
 module's bounded, recursive byte/ZIP validator before writing inventory,
@@ -27,6 +27,44 @@ results or approvals. The appendix retains the original 1.6.0 inventory
 (including its former combined-document path); it is not a current file list.
 The [unreleased 1.6.1 requirement](prd.md#161-patch-workflow-legend-accessibility)
 remains separate from these historical claims.
+
+## 1.9.2 internal build candidate
+
+**12 November 2026: unreleased internal candidate; version-only preparation
+from merged `03e298e` ([PR #32](https://github.com/urruegg/frontier-envisioning/pull/32)).**
+[Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33),
+the [candidate design](specs/2026-11-12-version-1.9.2-design.md),
+[plan](plans/2026-11-12-version-1.9.2-plan.md) and
+[SPRINT-006](sprints/SPRINT-006-version-1.9.2.md) govern this bounded build.
+The [PRD candidate note](prd.md#192-internal-build-candidate) owns requirements
+and release/decision authority.
+
+All merged features and architecture remain unchanged: eight skills, seven
+non-FinOps GA wrappers, optional requested process/ontology and bundled optional
+acknowledgement-gated Preview FinOps. Core HTML, screenshots and starter-prompt
+scope are retained. Fabric Preview, mapping/binding gaps, MOS3 `devPreview`,
+private/IP boundaries and human-only #8/#30 are unchanged. Engineering output
+or profile metadata labelled `preview` is not FinOps permission.
+
+The complete 1.9.1 requirements, acceptance targets and design below still
+apply. Their “current” wording and returned evidence retain their chronological
+scope; the version number validates none of them anew. Historical A.12/A.13,
+Part B/B.9 and the original inventory are not changed by this preparation.
+
+Parent-returned preparation evidence: all 205 generated non-raster paths/hashes
+matched the 1.9.1/A6 inputs before the named 1.9.2 profile was added. Three
+expected RED cases were followed by 43 focused profile/documentation tests,
+82 subtests and Ruff passing. Subsequent actual core and explicit Preview builds
+each verified 205 inputs and 223 PNGs. Both retained the corrected A6 archive
+SHA-256 `e40b132d2e1d396ad7ee681d09931b3e35cd5728081cb01235b17396059cfdf9`.
+Rendered HTML identifies 1.9.2; core has no FinOps model, while the separate
+acknowledged Preview output retains its limitations. The tracked HTML, five
+real captures and manifest were regenerated and passed the fresh-output check.
+
+Full strict L1/L2, repeated package builds, final digests and offline install
+results are recorded in SPRINT-006, not inferred from earlier baselines. The 12 November
+archive date is build provenance, not a release. Actual Cowork/Fabric/manual AT
+acceptance and human publication/release/sharing decisions remain separate.
 
 ## 1.9.1 development intake
 

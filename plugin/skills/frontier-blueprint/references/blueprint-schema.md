@@ -1,4 +1,4 @@
-# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.9.1 — unreleased)
+# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.9.2 — unreleased)
 
 Every field is optional unless marked required. Missing fields render as "To be confirmed". Unknown fields are kept but not shown. `src` is always a list of evidence ids.
 

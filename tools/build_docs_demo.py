@@ -143,9 +143,8 @@ def source_fingerprint(root: Path) -> str:
     for folder, name in ((".claude-plugin", "plugin.json"), ("package", "manifest.json")):
         if (path := root / "plugin" / folder / name).is_file():
             paths.add(path)
-    profile = root / "tests" / "fixtures" / "caldova-raster-1.9.1-inputs.json"
-    if profile.is_file():
-        paths.add(profile)
+    paths.update(path for path in (root / "tests" / "fixtures").glob("caldova-raster-*-inputs.json")
+                 if path.is_file())
     rows = [(path.relative_to(root).as_posix(), sha256_bytes(path.read_bytes()))
             for path in sorted(paths, key=lambda p: p.relative_to(root).as_posix())]
     return sha256_bytes(json.dumps(rows, separators=(",", ":")).encode())

@@ -2,15 +2,15 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-12 |
 | Author | Copilot; AI-assisted documentation |
 | Status | Maintained internal guide; not release or sharing approval |
-| Scope | First use of the 1.9.1 internal candidate; document revision, not product version |
-| References | [Documentation](README.md), [Plugin guide](../plugin/README.md), [Gallery](demo/README.md), [Starter prompts](starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31) |
+| Scope | First use of the 1.9.2 internal candidate; document revision, not product version |
+| References | [Documentation](README.md), [Plugin guide](../plugin/README.md), [Gallery](demo/README.md), [Starter prompts](starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33) |
 
 Start with the fictitious example, then prepare a small, evidence-led workshop.
-The plugin is **1.9.1 UNRELEASED**, an internal candidate in a private repository.
+The plugin is **1.9.2 UNRELEASED**, an internal candidate in a private repository.
 You do not need to install it or deploy anything to inspect the example.
 
 ## Try the example without installing
@@ -40,7 +40,7 @@ do not assume edits update the original source or a shared tenant service.
 ## Install in Copilot Cowork
 
 1. Ask [@urruegg](https://github.com/urruegg), the maintainer, for the approved
-   internal `frontier-envisioning-plugin-1.9.1.zip`. Keep it zipped.
+   internal `frontier-envisioning-plugin-1.9.2.zip`. Keep it zipped.
 2. Start a new Copilot Cowork chat, attach the ZIP and type
    **Install the Frontier PlugIn**.
 3. Review each approval prompt. The installer checks the package inventory;

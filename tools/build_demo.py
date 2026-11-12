@@ -11,7 +11,7 @@ examples with the reviewed identity config/palette, value case and process ontol
 FinOps is omitted by default. Identity inputs retain verified historical provenance;
 the current blueprint's feature data is not a claim of original 1.4.0 reproduction.
 Text is written as LF, and identity ZIP entries use stable ordering and Unix creator metadata.
-Received baselines and finite 1.6.1/1.7.1/1.9.1 profiles use verified frozen rasters guarded by every
+Received baselines and finite 1.6.1/1.7.1/1.9.1/1.9.2 profiles use verified frozen rasters guarded by every
 version-approved non-raster input. Current identity output is verified against its own release
 record after rebuilding and canonicalising, separately from historical raster provenance.
 Other versions require successful card/visual conversion; --no-png is an explicitly SVG-only
