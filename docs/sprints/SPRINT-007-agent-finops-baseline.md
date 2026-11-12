@@ -2,17 +2,17 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.5 |
+| Version | 0.7 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Task 0/contract reviewed; calculator under review; authority prose verified; final gates pending |
+| Status | Version/contract/calculator reviewed; records/export checkpoint under review; final gates pending |
 | Scope | Offline baseline-first 1.10.0 internal candidate, not live FinOps operations |
 | References | [Catalogue](README.md), [Parent #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Design](../specs/2026-11-12-agent-finops-baseline-design.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
 | [#35](https://github.com/urruegg/frontier-envisioning/issues/35) | [Outcome/input](../ideas/2026-11-12-agent-finops-baseline.md) | [Baseline design](../specs/2026-11-12-agent-finops-baseline-design.md) | [Tasks 0-8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; accountable | Actual D35-09 plan/readiness approval recorded | Approved for bounded implementation; no label change inferred | Spec approval `2e3c0e7`; plan approval `efb3468`; no delivery/PR proof yet |
-| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Contract reviewed; calculator spec review in progress | Records/projection/CLI and full integration remain pending |
+| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Contract/calculator reviewed; Task 3 checkpoint under spec review | Wrapper/renderer and final installed/distribution proof pending |
 | [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | D1 stable contract and review; fixture preparation before UI | Draft; no code | Existing wrapper/renderer integration, not a new app |
 | [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | [Verified candidate](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-10/11/12](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D3, Tasks 0/5/7/8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D3, estimated M | Preparation first; final proof after D1/D2 | Task 0 reviewed; remaining D3 work pending | Scoped evidence below, not full 1.10.0 quality/distribution proof |
 
@@ -115,6 +115,36 @@ subtests before the fix; the earlier 13 spec-fix regressions were independently
 replayed against pre-fix code. These are scoped technical checkpoints, not full
 L1/L2, commercial pricing verification, authenticated financial approval or
 final package/distribution acceptance.
+
+## Task 2: Calculator checkpoint
+
+The initial calculator was `d7de4b53`, followed by numerical/metadata corrections
+at `bf7bf4db` and the bounded optional-FX-identity correction at
+`984b3c408ebbe0765518b16277dc700816ae6c44`. The scope is the pure calculator,
+baseline tests and generator-produced installer; no lifecycle, CLI or renderer
+delivery is implied.
+
+Independent spec review verified the exact-or-refuse intermediate Decimal
+arithmetic, isolated context, nullable legacy ancestry, missing-versus-
+incompatible applicability and D35-10 provisional figures. Unsupported
+representations, including nonterminating intermediate line-price division,
+raise explicit errors rather than silently returning incorrect cents.
+Ordinary final unit ratios use exact quotient/remainder rounding.
+
+The code-quality stage found a missing FX-identity draft case. Its bounded
+correction was reviewed directly: optional identities are parsed and omitted
+from `fx_refs`, while `/fx/<index>` dependencies, dated evidence, strict
+handover gaps, input purity and private ancestry remain. Fresh controller
+validation passed **109 baseline/calculator tests**; the worker's combined
+run passed **190 tests**, including all 81 legacy Preview cases.
+Rehashed fabricated results, stale receipts and cached acknowledgement do not
+become valid calculation lineage.
+
+These are scoped AI-assisted technical checks, not independent human approval,
+verified commercial rates, financial authority or full L1/L2. The interim
+full-check attempt exposed the separately corrected authority-ID guard; its
+failure is not replaced by a success claim. Integrated full gates, browser,
+final extracted-package execution and repeatable distribution remain pending.
 
 ## Independent authority-document checkpoint
 
