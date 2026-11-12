@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Written specification approved; this implementation plan awaits explicit approval |
+| Status | Human plan/readiness approved at efb3468; subagent-driven implementation in progress |
 | Scope | Test-first 1.10.0 internal candidate, not publication or live deployment |
 | References | [Catalogue](README.md), [Parent #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [D1 #38](https://github.com/urruegg/frontier-envisioning/issues/38), [D2 #37](https://github.com/urruegg/frontier-envisioning/issues/37), [D3 #39](https://github.com/urruegg/frontier-envisioning/issues/39), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Approved design](../specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
@@ -30,8 +30,11 @@ tests, Playwright and self-contained HTML/CSS/JavaScript. No new dependencies.
 
 The maintainer approved the written specification at
 `2e3c0e79dc45c9ab06775def9f31cfb3bad7a8aa` with
-`approve-written-spec` (D35-08). That permits this plan, **not implementation**.
-Wait for explicit plan/readiness approval and the execution-mode choice.
+`approve-written-spec` (D35-08), initially authorising planning only.
+Subsequently, the actual `approve-subagent-driven` response (D35-09) approved
+the plan/readiness at `efb3468dbe597ea6112b6839c7019243ab44b885` and selected
+subagent-driven execution. These are human decision records, not inferred
+protected label changes or financial/deployment authority.
 Stop for material questions even with autopilot enabled.
 
 Work in the already consented native worktree on `feat/35-finops-baselines`.

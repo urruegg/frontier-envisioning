@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted design preparation |
-| Status | Written spec approved at 2e3c0e7; implementation-plan/readiness approval pending |
+| Status | Written spec approved at 2e3c0e7; plan/readiness approved at efb3468, implementation in progress |
 | Scope | Offline baseline-first sprint; not a deployed FinOps Agent or live billing integration |
 | References | [Catalogue](README.md), [Issue #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Design](../specs/2026-11-12-agent-finops-baseline-design.md), [Draft sprint row](../sprints/README.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
@@ -85,8 +85,10 @@ The maintainer subsequently approved the written spec at `2e3c0e7`
 (`approve-written-spec`, D35-08). The real
 [plan](../plans/2026-11-12-agent-finops-baseline-plan.md) and
 [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md) now link bounded
-D1 #38, D2 #37 and D3 #39. Their implementation still waits for actual
-plan/readiness approval; no protected label change is inferred.
+D1 #38, D2 #37 and D3 #39. Subsequently, the actual
+`approve-subagent-driven` response (D35-09) approved plan/readiness at
+`efb3468dbe597ea6112b6839c7019243ab44b885` and selected subagent-driven work.
+No protected label change or completed delivery is inferred.
 
 Protected routing [#8](https://github.com/urruegg/frontier-envisioning/issues/8)
 and release-cache [#30](https://github.com/urruegg/frontier-envisioning/issues/30)

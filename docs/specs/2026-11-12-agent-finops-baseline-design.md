@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted design preparation |
-| Status | Written spec approved at 2e3c0e7; implementation-plan/readiness approval pending |
+| Status | Written spec approved at 2e3c0e7; plan/readiness approved at efb3468, delivery unverified |
 | Scope | Versioned offline agent baselines and strict financial build-handover evidence for a 1.10.0 candidate |
 | References | [Catalogue](README.md), [Issue #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md), [PRD](../prd.md), [Solution design](../solution-design.md) |
 
@@ -59,11 +59,13 @@ The table records the section/scope decisions as they stood before written
 review. Subsequently, D35-08 is the actual `approve-written-spec` response for
 `2e3c0e79dc45c9ab06775def9f31cfb3bad7a8aa`; the
 [implementation plan](../plans/2026-11-12-agent-finops-baseline-plan.md) was
-written only after that response. Plan/readiness approval remains pending.
+written only after that response. The subsequent actual
+`approve-subagent-driven` response (D35-09) approved plan/readiness at
+`efb3468dbe597ea6112b6839c7019243ab44b885` and selected subagent-driven work.
 Neither unavailable users nor autopilot defaults count as approval.
 Protected labels are not inferred.
 
-Document revision 0.2 adds this actual approval receipt and plan/sprint links;
+Document revisions 0.2/0.3 add actual approval receipts and plan/sprint links;
 the normative baseline-first contract is the one reviewed at `2e3c0e7`.
 
 ## 3. Scope and architecture

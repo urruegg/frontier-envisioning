@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.0 |
+| Version | 1.1 |
 | Date | 2026-11-12 |
 | Author | Original catalogue author not recorded; Copilot SDK in VS Code, AI-assisted consolidation |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
@@ -11,7 +11,7 @@
 
 | Plan | Owner during execution | Tracking and delivery evidence |
 |---|---|---|
-| [Agent FinOps baseline](2026-11-12-agent-finops-baseline-plan.md) | `@urruegg` accountable; execution mode and plan approval pending | [#35](https://github.com/urruegg/frontier-envisioning/issues/35), [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), D1 #38 / D2 #37 / D3 #39 and [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md); planning only, no implementation proof |
+| [Agent FinOps baseline](2026-11-12-agent-finops-baseline-plan.md) | `@urruegg` accountable; actual subagent-driven plan/readiness approval at `efb3468` | [#35](https://github.com/urruegg/frontier-envisioning/issues/35), [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), D1 #38 / D2 #37 / D3 #39 and [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md); implementation in progress, delivery not yet verified |
 | [Version 1.9.2](2026-11-12-version-1.9.2-plan.md) | `@urruegg` accountable; mechanical preparation | [#33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](../sprints/SPRINT-006-version-1.9.2.md); local gates/rebuild proof pass, live PR/CI separate |
 | [Internal user documentation](2026-11-12-internal-user-documentation-plan.md) | `@urruegg` accountable; execution directed in conversation | [#31](https://github.com/urruegg/frontier-envisioning/issues/31), [SPRINT-005](../sprints/SPRINT-005-internal-user-documentation.md); local gates pass, PR/CI and human review separate |
 | [SPRINT-004 implementation](2026-11-11-handover-1.9-preview-finops-plan.md) | `@urruegg` accountable; parent plus bounded workers under approved written plan | [#25](https://github.com/urruegg/frontier-envisioning/issues/25), [receipt](../intake/handover-1.9.0.md), [SPRINT-004](../sprints/SPRINT-004-handover-1.9-preview-finops.md); D0–D5 local technical delivery complete, human-merged [PR #29](https://github.com/urruegg/frontier-envisioning/pull/29), 11 November; release/manual acceptance separate |
