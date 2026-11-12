@@ -89,4 +89,6 @@ gallery. Keep FinOps off; do not calculate costs or ROI.
 
 Compare the result with the [gallery](demo/README.md), not with a claimed live
 tenant. The example is a workshop aid, not proof of deployment or output quality
-for an unevidenced engagement.
+for an unevidenced engagement. The gallery shows the broader bundled core
+sample; a scoped Sales/Services preparation is not expected to reproduce every
+journey or the exact screenshot layout.

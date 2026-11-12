@@ -50,8 +50,9 @@ Current reader-documentation work is [#31](https://github.com/urruegg/frontier-e
 [design](specs/2026-11-12-internal-user-documentation-design.md),
 [plan](plans/2026-11-12-internal-user-documentation-plan.md) and
 [SPRINT-005](sprints/SPRINT-005-internal-user-documentation.md).
-Execution was directed in conversation; separate written-plan review,
-ready labels and completed verification are not inferred.
+Execution was directed in conversation. The sprint records actual local
+verification; use #31 for current PR/CI status. Separate written-plan review
+and protected ready/approval labels are not inferred.
 
 ## Historical evidence and internal analyses
 

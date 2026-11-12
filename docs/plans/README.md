@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Version | 0.9 |
-| Date | 2026-11-11 |
+| Date | 2026-11-12 |
 | Author | Original catalogue author not recorded; Copilot SDK in VS Code, AI-assisted consolidation |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Current and historical implementation plans; specifications live in docs/specs |
@@ -11,7 +11,7 @@
 
 | Plan | Owner during execution | Tracking and delivery evidence |
 |---|---|---|
-| [Internal user documentation](2026-11-12-internal-user-documentation-plan.md) | Execution directed in conversation; implementation and gates in progress | [#31](https://github.com/urruegg/frontier-envisioning/issues/31), [SPRINT-005](../sprints/SPRINT-005-internal-user-documentation.md) |
+| [Internal user documentation](2026-11-12-internal-user-documentation-plan.md) | `@urruegg` accountable; execution directed in conversation | [#31](https://github.com/urruegg/frontier-envisioning/issues/31), [SPRINT-005](../sprints/SPRINT-005-internal-user-documentation.md); local gates pass, PR/CI and human review separate |
 | [SPRINT-004 implementation](2026-11-11-handover-1.9-preview-finops-plan.md) | `@urruegg` accountable; parent plus bounded workers under approved written plan | [#25](https://github.com/urruegg/frontier-envisioning/issues/25), [receipt](../intake/handover-1.9.0.md), [SPRINT-004](../sprints/SPRINT-004-handover-1.9-preview-finops.md); D0–D5 local technical delivery complete, human-merged [PR #29](https://github.com/urruegg/frontier-envisioning/pull/29), 11 November; release/manual acceptance separate |
 | [Selective 1.7 intake](2026-11-10-handover-1.7-intake-plan.md) | `@urruegg` accountable; parent coordinates bounded builder/renderer/docs workers under approved plan | [#22](https://github.com/urruegg/frontier-envisioning/issues/22), human-merged [#23](https://github.com/urruegg/frontier-envisioning/pull/23), [receipt](../intake/handover-1.7.0.md), [SPRINT-003](../sprints/SPRINT-003-handover-1.7-intake.md); local technical integration completed in human-merged [PR #24](https://github.com/urruegg/frontier-envisioning/pull/24), 11 November, main `907c3ca`; release/manual acceptance separate |
 | [Anonymised distribution](2026-11-10-anonymised-distribution-plan.md) | `@urruegg` accountable; inline AI-assisted maintenance | [#20](https://github.com/urruegg/frontier-envisioning/issues/20), [SPRINT-002](../sprints/SPRINT-002-anonymised-distribution.md); no external clearance inferred |

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Version | 0.9 |
-| Date | 2026-11-11 |
+| Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Ideas for Frontier Envisioning work packages in the canonical plural folder |
@@ -11,7 +11,7 @@
 
 | Idea | State | Governing work |
 |---|---|---|
-| [Internal user documentation](2026-11-12-internal-user-documentation.md) | Maintainer directed autonomous implementation; gates pending | [#31](https://github.com/urruegg/frontier-envisioning/issues/31), [SPRINT-005](../sprints/SPRINT-005-internal-user-documentation.md) |
+| [Internal user documentation](2026-11-12-internal-user-documentation.md) | Locally implemented and verified; PR/CI and human review separate | [#31](https://github.com/urruegg/frontier-envisioning/issues/31), [SPRINT-005](../sprints/SPRINT-005-internal-user-documentation.md) |
 | [1.9 intake and optional Preview FinOps](2026-11-11-handover-1.9-preview-finops.md) | D0–D5 local technical delivery complete; human-merged [PR #29](https://github.com/urruegg/frontier-envisioning/pull/29), 11 November; release/manual acceptance separate | [#25](https://github.com/urruegg/frontier-envisioning/issues/25), [receipt](../intake/handover-1.9.0.md), [SPRINT-004](../sprints/SPRINT-004-handover-1.9-preview-finops.md) |
 | [Refined Cowork handover](2026-11-10-handover-1.7-intake.md) | Local technical integration completed in human-merged [PR #24](https://github.com/urruegg/frontier-envisioning/pull/24), 11 November, main `907c3ca`; release/manual acceptance separate | [#22](https://github.com/urruegg/frontier-envisioning/issues/22), [latest receipt](../intake/handover-1.7.0.md), [SPRINT-003](../sprints/SPRINT-003-handover-1.7-intake.md) |
 | [Anonymised distribution](2026-11-10-anonymised-distribution.md) | Maintainer-requested cleanup; internal audience assumed, no external clearance | [#20](https://github.com/urruegg/frontier-envisioning/issues/20), [SPRINT-002](../sprints/SPRINT-002-anonymised-distribution.md) |
