@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.5 |
+| Version | 0.6 |
 | Date | 2026-11-12 |
 | Author | Urs Rüegg; Copilot AI-assisted maintenance |
 | Status | Maintained internal reader guide; not release approval |
 | Scope | Using and evaluating the plugin; document revision, not product version |
-| References | [Documentation](docs/README.md), [Getting started](docs/getting-started.md), [Plugin guide](plugin/README.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31) |
+| References | [Documentation](docs/README.md), [Getting started](docs/getting-started.md), [Plugin guide](plugin/README.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33) |
 
 **Turn scoped business evidence into a Frontier Company Blueprint and a focused workshop.**
 
@@ -16,7 +16,7 @@ solution engineers. It helps frame opportunities across business journeys,
 for example Sales and Services, test hypotheses with people and prepare a
 validated MVP for design handover.
 
-**1.9.1 is an UNRELEASED internal candidate**, not a published release.
+**1.9.2 is an UNRELEASED internal candidate**, not a published release.
 This repository is private; internal sharing does not grant public visibility,
 customer redistribution or IP clearance. Maintainer: [@urruegg](https://github.com/urruegg).
 
@@ -65,7 +65,7 @@ flowchart LR
 
 ## Install the internal candidate
 
-Obtain the approved internal `frontier-envisioning-plugin-1.9.1.zip` from the
+Obtain the approved internal `frontier-envisioning-plugin-1.9.2.zip` from the
 maintainer and keep it zipped. In a new Copilot Cowork chat, attach it and type
 **Install the Frontier PlugIn**. Review the installation approval prompts.
 Start a new chat after sync. See the [packaged guide](plugin/README.md) for

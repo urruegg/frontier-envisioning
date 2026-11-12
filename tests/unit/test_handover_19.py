@@ -9,7 +9,9 @@ from tests.unit._util import ROOT
 class Handover19(unittest.TestCase):
     def test_integrated_version_is_distinct_from_received_release(self):
         plugin = json.loads((ROOT / "plugin/.claude-plugin/plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(plugin["version"], "1.9.1")
+        self.assertNotEqual(plugin["version"], "1.9.0")
+        manifest = json.loads((ROOT / "plugin/package/manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(plugin["version"], manifest["version"])
 
     def test_received_inventory_is_frozen(self):
         path = ROOT / "docs/intake/source-inventory-1.9.0.json"

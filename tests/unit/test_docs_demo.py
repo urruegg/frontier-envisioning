@@ -93,7 +93,8 @@ class DocsDemo(unittest.TestCase):
     def test_identity_kit_and_shared_helper_mutations_invalidate_the_sample(self):
         for name in ("plugin/skills/frontier-agent-identity/kit/glyph.svg",
                      "plugin/skills/frontier-agent-identity/kit/scripts/builder.py",
-                     "tools/fe_lib.py", "plugin/.claude-plugin/plugin.json", "plugin/package/manifest.json"):
+                     "tools/fe_lib.py", "plugin/.claude-plugin/plugin.json", "plugin/package/manifest.json",
+                     "tests/fixtures/caldova-raster-1.9.2-inputs.json"):
             with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 path = root.joinpath(*name.split("/"))

@@ -2,6 +2,25 @@
 
 Releases of the Frontier Envisioning plugin. Engineering changes to the repository are recorded in the pull requests.
 
+## 1.9.2 — unreleased
+
+- **Current-state internal candidate (#33).** Version-only preparation from
+  merged #32 (`03e298e`), carrying forward the core Blueprint/value/identity/design,
+  optional process/ontology and reader-guide/gallery/starter-prompt polish already
+  in unreleased 1.9.1. Eight skills and all maturity/Preview boundaries are
+  unchanged; no new runtime features.
+- **Version alignment.** Version carriers, package filenames and active guides
+  identify 1.9.2. The 12 November archive date is build provenance, not a release.
+- **Finite identity profile.** The named 1.9.2 profile was prepared after all
+  205 non-raster inputs matched the existing 1.9.1/A6 baseline. Subsequent full
+  builds verified 223 PNGs and the unchanged corrected identity ZIP.
+  Historical profiles/assets remain unchanged.
+- **Regenerated examples and evidence.** The core HTML, five real captures and
+  manifest identify the new candidate. [SPRINT-006](docs/sprints/SPRINT-006-version-1.9.2.md)
+  records actual quality, package, install and reproducibility evidence and
+  remaining human checks. No actual Cowork/Fabric/manual AT acceptance,
+  publication, deployment or release approval is claimed.
+
 ## 1.9.1 — unreleased
 
 - **Internal reader journey (#31, 12 November 2026).** Reader-first overview,

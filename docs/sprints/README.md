@@ -11,6 +11,7 @@
 
 | Sprint | Goal | State |
 |---|---|---|
+| [SPRINT-006](SPRINT-006-version-1.9.2.md) | Verified 1.9.2 build from the current merged product | [#33](https://github.com/urruegg/frontier-envisioning/issues/33); internal candidate, not publication |
 | [SPRINT-005](SPRINT-005-internal-user-documentation.md) | Internal user guide, Caldova HTML/gallery and starter prompt | [#31](https://github.com/urruegg/frontier-envisioning/issues/31); local implementation/gates verified; live PR/CI and human review separate |
 | [SPRINT-004](SPRINT-004-handover-1.9-preview-finops.md) | Selective 1.9 process intake and optional acknowledged Preview FinOps | [#25](https://github.com/urruegg/frontier-envisioning/issues/25), children #28/#26/#27; D0–D5 local technical delivery complete, human-merged [PR #29](https://github.com/urruegg/frontier-envisioning/pull/29), 11 November; release/manual acceptance separate |
 | [SPRINT-003](SPRINT-003-handover-1.7-intake.md) | Selective 1.7.1 feature intake, build and internal distribution | [#22](https://github.com/urruegg/frontier-envisioning/issues/22); local technical integration completed in human-merged [PR #24](https://github.com/urruegg/frontier-envisioning/pull/24), 11 November, main `907c3ca`; historical seven-skill evidence retained, current package has eight; release/manual acceptance separate |

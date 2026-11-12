@@ -1,6 +1,6 @@
 # Frontier Envisioning — plugin for Copilot Cowork
 
-**Version 1.9.1 · UNRELEASED · Microsoft Innovation Hub Switzerland · 12 November 2026**
+**Version 1.9.2 · UNRELEASED · Microsoft Innovation Hub Switzerland · 12 November 2026**
 
 *Guide maintenance: Copilot AI-assisted; original authorship retained.*
 
@@ -12,7 +12,7 @@ and icons. Once MVP scope is validated, it supports PRD, solution design,
 architecture decisions and IT readiness handover; earlier documents are drafts.
 Identity branding is not Entra identity provisioning.
 
-**1.9.1 is an unreleased internal candidate, not a published release.**
+**1.9.2 is an unreleased internal candidate, not a published release.**
 The installation procedure below is not evidence of actual Cowork installation,
 organisation catalogue publication or tenant deployment.
 
@@ -47,7 +47,7 @@ product-icon terms. Confirm content/IP clearance before sharing externally.
 
 ## Install it in Copilot Cowork
 
-1. **Obtain the approved internal candidate** `frontier-envisioning-plugin-1.9.1.zip` from the maintainer, [@urruegg](https://github.com/urruegg). Keep it zipped; it is not a published release.
+1. **Obtain the approved internal candidate** `frontier-envisioning-plugin-1.9.2.zip` from the maintainer, [@urruegg](https://github.com/urruegg). Keep it zipped; it is not a published release.
 2. **Open Copilot Cowork** and start a new chat.
 3. **Attach the zip** to the chat and type:
 
@@ -170,7 +170,7 @@ See the [FinOps skill](skills/frontier-finops/SKILL.md) for exact CLI examples.
 ## What is in the package
 
 ```
-frontier-envisioning-plugin-1.9.1.zip
+frontier-envisioning-plugin-1.9.2.zip
 ├── README.md                         this guide
 ├── MIT.md                            the licence (MIT)
 ├── THIRD-PARTY-NOTICES.md            Microsoft product icons and other material not covered by MIT

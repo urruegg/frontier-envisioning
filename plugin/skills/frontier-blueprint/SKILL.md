@@ -14,7 +14,7 @@ license: MIT
 metadata:
   category: productivity
   icon: Organization
-  version: "1.9.1"
+  version: "1.9.2"
   plugin: frontier-envisioning
   maturity: ga
   optional: false
@@ -37,7 +37,7 @@ The HTML follows the Innovation Hub journey; optional data determines the view s
 Agent identity icons mark agents everywhere; Microsoft product icons mark products, design areas and factory tools (only the icons used are embedded).
 
 Part labels and descriptions can be overridden with `parts`. This is unreleased
-1.9.1. Seven non-FinOps skills are GA product wrappers, not a guarantee of
+1.9.2. Seven non-FinOps skills are GA product wrappers, not a guarantee of
 result confidence, provider GA, release/deployment or external/IP clearance.
 Fabric ontology/agent/operations features remain Preview with dated source and
 mapping gaps; MOS3 `devPreview` remains a separate packaging protocol.

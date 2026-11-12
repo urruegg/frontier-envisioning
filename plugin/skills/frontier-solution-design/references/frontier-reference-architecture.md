@@ -2,7 +2,7 @@
 
 Research date: 22 October 2026. Public Microsoft sources only; numbers in brackets refer to the source list at the end. Product names and availability change often, especially around Microsoft announcement events: re-check before a workshop and before any build decision.
 
-For optional 1.9.1 process design, also use the
+For optional 1.9.2 process design, also use the
 [process method and dated Fabric source IDs](../../frontier-process/references/ontology-method.md).
 Fabric ontology/agent integrations and operations agents remain Preview, with
 unverified mapping/tenant gaps. The process canon's recorded 11 November 2026

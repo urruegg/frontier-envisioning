@@ -13,7 +13,7 @@ license: MIT
 metadata:
   category: productivity
   icon: DataUsage
-  version: "1.9.1"
+  version: "1.9.2"
   plugin: frontier-envisioning
   maturity: ga
   optional: true

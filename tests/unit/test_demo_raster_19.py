@@ -14,7 +14,7 @@ class ProcessRasterPreview(unittest.TestCase):
     def test_only_named_process_preview_is_added(self):
         module = load("tools/demo_raster.py")
         self.assertEqual(module.SUPPORTED_VERSIONS, {"1.4.0", "1.5.0", "1.6.0"})
-        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1", "1.7.1", "1.9.1"})
+        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1", "1.7.1", "1.9.1", "1.9.2"})
 
     def test_process_profile_preserves_the_exact_reviewed_a6_inputs(self):
         module = load("tools/demo_raster.py")
@@ -61,5 +61,5 @@ class ProcessRasterPreview(unittest.TestCase):
                         module.verify_release_identity(final, report)
                     else:
                         with self.assertRaises(module.RasterProfileError):
-                            module.replay(kit, profile, version="1.9.2" if change == "future" else "1.9.1")
+                            module.replay(kit, profile, version="1.9.3" if change == "future" else "1.9.1")
                         self.assertFalse((kit / "agents/sample/identity/card.png").exists())

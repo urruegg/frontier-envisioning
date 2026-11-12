@@ -2,16 +2,16 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.5 |
+| Version | 0.6 |
 | Date | 2026-11-12 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained catalogue; approval not inferred |
 | Scope | Using the plugin, engineering guidance and historical records; document revision, not product version |
-| References | [Repository](../README.md), [Product requirements](prd.md), [Solution design](solution-design.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31) |
+| References | [Repository](../README.md), [Product requirements](prd.md), [Solution design](solution-design.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33) |
 
 ## Using the plugin
 
-Start here to evaluate the **1.9.1 unreleased internal candidate**. No repository
+Start here to evaluate the **1.9.2 unreleased internal candidate**. No repository
 visibility change, published release or external sharing clearance is implied.
 The sole human maintainer is [@urruegg](https://github.com/urruegg).
 
@@ -26,7 +26,7 @@ The sole human maintainer is [@urruegg](https://github.com/urruegg).
 
 | Document | Authority or purpose |
 |---|---|
-| [Product requirements](prd.md) | Requirements, release decisions and acceptance targets; current 1.9.1 block is separate from historical Part A |
+| [Product requirements](prd.md) | Requirements, release decisions and acceptance targets; current 1.9.2 candidate note preserves the applicable 1.9.1 requirements and historical Part A |
 | [Solution design](solution-design.md) | Architecture and scope-qualified verification; historical Part B is retained |
 | [Architecture decisions](adr/README.md) | Repository/engineering rationale; Proposed status is not acceptance |
 | [Engineering handbook](engineering/handbook.md) | Build, test, version, release and deployment practice |
@@ -45,7 +45,11 @@ The sole human maintainer is [@urruegg](https://github.com/urruegg).
 | [plans/](plans/README.md) | Test-first implementation plans |
 | [sprints/](sprints/README.md) | Linked delivery records |
 
-Current reader-documentation work is [#31](https://github.com/urruegg/frontier-envisioning/issues/31):
+Current version-only preparation is [#33](https://github.com/urruegg/frontier-envisioning/issues/33):
+[plan](plans/2026-11-12-version-1.9.2-plan.md) and
+[SPRINT-006](sprints/SPRINT-006-version-1.9.2.md). This is not a release.
+
+The reader-documentation baseline is [#31](https://github.com/urruegg/frontier-envisioning/issues/31):
 [idea and execution direction](ideas/2026-11-12-internal-user-documentation.md),
 [design](specs/2026-11-12-internal-user-documentation-design.md),
 [plan](plans/2026-11-12-internal-user-documentation-plan.md) and

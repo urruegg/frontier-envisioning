@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.3 |
-| Date | 2026-11-11 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake and 1.9.1 prose) |
+| Version | 1.4 |
+| Date | 2026-11-12 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes) |
 | Status | Maintained requirements; no new product or release approval implied |
-| Scope | Shared product context, unreleased 1.9.1 requirements, historical 1.7.1/1.6.1 intake and original Part A |
-| References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md) |
+| Scope | Current unreleased 1.9.2 candidate, shared product context, preserved 1.9.1 requirements, historical 1.7.1/1.6.1 intake and original Part A |
+| References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md) |
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Current source references are
 anonymised without changing attribution or private historical evidence. Plugin
@@ -23,6 +23,36 @@ The split preserves historical results and claims, including the original
 1.6.0 acceptance and release plan. It does not rerun or extend those claims,
 approve a release, change pricing or alter plugin behaviour. The 1.6.1 note
 below remains unreleased.
+
+## 1.9.2 internal build candidate
+
+**12 November 2026: 1.9.2 is an unreleased internal build candidate, not a
+published release.** [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33)
+directs a version-only build of merged `03e298e`
+([PR #32](https://github.com/urruegg/frontier-envisioning/pull/32)).
+The [idea](ideas/2026-11-12-version-1.9.2.md),
+[candidate design](specs/2026-11-12-version-1.9.2-design.md),
+[plan](plans/2026-11-12-version-1.9.2-plan.md) and
+[SPRINT-006](sprints/SPRINT-006-version-1.9.2.md) govern preparation.
+
+All current features and behaviour are carried forward: eight skills, seven
+non-FinOps GA wrappers and bundled optional, acknowledgement-gated Preview
+FinOps. Core work does not require FinOps; process/ontology remains optional
+when requested. Reader guides, the core HTML/gallery and starter prompt retain
+their merged scope. Fabric Preview, mapping gaps, MOS3 `devPreview` and private
+sharing/IP boundaries are unchanged.
+
+The complete 1.9.1 requirements and acceptance targets below remain applicable;
+none is newly validated by the version number. Their chronological references
+to “current” describe that intake, not a new 1.9.2 result. Document revision
+1.4 is separate from product version. Actual build, regeneration and candidate
+verification results are recorded separately in SPRINT-006.
+
+This PRD retains release and decision authority. Candidate preparation changes
+neither historical A.12/A.13 nor the design's B.9 results. The 12 November archive
+date is build provenance, not a release date. Actual Cowork/Fabric/manual AT
+acceptance, human release decisions and human-owned #8/#30 remain separate;
+no approval, publication, deployment or external clearance is implied.
 
 ## 1.9.1 development intake
 
