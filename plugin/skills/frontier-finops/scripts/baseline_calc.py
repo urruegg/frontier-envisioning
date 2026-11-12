@@ -27,17 +27,23 @@ Task3 consumption contract:
   exact scenario coverage and results_fingerprint. It is outside hashed results
   and is internal technical data, NOT authentication, review or viewer consent.
 
-Raw Decimal arithmetic uses a fixed local 80-digit context, HALF_UP rounding,
-and bounded exponents. Representation failures explicitly refuse the field;
-they never silently become zero. Round only final period money to cents and
-unit metrics to six places. Annual sums use unrounded monthly contributions.
+Raw Decimal arithmetic uses an explicitly configured local 80-digit context
+with bounded exponents. Every inexact intermediate operation is refused,
+including products/sums of individually representable inputs and nonterminating
+line-price division. This is an explicit unsupported-representation error,
+never a rounded input or a silent zero. HALF_UP rounding is allowed only at
+final period money (cents) or unit metrics (six places); the latter use exact
+Decimal quotient/remainder rounding, not a rounded intermediate ratio.
+Annual sums use unrounded monthly contributions. Caller flags/traps are neither
+inherited nor modified. No numeric bound is inferred from the caller context.
 """
 from __future__ import annotations
 
 import calendar
 import copy
 from datetime import date
-from decimal import Decimal, DecimalException, ROUND_HALF_UP, Underflow, localcontext
+from decimal import (Context, Decimal, DecimalException, DivisionByZero, FloatOperation,
+                     Inexact, InvalidOperation, Overflow, ROUND_HALF_UP, Underflow, localcontext)
 
 from baseline_model import _date, _decimal, _gap, _text, material_payload, model_fingerprint, validate_model
 from finops_preview import NOTICE, fingerprint, inherit_restrictions, is_private, require_preview_ack
@@ -46,6 +52,10 @@ _CENT = Decimal("0.01")
 _UNIT = Decimal("0.000001")
 _CLASSES = {"customer-shareable", "customer-specific", "internal-only", "validation-required"}
 _REF_KEYS = ("src", "content_src")
+_ARITHMETIC_CONTEXT = Context(
+    prec=80, rounding=ROUND_HALF_UP, Emin=-999, Emax=999, capitals=1, clamp=0,
+    flags=[], traps=[InvalidOperation, DivisionByZero, Overflow, Underflow, Inexact, FloatOperation],
+)
 
 
 def _pointer(parts):
@@ -59,22 +69,38 @@ def _field(parts):
     return field or "model"
 
 
+def _legacy_refs(value):
+    """Parse optional legacy ancestry without altering the authored payload."""
+    if value is None:
+        return []
+    values = value.replace(",", " ").split() if isinstance(value, str) else value
+    return [ref for ref in values if _text(ref, "lineage.reference") is not None]
+
+
+def _parsed_restrictions(record):
+    parsed = dict(record)
+    for key in _REF_KEYS:
+        refs = _legacy_refs(record.get(key))
+        if refs:
+            parsed[key] = refs
+        else:
+            parsed.pop(key, None)
+    return parsed
+
+
 def _refs(record):
     refs = []
     if isinstance(record, dict):
         if _text(record.get("source_id"), "lineage.source_id") is not None:
             refs.append(record["source_id"])
         for key in _REF_KEYS:
-            value = record.get(key)
-            if isinstance(value, str):
-                refs.extend(value.replace(",", " ").split())
-            elif isinstance(value, list):
-                refs.extend(value)
+            refs.extend(_legacy_refs(record.get(key)))
     return refs
 
 
 def _combine(*records):
     """Combine already classified lineage, never copy supplied private prose."""
+    records = [_parsed_restrictions(record) for record in records]
     flags = inherit_restrictions(*records)
     classes, scopes = set(), set()
     dependencies, sources, fx_refs, src = set(), set(), set(), set()
@@ -108,12 +134,27 @@ def _count(number):
     return format(number, "f")
 
 
+def _final_amount(value, places):
+    """Only final display quantization may intentionally discard precision."""
+    with localcontext(_ARITHMETIC_CONTEXT) as context:
+        context.traps[Inexact] = False
+        return format(value.quantize(places, rounding=ROUND_HALF_UP), "f")
+
+
+def _unit_value(numerator, denominator):
+    """Round a non-negative final ratio once, without an approximate division."""
+    whole, remainder = divmod(numerator / _UNIT, denominator)
+    if remainder * 2 >= denominator:
+        whole += 1
+    return whole * _UNIT
+
+
 def _money(value, meta, currency, period, basis, *, provisional=False, reason=None, incomplete=False, places=_CENT):
     status = "incomplete" if incomplete else "unavailable"
     if value is not None:
         status = "provisional" if provisional else "available"
         reason = "pricing-evidence-incomplete" if provisional else None
-    return {**meta, "amount": format(value.quantize(places, rounding=ROUND_HALF_UP), "f") if value is not None else None,
+    return {**meta, "amount": _final_amount(value, places) if value is not None else None,
             "currency": currency, "status": status, "reason": reason, "period": period, "basis": basis}
 
 
@@ -245,7 +286,9 @@ class _Calculation:
                     gaps.append(gap)
             # Missing source metadata is incomplete evidence, not a lost price.
             # An explicitly contradictory source claim cannot price this line.
-            if source and (kind not in (source.get("applicability") or []) or source.get("type") == "public-reference"):
+            claims = [claim for claim in source.get("applicability") or []
+                      if _text(claim, field + ".source.applicability") is not None]
+            if source.get("type") == "public-reference" or (claims and kind not in claims):
                 applicable = False
             if any(g["code"] == "future-evidence" for g in own):
                 applicable = False
@@ -379,7 +422,7 @@ class _Calculation:
                 reason = "incomplete-cost"
             elif denominator is None or denominator == 0:
                 reason = "no-denominator"
-            value = cost["value"] / denominator if reason is None else None
+            value = _unit_value(cost["value"], denominator) if reason is None else None
             metrics[name] = {**_money(value, meta, self.currency, period, basis,
                                      provisional=cost["provisional"], reason=reason, places=_UNIT),
                              "denominator": _count(denominator), "denominator_unit": unit}
@@ -448,11 +491,7 @@ def calculate(model, *, as_of, acknowledge_finops_preview=False):
     """Return fresh authored data plus results/receipt; discard stale owned outputs."""
     metadata = require_preview_ack(acknowledge_finops_preview)
     try:
-        with localcontext() as context:
-            context.prec = 80
-            context.rounding = ROUND_HALF_UP
-            context.Emax, context.Emin = 999, -999
-            context.traps[Underflow] = True
+        with localcontext(_ARITHMETIC_CONTEXT):
             authored = material_payload(model)
             results = _Calculation(authored, as_of).results()
             receipt = {"kind": "baseline", "as_of": as_of.isoformat(),

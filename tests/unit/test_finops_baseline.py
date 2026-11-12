@@ -7,6 +7,7 @@ import json
 import sys
 import unittest
 from datetime import date
+from decimal import Inexact, ROUND_FLOOR, Rounded, localcontext
 from unittest import mock
 
 from tests.unit._util import ROOT, load
@@ -1134,6 +1135,149 @@ class BaselineCalculationTests(unittest.TestCase):
                 baseline_module("finops_preview").fingerprint(bad["results"]))
             with self.subTest(path=path), self.assertRaisesRegex(ValueError, "recalculate"):
                 self.calc.validate_receipt(bad, as_of=DAY, acknowledge_finops_preview=True)
+
+    def test_review_precision_boundary_never_returns_a_wrong_cent(self):
+        self.model["rates"][2]["amount"] = "0.004" + "9" * 85
+        before = copy.deepcopy(self.model)
+        try:
+            result = self.expected()
+        except ValueError as error:
+            self.assertIn("arithmetic representation", str(error))
+            self.assertNotIn(self.model["rates"][2]["amount"], str(error))
+        else:
+            self.assertEqual(result["one_time"]["amount"], "0.00",
+                             "Intermediate rounding must not cross the HALF_UP cent boundary")
+        self.assertEqual(self.model, before)
+
+    def test_review_precision_product_loss_is_explicit_even_when_inputs_fit(self):
+        for scenario in self.model["baseline"]["scenarios"]:
+            scenario["drivers"]["build_units"] = "1." + "1" * 50
+        self.model["rates"][2]["amount"] = "0." + "1" * 50
+        before = copy.deepcopy(self.model)
+        with self.assertRaisesRegex(ValueError, "arithmetic representation"):
+            self.calculate()
+        self.assertEqual(self.model, before)
+
+    def test_review_precision_sum_loss_is_explicit_even_when_inputs_fit(self):
+        self.model["rates"][0]["amount"] = "1e-100"
+        self.model["rates"][1]["amount"] = "0.004" + "9" * 77
+        before = copy.deepcopy(self.model)
+        with self.assertRaisesRegex(ValueError, "arithmetic representation"):
+            self.calculate()
+        self.assertEqual(self.model, before)
+
+    def test_review_precision_nonterminating_line_division_is_explicit(self):
+        self.model["rates"][0]["pricing_block"] = "3"
+        with self.assertRaisesRegex(ValueError, "arithmetic representation"):
+            self.calculate()
+
+    def test_review_caller_decimal_context_cannot_change_results_or_receipt(self):
+        expected = self.calculate()
+        with localcontext() as caller:
+            caller.prec, caller.rounding = 7, ROUND_FLOOR
+            caller.Emin, caller.Emax, caller.clamp, caller.capitals = -9, 9, 1, 0
+            for signal in caller.traps:
+                caller.traps[signal] = True
+            caller.flags[Inexact] = caller.flags[Rounded] = True
+            state = (dict(caller.traps), dict(caller.flags), caller.prec, caller.rounding,
+                     caller.Emin, caller.Emax, caller.clamp, caller.capitals)
+            self.assertEqual(self.calculate(), expected)
+            self.assertEqual(self.calc.validate_receipt(expected, as_of=DAY, acknowledge_finops_preview=True),
+                             expected["finops_preview"]["calculations"]["baseline"])
+            self.assertEqual((dict(caller.traps), dict(caller.flags), caller.prec, caller.rounding,
+                              caller.Emin, caller.Emax, caller.clamp, caller.capitals), state)
+
+    def test_review_nullable_blank_legacy_refs_are_parsed_before_derivation(self):
+        private = copy.deepcopy(self.model["sources"][0])
+        private.update(id="TEST-PRIVATE", internal=True, visibility="internal",
+                       sharingClassification="internal-only", content_src=["SYN-CONTEXT"])
+        self.model["sources"].append(private)
+        for key in ("src", "content_src"):
+            for value in (None, [], ["", "   ", None], ["", "TEST-PRIVATE", "   ", None]):
+                model = copy.deepcopy(self.model)
+                model["rates"][0][key] = value
+                before = copy.deepcopy(model)
+                gaps = baseline_module().validate_model(model, as_of=DAY)
+                with self.subTest(key=key, value=value):
+                    result = self.calculate(model)["results"]
+                    month = result["scenarios"]["expected"]["months"][0]
+                    self.assertEqual(month["total"]["amount"], "110.00")
+                    line = month["lines"][0]["cost"]
+                    for field in ("src", "content_src", "source_refs"):
+                        self.assertTrue(all(isinstance(ref, str) and ref.strip() for ref in line.get(field, [])))
+                    for gap in gaps:
+                        self.assertIn(gap, result["gaps"])
+                    if value and "TEST-PRIVATE" in value:
+                        self.assertTrue(line["internal"])
+                        self.assertIn("TEST-PRIVATE", line["source_refs"])
+                        self.assertIn("SYN-CONTEXT", line["source_refs"])
+                        self.assertNotIn("internal", month["lines"][1]["cost"])
+                    else:
+                        self.assertNotIn("internal", line)
+                    self.assertEqual(model, before)
+
+    def test_review_absent_rate_applicability_keeps_dated_provisional_figures(self):
+        self.verified_test_data()
+        for value in (None, [], [None], [""], ["   "], [None, "", "   "]):
+            self.model["sources"][0]["applicability"] = value
+            before = copy.deepcopy(self.model)
+            with self.subTest(value=value):
+                result = self.calculate()["results"]
+                month = result["scenarios"]["expected"]["months"][0]
+                self.assertEqual(month["total"]["amount"], "110.00")
+                self.assertEqual(month["total"]["status"], "provisional")
+                self.assertEqual(month["per_run"]["amount"], "1.100000")
+                self.assertEqual(month["per_run"]["status"], "provisional")
+                self.assertTrue(result["handover_blocked"])
+                evidence = month["lines"][0]["pricing_evidence"]
+                self.assertEqual(evidence["as_of"], DAY.isoformat())
+                self.assertEqual(evidence["records"][0]["source_date"], "2026-11-12")
+                self.assertEqual(evidence["records"][0]["source_id"], "SYN-ENGINEERING")
+                self.assertIn("source-applicability", {g["code"] for g in evidence["gaps"]})
+                self.assertTrue(any(g["field"].startswith("sources[0]") for g in evidence["gaps"]))
+                self.assertEqual(self.model, before)
+
+    def test_review_absent_fx_applicability_keeps_known_explicit_fx_only(self):
+        self.verified_test_data()
+        self.add_fx(status="verified")
+        source = copy.deepcopy(self.model["sources"][0])
+        source["id"] = "TEST-FX-SOURCE"
+        self.model["sources"].append(source)
+        self.model["fx"][0]["source_id"] = source["id"]
+        for value in (None, [], [None, "", "   "]):
+            source["applicability"] = value
+            with self.subTest(value=value):
+                month = self.expected()["months"][0]
+                self.assertEqual(month["total"]["amount"], "100.00")
+                self.assertEqual(month["provisional_subtotal"]["amount"], "90.00")
+                self.assertEqual(month["verified_subtotal"]["amount"], "10.00")
+                self.assertEqual(month["per_run"]["status"], "provisional")
+                evidence = month["lines"][0]["pricing_evidence"]
+                self.assertTrue(evidence["gaps"])
+                self.assertEqual(evidence["records"][1]["source_date"], "2026-11-12")
+        self.model["fx"][0]["rate"] = None
+        self.assertIsNone(self.expected()["months"][0]["total"]["amount"])
+
+    def test_review_explicit_incompatible_applicability_is_still_unavailable(self):
+        for value in (["concept"], ["outcome"], [None, "", "concept"]):
+            self.model["sources"][0]["applicability"] = value
+            with self.subTest(value=value):
+                month = self.expected()["months"][0]
+                self.assertIsNone(month["total"]["amount"])
+                self.assertIsNone(month["per_run"]["amount"])
+        self.model = example()
+        self.add_fx()
+        self.model["sources"][0]["applicability"] = ["rate"]
+        self.assertIsNone(self.expected()["months"][0]["total"]["amount"])
+
+    def test_review_final_metric_rounding_allows_repeating_division_and_half_up(self):
+        self.model["rates"][0]["amount"] = "0"
+        self.model["baseline"]["scenarios"][1]["monthly_runs"] = ["3"] * 12
+        for rate, expected in (("0.000001499999999999999999999999", "0.000000"),
+                               ("0.0000015", "0.000001"), ("0.0000016", "0.000001")):
+            self.model["rates"][1]["amount"] = rate
+            with self.subTest(rate=rate):
+                self.assertEqual(self.expected()["months"][0]["per_run"]["amount"], expected)
 
 
 if __name__ == "__main__":
