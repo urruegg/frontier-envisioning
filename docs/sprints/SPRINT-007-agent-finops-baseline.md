@@ -2,17 +2,17 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
+| Version | 0.4 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Task 0 reviewed; D1 contract in progress; full delivery/gates remain pending |
+| Status | Task 0 and D1 contract reviewed; calculator preparation with actual D35-10 amendment; final gates pending |
 | Scope | Offline baseline-first 1.10.0 internal candidate, not live FinOps operations |
 | References | [Catalogue](README.md), [Parent #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Design](../specs/2026-11-12-agent-finops-baseline-design.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
 | [#35](https://github.com/urruegg/frontier-envisioning/issues/35) | [Outcome/input](../ideas/2026-11-12-agent-finops-baseline.md) | [Baseline design](../specs/2026-11-12-agent-finops-baseline-design.md) | [Tasks 0-8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; accountable | Actual D35-09 plan/readiness approval recorded | Approved for bounded implementation; no label change inferred | Spec approval `2e3c0e7`; plan approval `efb3468`; no delivery/PR proof yet |
-| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Task 1 contract in progress | Calculator/records/projection/CLI not yet delivered |
+| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Contract reviewed; Task 2 starting after D35-10 | Records/projection/CLI and full integration remain pending |
 | [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | D1 stable contract and review; fixture preparation before UI | Draft; no code | Existing wrapper/renderer integration, not a new app |
 | [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | [Verified candidate](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-10/11/12](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D3, Tasks 0/5/7/8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D3, estimated M | Preparation first; final proof after D1/D2 | Task 0 reviewed; remaining D3 work pending | Scoped evidence below, not full 1.10.0 quality/distribution proof |
 
@@ -36,6 +36,12 @@ Use the existing private host and `@urruegg` as sole accountable human owner.
 The user explicitly requires waiting at questions despite autopilot.
 No live billing connector, deployed FinOps Agent, purchasing or authenticated
 financial-approval service belongs to this sprint.
+
+Before Task 2, the actual `provisional-draft-figures` response is D35-10.
+Known supplied stale/unverified rates may support explicitly provisional
+draft totals/unit costs with source/date gaps and separated contributions.
+Unknown values remain unknown; strict financial build handover is unchanged.
+This targeted reporting decision was recorded before calculator code.
 
 ## Preparation evidence, not new-feature evidence
 
@@ -86,6 +92,29 @@ logic issue. Fresh controller checks passed: the new profile's five tests/
 after the bump. Strict docs and range whitespace checks also passed.
 This is AI-assisted technical review, not independent human approval,
 full L1/L2, final installed-package proof, distribution or deployment.
+
+## Task 1: Contract checkpoint
+
+The initial contract checkpoint was `03b49032`; spec fixes were committed
+as `75333d14`, followed by the normalization correction at
+`4454974a389100f28fe4d093af01c8a55df4ea14`. Scope is the pure contract module,
+synthetic Caldova input, public concept-reference metadata, focused tests and
+generator-produced installer. No calculator/records/projection/CLI/UI existed
+at this checkpoint.
+
+Spec review found and independently re-verified fixes for dependency-based
+scenario uncertainty, empty-scope supplied references and incomplete
+applicability entries. Code-quality review then found raw blank metadata being
+compared after missing-value parsing. The bounded final correction was reviewed
+directly: detached parsed comparison values, consistent None/blank/whitespace
+gaps, retained genuine mismatch/unknown-enum errors and no input mutation.
+
+The controller's final focused run passed **59 tests**, plus Ruff and whitespace.
+The six normalization regression methods were reported RED with 17 failing
+subtests before the fix; the earlier 13 spec-fix regressions were independently
+replayed against pre-fix code. These are scoped technical checkpoints, not full
+L1/L2, commercial pricing verification, authenticated financial approval or
+final package/distribution acceptance.
 
 Protected routing [#8](https://github.com/urruegg/frontier-envisioning/issues/8)
 and release-cache [#30](https://github.com/urruegg/frontier-envisioning/issues/30)

@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
+| Version | 0.4 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted design preparation |
-| Status | Written spec approved at 2e3c0e7; plan/readiness approved at efb3468, delivery unverified |
+| Status | Spec/plan approved at 2e3c0e7/efb3468; actual D35-10 draft-reporting amendment recorded; delivery unverified |
 | Scope | Versioned offline agent baselines and strict financial build-handover evidence for a 1.10.0 candidate |
 | References | [Catalogue](README.md), [Issue #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md), [PRD](../prd.md), [Solution design](../solution-design.md) |
 
@@ -67,6 +67,20 @@ Protected labels are not inferred.
 
 Document revisions 0.2/0.3 add actual approval receipts and plan/sprint links;
 the normative baseline-first contract is the one reviewed at `2e3c0e7`.
+
+### Targeted draft-reporting amendment: D35-10
+
+Before calculator implementation the maintainer selected
+`provisional-draft-figures` in a separate structured question. Explicitly
+supplied rates whose evidence is stale or not yet verified may support draft
+totals and unit costs, marked **provisional: pricing evidence incomplete**,
+with source/date gaps and visibly distinguished verified/provisional
+contributions. This does not invent an absent price, quantity or required FX,
+nor make an inapplicable rate applicable.
+
+The strict evidenced/priced financial handover gate is unchanged. This actual
+decision amends only draft reporting in revision 0.4; it does not verify rates,
+promote FinOps GA or grant financial, deployment or GitHub-label authority.
 
 ## 3. Scope and architecture
 
@@ -189,12 +203,21 @@ conflicting cost sources require an explicit choice, not a silent winner.
    expired, stale or unverified rates/FX remain visible evidence gaps and
    cannot pass financial handover. Do not invent rates or infer licence
    coverage from the harness/audience alone.
+   Under D35-10, a supplied usable rate with stale/unverified evidence may
+   contribute a clearly provisional draft figure; a missing required value
+   remains unavailable. Explicit FX evidence limitations propagate in the
+   same way, without creating or inferring a conversion rate.
 8. Forecasts are estimates. Measured/allocated inputs keep their labels and
    provenance; forecast totals do not become measured actuals. No observed
    cost-ingestion capability is claimed.
 9. Unknown/unpriced/unquantified is not zero. Drafts may expose a clearly
    labelled priced subtotal. Incomplete full totals and unit metrics remain
    unavailable with reasons rather than complete-looking amounts.
+   Distinguish missing arithmetic inputs from known inputs with incomplete
+   pricing evidence: D35-10 permits the latter's draft totals/unit costs only
+   with provisional status, source/date warnings and separate/tagged
+   verified versus provisional contributions. Never label that combined
+   estimate verified or financially ready.
    JSON uses `null` with an explicit status/reason for unavailable values,
    never zero, NaN or infinity. With no priced lines even the priced subtotal
    is unavailable, rather than a misleading empty-sum zero.
@@ -300,7 +323,7 @@ The historical PRD's future FOCUS roadmap is not proof of current availability.
 | AFB-02 | Profile and baseline refer to a real existing agent ID; unknown/duplicate IDs, unsupported schemas and invalid units/numbers/dates produce explicit diagnostics. |
 | AFB-03 | All three scenarios expose demand plus another differing uncertainty driver; final-total multipliers alone fail validation. |
 | AFB-04 | Focused known-answer calculations verify recurring, annual, one-time, first-year and unit economics, including pricing-block conversion and explicit FX. Different currencies are not silently summed. |
-| AFB-05 | Missing/stale/unverified rates or FX and unpriced/unquantified lines yield explicit incomplete results, not zero; full totals/unit metrics do not masquerade as complete. |
+| AFB-05 | Missing required rates/FX or unquantified lines yield unavailable full totals/dependent metrics, not zero. Known supplied stale/unverified rates may yield D35-10 provisional draft figures, with evidence gaps and distinguished contributions; never verified/financially ready claims. |
 | AFB-06 | Every unresolved in-scope driver blocks financial handover. Empty scope, forged status fields, local feedback and technical acknowledgement cannot pass it. |
 | AFB-07 | A positive, fully evidenced handover case requires matching owner review/version/hash, current source evidence, measurement, guardrails and other required fields. Planning status never grants financial or deployment authority. |
 | AFB-08 | Changing reviewed inputs/rates/FX/scenarios/privacy invalidates the old review for the new revision. Historical snapshots remain intact and stale/mismatched receipts reject. |

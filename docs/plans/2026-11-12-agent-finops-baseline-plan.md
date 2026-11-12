@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Human plan/readiness approved at efb3468; subagent-driven implementation in progress |
+| Status | Human plan/readiness approved at efb3468; targeted D35-10 draft-reporting amendment; implementation in progress |
 | Scope | Test-first 1.10.0 internal candidate, not publication or live deployment |
 | References | [Catalogue](README.md), [Parent #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [D1 #38](https://github.com/urruegg/frontier-envisioning/issues/38), [D2 #37](https://github.com/urruegg/frontier-envisioning/issues/37), [D3 #39](https://github.com/urruegg/frontier-envisioning/issues/39), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Approved design](../specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
@@ -36,6 +36,13 @@ the plan/readiness at `efb3468dbe597ea6112b6839c7019243ab44b885` and selected
 subagent-driven execution. These are human decision records, not inferred
 protected label changes or financial/deployment authority.
 Stop for material questions even with autopilot enabled.
+
+Before Task 2 the maintainer separately selected `provisional-draft-figures`
+(D35-10): supplied usable rates with stale/unverified evidence may produce
+explicitly provisional draft totals/unit costs, with source/date warnings and
+visible verified/provisional contributions. Unknown required values still
+produce unavailable full totals; the strict financial handover gate remains.
+This is the actual targeted amendment to the otherwise approved plan.
 
 Work in the already consented native worktree on `feat/35-finops-baselines`.
 The primary checkout remains separate. Accountable human owner: `@urruegg`.
@@ -128,6 +135,11 @@ relevant, status and reason. Unit metrics identify period/cost basis.
 Complete monetary summaries round to cents with `ROUND_HALF_UP` at the
 documented final aggregation boundary; unit metrics use six decimal places.
 Retain supplied rate precision in calculations and explain rounding differences.
+Monthly/annual summaries distinguish `verified_subtotal` and
+`provisional_subtotal` alongside the known priced subtotal and full total.
+An empty contribution group is unavailable, not a fictional zero. A full total
+with known but unverified/stale pricing has provisional status and warnings;
+one missing required contribution makes the full total unavailable.
 
 `material_payload` excludes only the owned root output fields `results`,
 `finops_preview`, `review_records` and `handover`. It retains all authored
@@ -327,6 +339,16 @@ def line_amount(quantity, rate, pricing_block, fx):
   evidence, unsupported source applicability and missing quantities. An empty
   priced set yields `null`, not empty-sum zero. A synthetic mode may demonstrate
   calculations, but remains ineligible for real financial handover.
+- [ ] Apply actual D35-10: keep supplied usable stale/unverified pricing as
+  provisional draft arithmetic, explicitly label affected totals/unit costs,
+  carry source/date evidence gaps and separate verified/provisional subtotals.
+  Do not silently mix statuses, invent missing FX/rates, apply incompatible
+  units/periods or pass financial handover. Missing inputs still prevent a
+  full total; metadata-only gaps must not erase unrelated known cost inputs.
+- [ ] Test a known unverified/stale unit rate, a supplied unverified FX rate,
+  a mixed verified/provisional case and a truly missing rate/FX. Require
+  provisional propagation to dependent unit metrics, no complete/verified
+  status, and strict blocked handover evidence.
 - [ ] Bind the shared fingerprint to material inputs and the exact calculated
   result. Receipt consumption checks shape, finite amounts, scenario coverage
   and recomputed outputs; rehashing a fabricated amount is not validation.
