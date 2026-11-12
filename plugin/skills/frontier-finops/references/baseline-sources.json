@@ -1,0 +1,62 @@
+{
+  "schema": "frontier-finops-baseline-sources/1.0",
+  "checked": "2026-11-12",
+  "sources": [
+    {
+      "id": "PUB-UE",
+      "type": "public-reference",
+      "title": "Unit economics",
+      "url": "https://learn.microsoft.com/cloud-computing/finops/framework/quantify/unit-economics",
+      "evidence_ref": null,
+      "supported_claim": "Business-unit definitions, supporting costs, allocation and measurement concepts.",
+      "limitations": "Concept grounding only; not an actual rate, implemented allocation or connector.",
+      "applicability": ["concept"],
+      "lastValidatedAt": "2026-11-12",
+      "validationStatus": "validated",
+      "freshness_policy": {"max_age_days": 365},
+      "sharingClassification": "customer-shareable"
+    },
+    {
+      "id": "PUB-PRICE",
+      "type": "public-reference",
+      "title": "Estimate costs with the Azure pricing calculator",
+      "url": "https://learn.microsoft.com/azure/cost-management-billing/costs/pricing-calculator",
+      "evidence_ref": null,
+      "supported_claim": "Anticipated usage and configured rates yield estimates. Agreement prices can differ from public retail; article example prices are not actual prices.",
+      "limitations": "No actual commercial rate or bundled legacy rate was verified by this reference.",
+      "applicability": ["concept"],
+      "lastValidatedAt": "2026-11-12",
+      "validationStatus": "validated",
+      "freshness_policy": {"max_age_days": 365},
+      "sharingClassification": "customer-shareable"
+    },
+    {
+      "id": "PUB-FOCUS-MS",
+      "type": "public-reference",
+      "title": "What is FOCUS?",
+      "url": "https://learn.microsoft.com/en-us/cloud-computing/finops/focus/what-is-focus",
+      "evidence_ref": null,
+      "supported_claim": "Distinctions between billed, effective, list and contracted amounts, and quantity, pricing and currency semantics.",
+      "limitations": "Future reference alignment only; no implemented importer or FOCUS conformance claim.",
+      "applicability": ["concept"],
+      "lastValidatedAt": "2026-11-12",
+      "validationStatus": "validated",
+      "freshness_policy": {"max_age_days": 365},
+      "sharingClassification": "customer-shareable"
+    },
+    {
+      "id": "PUB-FOCUS",
+      "type": "public-reference",
+      "title": "FOCUS",
+      "url": "https://focus.finops.org/",
+      "evidence_ref": null,
+      "supported_claim": "As checked on 12 November 2026, the site advertised specification 1.4 and Azure generation 1.2. Provider availability differs from the specification version.",
+      "limitations": "Future alignment reference only; not a provider-support guarantee, importer or conformance claim.",
+      "applicability": ["concept"],
+      "lastValidatedAt": "2026-11-12",
+      "validationStatus": "validated",
+      "freshness_policy": {"max_age_days": 365},
+      "sharingClassification": "customer-shareable"
+    }
+  ]
+}
