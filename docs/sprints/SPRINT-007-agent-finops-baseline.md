@@ -2,19 +2,19 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Human plan/readiness approved at efb3468; Task 0 in progress, delivery not yet verified |
+| Status | Task 0 reviewed; D1 contract in progress; full delivery/gates remain pending |
 | Scope | Offline baseline-first 1.10.0 internal candidate, not live FinOps operations |
 | References | [Catalogue](README.md), [Parent #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Design](../specs/2026-11-12-agent-finops-baseline-design.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
 | [#35](https://github.com/urruegg/frontier-envisioning/issues/35) | [Outcome/input](../ideas/2026-11-12-agent-finops-baseline.md) | [Baseline design](../specs/2026-11-12-agent-finops-baseline-design.md) | [Tasks 0-8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; accountable | Actual D35-09 plan/readiness approval recorded | Approved for bounded implementation; no label change inferred | Spec approval `2e3c0e7`; plan approval `efb3468`; no delivery/PR proof yet |
-| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Plan approval; Task 0 version preparation | Draft; no code | Proposed bounded engine/records/projection/CLI work |
+| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Task 1 contract in progress | Calculator/records/projection/CLI not yet delivered |
 | [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | D1 stable contract and review; fixture preparation before UI | Draft; no code | Existing wrapper/renderer integration, not a new app |
-| [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | [Verified candidate](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-10/11/12](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D3, Tasks 0/5/7/8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D3, estimated M | Preparation first; final proof after D1/D2 | Task 0 in progress; final verification pending | No full 1.10.0 gate, distribution or deployment evidence yet |
+| [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | [Verified candidate](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-10/11/12](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D3, Tasks 0/5/7/8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D3, estimated M | Preparation first; final proof after D1/D2 | Task 0 reviewed; remaining D3 work pending | Scoped evidence below, not full 1.10.0 quality/distribution proof |
 
 ## Human evidence and gates
 
@@ -49,6 +49,43 @@ These are planning/baseline results, not red/green implementation proof,
 full 1.10.0 L1/L2, package execution or distribution acceptance.
 The implementation will record exact checked heads, commands/results,
 counts and archive hashes here after they exist.
+
+## Task 0: Version and identity-provenance checkpoint
+
+The checked implementation is
+`789c4b65fccf814b2d5f5f7ad71d4bbb215b74d3`, reviewed against the approved
+plan head `efb3468`. It updates the standard version carriers to an
+**unreleased internal 1.10.0 candidate**, with no engine/UI algorithm changes.
+The installer metadata was regenerated. Active reader prose still needs the
+planned Task 7 alignment; this is not a claim that the whole candidate is ready.
+
+An actual SVG-only identity probe matched **205/205 paths and hashes** against
+the approved 1.9.2/A6 mapping. The named LF 1.10.0 input record is pinned at
+`53b5e9bf545501306db18e9f8aa6f0289aae8f56a8b12a3a1c8b240e9742846e`.
+The preservation receipt in ignored build evidence covers **319 files,
+223 original PNGs and three historical suffixes**, all unchanged.
+No golden archive or arbitrary future-version allowance was substituted.
+
+The combined raster/raster-17/raster-19/raster-192/raster-110/docs-demo selector
+collects **46 tests** both before and after the change:
+
+| Phase | Ordinary results | Subtests |
+|---|---|---|
+| RED against the prior raster implementation | 6 failed, 40 passed | 11 failed, 85 passed |
+| GREEN | 46 passed | 96 passed |
+
+Pytest combines ordinary and subtest failures in its RED summary, so
+"17 failed, 40 passed" does not mean 57 collected tests. Technical spec review
+independently verified **41 existing tests plus five new tests**, with no
+hidden/removed regression cases, the actual probe, pins, preservation and
+standard bump/installer output.
+
+The subsequent bounded controller code-quality review found no meaningful
+logic issue. Fresh controller checks passed: the new profile's five tests/
+13 subtests, and all **81 legacy Preview/privacy/cache/value/wrapper tests**
+after the bump. Strict docs and range whitespace checks also passed.
+This is AI-assisted technical review, not independent human approval,
+full L1/L2, final installed-package proof, distribution or deployment.
 
 Protected routing [#8](https://github.com/urruegg/frontier-envisioning/issues/8)
 and release-cache [#30](https://github.com/urruegg/frontier-envisioning/issues/30)
