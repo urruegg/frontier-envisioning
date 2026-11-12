@@ -457,20 +457,27 @@ class DocumentationRunner(unittest.TestCase):
             with self.subTest(command=command):
                 dev = load("tools/dev.py")
                 names = ("cmd_template_check", "cmd_lint", "cmd_docs", "cmd_scan", "cmd_test", "cmd_selftest",
-                         "cmd_package", "cmd_demo", "cmd_verify_release", "cmd_dom")
+                         "cmd_package", "cmd_demo", "cmd_docs_demo_check", "cmd_verify_release", "cmd_dom")
                 calls = []
                 steps = {name: mock.Mock(side_effect=lambda *a, name=name, **kw: calls.append(name)) for name in names}
-                with mock.patch.multiple(dev, create=True, **steps), contextlib.redirect_stdout(io.StringIO()):
+                with tempfile.TemporaryDirectory() as directory, \
+                        mock.patch.object(dev, "DEMO_DIR", Path(directory) / "not-built"), \
+                        mock.patch.multiple(dev, create=True, **steps), contextlib.redirect_stdout(io.StringIO()):
                     self.assertEqual(dev.main([command]), 0)
                 self.assertEqual(calls[:3], ["cmd_template_check", "cmd_lint", "cmd_docs"])
                 steps["cmd_docs"].assert_called_once_with()
+                if command == "check":
+                    self.assertEqual(calls.index("cmd_docs_demo_check"), calls.index("cmd_demo") + 1)
+                else:
+                    steps["cmd_docs_demo_check"].assert_not_called()
 
     def test_aggregate_gates_stop_at_docs_failure(self):
         for command in ("precommit", "check"):
             with self.subTest(command=command):
                 dev = load("tools/dev.py")
                 before = ("cmd_template_check", "cmd_lint")
-                after = ("cmd_scan", "cmd_test", "cmd_selftest", "cmd_package", "cmd_demo", "cmd_verify_release", "cmd_dom")
+                after = ("cmd_scan", "cmd_test", "cmd_selftest", "cmd_package", "cmd_demo", "cmd_docs_demo_check",
+                         "cmd_verify_release", "cmd_dom")
                 steps = {name: mock.Mock() for name in (*before, *after)}
                 with mock.patch.multiple(dev, **steps), mock.patch.object(dev, "tool", return_value=1), \
                         contextlib.redirect_stdout(io.StringIO()):

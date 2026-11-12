@@ -1,0 +1,66 @@
+{
+  "schema": "frontier-docs-demo/1.0",
+  "profile": "core",
+  "plugin_version": "1.9.1",
+  "source_sha256": "18f8dc972d80281620b5c8b39a3721e00494196ea3e863ad84646532db296c66",
+  "html": {
+    "file": "caldova-blueprint.html",
+    "sha256": "5d124f3e22ab3921318a83be893ebfa03112252e4c330efc8c37749219ee9ef6",
+    "canonical_sha256": "5a52dd1340aa625a0a78ada5ec5a4fc4c54ba00aca1600adddc765d7cd84620c",
+    "generated": "2026-11-12"
+  },
+  "capture": {
+    "browser": "156.0.8078.4",
+    "playwright": "1.64.1",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "color_scheme": "light",
+    "reduced_motion": "reduce",
+    "locale": "en-GB",
+    "timezone": "UTC",
+    "screenshots": [
+      {
+        "name": "overview",
+        "route": "#/overview",
+        "file": "overview.png",
+        "width": 1440,
+        "height": 1000,
+        "sha256": "adb8fd15fa7ffa805e77033f673567e9d4f41abe10fe6d8044eb11a24481c851"
+      },
+      {
+        "name": "org-model",
+        "route": "#/org",
+        "file": "org-model.png",
+        "width": 1440,
+        "height": 1000,
+        "sha256": "73bb03ce333ffe62c52237caae27471c28941d604107418edc257d79b84f9434"
+      },
+      {
+        "name": "agents",
+        "route": "#/agents/D3-A05",
+        "file": "agents.png",
+        "width": 1440,
+        "height": 1000,
+        "sha256": "fdd1bc1195296b7a8816d13f9bf251ea3c50328283621cd49843828e09aabb6e"
+      },
+      {
+        "name": "agent-identity",
+        "route": "#/identity",
+        "file": "agent-identity.png",
+        "width": 1440,
+        "height": 1000,
+        "sha256": "55e4ef059e8f83ad408e32c21324a19772a23505eea5ef69170f809f75bd9773"
+      },
+      {
+        "name": "ontology",
+        "route": "#/ontology",
+        "file": "ontology.png",
+        "width": 1440,
+        "height": 1000,
+        "sha256": "e313335afbc9342942ece1fbcc92f46af936357ba6ec5b9c426023784bc386a2"
+      }
+    ]
+  }
+}

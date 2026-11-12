@@ -222,6 +222,7 @@ class DevGateWiring(unittest.TestCase):
             cmd_selftest=mock.DEFAULT,
             cmd_package=mock.DEFAULT,
             cmd_demo=mock.DEFAULT,
+            cmd_docs_demo_check=mock.DEFAULT,
             cmd_verify_release=mock.DEFAULT,
             cmd_dom=mock.DEFAULT,
         ) as commands:

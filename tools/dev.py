@@ -16,6 +16,7 @@ Commands
   selftest        the plugin's end-to-end self-test against the Caldova examples
   package         build the plugin package into dist/ (and refresh plugin/install/plugin-install.json)
   demo            build the Caldova demo into build/demo (blueprint, identity kit, catalogue)
+  docs-demo       regenerate the tracked offline Caldova HTML and five documentation images
   verify-release  compare dist/ and build/demo with releases/<version>/manifest.json
   dom             core and explicitly acknowledged Preview fixture tests in a headless DOM
   site            assemble the showcase site into build/site (SITE_AUTH_MODE / SITE_AUTH_TENANT_ID)
@@ -189,6 +190,17 @@ def cmd_demo():
         raise GateFailure("demo build")
 
 
+@step("documentation demo drift")
+def cmd_docs_demo_check():
+    if tool("build_docs_demo", ["--check", "--demo", str(DEMO_DIR)]):
+        raise GateFailure("documentation demo is stale; run python tools/dev.py docs-demo")
+
+
+def cmd_docs_demo():
+    if tool("build_docs_demo", []):
+        raise GateFailure("documentation demo generation failed")
+
+
 @step("release reproduction")
 def cmd_verify_release():
     if tool("verify_release", []):
@@ -318,10 +330,10 @@ def main(argv=None) -> int:
     simple = {"doctor": cmd_doctor, "setup": cmd_setup, "template": cmd_template, "serve": cmd_serve}
     gated = {"lint": cmd_lint, "docs": cmd_docs, "scan": cmd_scan, "test": cmd_test, "test-all": lambda: cmd_test(True),
              "selftest": cmd_selftest, "package": cmd_package, "demo": cmd_demo, "verify-release": cmd_verify_release,
-             "dom": cmd_dom, "site": cmd_site, "e2e": cmd_e2e, "bundle": cmd_bundle,
+             "dom": cmd_dom, "site": cmd_site, "e2e": cmd_e2e, "bundle": cmd_bundle, "docs-demo": cmd_docs_demo,
              "precommit": lambda: [cmd_template_check(), cmd_lint(), cmd_docs(), cmd_scan()],
              "check": lambda: [cmd_template_check(), cmd_lint(), cmd_docs(), cmd_scan(), cmd_test(include_slow=True), cmd_selftest(), cmd_package(),
-                               cmd_demo(), cmd_verify_release(), cmd_dom(), cmd_scan()]}
+                               cmd_demo(), cmd_docs_demo_check(), cmd_verify_release(), cmd_dom(), cmd_scan()]}
     if argv[0] == "ci":
         STRICT = True
         argv = ["check"]
