@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted design preparation |
-| Status | Design sections agreed; written-spec review and implementation plan pending |
+| Status | Written spec approved at 2e3c0e7; implementation-plan/readiness approval pending |
 | Scope | Offline baseline-first sprint; not a deployed FinOps Agent or live billing integration |
 | References | [Catalogue](README.md), [Issue #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Design](../specs/2026-11-12-agent-finops-baseline-design.md), [Draft sprint row](../sprints/README.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
@@ -76,10 +76,17 @@ Accountable human owner: `@urruegg`. Design-section approval is not written-spec
 approval, plan approval, a GitHub label change or permission to implement.
 The user explicitly requires stopping for questions despite autopilot.
 
-The draft SPRINT-007 catalogue row exists early. Its full work-item record
-will link the actual implementation plan once the written spec is reviewed.
-No placeholder plan or unrelated historical plan stands in for that gate.
-Implementation must be split into reviewable work packages no larger than M.
+An early draft SPRINT-007 catalogue row reserved the sprint before written
+review. The actual plan was not written before that approval. No placeholder
+or unrelated historical plan stood in for the gate. Implementation is split
+into reviewable work packages no larger than M.
+
+The maintainer subsequently approved the written spec at `2e3c0e7`
+(`approve-written-spec`, D35-08). The real
+[plan](../plans/2026-11-12-agent-finops-baseline-plan.md) and
+[SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md) now link bounded
+D1 #38, D2 #37 and D3 #39. Their implementation still waits for actual
+plan/readiness approval; no protected label change is inferred.
 
 Protected routing [#8](https://github.com/urruegg/frontier-envisioning/issues/8)
 and release-cache [#30](https://github.com/urruegg/frontier-envisioning/issues/30)

@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted design preparation |
-| Status | Four design sections approved; written-spec review and implementation plan pending |
+| Status | Written spec approved at 2e3c0e7; implementation-plan/readiness approval pending |
 | Scope | Versioned offline agent baselines and strict financial build-handover evidence for a 1.10.0 candidate |
-| References | [Catalogue](README.md), [Issue #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Draft sprint row](../sprints/README.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md), [PRD](../prd.md), [Solution design](../solution-design.md) |
+| References | [Catalogue](README.md), [Issue #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md), [PRD](../prd.md), [Solution design](../solution-design.md) |
 
 ## 1. Outcome and authority
 
@@ -55,9 +55,16 @@ the following actual structured answers, recorded on #35 and #36:
 | D35-06 | `approve-section-3` | Frozen version/hash review, separate validation/pricing/review, honest offline-authority limits and fail-closed sharing. |
 | D35-07 | `approve-section-4` | Existing UI, safe exports, synthetic example, actual gates/package proof and an unreleased 1.10.0 candidate. |
 
-These are real section/scope decisions, **not** approval of this written
-specification or a future implementation plan. Neither unavailable users nor
-autopilot defaults count as approval. Protected labels are not inferred.
+The table records the section/scope decisions as they stood before written
+review. Subsequently, D35-08 is the actual `approve-written-spec` response for
+`2e3c0e79dc45c9ab06775def9f31cfb3bad7a8aa`; the
+[implementation plan](../plans/2026-11-12-agent-finops-baseline-plan.md) was
+written only after that response. Plan/readiness approval remains pending.
+Neither unavailable users nor autopilot defaults count as approval.
+Protected labels are not inferred.
+
+Document revision 0.2 adds this actual approval receipt and plan/sprint links;
+the normative baseline-first contract is the one reviewed at `2e3c0e7`.
 
 ## 3. Scope and architecture
 

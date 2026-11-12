@@ -11,7 +11,7 @@
 
 | Idea | State | Governing work |
 |---|---|---|
-| [Agent FinOps baseline](2026-11-12-agent-finops-baseline.md) | Design sections agreed; written-spec review and implementation plan pending | [#35](https://github.com/urruegg/frontier-envisioning/issues/35), [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), draft SPRINT-007 in the [sprint catalogue](../sprints/README.md) |
+| [Agent FinOps baseline](2026-11-12-agent-finops-baseline.md) | Written spec approved at `2e3c0e7`; implementation-plan/readiness approval pending | [#35](https://github.com/urruegg/frontier-envisioning/issues/35), [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md) |
 | [Version 1.9.2](2026-11-12-version-1.9.2.md) | Locally built and verified; PR/CI and human release decisions separate | [#33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](../sprints/SPRINT-006-version-1.9.2.md) |
 | [Internal user documentation](2026-11-12-internal-user-documentation.md) | Locally implemented and verified; PR/CI and human review separate | [#31](https://github.com/urruegg/frontier-envisioning/issues/31), [SPRINT-005](../sprints/SPRINT-005-internal-user-documentation.md) |
 | [1.9 intake and optional Preview FinOps](2026-11-11-handover-1.9-preview-finops.md) | D0–D5 local technical delivery complete; human-merged [PR #29](https://github.com/urruegg/frontier-envisioning/pull/29), 11 November; release/manual acceptance separate | [#25](https://github.com/urruegg/frontier-envisioning/issues/25), [receipt](../intake/handover-1.9.0.md), [SPRINT-004](../sprints/SPRINT-004-handover-1.9-preview-finops.md) |
