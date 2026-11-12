@@ -1279,6 +1279,71 @@ class BaselineCalculationTests(unittest.TestCase):
             with self.subTest(rate=rate):
                 self.assertEqual(self.expected()["months"][0]["per_run"]["amount"], expected)
 
+    def missing_fx_identity_models(self):
+        self.verified_test_data()
+        self.add_fx(status="verified")
+        self.model["fx"][0].update(internal=True, visibility="internal", content_src=["SYN-CONTEXT"])
+        for label, identity in (("absent", None), ("null", None), ("empty", ""), ("whitespace", "   ")):
+            model = copy.deepcopy(self.model)
+            if label == "absent":
+                del model["fx"][0]["id"]
+            else:
+                model["fx"][0]["id"] = identity
+            yield label, model
+
+    def test_review_missing_fx_identity_keeps_calculation_dependencies_not_fake_refs(self):
+        for label, model in self.missing_fx_identity_models():
+            with self.subTest(identity=label):
+                before = copy.deepcopy(model)
+                gaps = baseline_module().validate_model(model, as_of=DAY)
+                identity_gap = next(g for g in gaps if g["code"] == "missing-identity" and g["field"] == "fx[0].id")
+                document = self.calculate(model)
+                result = document["results"]
+                expected = result["scenarios"]["expected"]
+                month = expected["months"][0]
+                self.assertEqual(month["total"]["amount"], "100.00")
+                self.assertEqual(month["total"]["status"], "provisional")
+                self.assertIn(identity_gap, result["gaps"])
+                self.assertIn("handover", identity_gap["blocks"])
+                self.assertTrue(result["handover_blocked"])
+                for derived in (month["lines"][0]["cost"], month["total"], month["per_run"],
+                                expected["annual_recurring"], expected["first_year"]):
+                    self.assertEqual(derived["fx_refs"], [])
+                    self.assertIn("/fx/0", derived["dependency_refs"])
+                    self.assertTrue(derived["internal"])
+                    self.assertIn("SYN-CONTEXT", derived["source_refs"])
+                self.assertNotIn("internal", month["lines"][1]["cost"])
+                evidence = month["lines"][0]["pricing_evidence"]
+                self.assertEqual(evidence["as_of"], DAY.isoformat())
+                self.assertEqual(evidence["records"][1]["date"], "2026-11-12")
+                self.assertIn(identity_gap, evidence["gaps"])
+                self.assertEqual(self.calc.validate_receipt(document, as_of=DAY, acknowledge_finops_preview=True),
+                                 document["finops_preview"]["calculations"]["baseline"])
+                self.assertEqual(model, before)
+
+    def test_review_missing_fx_identity_receipt_refuses_stale_or_rehashed_outputs_not_keyerror(self):
+        cases = list(self.missing_fx_identity_models())
+        valid = copy.deepcopy(cases[0][1])
+        valid["fx"][0]["id"] = "FX-TEST"
+        cached = self.calculate(valid)
+        for label, model in cases:
+            with self.subTest(identity=label):
+                stale = {**copy.deepcopy(model), "results": copy.deepcopy(cached["results"]),
+                         "finops_preview": copy.deepcopy(cached["finops_preview"])}
+                for ack in (False, None, 1, "true"):
+                    with self.assertRaisesRegex(ValueError, "Explicit"):
+                        self.calc.validate_receipt(stale, as_of=DAY, acknowledge_finops_preview=ack)
+                with self.assertRaisesRegex(ValueError, "recalculate"):
+                    self.calc.validate_receipt(stale, as_of=DAY, acknowledge_finops_preview=True)
+                fresh = self.calculate(model)
+                fresh["results"]["scenarios"]["expected"]["months"][0]["total"]["amount"] = "999.00"
+                fresh["finops_preview"]["calculations"]["baseline"]["results_fingerprint"] = (
+                    baseline_module("finops_preview").fingerprint(fresh["results"]))
+                before = copy.deepcopy(fresh)
+                with self.assertRaisesRegex(ValueError, "recalculate"):
+                    self.calc.validate_receipt(fresh, as_of=DAY, acknowledge_finops_preview=True)
+                self.assertEqual(fresh, before)
+
 
 if __name__ == "__main__":
     unittest.main()

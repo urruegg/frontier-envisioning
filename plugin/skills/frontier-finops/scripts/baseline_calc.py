@@ -349,7 +349,9 @@ class _Calculation:
                 fi, fx = selected
                 factor = _decimal(fx.get("rate"), f"fx[{fi}].rate", positive=True)
                 price_records.append((f"fx[{fi}]", fx, "fx"))
-                meta = _combine(meta, self.ancestry([("fx", fi)], deep=True), {"fx_refs": [fx["id"]]})
+                fx_id = self.text(fx, "id", f"fx[{fi}]")
+                meta = _combine(meta, self.ancestry([("fx", fi)], deep=True),
+                                {"fx_refs": [fx_id] if fx_id is not None else []})
         applicable, provisional, pricing_evidence = self.price_evidence(price_records)
         provisional = provisional or meta.get("synthetic") is True
         effective_from = _date(rate.get("effective_from"), rate_field + ".effective_from")
