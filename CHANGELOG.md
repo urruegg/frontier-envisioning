@@ -2,6 +2,18 @@
 
 Releases of the Frontier Envisioning plugin. Engineering changes to the repository are recorded in the pull requests.
 
+## 1.10.0 — unreleased
+
+- **UNRELEASED INTERNAL CANDIDATE (#39, 12 November 2026).** Task 0 prepares
+  version carriers and a finite identity-input profile only; no FinOps engine,
+  UI, algorithm or maturity change. Eight skills remain registered: seven
+  non-FinOps GA wrappers and optional Preview FinOps.
+- **Measured identity provenance.** All 205 generated non-raster input paths
+  and SHA-256 values match the approved 1.9.2/A6 mapping. The named 1.10.0
+  record retains the historical base profile and all 223 PNG assets.
+  Future versions are not enabled. The fixed archive date is build provenance,
+  not publication, deployment or release approval.
+
 ## 1.9.2 — unreleased
 
 - **Current-state internal candidate (#33).** Version-only preparation from

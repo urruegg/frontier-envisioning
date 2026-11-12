@@ -52,7 +52,7 @@ DECLARATIONS = ("write_envelope", "refusal_set", "escalation_path", "grounding_s
 DEFAULT_TEMPLATE = Path(__file__).resolve().parent.parent / "templates" / "frontier-blueprint-template.html"
 DEFAULTS = Path(__file__).resolve().parent.parent / "templates" / "blueprint-defaults.json"
 ICONS = Path(__file__).resolve().parent.parent / "templates" / "product-icons.json"
-PLUGIN_VERSION = "1.9.2"
+PLUGIN_VERSION = "1.10.0"
 
 
 class Report:

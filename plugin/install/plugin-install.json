@@ -2,7 +2,7 @@
  "schema": "frontier-plugin-install/1.0",
  "plugin": "frontier-envisioning",
  "display_name": "Frontier Envisioning",
- "version": "1.9.2",
+ "version": "1.10.0",
  "start_prompts": [
   "Prepare the Frontier envisioning for <customer>, workshop on <date>",
   "Build the Frontier blueprint demo for Caldova",
@@ -17,7 +17,7 @@
    "name": "frontier-envisioning",
    "folder": "skills/frontier-envisioning",
    "files": {
-    "SKILL.md": "200619d1e349bd86dab00bb7c54b1a62e42eddcb66fef5de789f3786d53638c9",
+    "SKILL.md": "7c77c87b24659909a832edc2d0b444863ca1c686627b8d2b8eb54a65a1f84c78",
     "references/hairo-model.md": "0d06a2ab5f1c1ef1e8db4d6354aedf907ea6a7048b81c1595bced230000e8bfb",
     "references/method.md": "a036ab1a5c02f64434df86339cc1de16fef0268041fe5921aee87d0b61b785ae"
    },
@@ -29,7 +29,7 @@
    "name": "frontier-context-discovery",
    "folder": "skills/frontier-context-discovery",
    "files": {
-    "SKILL.md": "fc272b81b7d5e2814675b9205f2b803e6a1ba051f84f96af83130de7c9525e7a",
+    "SKILL.md": "9c8290713122a7a12358f24b2cd2bfb78f9f9237f4a8d650ff8628ad7cd6524b",
     "examples/caldova-context.json": "bc087b0c059ae4644709f251dbe4596f7ecca3c9f8a7cb675d9b4cf8a6483db6",
     "references/context-pack.md": "49809faea6a6a0b18a0e179c07d91b975ee6bcad7aabccf2792df987d704206d",
     "references/question-bank.md": "9faa1fd3da70e43c9d246916350a967f99a23a960b2e61487fee0984f6dda63f",
@@ -45,11 +45,11 @@
    "name": "frontier-blueprint",
    "folder": "skills/frontier-blueprint",
    "files": {
-    "SKILL.md": "eb3306b4a32d703a11888eb107ee93847a4f064e911e29fea32644f8b4630c4e",
+    "SKILL.md": "f1b9f2fb08e9f31e6c4b8e98c7585d492b46f2e7aeac608ae0304664a19f9e64",
     "examples/caldova-blueprint.json": "6005c5ecd4aa089a6b6af72a0bc7777054bd1fd545bf0ce78009682f44462f4a",
     "references/authoring-guide.md": "dee2fab505334af2dd75e911b6b10e09fb1ab973bc3b020baa9091a625a5a317",
     "references/blueprint-schema.md": "32ccbf172fddceacc8f67de16bd88cf37891eee7e9d0770ded353a8dc072ab6e",
-    "scripts/build_blueprint.py": "61cf8c05b86f96c08000d5cd45192a4750a85f1054c5393b6ddd10ce2dd82c46",
+    "scripts/build_blueprint.py": "31cb8e9c9da4eec17d1d84189da2aa24db6ed4744a0db226632ab8905daa241e",
     "scripts/build_with_identity.py": "d8ad025dbdd7c4699258dbeaaa2604babe023c1b0367d050fb16a16a559c9ef8",
     "scripts/canon.py": "025d8adad751805c6bd02d317c56332468176f323437a0824302f6b0b54880c9",
     "scripts/merge_feedback.py": "af300a6434e4ae2d5909c1e585aa9b0bcb33502a8aa8d8fcce970b0a61446b18",
@@ -69,7 +69,7 @@
    "name": "frontier-solution-design",
    "folder": "skills/frontier-solution-design",
    "files": {
-    "SKILL.md": "e2ca8c8e27800622325e8601ba77725ce07f47936e624b13a0e825873339292a",
+    "SKILL.md": "7378aca71f0213cc796c6eea31130ca37fe4c34ad639ffcf0f914797d30ccbc8",
     "references/design-rules.md": "0a9eee967f4ddc6702c1c59f50f626ac0c4b80828be395456d4d56e5fe20578c",
     "references/frontier-reference-architecture.md": "9cc88d6b80965ffb8f7ca7ac29037d432c14f7c7f091107d21fdee4ec9bfd6a9",
     "scripts/prd_model.py": "a8105006d4a9ffd7698537716d98539cc9d9dc05a08c6b8256e07ab98abd5d97",
@@ -83,7 +83,7 @@
    "name": "frontier-agent-identity",
    "folder": "skills/frontier-agent-identity",
    "files": {
-    "SKILL.md": "83663ec741ceeb03599a7fe6124284c3e46f54c69e457271077150c01b285888",
+    "SKILL.md": "21469b1a445d757c1a9f9f1e255db4e8342d0a55bee8fb7fc0a969efa1aa1f4a",
     "examples/caldova-agent-identity.json": "33af4a468f58c6888e6b3c3ed619ab85f187d63a310da76853744b481a113e96",
     "examples/caldova-brand.json": "8700f47ec17390427752a99d8f066a32d5c042406d3ba18f0f33392ccac42a1c",
     "examples/caldova-palette.json": "da88e80c31333f8abe3e0df537ca564a88f066f1202bb8afee4125c3b5e874d3",
@@ -116,7 +116,7 @@
    "name": "frontier-value-case",
    "folder": "skills/frontier-value-case",
    "files": {
-    "SKILL.md": "a2510d20d99083b8b0ad055292fa4c6fea645e971570184a45357f3fea730a4b",
+    "SKILL.md": "80ca5abccefc7dad7acad6675ade14dd161e07f8558e57e21ecac0d1d7c5c370",
     "examples/caldova-value.json": "9319597e130d4eaf34e7f18d1b9da231dc2c8f896028f8c50fadc9e5b222a11a",
     "examples/reference-hr-assistant.value.json": "47601641c0fea73af45037d95d2b2e9eb514a77ac98d3062a6947040a817eb09",
     "references/value-method.md": "d2a3ddb72f95d6f4030f2bb2079b2979de545ea65e1390475fea9661a656927a",
@@ -134,7 +134,7 @@
    "name": "frontier-finops",
    "folder": "skills/frontier-finops",
    "files": {
-    "SKILL.md": "9149033e8c2d82fc3574a35074495a48040fa39a1e77bf32a4c634543553fe55",
+    "SKILL.md": "8f6328f31ccea2718b5e372e38e511663b841a06823b0d661bf60a56a5a92afe",
     "examples/caldova-finops.json": "15a2f676f1382dd058776d574ad72b9e8e2ffd38677487facb99f5007ebc2214",
     "examples/reference-hr-assistant.finops.json": "730a7d08da1f77ba89776e5d3650b6967d08d0eea3305cab89d86301bfaf3e95",
     "rates/rates-2026-11.json": "674bfbce4e85d5a6336460436b2a2d4093f830e70d72ef42b2c52e28a383542a",
@@ -154,7 +154,7 @@
    "name": "frontier-process",
    "folder": "skills/frontier-process",
    "files": {
-    "SKILL.md": "13f212c41a33eb19f2ac8f20b824c16de1b7b13faf367231eb6c4bef31a3764b",
+    "SKILL.md": "4031167438fa5b0f2b879fae2b642e630b4d44e330fb704b4a9f2a5de83c5650",
     "examples/caldova-ontology.json": "287fbf6bc1b5b202af64ddeed5a3070560415a02ddc843311a1df34fb1b8eb6f",
     "references/ontology-method.md": "866f8de486395746064c9a377f07cd773bc416197e32d663f842be06c717beec",
     "scripts/apply_ontology.py": "b05affc6ee70055b82c6220e4bd64eb475a292b8baf67f32113b4dc9023d33e2",

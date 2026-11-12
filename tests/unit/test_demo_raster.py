@@ -40,7 +40,7 @@ class RasterReplay(unittest.TestCase):
     def test_explicit_patch_preview_uses_base_rasters_and_reviewed_current_inputs(self):
         module = self.module()
         self.assertTrue(hasattr(module, "PREVIEW_VERSIONS"), "explicit patch-preview support is missing")
-        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1", "1.7.1", "1.9.1", "1.9.2"})
+        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1", "1.7.1", "1.9.1", "1.9.2", "1.10.0"})
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             kit, profile, current = self.current_fixture(root)
