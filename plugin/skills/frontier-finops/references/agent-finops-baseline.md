@@ -69,6 +69,12 @@ original reference kinds. Parent classes/scopes constrain descendants.
 Unknown nonblank Blueprint references refuse. Explicit missing ancestry and
 cycles remain validation-required, not customer-shareable; no silent parent or
 customer selection occurs.
+Blueprint application uses that same consumed root/domain/selected-agent and
+nested source-closure policy, rather than assuming a standalone baseline report
+proves its Blueprint ancestry shareable. Unrelated agents and unreferenced
+sources are excluded from that linkage decision. A positive customer apply
+therefore needs an actually shareable/scoped Blueprint, not the stock example's
+internal source context.
 
 Every in-scope driver needs a typed, quantified line and applicable evidence.
 Rate and FX records identify units, pricing blocks, currencies, sources,
@@ -183,6 +189,16 @@ readiness are separate. An external approve decision can remain historically
 `validated` or `needs-validation`, never approved. Editable reports are drafts.
 No automatic supersession or silent last-review selection is performed.
 
+Direct model/snapshot source ancestry is also checked with an active-path cycle
+detector shared by seed, application and dated consumers. A shared acyclic parent
+is not a cycle. `source-ancestry-cycle` gaps identify affected `sources[index]`
+records and block `handover` and `customer-export`; an external approve assertion
+cannot override them. Projection withholds affected dependencies, while
+independent public cost rows (and amounts unrelated to an unused cycle) remain.
+Customer diagnostics may be reduced to the existing withheld-context marker;
+internal dated handover/report gaps carry the explicit cycle code. Frozen
+calculation receipts/results are not rewritten to add these consumer diagnostics.
+
 Readiness rechecks every model gap, required unit metrics, unknown legacy
 visibility, synthetic review and unresolved review sharing. Missing, provisional,
 stale or synthetic evidence blocks. Duplicate active reviews refuse; callers
@@ -230,6 +246,11 @@ IDs and annotation/mapping keys remain redactable even when they spell the same
 word, such as `drivers`. Literal dotted/bracketed keys do not create trusted
 schema paths. Missing or withheld nested containers are guarded; they do not
 produce traceback-shaped CLI failures or reconstructed inputs.
+Contract-accepted null containers are read through the contract's mapping/list
+boundaries before access or iteration. Empty projected collections retain the
+validation gaps and partial/withheld status; they do not mean zero cost or
+complete coverage. Invalid non-object/non-list values still refuse. A missing
+finance-owner container cannot create an external owner decision.
 Required customer-export gaps constrain their intended paths even when a
 metadata record is null or absent. Pointer lookup continues along the intended
 path after a missing intermediate. Null, absent, empty and blank required

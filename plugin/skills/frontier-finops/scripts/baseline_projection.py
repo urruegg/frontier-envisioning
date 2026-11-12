@@ -13,8 +13,8 @@ import copy
 import html
 import re
 from baseline_calc import calculate, validate_receipt
-from baseline_model import _text, material_payload, model_fingerprint, validate_model
-from baseline_records import BOUNDARY, SNAPSHOT_SCHEMA, _day, _refs, _snapshot, handover
+from baseline_model import _mapping, _rows, _text, material_payload, model_fingerprint, validate_model
+from baseline_records import BOUNDARY, SNAPSHOT_SCHEMA, _day, _refs, _snapshot, _source_cycle_gaps, handover
 from finops_preview import NOTICE, is_private, require_preview_ack
 
 REPORT_SCHEMA = "frontier-agent-finops-report/1.0"
@@ -36,7 +36,7 @@ _DIGEST_FAMILIES = {
 class _Projection:
     def __init__(self, model, audience, customer_scope, gaps):
         self.model, self.audience, self.scope = model, audience, customer_scope
-        self.sources = {s["id"]: s for s in model.get("sources", []) if s.get("id")}
+        self.sources = {s["id"]: s for s in _rows(model, "sources", "sources") if s.get("id")}
         # Required export policy is a property of the intended location, even
         # when its record is absent/null. Do not infer public from nonexistence.
         self.unresolved = {
@@ -202,7 +202,7 @@ class _Projection:
         return False
 
     def source_field(self, ref):
-        for i, row in enumerate(self.model.get("sources", [])):
+        for i, row in enumerate(_rows(self.model, "sources", "sources")):
             if row.get("id") == ref:
                 return f"sources[{i}]"
         return None
@@ -315,7 +315,8 @@ class _Projection:
 
     def scenario_inputs(self):
         projected = []
-        for i, scenario in enumerate(self.model.get("baseline", {}).get("scenarios", [])):
+        baseline = _mapping(self.model, "baseline", "baseline")
+        for i, scenario in enumerate(_rows(baseline, "scenarios", "baseline.scenarios")):
             field = f"baseline.scenarios[{i}]"
             row = self.raw(scenario, field, self.model.get("customer_scope"))
             if row.get("status") == "withheld":
@@ -330,7 +331,7 @@ class _Projection:
             if not isinstance(drivers, dict) or drivers.get("status") == "withheld":
                 projected.append(row)
                 continue
-            for key in scenario.get("drivers") or {}:
+            for key in _mapping(scenario, "drivers", f"{field}.drivers"):
                 if key not in drivers:  # already redacted as an authored identifier
                     continue
                 escaped = key.replace("~", "~0").replace("/", "~1")
@@ -369,7 +370,7 @@ def project(model, reviews=(), *, as_of, audience, customer_scope=None, acknowle
         model, _, _ = _snapshot(snapshot, as_of=as_of)
     else:
         validate_receipt(model, as_of=as_of, acknowledge_finops_preview=True)
-    gaps = validate_model(model, as_of=as_of)
+    gaps = [*validate_model(model, as_of=as_of), *_source_cycle_gaps(model)]
     current = calculate(model, as_of=as_of, acknowledge_finops_preview=True)
     material = material_payload(model)
     projector = _Projection(material, audience, customer_scope, gaps)
@@ -421,13 +422,13 @@ def project(model, reviews=(), *, as_of, audience, customer_scope=None, acknowle
             if isinstance(readiness.get("owner_review"), dict):
                 readiness["owner_review"].pop("material_hash", None)
             visible_gaps = [{"code": g["code"], "message": g["message"], "blocks": g["blocks"]}
-                            for g in current["results"]["gaps"]]
+                            for g in gaps]
     else:
-        visible_gaps = copy.deepcopy(current["results"]["gaps"])
-    baseline = material.get("baseline", {})
+        visible_gaps = copy.deepcopy(gaps)
+    baseline = _mapping(material, "baseline", "baseline")
     baseline_private = projector.restricted(baseline, field="baseline",
                                             inherited_scope=material.get("customer_scope"))
-    profile = projector.raw(material.get("profile", {}), "profile", material.get("customer_scope"))
+    profile = projector.raw(_mapping(material, "profile", "profile"), "profile", material.get("customer_scope"))
     baseline_envelope = projector.raw({k: baseline[k] for k in
                                       ("id", "version", "as_of", "start_month", "currency", "sharingClassification",
                                        "customer_scope", "internal", "visibility", "src", "content_src") if k in baseline},
@@ -450,7 +451,7 @@ def project(model, reviews=(), *, as_of, audience, customer_scope=None, acknowle
         "scenarios": {} if baseline_private else projector.derived(current["results"]["scenarios"]),
         "scenario_inputs": [] if baseline_private else projector.scenario_inputs(),
         "evidence": {"status": "withheld"} if baseline_private else {
-                     k: projector.raw(material.get(k, []), k, material.get("customer_scope"))
+                     k: projector.raw(_rows(material, k, k), k, material.get("customer_scope"))
                      for k in ("sources", "rates", "fx")},
         "gaps": visible_gaps, "handover": readiness,
     }

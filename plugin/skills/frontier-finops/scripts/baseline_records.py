@@ -14,7 +14,7 @@ from datetime import date
 from pathlib import Path
 
 from baseline_calc import _combine, calculate, validate_receipt
-from baseline_model import _date, _gap, _integer, _object, _text, material_payload, model_fingerprint, validate_model
+from baseline_model import _date, _gap, _integer, _mapping, _object, _rows, _text, material_payload, model_fingerprint, validate_model
 from finops_preview import NOTICE, fingerprint, require_preview_ack
 
 SNAPSHOT_SCHEMA = "frontier-finops-snapshot/1.0"
@@ -136,6 +136,45 @@ def _context(value):
     return copy.deepcopy(value)
 
 
+def _source_cycles(rows):
+    """Source ancestry back-edges, not repeated visits to a shared DAG node."""
+    indexed = {row["id"]: row for row in rows if row.get("id")}
+    edges = {identity: {ref for record in _walk(row) for ref in _refs(record)}
+             for identity, row in indexed.items()}
+    active, positions, completed, cyclic = [], {}, set(), set()
+
+    def visit(identity):
+        if identity in positions:
+            cyclic.update(active[positions[identity]:])
+            return
+        if identity in completed:
+            return
+        positions[identity] = len(active)
+        active.append(identity)
+        for ref in sorted(edges[identity]):
+            if ref not in indexed:
+                raise ValueError("unresolved source ancestry reference")
+            visit(ref)
+        active.pop()
+        del positions[identity]
+        completed.add(identity)
+
+    for identity in sorted(indexed):
+        visit(identity)
+    return cyclic
+
+
+def _source_cycle_gaps(model):
+    rows = _rows(model, "sources", "sources")
+    cyclic = _source_cycles(rows)
+    gaps = []
+    for i, row in enumerate(rows):
+        if row.get("id") in cyclic:
+            _gap(gaps, "source-ancestry-cycle", f"sources[{i}]",
+                 "Resolve cyclic source ancestry before financial handover.", "customer-export")
+    return gaps
+
+
 def _merged_ancestry(contexts, scope, sources=None):
     """Adapt authored ancestry to the existing calculator's class/flag merger.
 
@@ -144,6 +183,7 @@ def _merged_ancestry(contexts, scope, sources=None):
     """
     records = [{"sharing_classes": ["customer-specific" if scope else "validation-required"],
                 "customer_scopes": [scope] if scope else []}]
+    cyclic = _source_cycles(list(sources.values())) if sources is not None else set()
 
     def visit(value, inherited_scope, trail=frozenset()):
         if isinstance(value, dict):
@@ -191,9 +231,11 @@ def _merged_ancestry(contexts, scope, sources=None):
             row.update(sharing_classes=classes, customer_scopes=scopes)
             records.append(row)
             for ref in refs:
-                if sources is None or ref in trail:
+                if sources is None or ref in cyclic:
                     records.append({"sharing_classes": ["validation-required"]})
-                elif ref not in sources:
+                if sources is None or ref in trail:
+                    continue
+                if ref not in sources:
                     raise ValueError("unresolved source ancestry reference")
                 else:
                     visit(sources[ref], supplied_scope, trail | {ref})
@@ -229,15 +271,11 @@ def _source(identity, raw=None, scope=None, sources=None):
     }
 
 
-def seed(blueprint, agent_id, *, as_of, acknowledge_finops_preview=False):
-    """Copy real Canvas context; ownership, money and economic scope stay unknown."""
-    require_preview_ack(acknowledge_finops_preview)
-    today = _day(as_of)
+def _blueprint_ancestry(blueprint, agent_id):
+    """One consumed-context/source policy for seed and Blueprint application."""
     domain, agent = _agent(blueprint, agent_id)
-    scope = _text(blueprint.get("customer_scope"), "blueprint.customer_scope")
     actual_ancestry = [{k: v for k, v in blueprint.items() if k not in {"domains", "evidence", "sources"}},
                        {k: v for k, v in domain.items() if k not in {"agents", "lead", "orchestrator"}}, agent]
-    ancestry = [_context(context) for context in actual_ancestry]
     raw_sources = blueprint.get("sources", blueprint.get("evidence", []))
     if not isinstance(raw_sources, list):
         raise ValueError("blueprint source register must be a list")
@@ -248,11 +286,22 @@ def seed(blueprint, agent_id, *, as_of, acknowledge_finops_preview=False):
         if identity is None or identity in indexed:
             raise ValueError("blueprint source register requires unique IDs")
         indexed[identity] = row
-    referenced = {ref for context in ancestry for row in _walk(context) for ref in _refs(row)}
+    referenced = {ref for context in actual_ancestry for row in _walk(context) for ref in _refs(row)}
     for row in raw_sources:
         referenced.update(ref for record in _walk(row) for ref in _refs(record))
     if referenced - set(indexed):
         raise ValueError("unresolved Blueprint source reference")
+    return actual_ancestry, indexed
+
+
+def seed(blueprint, agent_id, *, as_of, acknowledge_finops_preview=False):
+    """Copy real Canvas context; ownership, money and economic scope stay unknown."""
+    require_preview_ack(acknowledge_finops_preview)
+    today = _day(as_of)
+    actual_ancestry, indexed = _blueprint_ancestry(blueprint, agent_id)
+    agent = actual_ancestry[-1]
+    scope = _text(blueprint.get("customer_scope"), "blueprint.customer_scope")
+    ancestry = [_context(context) for context in actual_ancestry]
     restrictions = _merged_ancestry(actual_ancestry, scope, indexed)
     scopes = restrictions.get("customer_scopes", [])
     scope = scopes[0] if len(scopes) == 1 else None
@@ -349,7 +398,7 @@ def _review(snapshot, review, *, as_of, persisted=False):
                       review.get("assertion") != "externally-asserted-not-authenticated"):
         raise ValueError("explicit external-review record required")
     _identity(review.get("id"))
-    sources = {source.get("id") for source in model.get("sources", [])}
+    sources = {source.get("id") for source in _rows(model, "sources", "sources")}
     for record in _walk(review):
         for key in ("sharingClassification", "visibility", "customer_scope"):
             if key in record:
@@ -368,7 +417,7 @@ def _review(snapshot, review, *, as_of, persisted=False):
     reviewed = _date(review.get("date"), "review.date")
     if reviewed is None or reviewed < frozen or reviewed > as_of:
         raise ValueError("review date must be between freeze and evaluation dates")
-    owner = model.get("profile", {}).get("owners", {}).get("finance")
+    owner = _mapping(_mapping(model, "profile", "profile"), "owners", "profile.owners").get("finance")
     if owner is None or review["finance_owner"] != owner:
         raise ValueError("review must identify the frozen accountable finance owner")
     if review["actor"] != owner and _text(review.get("delegation_evidence_ref"), "review.delegation_evidence_ref") is None:
@@ -407,7 +456,7 @@ def handover(snapshot, reviews, *, as_of, acknowledge_finops_preview=False):
     if len(checked) > 1:
         raise ValueError("ambiguous active reviews; select one externally resolved decision explicitly")
     current = calculate(model, as_of=as_of, acknowledge_finops_preview=True)
-    gaps = copy.deepcopy(current["results"]["gaps"])
+    gaps = [*copy.deepcopy(current["results"]["gaps"]), *_source_cycle_gaps(model)]
     if any(record.get("visibility") is not None and record["visibility"] not in
            {"internal", "customer", "public"} for record in _walk(material_payload(model))):
         _gap(gaps, "sharing-validation", "model.provenance", "Legacy visibility requires explicit validation.")

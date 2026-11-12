@@ -15,10 +15,10 @@ from datetime import date
 from pathlib import Path
 
 from baseline_calc import calculate, validate_receipt
-from baseline_model import validate_model
+from baseline_model import _mapping, validate_model
 from baseline_projection import VIEW_SCHEMA, _Projection, _withheld_report, project, render_markdown
 from baseline_records import (
-    BOUNDARY, SNAPSHOT_SCHEMA, _agent, _day, _json_text, _snapshot, _write_exclusive,
+    BOUNDARY, SNAPSHOT_SCHEMA, _agent, _blueprint_ancestry, _day, _json_text, _merged_ancestry, _snapshot, _write_exclusive,
     freeze, migrate, record_review, seed,
 )
 from finops_preview import NOTICE, require_preview_ack
@@ -55,18 +55,12 @@ def _authored(document, as_of):
 
 
 def _link_private(blueprint, agent_id, audience, customer_scope):
-    domain, agent = _agent(blueprint, agent_id)
-    raw_sources = blueprint.get("sources", blueprint.get("evidence", []))
-    if not isinstance(raw_sources, list) or any(not isinstance(s, dict) for s in raw_sources):
-        raise ValueError("Blueprint source register must be a list of objects")
-    identities = [s.get("id") for s in raw_sources]
-    if any(not isinstance(identity, str) for identity in identities) or len(set(identities)) != len(identities):
-        raise ValueError("Blueprint source register requires unique IDs")
-    projection = _Projection({"sources": raw_sources}, audience, customer_scope, [])
-    # Unrelated private agents/sources do not taint this agent's linkage.
-    return (projection.restricted(blueprint) or
-            projection.restricted(domain, inherited_scope=blueprint.get("customer_scope")) or
-            projection.any_restricted(agent, "agent", domain.get("customer_scope", blueprint.get("customer_scope"))))
+    contexts, source_index = _blueprint_ancestry(blueprint, agent_id)
+    flags = _merged_ancestry(contexts, blueprint.get("customer_scope"), source_index)
+    scopes = flags.get("customer_scopes", [])
+    flags["customer_scope"] = scopes[0] if len(scopes) == 1 else None
+    projection = _Projection({"sources": list(source_index.values())}, audience, customer_scope, [])
+    return projection.restricted(flags)
 
 
 def apply_models(blueprint, baselines, reviews=(), *, as_of, audience, customer_scope=None,
@@ -95,12 +89,12 @@ def apply_models(blueprint, baselines, reviews=(), *, as_of, audience, customer_
         if document.get("schema") != SNAPSHOT_SCHEMA:
             validate_receipt(model, as_of=as_of, acknowledge_finops_preview=True)
         validate_model(model, as_of=as_of, blueprint=blueprint)
-        agent = model.get("profile", {}).get("agent_id")
+        agent = _mapping(model, "profile", "profile").get("agent_id")
         _agent(blueprint, agent)
         if agent in agents:
             raise ValueError("duplicate active agent baseline versions; select one explicitly")
         agents.add(agent)
-        baseline = model.get("baseline", {})
+        baseline = _mapping(model, "baseline", "baseline")
         target = (baseline.get("id"), baseline.get("version"))
         if target in targets:
             raise ValueError("duplicate active baseline target")

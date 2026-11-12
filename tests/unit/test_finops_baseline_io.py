@@ -49,6 +49,42 @@ def simulated():
     return model
 
 
+def nullable_model(kind):
+    """Contract-accepted incomplete inputs; remove incompatible dangling refs."""
+    model = example()
+    if kind == "sources":
+        model["sources"] = None
+
+        def clear_refs(value):
+            if isinstance(value, dict):
+                for key, child in value.items():
+                    if key in {"source_id", "src", "content_src"}:
+                        value[key] = None
+                    else:
+                        clear_refs(child)
+            elif isinstance(value, list):
+                for child in value:
+                    clear_refs(child)
+        clear_refs(model)
+    elif kind in {"scenarios", "lines"}:
+        model["baseline"][kind] = None
+        if kind == "scenarios":
+            model["baseline"]["lines"] = None
+    elif kind == "rates":
+        model["rates"] = None
+        for line in model["baseline"]["lines"]:
+            line["rate_id"] = None
+    elif kind == "fx":
+        model["fx"] = None
+    elif kind in {"baseline", "profile"}:
+        model[kind] = None
+        if kind == "profile":
+            model["baseline"]["agent_id"] = None
+    else:
+        model["baseline"][kind] = None
+    return model
+
+
 def review_for(snapshot, **changes):
     review = {
         "id": "SIMULATED-REVIEW", "decision": "approve",
@@ -481,6 +517,68 @@ class LifecycleTests(IOCase):
         result = self.records.handover(snapshot, [review], **ACK)
         self.assertTrue(result["ready"])  # simulated verified-input test only
         self.assertFalse(result["financial_permission"])
+
+    def test_direct_snapshot_source_cycles_block_reviewed_handover_and_customer_costs(self):
+        for nested in (False, True):
+            model = simulated()
+            first = {**model["sources"][0], "id": "CYCLE-A", "src": ["CYCLE-B"]}
+            second = {**model["sources"][0], "id": "CYCLE-B"}
+            if nested:
+                second["provenance"] = {"source_id": "CYCLE-A"}
+            else:
+                second["content_src"] = ["CYCLE-A"]
+            model["sources"].extend([first, second])
+            model["rates"][0]["source_id"] = "CYCLE-A"
+            with self.subTest(nested=nested):
+                _, snapshot = self.snapshot(model, f"cycle-{nested}")
+                review = self.review(snapshot, id=f"REVIEW-{nested}")
+                result = self.records.handover(snapshot, [review], **ACK)
+                self.assertFalse(result["ready"])
+                self.assertFalse(result["financial_permission"])
+                self.assertIn("source-ancestry-cycle", {g["code"] for g in result["gaps"]})
+                report = self.projection.project(snapshot, [review], **ACK, audience="customer")
+                month = report["scenarios"]["expected"]["months"][0]
+                self.assertEqual(month["total"]["status"], "withheld")
+                self.assertIsNone(month["total"]["amount"])
+                self.assertEqual(month["lines"][1]["cost"]["amount"], "10.00")
+                self.assertNotEqual(report["status"], "planning-ready")
+
+    def test_unused_cycles_do_not_hide_independent_rows_and_shared_dag_is_not_cycle(self):
+        for cycle in (False, True):
+            model = simulated()
+            model["sources"].extend([
+                {**model["sources"][0], "id": "GRAPH-A", "src": ["GRAPH-C"]},
+                {**model["sources"][0], "id": "GRAPH-B", "content_src": ["GRAPH-C"]},
+                {**model["sources"][0], "id": "GRAPH-C", **({"source_id": "GRAPH-A"} if cycle else {})},
+            ])
+            _, snapshot = self.snapshot(model, f"graph-{cycle}")
+            review = self.review(snapshot, id=f"REVIEW-{cycle}")
+            result = self.records.handover(snapshot, [review], **ACK)
+            report = self.projection.project(snapshot, [review], **ACK, audience="customer")
+            with self.subTest(cycle=cycle):
+                self.assertEqual(result["ready"], not cycle)
+                self.assertEqual("source-ancestry-cycle" in {g["code"] for g in result["gaps"]}, cycle)
+                self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+
+    def test_nullable_source_registry_review_records_remain_partial_not_typeerror(self):
+        _, snapshot = self.snapshot(nullable_model("sources"))
+        review = self.review(snapshot)
+        result = self.records.handover(snapshot, [review], **ACK)
+        self.assertFalse(result["ready"])
+        self.assertFalse(result["financial_permission"])
+
+    def test_missing_nullable_finance_owner_refuses_review_with_valueerror(self):
+        for absent in ("profile", "owners"):
+            model = nullable_model("profile") if absent == "profile" else example()
+            if absent == "owners":
+                model["profile"]["owners"] = None
+            _, snapshot = self.snapshot(model, f"no-{absent}")
+            review = {"id": "NO-OWNER", "actor": "Finance lead", "finance_owner": "Finance lead",
+                      "decision": "approve", "date": DAY.isoformat(), "evidence_ref": "test:not-real-approval",
+                      "mode": model["mode"], "sharingClassification": "customer-shareable", **snapshot["target"]}
+            with self.subTest(absent=absent), self.assertRaises(ValueError):
+                self.records.record_review(snapshot, review, self.dir / "no-review", **ACK)
+            self.assertFalse((self.dir / "no-review").exists())
 
     def test_seed_closes_every_reference_kind_through_chained_source_parents(self):
         for ancestor_kind in ("src", "content_src", "source_id"):
@@ -987,6 +1085,37 @@ class ProjectionTests(IOCase):
         self.assertIsNone(report["scenarios"]["expected"]["months"][0]["total"]["amount"])
         self.assertFalse(report["handover"]["ready"])
 
+    def test_contract_accepted_nullable_containers_project_purely_with_explicit_partial_state(self):
+        kinds = ("scenarios", "sources", "rates", "fx", "lines", "baseline", "profile",
+                 "annualisation", "confidence", "assumptions", "exclusions", "risks")
+        for kind in kinds:
+            model = nullable_model(kind)
+            calculated = self.calculated(model)
+            before = copy.deepcopy(calculated)
+            self.calc.validate_receipt(calculated, **ACK)
+            with self.subTest(kind=kind):
+                report = self.projection.project(calculated, **ACK, audience="customer")
+                self.assertIn(report["status"], {"partial", "withheld"})
+                self.assertFalse(report["handover"]["ready"])
+                self.assertEqual(calculated, before)
+                self.projection.render_markdown(report)
+                if kind in {"sources", "fx"}:
+                    self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+                if kind == "scenarios":
+                    self.assertEqual(report["scenarios"], {})
+                    self.assertEqual(report["scenario_inputs"], [])
+
+    def test_malformed_container_types_are_not_normalised_to_empty(self):
+        for kind in ("scenarios", "sources", "rates", "fx", "baseline", "profile"):
+            for bad in (False, 0, "invalid", [] if kind in {"baseline", "profile"} else {}):
+                model = example()
+                if kind == "scenarios":
+                    model["baseline"][kind] = bad
+                else:
+                    model[kind] = bad
+                with self.subTest(kind=kind, bad=bad), self.assertRaises(ValueError):
+                    self.calc.calculate(model, **ACK)
+
     def test_required_evidence_null_absent_empty_and_blank_are_equally_fail_closed(self):
         for key in ("tokens_per_run", "operations_units", "monthly_runs", "success_share", "outcomes_per_success"):
             for shape in ("null", "absent", "empty", "blank", "missing-container"):
@@ -1129,8 +1258,11 @@ class CLITests(IOCase):
         self.assertEqual((self.dir / "export/report.md").read_text(encoding="utf-8"),
                          self.projection.render_markdown(report))
         applied = self.dir / "applied.json"
-        result = self.run_cli("apply", "--blueprint", BP, "--baseline", calculated,
-                              "--out", applied, "--audience", "customer", *common)
+        # A positive customer apply needs public/scoped input. The stock
+        # Blueprint contains internal E04 ancestry and must now be withheld.
+        public_bp = self.write("public-apply.json", seed_blueprint())
+        result = self.run_cli("apply", "--blueprint", public_bp, "--baseline", calculated,
+                              "--out", applied, "--audience", "customer", "--customer-scope", "caldova-scope", *common)
         self.assertEqual(result.returncode, 0, result.stderr)
         dto = json.loads(applied.read_text(encoding="utf-8"))["agent_finops"]
         self.assertEqual(dto["schema"], "frontier-agent-finops-view/1.0")
@@ -1362,6 +1494,96 @@ class CLITests(IOCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         for path in (out / "report.json", out / "report.md"):
             self.assertNotIn(digest, path.read_text(encoding="utf-8"))
+
+    def test_cli_exports_contract_accepted_null_containers_without_tracebacks(self):
+        for kind in ("scenarios", "sources", "rates", "fx", "lines", "baseline", "profile"):
+            source = self.write(f"nullable-{kind}.json", self.calculated(nullable_model(kind)))
+            before = source.read_bytes()
+            out = self.dir / f"nullable-export-{kind}"
+            result = self.run_cli("export", "--baseline", source, "--out-dir", out, "--audience", "customer",
+                                  "--as-of", DAY, "--acknowledge-finops-preview")
+            with self.subTest(kind=kind):
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+                self.assertEqual(json.loads(result.stdout)["status"], "partial")
+                self.assertEqual(source.read_bytes(), before)
+                self.assertTrue((out / "report.json").is_file())
+                self.assertTrue((out / "report.md").is_file())
+
+    def test_cli_direct_model_cycle_export_is_partial_and_keeps_independent_public_cost(self):
+        model = simulated()
+        model["sources"].extend([
+            {**model["sources"][0], "id": "CYCLE-A", "src": ["CYCLE-B"]},
+            {**model["sources"][0], "id": "CYCLE-B", "content_src": ["CYCLE-A"]},
+        ])
+        model["rates"][0]["source_id"] = "CYCLE-A"
+        source = self.write("cycle-model.json", self.calculated(model))
+        before = source.read_bytes()
+        out = self.dir / "cycle-export"
+        result = self.run_cli("export", "--baseline", source, "--out-dir", out, "--audience", "customer",
+                              "--as-of", DAY, "--acknowledge-finops-preview")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        report = json.loads((out / "report.json").read_text(encoding="utf-8"))
+        self.assertEqual(report["scenarios"]["expected"]["months"][0]["total"]["status"], "withheld")
+        self.assertEqual(report["scenarios"]["expected"]["months"][0]["lines"][1]["cost"]["amount"], "10.00")
+        self.assertEqual(source.read_bytes(), before)
+
+    def test_apply_nullable_profile_refuses_known_agent_link_with_valueerror(self):
+        with self.assertRaises(ValueError):
+            self.cli.apply_models(seed_blueprint(), [self.calculated(nullable_model("profile"))],
+                                  **ACK, audience="customer", customer_scope="caldova-scope")
+        result = self.cli.apply_models(seed_blueprint(), [self.calculated(nullable_model("baseline"))],
+                                      **ACK, audience="customer", customer_scope="caldova-scope")
+        self.assertFalse(result["agent_finops"]["records"][0]["handover"]["ready"])
+
+    def test_apply_reuses_consumed_blueprint_closure_not_standalone_baseline_privacy(self):
+        for private in (False, True):
+            bp = seed_blueprint()
+            agent = next(a for d in bp["domains"] for a in d["agents"] if a["id"] == "D3-A05")
+            agent["src"] = ["APPLY-CHILD"]
+            bp["evidence"].extend([
+                {**bp["evidence"][0], "id": "APPLY-CHILD", "provenance": {"source_id": "APPLY-PARENT"}},
+                {**bp["evidence"][0], "id": "APPLY-PARENT",
+                 "sharingClassification": "internal-only" if private else "customer-shareable"},
+                {**bp["evidence"][0], "id": "UNRELATED-PRIVATE", "internal": True},
+            ])
+            before = copy.deepcopy(bp)
+            calculated = self.calculated()
+            standalone = self.projection.project(calculated, **ACK, audience="customer")
+            self.assertEqual(standalone["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+            result = self.cli.apply_models(bp, [calculated], **ACK, audience="customer", customer_scope="caldova-scope")
+            record = result["agent_finops"]["records"][0]
+            with self.subTest(private=private):
+                if private:
+                    self.assertEqual(record["status"], "withheld")
+                    self.assertNotIn("1320.00", json.dumps(result["agent_finops"]))
+                else:
+                    self.assertEqual(record["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+                self.assertEqual(bp, before)
+
+    def test_cli_apply_reuses_nested_source_ancestry_with_public_control(self):
+        for private in (False, True):
+            bp = seed_blueprint()
+            agent = next(a for d in bp["domains"] for a in d["agents"] if a["id"] == "D3-A05")
+            agent["content_src"] = ["APPLY-CHILD"]
+            bp["evidence"].extend([
+                {**bp["evidence"][0], "id": "APPLY-CHILD", "provenance": {"source_id": "APPLY-PARENT"}},
+                {**bp["evidence"][0], "id": "APPLY-PARENT",
+                 "sharingClassification": "internal-only" if private else "customer-shareable"},
+            ])
+            source = self.write(f"bp-{private}.json", bp)
+            model = self.write(f"model-{private}.json", self.calculated())
+            output = self.dir / f"apply-{private}.json"
+            result = self.run_cli("apply", "--blueprint", source, "--baseline", model, "--out", output,
+                                  "--audience", "customer", "--customer-scope", "caldova-scope",
+                                  "--as-of", DAY, "--acknowledge-finops-preview")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            dto = json.loads(output.read_text(encoding="utf-8"))["agent_finops"]
+            if private:
+                self.assertNotIn("1320.00", json.dumps(dto))
+                self.assertEqual(dto["records"][0]["status"], "withheld")
+            else:
+                self.assertEqual(dto["records"][0]["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
 
 
 if __name__ == "__main__":
