@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.6 |
+| Version | 0.7 |
 | Date | 2026-11-12 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained catalogue; approval not inferred |
 | Scope | Using the plugin, engineering guidance and historical records; document revision, not product version |
-| References | [Repository](../README.md), [Product requirements](prd.md), [Solution design](solution-design.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33) |
+| References | [Repository](../README.md), [Product requirements](prd.md), [Solution design](solution-design.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Issue #35](https://github.com/urruegg/frontier-envisioning/issues/35), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md) |
 
 ## Using the plugin
 
@@ -26,8 +26,8 @@ The sole human maintainer is [@urruegg](https://github.com/urruegg).
 
 | Document | Authority or purpose |
 |---|---|
-| [Product requirements](prd.md) | Requirements, release decisions and acceptance targets; current 1.9.2 candidate note preserves the applicable 1.9.1 requirements and historical Part A |
-| [Solution design](solution-design.md) | Architecture and scope-qualified verification; historical Part B is retained |
+| [Product requirements](prd.md) | Approved 1.10.0 development-candidate requirements with integrated proof pending; prior candidate records and historical Part A are retained |
+| [Solution design](solution-design.md) | Candidate architecture and scope-qualified verification; new integrated proof is pending and historical Part B is retained |
 | [Architecture decisions](adr/README.md) | Repository/engineering rationale; Proposed status is not acceptance |
 | [Engineering handbook](engineering/handbook.md) | Build, test, version, release and deployment practice |
 | [Workstation setup](engineering/workstation-setup.md) | Existing dependency, dev-container and local setup instructions |
@@ -45,7 +45,12 @@ The sole human maintainer is [@urruegg](https://github.com/urruegg).
 | [plans/](plans/README.md) | Test-first implementation plans |
 | [sprints/](sprints/README.md) | Linked delivery records |
 
-Current version-only preparation is [#33](https://github.com/urruegg/frontier-envisioning/issues/33):
+Baseline-first FinOps development is [#35](https://github.com/urruegg/frontier-envisioning/issues/35):
+[approved plan](plans/2026-11-12-agent-finops-baseline-plan.md) and
+[SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md). Approval and
+in-progress implementation are not verified delivery or a release.
+
+The version-only 1.9.2 preparation is [#33](https://github.com/urruegg/frontier-envisioning/issues/33):
 [plan](plans/2026-11-12-version-1.9.2-plan.md) and
 [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md). This is not a release.
 
