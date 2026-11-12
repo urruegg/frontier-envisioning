@@ -143,7 +143,7 @@
     "references/finops-for-agents.md": "1a53da1f85751862bd69fa39f5b57f975141a98d75af26b46dd1eb4d88da0940",
     "references/guardrails.md": "356cb4bd0632755a8c37d01775f7d916680acb2039e10e17c535f2e66088d272",
     "scripts/apply_finops.py": "17ebf7ca35f7f2f30414114d6d8c84cc44b762a104b8dc5c2716a32a93306817",
-    "scripts/baseline_model.py": "65d1d8398de81fea6c67a283dabf1fd89ce971ba8d6fd0fc73bdd0a82eec16bd",
+    "scripts/baseline_model.py": "9289f02742e77ba492afad39c3fcb38241695e92e0e1f8c4b1320bb41ba48456",
     "scripts/finops_calc.py": "d7eb09ac7c5c64a5144b0e7178a96390b6685a6bc1a898b79b47fb83652e23d5",
     "scripts/finops_preview.py": "ae3fed05f7cf6cd74fd83a5b80348064014b85739b094e633998f4f8ad0ff520",
     "scripts/fv_expr.py": "fb7c40ead407d88d3680f1cdb1ab8647de7884df2ad6fc0f53379270550109fb",

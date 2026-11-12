@@ -44,6 +44,24 @@ class BaselineContractTests(unittest.TestCase):
     def gaps(self, model=None, **kwargs):
         return self.module.validate_model(self.model if model is None else model, as_of=DAY, **kwargs)
 
+    def assert_missing_text_equivalent(self, path, code, field):
+        canonical = example()
+        put(canonical, path, None)
+        expected = self.gaps(canonical)
+        self.assertTrue(any(g["code"] == code and g["field"] == field for g in expected))
+        for value in (None, "", "   "):
+            model = example()
+            put(model, path, value)
+            original = copy.deepcopy(model)
+            with self.subTest(field=field, value=value):
+                try:
+                    actual = self.gaps(model)
+                except ValueError as error:
+                    self.fail(f"Missing editable metadata must return gaps, not a contradiction: {error}")
+                self.assertEqual(actual, expected)
+                self.assertEqual(model, original)
+        return expected
+
     def test_synthetic_example_has_math_inputs_but_never_financial_readiness(self):
         gaps = self.gaps()
         self.assertIn("synthetic-evidence", {g["code"] for g in gaps})
@@ -348,6 +366,78 @@ class BaselineContractTests(unittest.TestCase):
         for scenario in self.model["baseline"]["scenarios"]:
             scenario["driver_evidence"]["outcomes_per_success"]["unit"] = "run"
         self.gaps()
+
+    def test_missing_metadata_normalization_outcome_unit_preserves_known_cost_inputs(self):
+        gaps = self.assert_missing_text_equivalent(
+            ("profile", "outcome", "unit"), "missing-outcome", "profile.outcome.unit")
+        self.assertFalse(any("calculation" in g["blocks"] for g in gaps))
+        self.assertTrue(any(g["code"] == "missing-outcome" and g["blocks"] == ["handover", "unit-metrics"]
+                            for g in gaps))
+
+    def test_missing_metadata_normalization_line_units_service_and_meter(self):
+        for key in ("quantity_unit", "service", "meter"):
+            self.assert_missing_text_equivalent(
+                ("baseline", "lines", 0, key), "missing-line-input", f"baseline.lines[0].{key}")
+
+    def test_missing_metadata_normalization_rate_units_service_meter_and_currency(self):
+        for key in ("unit", "service", "meter", "currency"):
+            gaps = self.assert_missing_text_equivalent(
+                ("rates", 0, key), "missing-rate-input", f"rates[0].{key}")
+            self.assertFalse(any(g["code"] == "missing-fx" for g in gaps))
+
+    def test_missing_metadata_normalization_scenario_driver_units(self):
+        for key, code in (("tokens_per_run", "missing-quantity"),
+                          ("success_share", "missing-outcome"), ("outcomes_per_success", "missing-outcome")):
+            gaps = self.assert_missing_text_equivalent(
+                ("baseline", "scenarios", 0, "driver_evidence", key, "unit"), code,
+                f"baseline.scenarios[0].driver_evidence.{key}.unit")
+            if code == "missing-outcome":
+                self.assertFalse(any("calculation" in g["blocks"] for g in gaps))
+
+    def test_missing_metadata_normalization_references_keep_field_specific_gaps(self):
+        for path, code, field in (
+            (("profile", "agent_id"), "missing-agent", "profile.agent_id"),
+            (("baseline", "agent_id"), "missing-agent", "baseline.agent_id"),
+            (("baseline", "lines", 0, "cost_driver_id"), "missing-scope", "baseline.lines[0].cost_driver_id"),
+            (("baseline", "lines", 0, "driver_id"), "missing-quantity", "baseline.lines[0].driver_id"),
+            (("baseline", "lines", 0, "rate_id"), "unpriced", "baseline.lines[0].rate_id"),
+            (("rates", 0, "source_id"), "missing-evidence", "rates[0].source_id"),
+        ):
+            self.assert_missing_text_equivalent(path, code, field)
+
+    def test_missing_metadata_normalization_does_not_hide_known_mismatches_or_unknown_enums(self):
+        cases = [
+            (("profile", "outcome", "unit"), "run", "unit"),
+            (("baseline", "lines", 0, "quantity_unit"), "hour", "unit"),
+            (("rates", 0, "unit"), "hour", "unit"),
+            (("baseline", "scenarios", 0, "driver_evidence", "tokens_per_run", "unit"), "call", "unit"),
+            (("baseline", "lines", 0, "service"), "another-service", "service"),
+            (("baseline", "lines", 0, "meter"), "another-meter", "meter"),
+            (("rates", 0, "service"), "another-service", "service"),
+            (("rates", 0, "meter"), "another-meter", "meter"),
+            (("profile", "outcome", "unit"), "unknown-unit", "unit"),
+            (("baseline", "lines", 0, "quantity_unit"), "unknown-unit", "unit"),
+            (("rates", 0, "unit"), "unknown-unit", "unit"),
+            (("rates", 0, "currency"), "GBP", "currency"),
+            (("baseline", "agent_id"), "UNKNOWN-AGENT", "agent_id"),
+            (("baseline", "lines", 0, "rate_id"), "UNKNOWN-RATE", "rate_id"),
+            (("baseline", "lines", 0, "driver_id"), "UNKNOWN-DRIVER", "driver_id"),
+        ]
+        for path, value, field in cases:
+            model = example()
+            put(model, path, value)
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, field):
+                self.gaps(model)
+        # A missing counterpart must not suppress validation of a nonblank enum.
+        for path, counterpart in (
+            (("rates", 0, "unit"), ("baseline", "lines", 0, "quantity_unit")),
+            (("baseline", "lines", 0, "quantity_unit"), ("rates", 0, "unit")),
+        ):
+            model = example()
+            put(model, path, "unknown-unit")
+            put(model, counterpart, "   ")
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, "unit"):
+                self.gaps(model)
 
     def test_absent_fx_declaration_is_not_an_implicit_conversion_policy(self):
         self.model["fx"] = None

@@ -303,6 +303,8 @@ def _verification(record, field, sources, as_of, gaps, *, kind):
 def _validate_rates(rows, sources, as_of, gaps):
     rates = _index(rows, "rates", gaps)
     for i, rate in enumerate(rows):
+        # Retain parsed comparison fields without changing the authored record.
+        rate = dict(rate)
         field = f"rates[{i}]"
         _sharing(rate, field, gaps)
         _needed(_integer(rate.get("version"), f"{field}.version", minimum=1), gaps,
@@ -310,13 +312,16 @@ def _validate_rates(rows, sources, as_of, gaps):
         _needed(_decimal(rate.get("amount"), f"{field}.amount"), gaps, "unpriced", f"{field}.amount",
                 "Supply an explicit rate; unknown is not zero.", "calculation")
         for key, allowed in (("currency", _CURRENCIES), ("unit", _UNITS)):
-            _needed(_enum(rate.get(key), allowed, f"{field}.{key}"), gaps, "missing-rate-input",
-                    f"{field}.{key}", "Declare the rate currency and typed unit.", "calculation")
+            rate[key] = _needed(_enum(rate.get(key), allowed, f"{field}.{key}"), gaps, "missing-rate-input",
+                                f"{field}.{key}", "Declare the rate currency and typed unit.", "calculation")
         _needed(_decimal(rate.get("pricing_block"), f"{field}.pricing_block", positive=True), gaps,
                 "missing-rate-input", f"{field}.pricing_block", "Declare the positive pricing block.", "calculation")
         for key in ("service", "meter"):
-            _needed(_text(rate.get(key), f"{field}.{key}"), gaps, "missing-rate-input",
-                    f"{field}.{key}", "Identify the priced service and meter.")
+            rate[key] = _needed(_text(rate.get(key), f"{field}.{key}"), gaps, "missing-rate-input",
+                                f"{field}.{key}", "Identify the priced service and meter.")
+        identity = _text(rate.get("id"), f"{field}.id")
+        if identity is not None:
+            rates[identity] = rate
         start = _date(rate.get("effective_from"), f"{field}.effective_from")
         end = _date(rate.get("effective_to"), f"{field}.effective_to")
         if start is not None and end is not None and end < start:
@@ -372,8 +377,8 @@ def _validate_profile(profile, sources, as_of, gaps, blueprint):
     _sharing(outcome, "profile.outcome", gaps)
     _needed(_text(outcome.get("definition"), "profile.outcome.definition"), gaps, "missing-outcome",
             "profile.outcome.definition", "Define the human-confirmed business outcome.", "unit-metrics")
-    _needed(_enum(outcome.get("unit"), _UNITS, "profile.outcome.unit"), gaps, "missing-outcome",
-            "profile.outcome.unit", "Declare the business outcome unit.", "unit-metrics")
+    outcome_unit = _needed(_enum(outcome.get("unit"), _UNITS, "profile.outcome.unit"), gaps, "missing-outcome",
+                           "profile.outcome.unit", "Declare the business outcome unit.", "unit-metrics")
     _evidence(outcome, "profile.outcome", sources, gaps, claim="outcome", as_of=as_of)
     for key, code in (("demand_context", "missing-demand-context"), ("target_context", "missing-target-context"),
                       ("measurement_plan", "missing-measurement")):
@@ -396,7 +401,7 @@ def _validate_profile(profile, sources, as_of, gaps, blueprint):
         known = _index(agents, "blueprint.agents", gaps)
         if agent_id is not None and agent_id not in known:
             _error("profile.agent_id", "unresolved blueprint agent reference")
-    return agent_id
+    return agent_id, outcome_unit
 
 
 def _validate_notes(baseline, sources, as_of, gaps):
@@ -430,6 +435,7 @@ def _validate_scenarios(rows, sources, as_of, gaps, *, outcome_unit, line_driver
         _gap(gaps, "missing-scenario", "baseline.scenarios", "Author exactly low, expected and high scenarios.", "calculation")
     driver_ids = set()
     parsed = []
+    normalized_rows = []
     for i, scenario in enumerate(rows):
         field = f"baseline.scenarios[{i}]"
         _sharing(scenario, field, gaps)
@@ -457,6 +463,7 @@ def _validate_scenarios(rows, sources, as_of, gaps, *, outcome_unit, line_driver
         # Evidence declares the driver even while its editable quantity is absent.
         driver_ids.update(set(evidence) - set(units))
         sourced = set()
+        normalized_evidence = {}
         for key in dict.fromkeys([*units, *drivers, *evidence]):
             path = f"{field}.driver_evidence.{key}"
             record = _mapping(evidence, key, path)
@@ -468,11 +475,13 @@ def _validate_scenarios(rows, sources, as_of, gaps, *, outcome_unit, line_driver
                            "unit-metrics" if denominator else "calculation")
             if key in units and units[key] is not None and unit is not None and unit != units[key]:
                 _error(f"{path}.unit", "contradicts the declared driver unit")
+            normalized_evidence[key] = {**record, "unit": unit}
             _evidence(record, path, sources, gaps, claim="quantity", as_of=as_of)
             source = sources.get(record.get("source_id"))
             if unit is not None and source is not None and "quantity" in (source.get("applicability") or []):
                 sourced.add(key)
         parsed.append((demand, {"success_share": success, "outcomes_per_success": outcomes}, values, sourced))
+        normalized_rows.append({**scenario, "driver_evidence": normalized_evidence})
     if len(parsed) == 3:
         demands = [tuple(row[0]) for row in parsed]
         if all(None not in row for row in demands) and len(set(demands)) == 1:
@@ -486,13 +495,14 @@ def _validate_scenarios(rows, sources, as_of, gaps, *, outcome_unit, line_driver
         if not any(all(v is not None for v in values) and len(set(values)) > 1 for values in uncertainties):
             _gap(gaps, "scenario-uncertainty", "baseline.scenarios",
                  "Vary a sourced uncertainty driver besides demand, not a blanket total multiplier.")
-    return driver_ids
+    return driver_ids, normalized_rows
 
 
 def _validate_lines(rows, scope, scenarios, driver_ids, rates, fx_pairs, currency, sources, as_of, gaps):
     _index(rows, "baseline.lines", gaps)
     covered = set()
     for i, line in enumerate(rows):
+        line = dict(line)
         field = f"baseline.lines[{i}]"
         _sharing(line, field, gaps)
         cost_driver = _text(line.get("cost_driver_id"), f"{field}.cost_driver_id")
@@ -500,12 +510,12 @@ def _validate_lines(rows, scope, scenarios, driver_ids, rates, fx_pairs, currenc
         covered.add(cost_driver)
         for key, allowed in (("category", _CATEGORIES), ("frequency", {"monthly", "one-time"}),
                              ("quantity_mode", {"per-run", "fixed"}), ("quantity_unit", _UNITS)):
-            _needed(_enum(line.get(key), allowed, f"{field}.{key}"), gaps, "missing-line-input",
-                    f"{field}.{key}", "Declare the explicit cost-line contract.",
-                    *(("calculation",) if key != "category" else ()))
+            line[key] = _needed(_enum(line.get(key), allowed, f"{field}.{key}"), gaps, "missing-line-input",
+                                f"{field}.{key}", "Declare the explicit cost-line contract.",
+                                *(("calculation",) if key != "category" else ()))
         for key in ("service", "meter"):
-            _needed(_text(line.get(key), f"{field}.{key}"), gaps, "missing-line-input",
-                    f"{field}.{key}", "Identify the service and meter.")
+            line[key] = _needed(_text(line.get(key), f"{field}.{key}"), gaps, "missing-line-input",
+                                f"{field}.{key}", "Identify the service and meter.")
         driver_id = _text(line.get("driver_id"), f"{field}.driver_id")
         if driver_id is None:
             _gap(gaps, "missing-quantity", f"{field}.driver_id", "Declare the quantity driver.", "calculation")
@@ -570,7 +580,7 @@ def validate_model(model, *, as_of, blueprint=None) -> list:
     sources = _validate_sources(_rows(model, "sources", "sources"), as_of, gaps)
     _lineage(material_payload(model), "", sources, gaps)
     profile = _mapping(model, "profile", "profile")
-    agent_id = _validate_profile(profile, sources, as_of, gaps, blueprint)
+    agent_id, outcome_unit = _validate_profile(profile, sources, as_of, gaps, blueprint)
     baseline = _mapping(model, "baseline", "baseline")
     _sharing(baseline, "baseline", gaps)
     _needed(_text(baseline.get("id"), "baseline.id"), gaps, "missing-identity", "baseline.id", "Supply a stable baseline ID.")
@@ -591,9 +601,11 @@ def validate_model(model, *, as_of, blueprint=None) -> list:
     currency = _needed(_enum(baseline.get("currency"), _CURRENCIES, "baseline.currency"), gaps,
                        "missing-currency", "baseline.currency", "Declare the reporting currency.", "calculation")
     annualisation = _mapping(baseline, "annualisation", "baseline.annualisation")
+    annualisation_values = {}
     for key, allowed in (("method", {"sum-12-months"}), ("demand_profile", {"flat", "authored-monthly"})):
-        _needed(_enum(annualisation.get(key), allowed, f"baseline.annualisation.{key}"), gaps,
-                "missing-annualisation", f"baseline.annualisation.{key}", "Declare the twelve-month annualisation policy.")
+        annualisation_values[key] = _needed(
+            _enum(annualisation.get(key), allowed, f"baseline.annualisation.{key}"), gaps,
+            "missing-annualisation", f"baseline.annualisation.{key}", "Declare the twelve-month annualisation policy.")
     _evidence(annualisation, "baseline.annualisation", sources, gaps, claim="assumption", as_of=as_of)
     scope_rows = _rows(baseline, "scope", "baseline.scope")
     scope = _index(scope_rows, "baseline.scope", gaps, key="cost_driver_id")
@@ -614,11 +626,10 @@ def validate_model(model, *, as_of, blueprint=None) -> list:
         _text(_object(line, f"baseline.lines[{i}]").get("driver_id"), f"baseline.lines[{i}].driver_id")
         for i, line in enumerate(lines)
     } - {None}
-    drivers = _validate_scenarios(scenarios, sources, as_of, gaps,
-                                  outcome_unit=_mapping(profile, "outcome", "profile.outcome").get("unit"),
-                                  line_driver_ids=line_driver_ids)
-    _validate_lines(lines, scope, scenarios, drivers, rates, fx_pairs, currency, sources, as_of, gaps)
-    if annualisation.get("demand_profile") == "flat":
+    drivers, normalized_scenarios = _validate_scenarios(scenarios, sources, as_of, gaps,
+                                                       outcome_unit=outcome_unit, line_driver_ids=line_driver_ids)
+    _validate_lines(lines, scope, normalized_scenarios, drivers, rates, fx_pairs, currency, sources, as_of, gaps)
+    if annualisation_values["demand_profile"] == "flat":
         for i, scenario in enumerate(scenarios):
             runs = scenario.get("monthly_runs")
             if runs is not None:
