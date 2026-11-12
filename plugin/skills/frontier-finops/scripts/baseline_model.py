@@ -32,7 +32,6 @@ _CATEGORIES = {"licence", "copilot-credit", "model-token", "agent-runtime", "too
                "integration", "observability", "security-governance", "infrastructure",
                "support-operations", "build-one-time", "other"}
 _SCENARIOS = {"low", "expected", "high"}
-_UNCERTAINTY = {"tokens_per_run", "retries", "retrieval", "retrievals_per_run"}
 _DECIMAL = re.compile(r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?\Z")
 
 
@@ -272,7 +271,9 @@ def _validate_sources(rows, as_of, gaps):
         applicability = _rows(source, "applicability", f"{field}.applicability")
         _needed(applicability, gaps, "missing-evidence", f"{field}.applicability", "Declare supported claim types.")
         for j, claim in enumerate(applicability):
-            _enum(claim, {"concept", "quantity", "outcome", "assumption", "rate", "fx"}, f"{field}.applicability[{j}]")
+            path = f"{field}.applicability[{j}]"
+            _needed(_enum(claim, {"concept", "quantity", "outcome", "assumption", "rate", "fx"}, path),
+                    gaps, "source-applicability", path, "Declare the supported claim type for this entry.")
         status = _enum(source.get("validationStatus"), {"validated", "synthetic", "unverified", "validation-required"},
                        f"{field}.validationStatus")
         if source.get("type") == "synthetic" or status == "synthetic":
@@ -421,7 +422,7 @@ def _validate_notes(baseline, sources, as_of, gaps):
     _evidence(confidence, "baseline.confidence", sources, gaps, claim="assumption", as_of=as_of)
 
 
-def _validate_scenarios(rows, sources, as_of, gaps, *, outcome_unit):
+def _validate_scenarios(rows, sources, as_of, gaps, *, outcome_unit, line_driver_ids):
     scenarios = _index(rows, "baseline.scenarios", gaps)
     if set(scenarios) - _SCENARIOS:
         _error("baseline.scenarios", "only low, expected and high scenario IDs are supported")
@@ -444,8 +445,8 @@ def _validate_scenarios(rows, sources, as_of, gaps, *, outcome_unit):
                                   f"{field}.monthly_runs[{j}]", "Supply monthly demand; unknown is not zero.", "calculation"))
         success = _needed(_decimal(scenario.get("success_share"), f"{field}.success_share", share=True), gaps,
                           "missing-outcome", f"{field}.success_share", "Supply the success share.", "unit-metrics")
-        _needed(_decimal(scenario.get("outcomes_per_success"), f"{field}.outcomes_per_success"), gaps,
-                "missing-outcome", f"{field}.outcomes_per_success", "Supply outcomes per successful run.", "unit-metrics")
+        outcomes = _needed(_decimal(scenario.get("outcomes_per_success"), f"{field}.outcomes_per_success"), gaps,
+                           "missing-outcome", f"{field}.outcomes_per_success", "Supply outcomes per successful run.", "unit-metrics")
         drivers = _mapping(scenario, "drivers", f"{field}.drivers")
         evidence = _mapping(scenario, "driver_evidence", f"{field}.driver_evidence")
         values = {key: _needed(_decimal(value, f"{field}.drivers.{key}"), gaps, "missing-quantity",
@@ -455,6 +456,7 @@ def _validate_scenarios(rows, sources, as_of, gaps, *, outcome_unit):
         units = {"monthly_runs": "run", "success_share": "share", "outcomes_per_success": outcome_unit}
         # Evidence declares the driver even while its editable quantity is absent.
         driver_ids.update(set(evidence) - set(units))
+        sourced = set()
         for key in dict.fromkeys([*units, *drivers, *evidence]):
             path = f"{field}.driver_evidence.{key}"
             record = _mapping(evidence, key, path)
@@ -467,13 +469,20 @@ def _validate_scenarios(rows, sources, as_of, gaps, *, outcome_unit):
             if key in units and units[key] is not None and unit is not None and unit != units[key]:
                 _error(f"{path}.unit", "contradicts the declared driver unit")
             _evidence(record, path, sources, gaps, claim="quantity", as_of=as_of)
-        parsed.append((demand, success, values))
+            source = sources.get(record.get("source_id"))
+            if unit is not None and source is not None and "quantity" in (source.get("applicability") or []):
+                sourced.add(key)
+        parsed.append((demand, {"success_share": success, "outcomes_per_success": outcomes}, values, sourced))
     if len(parsed) == 3:
         demands = [tuple(row[0]) for row in parsed]
         if all(None not in row for row in demands) and len(set(demands)) == 1:
             _gap(gaps, "scenario-demand", "baseline.scenarios", "Demand must differ between the three scenarios.")
-        uncertainties = [[row[1] for row in parsed]]
-        uncertainties.extend([[row[2].get(key) for row in parsed] for key in sorted(driver_ids & _UNCERTAINTY)])
+        # Only dependencies that affect a cost line or an outcome denominator
+        # qualify; a familiar but unused driver name is not economic variation.
+        uncertainties = [[row[1][key] if key in row[3] else None for row in parsed]
+                         for key in ("success_share", "outcomes_per_success")]
+        uncertainties.extend([[row[2].get(key) if key in row[3] else None for row in parsed]
+                              for key in sorted(line_driver_ids)])
         if not any(all(v is not None for v in values) and len(set(values)) > 1 for values in uncertainties):
             _gap(gaps, "scenario-uncertainty", "baseline.scenarios",
                  "Vary a sourced uncertainty driver besides demand, not a blanket total multiplier.")
@@ -487,8 +496,7 @@ def _validate_lines(rows, scope, scenarios, driver_ids, rates, fx_pairs, currenc
         field = f"baseline.lines[{i}]"
         _sharing(line, field, gaps)
         cost_driver = _text(line.get("cost_driver_id"), f"{field}.cost_driver_id")
-        if scope:
-            _ref(cost_driver, scope, f"{field}.cost_driver_id", gaps, code="missing-scope")
+        _ref(cost_driver, scope, f"{field}.cost_driver_id", gaps, code="missing-scope")
         covered.add(cost_driver)
         for key, allowed in (("category", _CATEGORIES), ("frequency", {"monthly", "one-time"}),
                              ("quantity_mode", {"per-run", "fixed"}), ("quantity_unit", _UNITS)):
@@ -601,10 +609,15 @@ def validate_model(model, *, as_of, blueprint=None) -> list:
         _gap(gaps, "missing-fx", "fx", "Declare FX records explicitly; use an empty list when no conversion is needed.")
     fx_pairs = _validate_fx(_rows(model, "fx", "fx"), sources, as_of, gaps)
     scenarios = _rows(baseline, "scenarios", "baseline.scenarios")
+    lines = _rows(baseline, "lines", "baseline.lines")
+    line_driver_ids = {
+        _text(_object(line, f"baseline.lines[{i}]").get("driver_id"), f"baseline.lines[{i}].driver_id")
+        for i, line in enumerate(lines)
+    } - {None}
     drivers = _validate_scenarios(scenarios, sources, as_of, gaps,
-                                  outcome_unit=_mapping(profile, "outcome", "profile.outcome").get("unit"))
-    _validate_lines(_rows(baseline, "lines", "baseline.lines"), scope, scenarios,
-                    drivers, rates, fx_pairs, currency, sources, as_of, gaps)
+                                  outcome_unit=_mapping(profile, "outcome", "profile.outcome").get("unit"),
+                                  line_driver_ids=line_driver_ids)
+    _validate_lines(lines, scope, scenarios, drivers, rates, fx_pairs, currency, sources, as_of, gaps)
     if annualisation.get("demand_profile") == "flat":
         for i, scenario in enumerate(scenarios):
             runs = scenario.get("monthly_runs")

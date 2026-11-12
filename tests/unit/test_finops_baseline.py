@@ -87,6 +87,77 @@ class BaselineContractTests(unittest.TestCase):
             scenario["success_share"] = share
         self.assertNotIn("scenario-uncertainty", {g["code"] for g in self.gaps()})
 
+    def test_uncertainty_dependency_referenced_fixed_quantity_qualifies(self):
+        for scenario, quantity in zip(self.model["baseline"]["scenarios"], ("1", "2", "3")):
+            scenario["drivers"]["tokens_per_run"] = "1000"
+            scenario["drivers"]["operations_units"] = quantity
+        self.assertNotIn("scenario-uncertainty", {g["code"] for g in self.gaps()})
+
+    def test_uncertainty_dependency_unused_retries_cannot_qualify(self):
+        for scenario, retries in zip(self.model["baseline"]["scenarios"], ("1", "2", "3")):
+            scenario["drivers"]["tokens_per_run"] = "1000"
+            scenario["drivers"]["retries"] = retries
+            scenario["driver_evidence"]["retries"] = {
+                "unit": "call", "source_id": "SYN-ENGINEERING",
+                "sharingClassification": "customer-shareable",
+            }
+        self.assertIn("scenario-uncertainty", {g["code"] for g in self.gaps()})
+
+    def test_uncertainty_dependency_outcomes_per_success_qualifies(self):
+        for scenario, outcomes in zip(self.model["baseline"]["scenarios"], ("1", "2", "3")):
+            scenario["drivers"]["tokens_per_run"] = "1000"
+            scenario["outcomes_per_success"] = outcomes
+        self.assertNotIn("scenario-uncertainty", {g["code"] for g in self.gaps()})
+
+    def test_uncertainty_dependency_renamed_referenced_driver_qualifies(self):
+        for scenario in self.model["baseline"]["scenarios"]:
+            scenario["drivers"]["input_volume"] = scenario["drivers"].pop("tokens_per_run")
+            scenario["driver_evidence"]["input_volume"] = scenario["driver_evidence"].pop("tokens_per_run")
+        self.model["baseline"]["lines"][0]["driver_id"] = "input_volume"
+        self.assertNotIn("scenario-uncertainty", {g["code"] for g in self.gaps()})
+
+    def test_uncertainty_dependency_compares_decimal_values_not_spellings(self):
+        for scenario, tokens, units in zip(self.model["baseline"]["scenarios"],
+                                           ("1000", "1000.0", "1e3"), ("1", "1.0", "1e0")):
+            scenario["drivers"]["tokens_per_run"] = tokens
+            scenario["drivers"]["operations_units"] = units
+        self.assertIn("scenario-uncertainty", {g["code"] for g in self.gaps()})
+
+    def test_uncertainty_dependency_demand_must_still_vary(self):
+        for scenario, quantity in zip(self.model["baseline"]["scenarios"], ("1", "2", "3")):
+            scenario["monthly_runs"] = ["100"] * 12
+            scenario["drivers"]["tokens_per_run"] = "1000"
+            scenario["drivers"]["operations_units"] = quantity
+        codes = {g["code"] for g in self.gaps()}
+        self.assertIn("scenario-demand", codes)
+        self.assertNotIn("scenario-uncertainty", codes)
+
+    def test_uncertainty_dependency_variation_needs_its_source_reference(self):
+        for key, values in (("operations_units", ("1", "2", "3")),
+                            ("success_share", ("0.3", "0.5", "0.7")),
+                            ("outcomes_per_success", ("1", "2", "3"))):
+            model = example()
+            for scenario, value in zip(model["baseline"]["scenarios"], values):
+                scenario["drivers"]["tokens_per_run"] = "1000"
+                if key in scenario["drivers"]:
+                    scenario["drivers"][key] = value
+                else:
+                    scenario[key] = value
+                scenario["driver_evidence"][key]["source_id"] = None
+            with self.subTest(key=key):
+                codes = {g["code"] for g in self.gaps(model)}
+                self.assertIn("missing-evidence", codes)
+                self.assertIn("scenario-uncertainty", codes)
+
+    def test_uncertainty_dependency_concept_evidence_does_not_source_quantities(self):
+        for scenario, share in zip(self.model["baseline"]["scenarios"], ("0.3", "0.5", "0.7")):
+            scenario["drivers"]["tokens_per_run"] = "1000"
+            scenario["success_share"] = share
+        self.model["sources"][1]["applicability"] = ["concept"]
+        codes = {g["code"] for g in self.gaps()}
+        self.assertIn("source-applicability", codes)
+        self.assertIn("scenario-uncertainty", codes)
+
     def test_unknown_rate_reference_is_an_explicit_error(self):
         self.model["baseline"]["lines"][0]["rate_id"] = "NO-SUCH-RATE"
         with self.assertRaisesRegex(ValueError, "rate"):
@@ -208,10 +279,34 @@ class BaselineContractTests(unittest.TestCase):
 
     def test_empty_scope_and_unrepresented_driver_are_gaps_not_empty_complete_coverage(self):
         self.model["baseline"]["scope"] = []
+        self.model["baseline"]["lines"] = []  # Empty draft, not supplied dangling references.
         self.assertIn("empty-scope", {g["code"] for g in self.gaps()})
         self.model = example()
         self.model["baseline"]["lines"].pop()
         self.assertIn("uncovered-driver", {g["code"] for g in self.gaps()})
+
+    def test_empty_scope_reference_unknown_id_still_raises(self):
+        self.model["baseline"]["scope"] = []
+        self.model["baseline"]["lines"] = self.model["baseline"]["lines"][:1]
+        self.model["baseline"]["lines"][0]["cost_driver_id"] = "UNKNOWN"
+        with self.assertRaisesRegex(ValueError, r"baseline\.lines\[0\]\.cost_driver_id"):
+            self.gaps()
+
+    def test_empty_scope_reference_absent_lines_remains_a_draft_gap(self):
+        self.model["baseline"]["scope"] = []
+        self.model["baseline"]["lines"] = []
+        gaps = self.gaps()
+        self.assertTrue(any(g["code"] == "empty-scope" and g["field"] == "baseline.scope" for g in gaps))
+
+    def test_empty_scope_reference_missing_id_remains_a_field_specific_gap(self):
+        for value in (None, "", " "):
+            model = example()
+            model["baseline"]["scope"] = []
+            model["baseline"]["lines"] = model["baseline"]["lines"][:1]
+            model["baseline"]["lines"][0]["cost_driver_id"] = value
+            with self.subTest(value=value):
+                self.assertTrue(any(g["code"] == "missing-scope" and g["field"] == "baseline.lines[0].cost_driver_id"
+                                    for g in self.gaps(model)))
 
     def test_missing_editable_profile_and_baseline_inputs_are_explicit(self):
         self.model["profile"]["owners"]["finance"] = None
@@ -355,6 +450,27 @@ class BaselineContractTests(unittest.TestCase):
     def test_explicit_null_source_applicability_remains_an_evidence_gap(self):
         self.model["sources"][0]["applicability"] = None
         self.assertIn("missing-evidence", {g["code"] for g in self.gaps()})
+
+    def test_source_applicability_entry_null_has_an_explicit_indexed_gap(self):
+        self.model["sources"][0]["applicability"].insert(1, None)
+        original = copy.deepcopy(self.model)
+        gaps = [g for g in self.gaps() if g["code"] == "source-applicability"
+                and g["field"] == "sources[0].applicability[1]"]
+        self.assertTrue(gaps)
+        self.assertTrue(all(g["blocks"] == ["handover"] for g in gaps))
+        self.assertEqual(self.model, original)
+
+    def test_source_applicability_entry_blank_has_an_explicit_indexed_gap(self):
+        for value in ("", " \t "):
+            model = example()
+            model["sources"][0]["applicability"].append(value)
+            original = copy.deepcopy(model)
+            with self.subTest(value=value):
+                gaps = [g for g in self.gaps(model) if g["code"] == "source-applicability"
+                        and g["field"] == "sources[0].applicability[4]"]
+                self.assertTrue(gaps)
+                self.assertTrue(all(g["blocks"] == ["handover"] for g in gaps))
+                self.assertEqual(model, original)
 
     def test_explicit_null_driver_evidence_remains_a_gap(self):
         self.model["baseline"]["scenarios"][0]["driver_evidence"]["tokens_per_run"] = None
