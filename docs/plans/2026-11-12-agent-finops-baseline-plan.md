@@ -140,8 +140,9 @@ Run from the worktree. In each fresh PowerShell process:
 ```powershell
 Remove-Item Env:PYTHONHOME -ErrorAction SilentlyContinue
 $env:PYTHONUTF8='1'
-$env:PATH='C:\Users\urruegg\source\urruegg_microsoft\frontier-envisioning\.venv\Scripts;' + $env:PATH
-$env:PLAYWRIGHT_BROWSERS_PATH='C:\Users\urruegg\source\urruegg_microsoft\frontier-envisioning\build\playwright-browsers'
+$primary = Split-Path -Parent (git rev-parse --path-format=absolute --git-common-dir)
+$env:PATH=(Join-Path $primary '.venv\Scripts') + ';' + $env:PATH
+$env:PLAYWRIGHT_BROWSERS_PATH=Join-Path $primary 'build\playwright-browsers'
 $env:CI='true'
 $env:SITE_AUTH_MODE='none'
 ```
