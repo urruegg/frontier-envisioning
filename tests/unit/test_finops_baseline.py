@@ -34,6 +34,22 @@ def put(model, path, value):
     row[path[-1]] = value
 
 
+def reorder_objects(value, order):
+    """Permute object keys recursively, never authored array order."""
+    if isinstance(value, dict):
+        keys = list(value)
+        if order == "sorted":
+            keys.sort()
+        elif order == "reverse":
+            keys.reverse()
+        elif keys:
+            keys = keys[1:] + keys[:1]
+        return {key: reorder_objects(value[key], order) for key in keys}
+    if isinstance(value, list):
+        return [reorder_objects(child, order) for child in value]
+    return copy.deepcopy(value)
+
+
 class BaselineContractTests(unittest.TestCase):
     def setUp(self):
         # An absent implementation must be an intentional assertion RED, not a loader error.
@@ -1343,6 +1359,98 @@ class BaselineCalculationTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "recalculate"):
                     self.calc.validate_receipt(fresh, as_of=DAY, acknowledge_finops_preview=True)
                 self.assertEqual(fresh, before)
+
+    def test_review_object_order_canonical_json_roundtrip_preserves_receipt(self):
+        document = self.calculate()
+        receipt = self.calc.validate_receipt(document, as_of=DAY, acknowledge_finops_preview=True)
+        canonical = json.loads(json.dumps(document, sort_keys=True, allow_nan=False))
+        before = copy.deepcopy(canonical)
+        self.assertEqual(self.calc.validate_receipt(canonical, as_of=DAY, acknowledge_finops_preview=True), receipt)
+        self.assertEqual(self.calculate(canonical)["results"], document["results"])
+        self.assertEqual(canonical, before)
+
+    def object_order_evidence_model(self):
+        self.add_fx(status="unverified")
+        self.model["fx"][0].update(internal=True, visibility="internal")
+        self.model["rates"][0]["verification"]["verified_at"] = "2026-01-01"
+        self.model["rates"][0]["source_id"] = None
+        self.model["sources"][0]["lastValidatedAt"] = "2026-01-01"
+        self.model["sources"][0]["applicability"] = None
+        self.model["profile"]["outcome"]["unit"] = None
+        self.model["baseline"]["assumptions"][0]["supporting_note"] = {
+            "source_id": None, "sharingClassification": None, "src": [None, ""],
+        }
+        return copy.deepcopy(self.model)
+
+    def test_review_object_order_permutations_preserve_all_results_and_evidence(self):
+        for model in (example(), self.object_order_evidence_model()):
+            expected = self.calculate(model)
+            month = expected["results"]["scenarios"]["expected"]["months"][0]
+            rich = bool(model["fx"])
+            self.assertEqual(month["total"]["amount"], "100.00" if rich else "110.00")
+            self.assertEqual(month["total"]["status"], "provisional")
+            self.assertEqual(month["per_run"]["amount"], "1.000000" if rich else "1.100000")
+            if rich:
+                self.assertTrue(month["lines"][0]["cost"]["internal"])
+                self.assertNotIn("internal", month["lines"][1]["cost"])
+                self.assertIsNone(month["per_outcome"]["amount"])
+                self.assertTrue(month["lines"][0]["pricing_evidence"]["gaps"])
+            for order in ("sorted", "reverse", "rotate"):
+                with self.subTest(rich=rich, order=order):
+                    reordered = reorder_objects(model, order)
+                    before = copy.deepcopy(reordered)
+                    self.assertEqual(reordered, model)  # Dict order is immaterial; every authored list remains exact.
+                    actual = self.calculate(reordered)
+                    # Whole-result comparison covers root gaps AND every line's
+                    # pricing_evidence.gaps, without normalising any arrays here.
+                    self.assertEqual(actual["results"], expected["results"])
+                    self.assertEqual(actual["finops_preview"], expected["finops_preview"])
+                    canonical = reorder_objects(expected, order)
+                    self.assertEqual(self.calc.validate_receipt(canonical, as_of=DAY, acknowledge_finops_preview=True),
+                                     expected["finops_preview"]["calculations"]["baseline"])
+                    self.assertEqual(reordered, before)
+
+    def test_review_object_order_fix_does_not_accept_forged_diagnostics(self):
+        document = self.calculate(self.object_order_evidence_model())
+        for path in (("results", "gaps"),
+                     ("results", "scenarios", "expected", "months", 0, "lines", 0, "pricing_evidence", "gaps")):
+            for mutation in ("message", "blocks", "delete", "duplicate"):
+                with self.subTest(path=path, mutation=mutation):
+                    bad = copy.deepcopy(document)
+                    gaps = bad
+                    for key in path:
+                        gaps = gaps[key]
+                    if mutation == "message":
+                        gaps[0]["message"] = "Fabricated diagnostic"
+                    elif mutation == "blocks":
+                        gaps[0]["blocks"] = []
+                    elif mutation == "delete":
+                        del gaps[0]
+                    else:
+                        gaps.append(copy.deepcopy(gaps[0]))
+                    bad["finops_preview"]["calculations"]["baseline"]["results_fingerprint"] = (
+                        baseline_module("finops_preview").fingerprint(bad["results"]))
+                    before = copy.deepcopy(bad)
+                    with self.assertRaisesRegex(ValueError, "recalculate"):
+                        self.calc.validate_receipt(bad, as_of=DAY, acknowledge_finops_preview=True)
+                    self.assertEqual(bad, before)
+
+    def test_review_object_order_fix_preserves_meaningful_output_array_order(self):
+        document = self.calculate(self.object_order_evidence_model())
+        for path in (("results", "scenarios", "expected", "months"),
+                     ("results", "scenarios", "expected", "months", 0, "lines"),
+                     ("results", "scenarios", "expected", "months", 0, "lines", 0, "pricing_evidence", "records")):
+            with self.subTest(path=path):
+                bad = copy.deepcopy(document)
+                rows = bad
+                for key in path:
+                    rows = rows[key]
+                self.assertGreater(len(rows), 1)
+                rows.reverse()
+                bad["finops_preview"]["calculations"]["baseline"]["results_fingerprint"] = (
+                    baseline_module("finops_preview").fingerprint(bad["results"]))
+                with self.assertRaisesRegex(ValueError, "recalculate"):
+                    self.calc.validate_receipt(bad, as_of=DAY, acknowledge_finops_preview=True)
 
 
 if __name__ == "__main__":

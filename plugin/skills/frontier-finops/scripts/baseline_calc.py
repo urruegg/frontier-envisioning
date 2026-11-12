@@ -20,6 +20,8 @@ Task3 consumption contract:
   all sharing_classes and combined sharingClassification, plus inherited
   internal/visibility/src/content_src/customer_scopes. Source ancestry closes
   transitively over BOTH legacy source-reference fields and source_id.
+* Derived gaps (root and pricing_evidence) have canonical content ordering,
+  independent of authored object-key order. Authored arrays are never sorted.
 * Available means computable, NOT approved. Provisional means usable supplied
   pricing with incomplete evidence. No full total/unit cost uses a partial
   priced sum. Empty priced groups are unavailable/null, never fictional zero.
@@ -132,6 +134,11 @@ def _count(number):
     if number is None:
         return None
     return format(number, "f")
+
+
+def _canonical_gaps(gaps):
+    """Order derived diagnostics only; preserve every record and its contents."""
+    return sorted(gaps, key=lambda gap: (gap["field"], gap["code"], gap["message"], tuple(gap["blocks"])))
 
 
 def _final_amount(value, places):
@@ -301,7 +308,8 @@ class _Calculation:
                 "source_date": source.get("lastValidatedAt"), "source_status": source.get("validationStatus"),
             })
         provisional = self.model.get("mode") != "planning" or bool(gaps)
-        return applicable, provisional, {"as_of": self.as_of.isoformat(), "records": projected, "gaps": copy.deepcopy(gaps)}
+        return applicable, provisional, {"as_of": self.as_of.isoformat(), "records": projected,
+                                        "gaps": copy.deepcopy(_canonical_gaps(gaps))}
 
     def line(self, scenario, si, line, li, mi, period, start, end):
         field, sp = f"baseline.lines[{li}]", f"baseline.scenarios[{si}]"
@@ -486,7 +494,7 @@ class _Calculation:
                 "internal": True, "sharingClassification": "internal-only", "forecast_kind": "estimate",
                 "synthetic": self.model.get("mode") == "synthetic", "notice": NOTICE,
                 "handover_blocked": True, "financial_approval": False,
-                "scenarios": scenarios, "gaps": self.gaps}
+                "scenarios": scenarios, "gaps": _canonical_gaps(self.gaps)}
 
 
 def calculate(model, *, as_of, acknowledge_finops_preview=False):
