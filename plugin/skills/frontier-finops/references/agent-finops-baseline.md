@@ -62,6 +62,13 @@ leave the new scalar scope unknown and require validation; no customer is picked
 Unconsumed unrelated domains do not taint the selected Canvas. The complete
 Blueprint fingerprint still binds them and is not customer-report content.
 Migration uses the same merger for new and consumed legacy restrictions.
+Source closure follows every supported `src`, `content_src` and `source_id`
+edge at ancestor and nested levels through the supplied source registry.
+Canonical list ancestry retains all edges; copied source context retains the
+original reference kinds. Parent classes/scopes constrain descendants.
+Unknown nonblank Blueprint references refuse. Explicit missing ancestry and
+cycles remain validation-required, not customer-shareable; no silent parent or
+customer selection occurs.
 
 Every in-scope driver needs a typed, quantified line and applicable evidence.
 Rate and FX records identify units, pricing blocks, currencies, sources,
@@ -209,10 +216,17 @@ collects known material/calculation and Blueprint/legacy/source/rate/FX ancestry
 digests, plus private source/review identities and opaque evidence/URL references.
 It checks dictionary keys and embedded strings, not only named fields or
 whole-string equality. Aliases and redaction paths cannot expose those tokens.
+Recognised digest registries include keys as well as values, lists and nested
+entries; a digest used as a key with a boolean value is still protected.
 Labelled external digest values remain withheld regardless of representation;
 recognising them for redaction does not validate or authenticate those digests.
 Validated monetary/quantity/unit/currency/date scalars are governed by dependency
 classification instead of accidental textual collisions with an identifier.
+Protocol field keys are recognised at actual schema positions. Authored driver
+IDs and annotation/mapping keys remain redactable even when they spell the same
+word, such as `drivers`. Literal dotted/bracketed keys do not create trusted
+schema paths. Missing or withheld nested containers are guarded; they do not
+produce traceback-shaped CLI failures or reconstructed inputs.
 Independent public amounts and rows remain, even when unused private context
 means the complete model hash must be hidden. Internal reports retain
 private context and are labelled `private-context-not-shareable`. This is not

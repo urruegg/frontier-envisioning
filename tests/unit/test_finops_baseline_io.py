@@ -482,6 +482,63 @@ class LifecycleTests(IOCase):
         self.assertTrue(result["ready"])  # simulated verified-input test only
         self.assertFalse(result["financial_permission"])
 
+    def test_seed_closes_every_reference_kind_through_chained_source_parents(self):
+        for ancestor_kind in ("src", "content_src", "source_id"):
+            for parent_kind in ("src", "content_src", "source_id"):
+                for nested in (False, True):
+                    bp = seed_blueprint()
+                    agent = next(a for d in bp["domains"] for a in d["agents"] if a["id"] == "D3-A05")
+                    agent["canvas"]["instructions"] = "TRANSITIVE-PRIVATE-CANVAS"
+                    holder = agent if not nested else agent["canvas"].setdefault("context", {})
+                    holder[ancestor_kind] = "GRAPH-CHILD" if ancestor_kind == "source_id" else ["GRAPH-CHILD"]
+                    parent = {**bp["evidence"][0], "id": "GRAPH-PARENT", "source_id": "GRAPH-GRANDPARENT"}
+                    child = {**bp["evidence"][0], "id": "GRAPH-CHILD",
+                             parent_kind: "GRAPH-PARENT" if parent_kind == "source_id" else ["GRAPH-PARENT"]}
+                    grandparent = {**bp["evidence"][0], "id": "GRAPH-GRANDPARENT",
+                                   "sharingClassification": "internal-only"}
+                    bp["evidence"].extend([child, parent, grandparent])
+                    with self.subTest(ancestor=ancestor_kind, parent=parent_kind, nested=nested):
+                        draft = self.records.seed(bp, "D3-A05", **ACK)
+                        report = self.projection.project(self.calculated(draft), **ACK, audience="customer",
+                                                         customer_scope="caldova-scope")
+                        for text in (json.dumps(report), self.projection.render_markdown(report),
+                                     json.dumps({"schema": "frontier-agent-finops-view/1.0", "records": [report]})):
+                            self.assertNotIn("TRANSITIVE-PRIVATE-CANVAS", text)
+                        self.assertEqual(draft["sharingClassification"], "internal-only")
+                        self.assertIn("GRAPH-GRANDPARENT", draft.get("src", []))
+
+    def test_seed_source_closure_scope_cycle_missing_unknown_and_public_control(self):
+        for case in ("scope", "cycle", "missing", "unknown", "public"):
+            bp = seed_blueprint()
+            agent = next(a for d in bp["domains"] for a in d["agents"] if a["id"] == "D3-A05")
+            agent["canvas"]["instructions"] = "CLOSURE-CONTROL-CANVAS"
+            agent["source_id"] = "GRAPH-CHILD"
+            child = {**bp["evidence"][0], "id": "GRAPH-CHILD", "source_id": "GRAPH-PARENT"}
+            parent = {**bp["evidence"][0], "id": "GRAPH-PARENT"}
+            if case == "scope":
+                parent["customer_scope"] = "other-scope"
+            elif case == "cycle":
+                parent["source_id"] = "GRAPH-CHILD"
+            elif case == "missing":
+                child["source_id"] = None
+            elif case == "unknown":
+                child["source_id"] = "UNKNOWN-PARENT"
+            bp["evidence"].extend([child, parent])
+            with self.subTest(case=case):
+                if case == "unknown":
+                    with self.assertRaises(ValueError):
+                        self.records.seed(bp, "D3-A05", **ACK)
+                    continue
+                draft = self.records.seed(bp, "D3-A05", **ACK)
+                report = self.projection.project(self.calculated(draft), **ACK, audience="customer",
+                                                 customer_scope="caldova-scope")
+                if case == "public":
+                    self.assertIn("CLOSURE-CONTROL-CANVAS", json.dumps(report))
+                    self.assertIn("GRAPH-PARENT", draft.get("src", []))
+                else:
+                    self.assertNotIn("CLOSURE-CONTROL-CANVAS", json.dumps(report))
+                    self.assertEqual(draft["sharingClassification"], "validation-required")
+
 
 class ProjectionTests(IOCase):
     def serialisations(self, report):
@@ -842,6 +899,94 @@ class ProjectionTests(IOCase):
                     self.assertNotIn(digest, text)
                 self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
 
+    def test_digest_registry_keys_lists_values_and_nested_entries_protect_aliases(self):
+        digest = "fed01234" * 8
+        formats = [{digest: True}, {"entries": [{digest: False}]},
+                   {"nested": {"registry": {digest: {"checked": True}}}},
+                   {"values": [digest]}, {"record": {"value": digest}}]
+        for registry in formats:
+            model = example()
+            model["provenance"] = {"source_hashes": registry}
+            model["sources"][0]["annotations"] = {f"alias-key/{digest}": f"embedded/{digest}/text",
+                                                   "public_control": "PUBLIC-ANNOTATION-CONTROL"}
+            report = self.project(model)
+            with self.subTest(registry=registry):
+                for text in self.serialisations(report):
+                    self.assertNotIn(digest, text)
+                self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+                self.assertIn("PUBLIC-ANNOTATION-CONTROL", json.dumps(report))
+
+    def test_fixed_schema_keys_survive_private_unused_identifier_collisions(self):
+        tokens = ("drivers", "driver_evidence", "monthly_runs", "amount", "unit", "source_id",
+                  "id", "assumptions", "confidence", "owners")
+        for token in tokens:
+            for restricted in (False, True):
+                model = example()
+                model["sources"].append({**model["sources"][0], "id": token, "internal": True,
+                                         "evidence_ref": f"private:collision/{token}"})
+                model["sources"][0]["annotations"] = {token: "AUTHORED-PRIVATE-MAPPING-VALUE",
+                                                       "public_control": "PUBLIC-MAPPING-CONTROL"}
+                if token == "source_id":
+                    # source_id is a supported reference kind at ALL levels,
+                    # unlike an arbitrary authored mapping identifier.
+                    model["sources"][0]["annotations"]["source_id"] = "SYN-CONTEXT"
+                if restricted:
+                    model["baseline"]["scenarios"][1]["driver_evidence"]["tokens_per_run"]["internal"] = True
+                with self.subTest(token=token, restricted=restricted):
+                    report = self.project(model)
+                    row = report["scenario_inputs"][1]
+                    self.assertIsInstance(row["drivers"], dict)
+                    self.assertIsInstance(row["driver_evidence"], dict)
+                    self.assertEqual(row["monthly_runs"], ["100"] * 12)
+                    self.assertIn("owners", report["profile"])
+                    month = report["scenarios"]["expected"]["months"][0]
+                    self.assertEqual(month["lines"][1]["cost"]["amount"], "10.00")
+                    if not restricted:
+                        self.assertEqual(month["total"]["amount"], "110.00")
+                    else:
+                        self.assertEqual(month["total"]["status"], "withheld")
+                    annotations = report["evidence"]["sources"][0]["annotations"]
+                    if token == "source_id":
+                        self.assertEqual(annotations["source_id"], "SYN-CONTEXT")
+                    else:
+                        self.assertNotIn(token, annotations)
+                    for text in self.serialisations(report):
+                        self.assertNotIn("AUTHORED-PRIVATE-MAPPING-VALUE", text)
+
+    def test_protocol_container_and_authored_driver_key_with_same_name_are_distinct(self):
+        model = example()
+        model["sources"].append({**model["sources"][0], "id": "drivers", "internal": True})
+        for scenario in model["baseline"]["scenarios"]:
+            scenario["drivers"]["drivers"] = scenario["drivers"].pop("tokens_per_run")
+            scenario["driver_evidence"]["drivers"] = scenario["driver_evidence"].pop("tokens_per_run")
+        model["baseline"]["lines"][0]["driver_id"] = "drivers"
+        report = self.project(model)
+        self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+        for row in report["scenario_inputs"]:
+            self.assertIn("drivers", row)  # trusted protocol container
+            self.assertNotIn("drivers", row["drivers"])  # authored identifier
+            self.assertNotIn("drivers", row["driver_evidence"])
+
+    def test_authored_dotted_keys_cannot_spoof_trusted_financial_schema_positions(self):
+        model = example()
+        model["sources"].append({**model["sources"][0], "id": "PRIVATE-DOTTED-TOKEN", "internal": True})
+        model["profile"]["outcome.unit"] = "PRIVATE-DOTTED-TOKEN"
+        model["sources"][0]["annotations"] = {"rates[0].amount": "PRIVATE-DOTTED-TOKEN"}
+        report = self.project(model)
+        for text in self.serialisations(report):
+            self.assertNotIn("PRIVATE-DOTTED-TOKEN", text)
+        self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+
+    def test_incomplete_nested_driver_containers_remain_unavailable_not_reconstructed(self):
+        model = example()
+        model["baseline"]["scenarios"][1]["drivers"] = None
+        model["baseline"]["scenarios"][1]["driver_evidence"] = None
+        report = self.project(model)
+        self.assertIsNone(report["scenario_inputs"][1]["drivers"])
+        self.assertIsNone(report["scenario_inputs"][1]["driver_evidence"])
+        self.assertIsNone(report["scenarios"]["expected"]["months"][0]["total"]["amount"])
+        self.assertFalse(report["handover"]["ready"])
+
     def test_private_review_id_and_evidence_aliases_in_public_notes_are_withheld(self):
         model = simulated()
         model["sources"][0]["annotation"] = "Quoted PRIVATE-REVIEW-TOKEN and private:review/evidence references."
@@ -1050,6 +1195,58 @@ class CLITests(IOCase):
         bp = {**blueprint(), "sharingClassification": None}
         report = self.cli.apply_models(bp, [self.calculated()], **ACK, audience="customer")["agent_finops"]["records"][0]
         self.assertEqual(report["status"], "withheld")
+
+    def test_cli_customer_export_obeys_transitive_source_id_privacy(self):
+        bp = seed_blueprint()
+        agent = next(a for d in bp["domains"] for a in d["agents"] if a["id"] == "D3-A05")
+        agent["src"] = ["GRAPH-CHILD"]
+        agent["canvas"]["instructions"] = "CLI-TRANSITIVE-PRIVATE-CANVAS"
+        bp["evidence"].extend([
+            {**bp["evidence"][0], "id": "GRAPH-CHILD", "source_id": "GRAPH-PARENT"},
+            {**bp["evidence"][0], "id": "GRAPH-PARENT", "sharingClassification": "internal-only"},
+        ])
+        source = self.write("blueprint.json", bp)
+        draft, calculated = self.dir / "draft.json", self.dir / "calculated.json"
+        common = ("--as-of", DAY, "--acknowledge-finops-preview")
+        for args in (("seed", "--blueprint", source, "--agent-id", "D3-A05", "--out", draft),
+                     ("calculate", "--baseline", draft, "--out", calculated),
+                     ("export", "--baseline", calculated, "--out-dir", self.dir / "export",
+                      "--audience", "customer", "--customer-scope", "caldova-scope")):
+            result = self.run_cli(*args, *common)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        for path in (self.dir / "export/report.json", self.dir / "export/report.md"):
+            self.assertNotIn("CLI-TRANSITIVE-PRIVATE-CANVAS", path.read_text(encoding="utf-8"))
+
+    def test_cli_customer_exports_redact_key_only_digest_registry_aliases(self):
+        digest = "abc90123" * 8
+        model = example()
+        model["provenance"] = {"source_hashes": {digest: True}}
+        model["sources"][0]["annotations"] = {digest: f"copied digest {digest}"}
+        source = self.write("calculated.json", self.calculated(model))
+        result = self.run_cli("export", "--baseline", source, "--out-dir", self.dir / "export",
+                              "--audience", "customer", "--as-of", DAY, "--acknowledge-finops-preview")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for path in (self.dir / "export/report.json", self.dir / "export/report.md"):
+            self.assertNotIn(digest, path.read_text(encoding="utf-8"))
+
+    def test_cli_private_fixed_key_collisions_export_valid_partial_reports(self):
+        for i, token in enumerate(("drivers", "driver_evidence", "monthly_runs", "amount")):
+            for restricted in (False, True):
+                model = example()
+                model["sources"].append({**model["sources"][0], "id": token, "internal": True})
+                if restricted:
+                    model["baseline"]["scenarios"][1]["driver_evidence"]["tokens_per_run"]["internal"] = True
+                source = self.write(f"input-{i}-{restricted}.json", self.calculated(model))
+                out = self.dir / f"export-{i}-{restricted}"
+                result = self.run_cli("export", "--baseline", source, "--out-dir", out, "--audience", "customer",
+                                      "--as-of", DAY, "--acknowledge-finops-preview")
+                with self.subTest(token=token, restricted=restricted):
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertNotIn("Traceback", result.stderr)
+                    self.assertEqual(json.loads(result.stdout)["status"], "partial")
+                    report = json.loads((out / "report.json").read_text(encoding="utf-8"))
+                    self.assertIn("drivers", report["scenario_inputs"][1])
+                    self.assertEqual(report["scenarios"]["expected"]["months"][0]["lines"][1]["cost"]["amount"], "10.00")
 
 
 if __name__ == "__main__":

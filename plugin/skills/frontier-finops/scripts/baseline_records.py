@@ -136,7 +136,7 @@ def _context(value):
     return copy.deepcopy(value)
 
 
-def _merged_ancestry(contexts, scope):
+def _merged_ancestry(contexts, scope, sources=None):
     """Adapt authored ancestry to the existing calculator's class/flag merger.
 
     Do not duplicate dominance/union rules. Conflicting scope declarations add
@@ -145,7 +145,7 @@ def _merged_ancestry(contexts, scope):
     records = [{"sharing_classes": ["customer-specific" if scope else "validation-required"],
                 "customer_scopes": [scope] if scope else []}]
 
-    def visit(value, inherited_scope):
+    def visit(value, inherited_scope, trail=frozenset()):
         if isinstance(value, dict):
             row = {key: copy.deepcopy(value[key]) for key in ("internal", "visibility", "src", "content_src")
                    if key in value}
@@ -181,14 +181,27 @@ def _merged_ancestry(contexts, scope):
                 classes.append("validation-required")
             if "customer-specific" in classes and not scopes:
                 classes.append("validation-required")
+            refs = _refs(value)
+            if any(key in value and not _refs({key: value[key]}) for key in ("src", "content_src", "source_id")):
+                classes.append("validation-required")
+            # The shared merger accepts list ancestry. Normalise ALL supported
+            # edges into it; original reference kinds remain in copied context.
+            if refs:
+                row["src"] = refs
             row.update(sharing_classes=classes, customer_scopes=scopes)
-            _refs(value)
             records.append(row)
+            for ref in refs:
+                if sources is None or ref in trail:
+                    records.append({"sharing_classes": ["validation-required"]})
+                elif ref not in sources:
+                    raise ValueError("unresolved source ancestry reference")
+                else:
+                    visit(sources[ref], supplied_scope, trail | {ref})
             for child in value.values():
-                visit(child, supplied_scope)
+                visit(child, supplied_scope, trail)
         elif isinstance(value, list):
             for child in value:
-                visit(child, inherited_scope)
+                visit(child, inherited_scope, trail)
 
     inherited = scope
     for context in contexts:
@@ -201,9 +214,9 @@ def _merged_ancestry(contexts, scope):
     return {key: merged[key] for key in _RESTRICTIONS if key in merged}
 
 
-def _source(identity, raw=None, scope=None):
+def _source(identity, raw=None, scope=None, sources=None):
     raw = raw or {}
-    restrictions = _merged_ancestry([raw], scope)
+    restrictions = _merged_ancestry([raw], scope, sources)
     scopes = restrictions.get("customer_scopes", [])
     return {
         "id": identity, "type": "customer-evidence", "title": raw.get("title"),
@@ -212,6 +225,7 @@ def _source(identity, raw=None, scope=None):
         "freshness_policy": {"max_age_days": None},
         "customer_scope": scopes[0] if len(scopes) == 1 else None,
         **restrictions, "original_context": _context(raw),
+        **({"source_id": copy.deepcopy(raw["source_id"])} if "source_id" in raw else {}),
     }
 
 
@@ -223,9 +237,6 @@ def seed(blueprint, agent_id, *, as_of, acknowledge_finops_preview=False):
     scope = _text(blueprint.get("customer_scope"), "blueprint.customer_scope")
     actual_ancestry = [{k: v for k, v in blueprint.items() if k not in {"domains", "evidence", "sources"}},
                        {k: v for k, v in domain.items() if k not in {"agents", "lead", "orchestrator"}}, agent]
-    restrictions = _merged_ancestry(actual_ancestry, scope)
-    scopes = restrictions.get("customer_scopes", [])
-    scope = scopes[0] if len(scopes) == 1 else None
     ancestry = [_context(context) for context in actual_ancestry]
     raw_sources = blueprint.get("sources", blueprint.get("evidence", []))
     if not isinstance(raw_sources, list):
@@ -242,7 +253,10 @@ def seed(blueprint, agent_id, *, as_of, acknowledge_finops_preview=False):
         referenced.update(ref for record in _walk(row) for ref in _refs(record))
     if referenced - set(indexed):
         raise ValueError("unresolved Blueprint source reference")
-    sources = [_source(identity, indexed[identity], scope) for identity in sorted(indexed)]
+    restrictions = _merged_ancestry(actual_ancestry, scope, indexed)
+    scopes = restrictions.get("customer_scopes", [])
+    scope = scopes[0] if len(scopes) == 1 else None
+    sources = [_source(identity, indexed[identity], scope, indexed) for identity in sorted(indexed)]
     sharing = restrictions["sharingClassification"]
     draft = {
         "schema": "frontier-finops-baseline/1.0", "mode": "planning", "forecast_kind": "estimate",
@@ -282,19 +296,20 @@ def migrate(legacy, blueprint, agent_id, *, as_of, acknowledge_finops_preview=Fa
     draft["provenance"]["legacy_fingerprint"] = fingerprint(legacy)
     draft["provenance"]["legacy_context"] = context
     restrictions = [{key: copy.deepcopy(record[key]) for key in
-                     ("sharingClassification", "internal", "visibility", "src", "content_src", "customer_scope")
+                     ("sharingClassification", "internal", "visibility", "src", "content_src", "source_id", "customer_scope")
                      if key in record} for record in _walk(legacy)]
     restrictions = [record for record in restrictions if record]
     draft["provenance"]["legacy_restrictions"] = restrictions
     draft["provenance"]["migration"] = "context-only; typed quantities, rates, FX and scenarios require new evidence"
     seed_flags = {key: draft[key] for key in (*_RESTRICTIONS, "customer_scope") if key in draft}
-    merged = _merged_ancestry([seed_flags, legacy], draft.get("customer_scope"))
+    existing = {s["id"] for s in draft["sources"]}
+    for identity in sorted({ref for r in _walk(legacy) for ref in _refs(r)} - existing):
+        draft["sources"].append(_source(identity))
+    source_index = {s["id"]: s for s in draft["sources"]}
+    merged = _merged_ancestry([seed_flags, legacy], draft.get("customer_scope"), source_index)
     draft.update(merged)
     scopes = merged.get("customer_scopes", [])
     draft["customer_scope"] = scopes[0] if len(scopes) == 1 else None
-    existing = {s["id"] for s in draft["sources"]}
-    for identity in sorted({ref for r in _walk(draft["provenance"]) for ref in _refs(r)} - existing):
-        draft["sources"].append(_source(identity))
     validate_model(draft, as_of=as_of, blueprint=blueprint)
     return draft
 

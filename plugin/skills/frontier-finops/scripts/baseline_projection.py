@@ -45,6 +45,10 @@ class _Projection:
             return
         if isinstance(value, dict):
             for key, child in value.items():
+                if digest_context and key.strip():
+                    # Recognised registries may encode digest identifiers as
+                    # keys with boolean/metadata values, not only as values.
+                    self.technical_hashes.add(key.casefold())
                 name = key.lower()
                 known = (name in {"fingerprint", "hash", "digest", "sha256", "hashes", "digests"}
                          or name.endswith(("_fingerprint", "_hash", "_digest", "_sha256",
@@ -71,18 +75,68 @@ class _Projection:
                 or any(digest.lower() in folded for digest in self.technical_hashes))
 
     @staticmethod
-    def _financial_scalar(field):
-        """Only validated schema positions, never arbitrary prose/digest fields."""
-        return any(re.fullmatch(pattern, field) for pattern in (
-            r"rates\[\d+\]\.(amount|pricing_block|currency|unit|effective_from|effective_to)",
-            r"rates\[\d+\]\.verification\.verified_at",
-            r"fx\[\d+\]\.(rate|from_currency|to_currency|date)",
-            r"fx\[\d+\]\.verification\.verified_at",
-            r"sources\[\d+\]\.lastValidatedAt",
-            r"baseline\.(currency|as_of|start_month)",
-            r"profile\.outcome\.unit",
-            r"baseline\.scenarios\[\d+\]\.(monthly_runs\[\d+\]|success_share|outcomes_per_success|drivers\..+)",
-        ))
+    def _financial_scalar(path):
+        """Actual path components, not spoofable dot/bracket text from keys."""
+        norm = tuple("*" if type(part) is int else part for part in path)
+        if norm in {("baseline", "currency"), ("baseline", "as_of"), ("baseline", "start_month"),
+                    ("profile", "outcome", "unit"), ("sources", "*", "lastValidatedAt")}:
+            return True
+        if len(norm) == 3 and norm[:2] == ("rates", "*"):
+            return norm[2] in {"amount", "pricing_block", "currency", "unit", "effective_from", "effective_to"}
+        if len(norm) == 3 and norm[:2] == ("fx", "*"):
+            return norm[2] in {"rate", "from_currency", "to_currency", "date"}
+        if len(norm) == 4 and norm[0] in {"rates", "fx"} and norm[1:] == ("*", "verification", "verified_at"):
+            return True
+        if norm[:3] == ("baseline", "scenarios", "*"):
+            return ((len(norm) == 4 and norm[3] in {"success_share", "outcomes_per_success"})
+                    or (len(norm) == 5 and norm[3] in {"monthly_runs", "drivers"})
+                    or (len(norm) == 6 and norm[3] == "driver_evidence" and norm[5] == "unit"))
+        return False
+
+    @staticmethod
+    def _fixed_keys(path):
+        """Closed contract objects only; driver IDs/notes remain authored maps."""
+        norm = tuple("*" if type(part) is int else part for part in path)
+        privacy = {"sharingClassification", "customer_scope", "sharing_classes", "customer_scopes",
+                   "internal", "visibility", "src", "content_src", "source_id"}
+        fixed = {
+            ("profile",): {"agent_id", "name", "canvas", "owners", "outcome", "demand_context",
+                           "target_context", "measurement_plan", "guardrails"},
+            ("profile", "owners"): {"business", "technical", "finance"},
+            ("profile", "outcome"): {"definition", "unit", "confirmation_status"},
+            ("baseline",): {"id", "version", "agent_id", "as_of", "start_month", "currency", "annualisation",
+                            "scope", "assumptions", "exclusions", "risks", "confidence", "scenarios", "lines"},
+            ("baseline", "annualisation"): {"method", "demand_profile"},
+            ("baseline", "confidence"): {"level", "rationale"},
+            ("baseline", "scenarios", "*"): {"id", "monthly_runs", "success_share", "outcomes_per_success",
+                                           "drivers", "driver_evidence"},
+            ("baseline", "scenarios", "*", "driver_evidence"): {"monthly_runs", "success_share", "outcomes_per_success"},
+            ("rates", "*"): {"id", "version", "amount", "currency", "unit", "pricing_block", "service", "meter",
+                             "effective_from", "effective_to", "verification", "freshness_policy"},
+            ("fx", "*"): {"id", "rate", "from_currency", "to_currency", "date", "method", "verification", "freshness_policy"},
+            ("sources", "*"): {"id", "type", "title", "url", "evidence_ref", "supported_claim", "applicability",
+                               "lastValidatedAt", "validationStatus", "freshness_policy", "original_context"},
+            ("handover",): {"schema", "as_of", "target", "lifecycle", "structural_validation", "pricing_completeness",
+                           "ready", "status", "gaps", "owner_review", "financial_permission", "limitations"},
+            ("handover", "owner_review"): {"schema", "id", "decision", "actor", "finance_owner", "date", "evidence_ref",
+                                          "delegation_evidence_ref", "baseline_id", "version", "material_hash", "mode",
+                                          "synthetic", "recorded_as_of", "assertion", "review_boundary"},
+        }
+        if norm in fixed:
+            return fixed[norm] | privacy
+        if len(norm) == 3 and norm[:2] in {("rates", "*"), ("fx", "*"), ("sources", "*")}:
+            if norm[2] == "freshness_policy":
+                return {"max_age_days"}
+            if norm[2] == "verification":
+                return {"status", "verified_at"} | privacy
+        if len(norm) == 3 and norm[0] == "baseline" and norm[1] in {"scope", "assumptions", "exclusions", "risks"}:
+            return {"id", "cost_driver_id", "description", "reason", "maturity"} | privacy
+        if len(norm) == 5 and norm[:4] == ("baseline", "scenarios", "*", "driver_evidence"):
+            return {"unit"} | privacy
+        # These metadata/reference kinds are interpreted by the existing
+        # contract at every nesting level. This does NOT make arbitrary
+        # mapping identifiers such as "drivers" protocol keys.
+        return privacy
 
     def _collect_private_ids(self, value, field="model", scope=None, parent_private=False, dynamic_key=None):
         if isinstance(value, dict):
@@ -140,8 +194,14 @@ class _Projection:
                 return f"sources[{i}]"
         return None
 
-    def raw(self, value, field="", inherited_scope=None):
+    def raw(self, value, field="", inherited_scope=None, *, path=None):
         """Project authored context recursively; no unsafe opaque serialised blob."""
+        if path is None:
+            # Entry fields are module-defined contract locations. Recursion
+            # appends literal keys, so authored "outcome.unit" cannot become
+            # the trusted path ("profile", "outcome", "unit").
+            path = tuple(int(part[1:-1]) if part.startswith("[") else part
+                         for part in re.findall(r"\[\d+\]|[^.\[\]]+", field))
         if isinstance(value, dict):
             if self.restricted(value, field=field, inherited_scope=inherited_scope):
                 return {"status": "withheld"}
@@ -152,16 +212,14 @@ class _Projection:
                 if k in _TECHNICAL or k in {"finops_preview", "review_records", "handover", "results"}:
                     continue
                 child_field = f"{field}.{k}" if field else k
-                # Dynamic driver keys are identifiers, not numeric scalar names.
-                fixed_financial_key = self._financial_scalar(child_field) and not field.endswith(".drivers")
-                if not fixed_financial_key and self._hidden_token(k):
+                if k not in self._fixed_keys(path) and self._hidden_token(k):
                     output[f"withheld-{len(output) + 1}"] = {"status": "withheld"}
                 else:
-                    output[k] = self.raw(v, child_field, scope)
+                    output[k] = self.raw(v, child_field, scope, path=(*path, k))
             return output
         if isinstance(value, list):
-            return [self.raw(v, f"{field}[{i}]", inherited_scope) for i, v in enumerate(value)]
-        if not self._financial_scalar(field) and self._hidden_token(value):
+            return [self.raw(v, f"{field}[{i}]", inherited_scope, path=(*path, i)) for i, v in enumerate(value)]
+        if not self._financial_scalar(path) and self._hidden_token(value):
             return {"status": "withheld"}
         return copy.deepcopy(value)
 
@@ -251,11 +309,17 @@ class _Projection:
                 if self.pointer_restricted(pointer) or (key == "outcomes_per_success" and
                                                        self.pointer_restricted("/profile/outcome")):
                     row[key] = {"status": "withheld"}
-            for key in scenario.get("drivers", {}):
+            drivers = row.get("drivers")
+            if not isinstance(drivers, dict) or drivers.get("status") == "withheld":
+                projected.append(row)
+                continue
+            for key in scenario.get("drivers") or {}:
+                if key not in drivers:  # already redacted as an authored identifier
+                    continue
                 escaped = key.replace("~", "~0").replace("/", "~1")
                 if self.pointer_restricted(f"/baseline/scenarios/{i}/driver_evidence/{escaped}"):
-                    row["drivers"].pop(key, None)
-                    row["drivers"][f"withheld-{len(row['drivers']) + 1}"] = {"status": "withheld"}
+                    drivers.pop(key)
+                    drivers[f"withheld-{len(drivers) + 1}"] = {"status": "withheld"}
             projected.append(row)
         return projected
 
