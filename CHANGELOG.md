@@ -4,6 +4,12 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
 
 ## 1.9.1 — unreleased
 
+- **Internal reader journey (#31, 12 November 2026).** Reader-first overview,
+  getting-started guide, scoped starter prompts and a five-view Caldova gallery
+  linked to the generated offline HTML. The synthetic core example includes
+  requested ontology, not FinOps; regeneration and drift-check instructions
+  accompany capture provenance. Private visibility, internal-candidate status
+  and separate human sharing/release decisions are unchanged.
 - **Eight skills, optional process.** Seven non-FinOps GA product wrappers plus
   bundled optional Preview FinOps. Requested process work produces deterministic
   local ontology/Turtle, data-agent and product documents; Fabric import/agent
@@ -20,8 +26,10 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
 - **Bounded product records.** New 1.9.1 requirements/acceptance are separate from
   unchanged historical product sections; process/CDM ADRs remain Proposed.
   [SPRINT-004](docs/sprints/SPRINT-004-handover-1.9-preview-finops.md) records
-  D0–D3 returned evidence, pre-D4 checks and remaining D5 review/build/validation.
-  Final post-doc tests and actual Cowork/Fabric/AT checks are not claimed.
+  chronological evidence; D0–D5 local technical delivery was completed and
+  human-merged in [PR #29](https://github.com/urruegg/frontier-envisioning/pull/29)
+  on 11 November. That baseline is not new #31 validation or proof of actual
+  Cowork installation, Fabric tenant checks or assistive-technology acceptance.
   GA designation is not provider GA, result confidence, release/deployment or
   external/public/IP clearance; private engineering distribution is unchanged.
 
