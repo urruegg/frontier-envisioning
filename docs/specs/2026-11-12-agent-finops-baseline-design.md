@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
+| Version | 0.5 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted design preparation |
 | Status | Spec/plan approved at 2e3c0e7/efb3468; actual D35-10 draft-reporting amendment recorded; delivery unverified |
@@ -81,6 +81,19 @@ nor make an inapplicable rate applicable.
 The strict evidenced/priced financial handover gate is unchanged. This actual
 decision amends only draft reporting in revision 0.4; it does not verify rates,
 promote FinOps GA or grant financial, deployment or GitHub-label authority.
+
+### Targeted combined-source amendment: D35-11
+
+During Task 4 the maintainer selected `support-combined-source-resolution`.
+Valid ontology and baseline inputs must work together. Resolve their separate
+source registers on a detached copy, preserving namespaces, actual consumed
+ancestry, sharing restrictions and customer scopes. Ambiguous or colliding
+identities must fail during preflight, before outputs; never shadow a private
+source with a public definition. Original inputs remain unchanged.
+
+This is a source-resolution amendment, not a financial or deployment
+permission. Unrelated agents and unconsumed sources must not taint otherwise
+independent financial records.
 
 ## 3. Scope and architecture
 

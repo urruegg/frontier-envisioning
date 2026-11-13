@@ -2,18 +2,18 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.7 |
+| Version | 0.9 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Version/contract/calculator reviewed; records/export checkpoint under review; final gates pending |
+| Status | D1 records/export checkpoint reviewed; Blueprint integration in progress; final gates pending |
 | Scope | Offline baseline-first 1.10.0 internal candidate, not live FinOps operations |
 | References | [Catalogue](README.md), [Parent #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Design](../specs/2026-11-12-agent-finops-baseline-design.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
 | [#35](https://github.com/urruegg/frontier-envisioning/issues/35) | [Outcome/input](../ideas/2026-11-12-agent-finops-baseline.md) | [Baseline design](../specs/2026-11-12-agent-finops-baseline-design.md) | [Tasks 0-8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; accountable | Actual D35-09 plan/readiness approval recorded | Approved for bounded implementation; no label change inferred | Spec approval `2e3c0e7`; plan approval `efb3468`; no delivery/PR proof yet |
-| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Contract/calculator reviewed; Task 3 checkpoint under spec review | Wrapper/renderer and final installed/distribution proof pending |
-| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | D1 stable contract and review; fixture preparation before UI | Draft; no code | Existing wrapper/renderer integration, not a new app |
+| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Engine/records/export checkpoint reviewed at `b623228a` | Integrated wrapper/UI and final installed/distribution proof pending |
+| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | Reviewed D1; fixture preparation before UI | Task 4 optional build integration in progress | Renderer and browser proof not yet delivered |
 | [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | [Verified candidate](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-10/11/12](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D3, Tasks 0/5/7/8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D3, estimated M | Preparation first; final proof after D1/D2 | Task 0 reviewed; remaining D3 work pending | Scoped evidence below, not full 1.10.0 quality/distribution proof |
 
 ## Human evidence and gates
@@ -42,6 +42,13 @@ Known supplied stale/unverified rates may support explicitly provisional
 draft totals/unit costs with source/date gaps and separated contributions.
 Unknown values remain unknown; strict financial build handover is unchanged.
 This targeted reporting decision was recorded before calculator code.
+
+During combined ontology/baseline integration, the actual
+`support-combined-source-resolution` response is D35-11. Separate source
+registers are resolved on a detached, restriction-preserving view; ambiguity/
+collisions reject during preflight before outputs. Valid combinations remain
+supported, original inputs stay unchanged and unrelated source context does
+not taint independent financial records.
 
 ## Preparation evidence, not new-feature evidence
 
@@ -145,6 +152,42 @@ verified commercial rates, financial authority or full L1/L2. The interim
 full-check attempt exposed the separately corrected authority-ID guard; its
 failure is not replaced by a success claim. Integrated full gates, browser,
 final extracted-package execution and repeatable distribution remain pending.
+
+The first real snapshot/CLI save-reload exercise exposed object-key iteration
+changing diagnostic-array order. The producer correction at `6bef994e`
+canonically orders only derived diagnostics, preserving authored and meaningful
+arrays and strict forged-output rejection. Four focused permutation/roundtrip
+regressions passed independently; the worker's combined run passed 194 tests.
+
+## Task 3: Records, projection and CLI checkpoint
+
+The reviewed checkpoint is
+`b623228aba2122c7904b33d225294c4ce08e6c55`. It adds versioned snapshots,
+externally evidenced review records, strict dated planning handover,
+context-only explicit legacy migration, dependency-projected JSON/Markdown
+and Blueprint report data, and the guarded CLI. It does not authenticate
+financial authority or implement the wrapper, renderer or live operating loop.
+
+The independent spec/privacy stage closed source-class/scope inheritance,
+transitive reference closure, diagnostic-gap-path restrictions, digest/ID
+aliases and mapping keys, schema-key collisions and synthetic-review cases.
+The quality stage closed current-Blueprint apply ancestry, source cycles and
+accepted nullable drafts. Shared DAG joins and unrelated public rows remain
+usable; cyclic/restricted dependencies are withheld rather than zero-filled.
+Synthetic records remain demonstrations, never financial permission.
+
+The final bounded report correction was reviewed directly: merge the current
+calculator's complete diagnostics with consumer-only cycle gaps, deduplicate
+whole records and preserve canonical order/period/block context. Three focused
+internal/customer API, Markdown and actual CLI coverage tests passed in the
+controller loop. The worker's full focused run passed **292 tests**
+(98 records/export plus 194 prior baseline/legacy tests), with all previous
+privacy and synthetic controls retained. Installer metadata was regenerated
+against the complete modules; all 93 source hashes were checked.
+
+These are intermediate source-qualified checks. Final L1/L2, actual installed
+handoff execution, screenshots and repeatable distribution are still pending;
+no interim plugin ZIP is declared ready for distribution.
 
 ## Independent authority-document checkpoint
 

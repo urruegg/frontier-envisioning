@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
+| Version | 0.4 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
 | Status | Human plan/readiness approved at efb3468; targeted D35-10 draft-reporting amendment; implementation in progress |
@@ -43,6 +43,14 @@ explicitly provisional draft totals/unit costs, with source/date warnings and
 visible verified/provisional contributions. Unknown required values still
 produce unavailable full totals; the strict financial handover gate remains.
 This is the actual targeted amendment to the otherwise approved plan.
+
+During Task 4, actual choice `support-combined-source-resolution` is D35-11:
+support combined ontology/baseline builds with detached namespace-aware,
+restriction-preserving source resolution. Reject ambiguous/colliding identities
+before outputs, preserve inputs and do not taint independent financial records
+with unrelated source context. One directly dependent shared helper in existing
+`frontier-finops/scripts/agent_finops.py` is allowed if needed for consistent
+preflight, final-builder and direct-apply behaviour.
 
 Work in the already consented native worktree on `feat/35-finops-baselines`.
 The primary checkout remains separate. Accountable human owner: `@urruegg`.
@@ -440,6 +448,12 @@ def write_exclusive(path, document):
   acknowledgement forwarded only within that action. Reject pre-existing
   ambiguous legacy/new blocks and Preview-derived legacy value without its
   required source, rather than silently selecting or clearing a model.
+- [ ] Apply actual D35-11 to combined ontology/baseline inputs. Resolve local
+  and root source registers on a detached view with consistent references,
+  restrictions and scopes; reject ambiguous collisions before identity/output
+  creation. Test public/private/transitive sources, unrelated controls and
+  input-byte preservation. Share the resolver rather than duplicate caller
+  policy; no source shadowing or assumed public classification.
 - [ ] In standalone `build_blueprint.py`, accept the explicit acknowledgement
   flag when successor data is present, validate/project through lazy optional
   baseline helpers before any serialisation, then use existing customer

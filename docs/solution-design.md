@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.5 |
+| Version | 1.6 |
 | Date | 2026-11-12 |
 | Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation) |
 | Status | Maintained design; 1.10.0 implementation/verification pending, no release approval implied |
@@ -78,6 +78,14 @@ part of this boundary. D1 [#38](https://github.com/urruegg/frontier-envisioning/
 owns the engine; D2 [#37](https://github.com/urruegg/frontier-envisioning/issues/37)
 owns integration; D3 [#39](https://github.com/urruegg/frontier-envisioning/issues/39)
 owns preparation and final proof. The sole accountable human owner is `@urruegg`.
+
+Actual integration decision D35-11 keeps combined ontology/baseline builds in
+scope. Root Blueprint evidence and ontology-local source registers are not
+silently treated as one namespace. A shared resolver works on a detached view,
+retains actual consumed ancestry/classes/scopes and rejects ambiguous or
+colliding identities during preflight before any output. Original inputs and
+ontology references remain intact; unrelated agents/sources do not taint an
+independent financial record.
 
 ### Planned flow and external trust boundary
 

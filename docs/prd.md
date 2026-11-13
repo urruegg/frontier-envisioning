@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.5 |
+| Version | 1.6 |
 | Date | 2026-11-12 |
 | Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation) |
 | Status | Maintained requirements; 1.10.0 implementation/verification pending, no release approval implied |
@@ -61,6 +61,7 @@ record the actual choices, not inferred permissions:
 | D35-08 | `approve-written-spec` | Written spec approved at [2e3c0e79](https://github.com/urruegg/frontier-envisioning/commit/2e3c0e79dc45c9ab06775def9f31cfb3bad7a8aa), before planning. |
 | D35-09 | `approve-subagent-driven` | Plan/readiness approved at [efb3468](https://github.com/urruegg/frontier-envisioning/commit/efb3468dbe597ea6112b6839c7019243ab44b885); bounded subagent-driven execution selected. |
 | D35-10 | `provisional-draft-figures` | Targeted draft-reporting amendment recorded at [28de255](https://github.com/urruegg/frontier-envisioning/commit/28de255404ec8cb4d88babf86299e36b2b63c9f8), before calculator code; strict financial handover unchanged. |
+| D35-11 | `support-combined-source-resolution` | Support valid ontology/baseline combinations through detached namespace-aware, restriction-preserving resolution; reject ambiguous source collisions before outputs and preserve originals. |
 
 [ADR-0028](adr/0028-versioned-agent-finops-baselines.md) remains **Proposed**
 until human acceptance. These records do not establish protected labels,
@@ -91,7 +92,7 @@ The following are requirements, not an implemented-feature inventory.
 | ID | Requirement | Priority | Verify |
 |---|---|---|---|
 | FR-0142 | Preserve independent core/ordinary value and sparse/legacy builds. Require fresh actual current-scenario Preview acknowledgement before each financial operation or figure write; reuse the full unchanged NOTICE, actual boolean API consent and current-chain-only forwarding (AFB-01). | M | T, manual behaviour |
-| FR-0143 | Link profile/baseline to existing agent IDs. Record business/technical/finance owners, outcome definition, demand, scope, assumptions, exclusions, risks, confidence, measurement and guardrails; diagnose invalid IDs, schemas, numbers, dates and units explicitly (AFB-02). | M | T |
+| FR-0143 | Link profile/baseline to existing agent IDs. Record business/technical/finance owners, outcome definition, demand, scope, assumptions, exclusions, risks, confidence, measurement and guardrails; diagnose invalid IDs, schemas, numbers, dates and units explicitly. D35-11 keeps ontology-local/root source identities and restrictions explicit, resolving valid combinations on a copy and rejecting ambiguity before outputs (AFB-02). | M | T |
 | FR-0144 | Use exactly low/expected/high scenarios with twelve monthly demand values each. Demand and another referenced, sourced cost/outcome uncertainty must differ and affect the model; neither final-total multipliers nor an unused driver-name whitelist suffices (AFB-03). | M | T |
 | FR-0145 | Use Decimal quantities, pricing units/blocks, preserved rate precision and declared rounding. Report monthly/annual recurring, one-time/first-year and per-run/success/outcome costs with matching period/basis; zero/missing denominators are unavailable. Support CHF/EUR/USD, one reporting currency per baseline, explicit dated FX pair/method only and no mixed-currency portfolio total. Forecasts remain estimates; measured/allocated inputs retain basis/lineage (AFB-04). | M | T |
 | FR-0146 | Keep missing required arithmetic inputs unavailable, never zero. Apply D35-10 only to known usable supplied prices/FX with incomplete evidence, with explicit provisional status, source/date gaps and separate verified/provisional contributions; do not imply verified prices or financial readiness (AFB-05). | M | T, evidence review |
