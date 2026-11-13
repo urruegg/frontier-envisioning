@@ -1,13 +1,13 @@
 {
   "schema": "frontier-docs-demo/1.0",
   "profile": "core",
-  "plugin_version": "1.9.2",
-  "source_sha256": "659b08921973cdbac73f3e74c99a0d031933d45cb0dcec7dee7b703f8d5c5f6f",
+  "plugin_version": "1.10.0",
+  "source_sha256": "422b646724247825e426e88afea0740408d40df9e89b7d1fdb8ba5cc21835c72",
   "html": {
     "file": "caldova-blueprint.html",
-    "sha256": "b5e124e72dd13cde76586deae2dc98be638640948fc2cfc182bf8cea9a1dc23f",
-    "canonical_sha256": "25f180806ffb07daad583a5371991b71e5b46fe1d12454a54db7477850d5d5e3",
-    "generated": "2026-11-12"
+    "sha256": "44ad69aaddbd269debb468408a642daa38766e8e70661e79480576a9fb928e8b",
+    "canonical_sha256": "1ecd07d7ebb398364ad76eb78b6bd6f1bf50a8138639c63437bca4ab84214d52",
+    "generated": "2026-11-13"
   },
   "capture": {
     "browser": "156.0.8078.4",

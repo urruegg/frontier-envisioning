@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.1 |
+| Version | 1.2 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Backend, build integration, fixture and source guidance reviewed; UI and final gates pending |
+| Status | Runtime, fixture, guidance and generated core example reviewed; final gates pending |
 | Scope | Offline baseline-first 1.10.0 internal candidate, not live FinOps operations |
 | References | [Catalogue](README.md), [Parent #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Design](../specs/2026-11-12-agent-finops-baseline-design.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
@@ -13,7 +13,7 @@
 |---|---|---|---|---|---|---|---|
 | [#35](https://github.com/urruegg/frontier-envisioning/issues/35) | [Outcome/input](../ideas/2026-11-12-agent-finops-baseline.md) | [Baseline design](../specs/2026-11-12-agent-finops-baseline-design.md) | [Tasks 0-8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; accountable | Actual D35-09 plan/readiness approval recorded | Approved for bounded implementation; no label change inferred | Spec approval `2e3c0e7`; plan approval `efb3468`; no delivery/PR proof yet |
 | [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Engine/records/export reviewed at `b623228a`; wrapper at `11e11f18` | Initial installed CLI proof below; UI and final distribution proof pending |
-| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | Reviewed D1 and explicit fixture | Task 4 reviewed at `11e11f18`; Task 5 quality closed at `39ade060` | Renderer and browser proof not yet delivered |
+| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | Reviewed D1 and explicit fixture | Task 4 reviewed at `11e11f18`; Task 6 quality closed at `9a453857` | Scoped DOM/browser evidence below; full L2 pending |
 | [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | [Verified candidate](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-10/11/12](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D3, Tasks 0/5/7/8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D3, estimated M | Preparation first; final proof after D1/D2 | Source guidance and explicit fixture reviewed | Initial package/CLI evidence below, not full 1.10.0 quality/distribution proof |
 
 ## Human evidence and gates
@@ -335,3 +335,109 @@ candidate-only changelog update. Generated HTML, five genuine captures and
 manifest are still to be rebuilt after Task 6; the manifest owns their actual
 version and hashes. No capture, full-gate or final-package result is inferred
 from the updated guides.
+
+## Core-only consumer-guard checkpoint
+
+The controller reproduced a successor-data gap in the gallery and complete
+bundle consumers. A core-tagged build report was insufficient proof that the
+actual HTML contained no FinOps. Two gallery and five bundle subtests failed
+before the fix, while the ordinary core/archive control passed.
+
+Commit `1573c0c717a3dd4d2c57c3b02ae49644a98cc270` extends the existing
+canonical core validator to `agent_finops` and reuses it on actual bundled
+HTML before any overwrite. Successor report metadata also refuses. All
+**17 focused consumer tests** passed, preserving previous outputs/checksums
+and exact archive contents for valid core inputs. Actual full core HTML was
+accepted; actual baseline HTML was rejected. Ruff, whitespace and strict
+documentation checks passed; all three historical suffixes remained unchanged.
+
+## Task 6: Renderer checkpoint
+
+The accepted checkpoint is
+`9a453857e7a55f9f016c3ce86d7f16cb580e6cf9`, following the initial
+`151cdbb3` and spec corrections `a0bd2ef8`. It adds the separate projected
+baseline view, transient acknowledgement, exact decimal text and gated
+JSON/Markdown reports. The financial criterion remains within the existing
+eight checks; other checks and declared build/release/operate stages remain.
+Workshop proposals are new-draft inputs, not frozen-model edits or approval.
+Independent ordinary value remains independent.
+
+Spec review found and closed contradictory pricing/contribution statuses,
+inconsistent projected owner/delegation/dates and omitted known-priced
+subtotals. Subsequent quality review found and closed wrong-agent association,
+missing frozen-version equality and contradictory consumed rate/source
+evidence. The fixes preserve legitimate empty contribution groups, projected
+customer hash omission, optional aliases and independent unused context.
+They do not calculate prices, reconstruct hashes or authenticate external review.
+
+Actual proof:
+
+- The final cold template/demo/DOM/package run passed **161 DOM tests**:
+  the prior 75 plus 86 new cases. Its `ALL GATES PASSED` covers those selected
+  steps, not full L1.
+- The focused Chromium run passed **17 tests**, including actual downloads,
+  acknowledgement reset, private/unpriced states, known-priced subtotals,
+  keyboard/reflow/accessibility and strict CSP. Recorded console errors and
+  external requests: **zero**. Local test servers were stopped.
+- Independent spec review passed 93 relevant DOM tests and actual projected
+  Blob-download checks; the pre-fix renderer failed 27 of 29 new regressions,
+  retaining two valid controls.
+- Independent quality closure passed **122 relevant DOM tests** and
+  **14 in-memory producer/consumer probes**, including all original failures.
+  The controller separately passed the 29 spec-correction cases.
+- Assembly and installer-recipe comparisons matched. ESLint reported zero
+  errors and six inherited warnings; no adjacent tests were weakened.
+
+Generated template SHA-256:
+`1cd5d0596461730dc9599252e02477f093a7e370a80a89c87cfe72559ad02465`.
+Genuine observed light/dark and association/subtotal captures and actual
+downloads are retained under `build/evidence/task6/`. Positive readiness probes
+use explicitly labelled test-only DTOs; the shipped producer example remains
+synthetic and financially blocked.
+
+## Ordinary combined-regression checkpoint
+
+At `9a453857`, the unmodified command
+`python -m unittest tests.unit.test_finops_baseline tests.unit.test_finops_baseline_io tests.unit.test_finops_preview -v`
+passed **336 tests in 421.333 seconds**, exit zero and no skips. This is
+targeted Python verification, not full L1/L2.
+
+An earlier quiet run was interrupted before a result. A repeated-faulthandler
+diagnostic then exited with a Windows native error while dumping a stack;
+that diagnostic is not passing or failing production-test evidence.
+An independent bounded investigation reproduced neither an ancestry defect
+nor the native crash: the original two cases and 22 affected cases passed
+normally, and measured ancestry work did not justify a source change.
+No speculative optimisation, test reduction or exception suppression was made.
+The complete ordinary 336-test run above subsequently passed in the same order.
+The instrumentation failure's cause remains unestablished.
+
+All source checkpoints are now reviewed. Full strict gates, final archive
+reproduction/installed execution and the draft pull request remain pending;
+scoped checks do not imply their completion.
+
+## Generated core-documentation checkpoint
+
+The standard `python tools/dev.py template package demo docs-demo` command
+completed successfully after renderer and core-guard review. The template
+remained 399,470 bytes. Full core regeneration verified all 205 named identity
+inputs and restored the same 223 historical rasters; no future profile was
+enabled. The current plugin ZIP hash at this checkpoint is
+`af7bd2e10c8e34ed7f15800b60e31166c2ab9139dc2b1f31f31023a3289e94cf`;
+this is not yet final distribution/repeatability proof.
+
+The tracked core HTML and manifest now identify **1.10.0**, with 17 routes and
+no FinOps. All five 1440 × 1000 light viewport captures were genuinely
+recaptured and manually viewed: Overview, Org model, Agents, Agent identity
+and Ontology. Their PNG bytes remained identical; the HTML and manifest changed.
+The manifest records Chromium 156.0.8078.4 / Playwright 1.64.1, en-GB, UTC and
+reduced motion. It owns the actual hashes and capture settings.
+
+- Core HTML SHA-256: `44ad69aaddbd269debb468408a642daa38766e8e70661e79480576a9fb928e8b`
+- Canonical HTML SHA-256: `1ecd07d7ebb398364ad76eb78b6bd6f1bf50a8138639c63437bca4ab84214d52`
+- Source fingerprint: `422b646724247825e426e88afea0740408d40df9e89b7d1fdb8ba5cc21835c72`
+
+`python tools/build_docs_demo.py --check --demo build/demo` verified the actual
+fresh core, source fingerprint and five captures. Strict documentation checks
+reported zero errors. These generated examples remain synthetic internal
+workshop aids, not deployment, pricing verification or sharing clearance.

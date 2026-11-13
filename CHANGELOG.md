@@ -23,6 +23,11 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
   acknowledgement, date and sharing scope. Current source ancestry is resolved
   before customer projection; cached views and workshop notes cannot supply
   financial authority. Core and legacy paths remain independent.
+- **Baseline review in the Blueprint (#37).** The existing optional FinOps view
+  shows projected profiles, scenarios, unit economics and pricing/review gaps,
+  with exact decimal text and acknowledgement-gated JSON/Markdown exports.
+  Canvas, Factory and Plan use the financial evidence criterion within their
+  existing checks; notes cannot approve it or rewrite production stages.
 - **Core-only sharing artefacts (#39).** The gallery and complete bundle check
   actual demo content. Legacy or successor FinOps data cannot enter the core
   sample merely because a stale build report calls it core.
