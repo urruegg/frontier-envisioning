@@ -269,7 +269,8 @@ class BrowserCache(unittest.TestCase):
         self.assertEqual(
             run.call_args.kwargs.get("env"),
             {"PLAYWRIGHT_BROWSERS_PATH": str(fe_lib.BUILD / "playwright-browsers"),
-             "FRONTIER_SITE_DIR": str(fe_lib.BUILD / "site-e2e")},
+             "FRONTIER_SITE_DIR": str(fe_lib.BUILD / "site-e2e"),
+             "BLUEPRINT_BASELINE_HTML": str(fe_lib.BUILD / "demo-agent-finops-preview" / fe_lib.DEMO_HTML_NAME)},
         )
 
 
@@ -295,12 +296,17 @@ class PreviewGateFixtures(unittest.TestCase):
                 mock.patch.object(dev, "run", return_value=0) as run:
             dev.cmd_dom()
         preview = fe_lib.BUILD / "demo-finops-preview"
+        baseline = fe_lib.BUILD / "demo-agent-finops-preview"
         tool.assert_any_call("build_demo", [
             "--out", str(preview), "--with-finops-preview", "--acknowledge-finops-preview",
+        ])
+        tool.assert_any_call("build_demo", [
+            "--out", str(baseline), "--with-finops-baseline", "--acknowledge-finops-preview",
         ])
         self.assertEqual(run.call_args.kwargs["env"], {
             "BLUEPRINT_HTML": str(fe_lib.DEMO_DIR / fe_lib.DEMO_HTML_NAME),
             "BLUEPRINT_PREVIEW_HTML": str(preview / fe_lib.DEMO_HTML_NAME),
+            "BLUEPRINT_BASELINE_HTML": str(baseline / fe_lib.DEMO_HTML_NAME),
         })
 
     def test_e2e_prepares_an_isolated_site_with_both_real_csp_fixtures(self):
@@ -311,11 +317,13 @@ class PreviewGateFixtures(unittest.TestCase):
                 mock.patch.object(dev, "run", return_value=0) as run:
             dev.cmd_e2e()
         preview = fe_lib.BUILD / "demo-finops-preview"
+        baseline = fe_lib.BUILD / "demo-agent-finops-preview"
         tool.assert_any_call("build_demo", [
             "--out", str(preview), "--with-finops-preview", "--acknowledge-finops-preview",
         ])
         tool.assert_any_call("build_site", [
-            "--out", str(fe_lib.BUILD / "site-e2e"), "--preview-demo", str(preview), "--auth", "none",
+            "--out", str(fe_lib.BUILD / "site-e2e"), "--preview-demo", str(preview),
+            "--baseline-demo", str(baseline), "--auth", "none",
         ])
         self.assertEqual(run.call_args.kwargs["env"]["FRONTIER_SITE_DIR"], str(fe_lib.BUILD / "site-e2e"))
 
@@ -331,6 +339,64 @@ class PreviewGateFixtures(unittest.TestCase):
                     with self.assertRaises(dev.GateFailure):
                         getattr(dev, command)()
                     run.assert_not_called()
+
+    def test_failed_baseline_build_stops_both_runners(self):
+        for command in ("cmd_dom", "cmd_e2e"):
+            with self.subTest(command=command):
+                dev = load("tools/dev.py")
+                with mock.patch.object(dev, "which", return_value="node"), \
+                        mock.patch.object(dev, "node_modules", return_value=True), \
+                        mock.patch.object(dev, "cmd_demo"), \
+                        mock.patch.object(dev, "tool", side_effect=[0, 1]), \
+                        mock.patch.object(dev, "run") as run:
+                    with self.assertRaisesRegex(dev.GateFailure, "baseline"):
+                        getattr(dev, command)()
+                    run.assert_not_called()
+
+    def test_dom_helper_exports_baseline_path_without_new_ui_logic(self):
+        helper = (ROOT / "tests/dom/helpers.mjs").read_text(encoding="utf-8")
+        self.assertIn("export const BASELINE_HTML = process.env.BLUEPRINT_BASELINE_HTML", helper)
+        self.assertIn('"demo-agent-finops-preview"', helper)
+
+
+class BaselineSelftest(unittest.TestCase):
+    def test_cli_subprocess_has_no_pythonpath_or_in_process_import_substitute(self):
+        selftest = load("tools/selftest.py")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            scripts, work, poison = root / "scripts", root / "work", root / "poison"
+            for path in (scripts, work, poison):
+                path.mkdir()
+            (scripts / "task5_probe_helper.py").write_text("VALUE = 'installed-sibling'\n", encoding="utf-8")
+            for path in (work, poison):
+                (path / "task5_probe_helper.py").write_text("raise AssertionError('wrong import')\n", encoding="utf-8")
+            script = scripts / "probe.py"
+            script.write_text(
+                "import json, sys, task5_probe_helper\n"
+                "print(json.dumps({'value': task5_probe_helper.VALUE, 'path': sys.path, "
+                "'no_site': sys.flags.no_user_site, 'ignore_env': sys.flags.ignore_environment, "
+                "'no_bytecode': sys.dont_write_bytecode}))\n", encoding="utf-8")
+            with mock.patch.dict(os.environ, {"PYTHONPATH": str(poison), "PYTHONHOME": str(poison)}):
+                result = selftest.installed_run(script, [], work)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            facts = json.loads(result.stdout)
+            self.assertEqual(facts["value"], "installed-sibling")
+            self.assertNotIn(str(poison), facts["path"])
+            self.assertEqual(facts["no_site"], 1)
+            self.assertEqual(facts["ignore_env"], 1)
+            self.assertIs(facts["no_bytecode"], True)
+            self.assertFalse(list(root.rglob("__pycache__")))
+
+    def test_real_cli_selftest_contract(self):
+        selftest = load("tools/selftest.py")
+        self.assertTrue(callable(getattr(selftest, "baseline_cli_checks", None)),
+                        "the installed baseline CLI self-test is missing")
+        results = []
+        with tempfile.TemporaryDirectory() as directory:
+            selftest.baseline_cli_checks(ROOT / "plugin", Path(directory),
+                                         lambda name, passed, detail="": results.append((name, passed, detail)))
+        self.assertGreaterEqual(len(results), 10)
+        self.assertTrue(all(passed for _, passed, _ in results), results)
 
 
 class Neutrality(unittest.TestCase):

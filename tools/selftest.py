@@ -22,7 +22,9 @@ Runs, in a temporary folder:
      (credits, purchase options, scenarios, NPV, ROI, payback, break-even); the Caldova value case and FinOps
      model built into the blueprint; workshop verdicts merged; seeds that leave volumes to collect
   8. build_package.py, then the Cowork install check on the extracted package (and on an altered copy)
-Each script is imported and its main(argv) called; nothing is fetched from the network.
+Most scripts are imported and their main(argv) called. Baseline CLI preparation
+also executes the actual extracted scripts in isolated subprocesses. Nothing is
+fetched from the network; technical fixture acknowledgement is not viewer consent.
 Exit code 0 when every step passes.
 """
 from __future__ import annotations
@@ -31,7 +33,10 @@ import contextlib
 import importlib.util
 import io
 import json
+import os
+import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import zipfile
@@ -134,6 +139,189 @@ def process_checks(t: Path, sample: Path, check) -> None:
                                 "--save-normalized", str(work / "customer.json"), "--no-product-icons"])
     customer = (work / "customer.json").read_text(encoding="utf-8") if code == 0 else sentinel
     check("process root privacy precedes customer projection", code == 0 and sentinel not in customer and '"ontology"' not in customer, text[-300:])
+
+
+def installed_run(script: Path, argv: list[str], work: Path) -> subprocess.CompletedProcess:
+    """Run the supplied installation, not in-process working-tree modules or PYTHONPATH."""
+    env = {key: value for key, value in os.environ.items() if key not in {"PYTHONPATH", "PYTHONHOME"}}
+    return subprocess.run([sys.executable, "-E", "-s", "-B", str(script), *argv], cwd=work,
+                          env=env, capture_output=True, text=True, encoding="utf-8", timeout=120)
+
+
+def baseline_cli_checks(package: Path, work: Path, check) -> None:
+    """Initial offline CLI proof; repeat against the exact final archive after UI/docs."""
+    skills = package / "skills"
+    script = skills / "frontier-finops/scripts/agent_finops.py"
+    example = skills / "frontier-finops/examples/caldova-agent-baseline.json"
+    sample = skills / "frontier-blueprint/examples/caldova-blueprint.json"
+    originals = {path: path.read_bytes() for path in (example, sample)}
+    authored = json.loads(originals[example])
+    day, agent = authored["baseline"]["as_of"], authored["profile"]["agent_id"]
+    ack = ["--as-of", day, "--acknowledge-finops-preview"]
+    notice = authored["preview_notice"]
+
+    def cli(command, *args, acknowledged=True):
+        flags = ack if acknowledged else ["--as-of", day]
+        return installed_run(script, [command, *map(str, args), *flags], work)
+
+    def read(path):
+        return json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
+
+    def write(path, document):
+        path.write_text(json.dumps(document, allow_nan=False) + "\n", encoding="utf-8", newline="\n")
+
+    def partial(proc, command):
+        return proc.returncode == 0 and json.loads(proc.stdout) == {
+            "command": command, "status": "partial", "maturity": "Preview", "financial_permission": False,
+        }
+
+    refusals = {
+        "seed": ["--blueprint", sample, "--agent-id", agent],
+        "calculate": ["--baseline", example],
+        "apply": ["--blueprint", sample, "--baseline", example, "--audience", "internal"],
+        "export": ["--baseline", example, "--audience", "customer"],
+    }
+    for command, args in refusals.items():
+        target = work / ("refused-" + command) / "output"
+        proc = cli(command, *args, "--out-dir" if command == "export" else "--out", target, acknowledged=False)
+        check(f"installed baseline {command} requires fresh acknowledgement before outputs",
+              proc.returncode == 2 and notice in proc.stderr and not target.parent.exists(), proc.stderr[-300:])
+
+    seeded = work / "seed.json"
+    proc = cli("seed", "--blueprint", sample, "--agent-id", agent, "--out", seeded)
+    seed = read(seeded)
+    check("installed baseline seed retains explicit unknowns without financial authority",
+          partial(proc, "seed") and seed.get("schema") == "frontier-finops-baseline/1.0"
+          and seed.get("profile", {}).get("agent_id") == agent and seed.get("rates") == [], proc.stderr[-300:])
+    seeded_calc = work / "seed-calculated.json"
+    proc = cli("calculate", "--baseline", seeded, "--out", seeded_calc)
+    seed_results = read(seeded_calc).get("results", {})
+    check("installed incomplete seed calculates as gaps, not zero-cost completeness",
+          partial(proc, "calculate") and bool(seed_results.get("gaps"))
+          and all(row["annual_recurring"]["amount"] is None for row in seed_results.get("scenarios", {}).values()),
+          proc.stderr[-300:])
+
+    calculated = work / "calculated.json"
+    proc = cli("calculate", "--baseline", example, "--out", calculated)
+    model = read(calculated)
+    expected = model.get("results", {}).get("scenarios", {}).get("expected", {})
+    check("installed synthetic baseline calculates provisional estimates with safe summary",
+          partial(proc, "calculate") and model.get("forecast_kind") == "estimate"
+          and expected.get("annual_recurring", {}).get("amount") == "1320.00"
+          and expected.get("annual_recurring", {}).get("status") == "provisional", proc.stderr[-300:])
+    frozen_dir = work / "snapshots"
+    proc = cli("freeze", "--baseline", calculated, "--out-dir", frozen_dir)
+    snapshots = list(frozen_dir.glob("*.json"))
+    check("installed baseline freezes exactly one snapshot", partial(proc, "freeze") and len(snapshots) == 1, proc.stderr[-300:])
+    if len(snapshots) != 1:
+        return
+    snapshot_path = snapshots[0]
+    snapshot = read(snapshot_path)
+    frozen_bytes = snapshot_path.read_bytes()
+    proc = cli("freeze", "--baseline", calculated, "--out-dir", frozen_dir)
+    check("installed snapshot cannot be overwritten",
+          proc.returncode == 2 and snapshot_path.read_bytes() == frozen_bytes and len(list(frozen_dir.iterdir())) == 1)
+
+    review_input = work / "synthetic-review.json"
+    review = {**snapshot["target"], "id": "SELFTEST-SYNTHETIC", "decision": "approve",
+              "actor": authored["profile"]["owners"]["finance"], "finance_owner": authored["profile"]["owners"]["finance"],
+              "date": day, "evidence_ref": "synthetic-selftest-not-a-human-decision", "mode": "synthetic",
+              "synthetic": True, "sharingClassification": "customer-shareable"}
+    write(review_input, review)
+    reviews_dir = work / "reviews"
+    proc = cli("record-review", "--baseline", snapshot_path, "--review", review_input, "--out-dir", reviews_dir)
+    reviews = list(reviews_dir.glob("*.json"))
+    recorded = read(reviews[0]) if len(reviews) == 1 else {}
+    check("installed review is an external synthetic assertion, not authenticated approval",
+          partial(proc, "record-review") and len(reviews) == 1 and recorded.get("synthetic") is True
+          and recorded.get("assertion") == "externally-asserted-not-authenticated", proc.stderr[-300:])
+    if len(reviews) != 1:
+        return
+    applied = work / "applied.json"
+    proc = cli("apply", "--blueprint", sample, "--baseline", snapshot_path, "--review", reviews[0],
+               "--audience", "internal", "--out", applied)
+    view = read(applied).get("agent_finops", {})
+    check("installed apply produces the derivative Preview DTO, never viewer consent",
+          partial(proc, "apply") and view.get("schema") == "frontier-agent-finops-view/1.0"
+          and view.get("notice") == notice and view.get("financial_permission") is False
+          and len(view.get("records", [])) == 1 and "preview_acknowledged" not in view, proc.stderr[-300:])
+
+    exported = work / "internal-export"
+    proc = cli("export", "--baseline", snapshot_path, "--review", reviews[0], "--audience", "internal",
+               "--out-dir", exported)
+    report = read(exported / "report.json")
+    markdown = (exported / "report.md").read_text(encoding="utf-8") if (exported / "report.md").is_file() else ""
+    handover = report.get("handover", {})
+    check("installed JSON and Markdown keep notice, estimates and strict synthetic handover block",
+          partial(proc, "export") and report.get("forecast_kind") == "estimate" and notice in markdown
+          and handover.get("ready") is False and handover.get("financial_permission") is False
+          and any("synthetic" in str(gap) for gap in handover.get("gaps", [])), proc.stderr[-300:])
+    saved = {path: path.read_bytes() for path in exported.glob("*")}
+    proc = cli("export", "--baseline", snapshot_path, "--audience", "internal", "--out-dir", exported)
+    check("installed export refuses overwrite and preserves both files",
+          proc.returncode == 2 and len(saved) == 2 and saved == {path: path.read_bytes() for path in exported.glob("*")})
+
+    # Bounded corruptions of our own technical records; these are not audit-storage claims.
+    corrupt = read(calculated)
+    corrupt["results"]["scenarios"]["expected"]["annual_recurring"]["amount"] = "999999.00"
+    corrupt_path = work / "tampered-receipt.json"
+    write(corrupt_path, corrupt)
+    target = work / "refused-receipt" / "output.json"
+    proc = cli("apply", "--blueprint", sample, "--baseline", corrupt_path, "--audience", "internal", "--out", target)
+    check("installed apply rejects a tampered calculation before outputs", proc.returncode == 2 and not target.parent.exists())
+    corrupt = read(snapshot_path)
+    corrupt["target"]["material_hash"] = "0" * 64
+    corrupt_path = work / "tampered-snapshot.json"
+    write(corrupt_path, corrupt)
+    target = work / "refused-snapshot"
+    proc = cli("export", "--baseline", corrupt_path, "--audience", "internal", "--out-dir", target)
+    check("installed export rejects a tampered snapshot before outputs", proc.returncode == 2 and not target.exists())
+    review["material_hash"] = "0" * 64
+    write(review_input, review)
+    target = work / "refused-review"
+    proc = cli("record-review", "--baseline", snapshot_path, "--review", review_input, "--out-dir", target)
+    check("installed review rejects a mismatched target hash", proc.returncode == 2 and not target.exists())
+
+    private = json.loads(originals[example])
+    sentinel = "SYNTHETIC_PRIVATE_BASELINE_SELFTEST"
+    private["rates"][0]["sharingClassification"] = "internal-only"
+    private["rates"][0]["note"] = sentinel
+    private_input, private_calc = work / "private.json", work / "private-calculated.json"
+    write(private_input, private)
+    calc = cli("calculate", "--baseline", private_input, "--out", private_calc)
+    customer_dir = work / "customer-export"
+    proc = cli("export", "--baseline", private_calc, "--audience", "customer", "--customer-scope", "synthetic-caldova",
+               "--out-dir", customer_dir)
+    customer = read(customer_dir / "report.json")
+    serialised = "".join(path.read_text(encoding="utf-8") for path in customer_dir.glob("*"))
+    total = customer.get("scenarios", {}).get("expected", {}).get("annual_recurring", {})
+    check("installed customer JSON/Markdown withhold private dependencies rather than rebuilding totals",
+          partial(calc, "calculate") and partial(proc, "export") and notice in serialised
+          and sentinel not in serialised and "RATE-TOKENS" not in serialised and "material_hash" not in serialised
+          and total.get("amount") is None and total.get("status") == "withheld", proc.stderr[-300:])
+    check("installed CLI preserves authored inputs and frozen records",
+          originals == {path: path.read_bytes() for path in originals} and frozen_bytes == snapshot_path.read_bytes())
+
+
+def installed_core_check(package: Path, work: Path, check) -> None:
+    """Only call on our temporary extracted package, after installer verification."""
+    skills = package / "skills"
+    shutil.rmtree(skills / "frontier-finops")
+    output = work / "core-without-finops"
+    proc = installed_run(skills / "frontier-blueprint/scripts/build_with_identity.py", [
+        "--data", str(skills / "frontier-blueprint/examples/caldova-blueprint.json"),
+        "--value", str(skills / "frontier-value-case/examples/caldova-value.json"),
+        "--ontology", str(skills / "frontier-process/examples/caldova-ontology.json"),
+        "--no-identity", "--out-dir", str(output),
+    ], work)
+    summary = json.loads(proc.stdout[proc.stdout.index("{"):]) if proc.returncode == 0 else {}
+    html_path = Path(summary["html"]) if summary.get("html") else work / "missing.html"
+    html = html_path.read_text(encoding="utf-8") if html_path.is_file() else ""
+    island = re.search(r'<script[^>]+id="bp-data"[^>]*>(.*?)</script>', html, re.S)
+    data = json.loads(island[1]) if island else {}
+    check("installed core value/ontology build works with FinOps removed",
+          proc.returncode == 0 and bool(data.get("value_case")) and bool(data.get("ontology"))
+          and "finops" not in data and "agent_finops" not in data, proc.stderr[-300:])
 
 
 def main() -> int:
@@ -473,17 +661,23 @@ def main() -> int:
             expected = json.loads((ROOT / "plugin/package/manifest.json").read_text(encoding="utf-8"))["agentSkills"]
             installed = plan.get("skills", [])
             finops = next((x for x in installed if x.get("name") == "frontier-finops"), {})
-            check("install check passes on the released package",
+            check("install check passes on the packaged candidate",
                   code == 0 and plan.get("verified") and len(plan.get("copy_calls", [])) == len(expected) == 8
                   and all(x["status"] == "new" for x in installed)
                   and sum(x.get("maturity") == "ga" for x in installed) == 7
                   and finops.get("maturity") == "preview" and finops.get("optional") is True
                   and finops.get("requires_preview_ack") is True
                   and "preview_acknowledged" not in plan, out[-300:] if code else "")
+            check("eight installer plans are read-only",
+                  not list((t / "empty").iterdir()) and len(installed) == 8)
+            installed_work = t / "installed-cli"
+            installed_work.mkdir()
+            baseline_cli_checks(t / "pkg", installed_work, check)
             with open(t / "pkg/skills/frontier-blueprint/SKILL.md", "a", encoding="utf-8") as fh:
                 fh.write("\n<!-- altered -->\n")
             code, out = run(inst, ["--root", str(t / "pkg"), "--installed", str(t / "empty")])
             check("install check refuses an altered package", code == 1 and '"verified": false' in out)
+            installed_core_check(t / "pkg", installed_work, check)
 
     for status, name, detail in results:
         print(f"{status}  {name}" + (f"  ({detail})" if detail and status == "FAIL" else ""))

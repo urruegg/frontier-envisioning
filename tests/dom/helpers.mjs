@@ -5,6 +5,7 @@ import path from "node:path";
 
 export const DEFAULT_HTML = path.join("build", "demo", "Frontier Company Blueprint - Template (Caldova sample).html");
 export const PREVIEW_HTML = process.env.BLUEPRINT_PREVIEW_HTML || path.join("build", "demo-finops-preview", "Frontier Company Blueprint - Template (Caldova sample).html");
+export const BASELINE_HTML = process.env.BLUEPRINT_BASELINE_HTML || path.join("build", "demo-agent-finops-preview", "Frontier Company Blueprint - Template (Caldova sample).html");
 export const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 export const txt = (el) => ((el && el.textContent) || "").replace(/\s+/g, " ").trim();
 

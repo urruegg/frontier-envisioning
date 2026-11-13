@@ -216,6 +216,16 @@ def prepare_preview_fixture() -> Path:
     return preview
 
 
+def prepare_baseline_fixture() -> Path:
+    """Technical synthetic-fixture acknowledgement, never persisted viewer consent."""
+    baseline = BUILD / "demo-agent-finops-preview"
+    if tool("build_demo", [
+        "--out", str(baseline), "--with-finops-baseline", "--acknowledge-finops-preview",
+    ]):
+        raise GateFailure("explicit FinOps baseline Preview test fixture failed")
+    return baseline
+
+
 @step("DOM tests (happy-dom)")
 def cmd_dom():
     if not which("node"):
@@ -225,10 +235,12 @@ def cmd_dom():
     if not (DEMO_DIR / DEMO_HTML_NAME).exists():
         cmd_demo()
     preview = prepare_preview_fixture()
+    baseline = prepare_baseline_fixture()
     files = [str(p.relative_to(ROOT)) for p in sorted((ROOT / "tests" / "dom").glob("*.test.mjs"))]
     if run(["node", "--test", *files], env={
         "BLUEPRINT_HTML": str(DEMO_DIR / DEMO_HTML_NAME),
         "BLUEPRINT_PREVIEW_HTML": str(preview / DEMO_HTML_NAME),
+        "BLUEPRINT_BASELINE_HTML": str(baseline / DEMO_HTML_NAME),
     }):
         raise GateFailure("DOM tests failed")
 
@@ -252,14 +264,17 @@ def cmd_e2e():
     if not (DEMO_DIR / DEMO_HTML_NAME).exists():
         cmd_demo()
     preview = prepare_preview_fixture()
+    baseline = prepare_baseline_fixture()
     test_site = BUILD / "site-e2e"
     if tool("build_site", [
-        "--out", str(test_site), "--preview-demo", str(preview), "--auth", "none",
+        "--out", str(test_site), "--preview-demo", str(preview),
+        "--baseline-demo", str(baseline), "--auth", "none",
     ]):
         raise GateFailure("isolated browser-test site build")
     cli = ROOT / "node_modules" / "@playwright" / "test" / "cli.js"
     cmd = ["node", str(cli), "test"] if cli.exists() else [npx() or "npx", "playwright", "test"]
-    if run(cmd, env={**browser_env(), "FRONTIER_SITE_DIR": str(test_site)}):
+    if run(cmd, env={**browser_env(), "FRONTIER_SITE_DIR": str(test_site),
+                     "BLUEPRINT_BASELINE_HTML": str(baseline / DEMO_HTML_NAME)}):
         raise GateFailure("browser tests failed")
 
 
