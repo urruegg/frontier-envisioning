@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
+| Version | 0.5 |
 | Date | 2026-11-13 |
 | Author | Copilot; AI-assisted documentation |
 | Status | Maintained internal example; not deployment or release evidence |
@@ -21,12 +21,14 @@ download and open the file locally in **Edge or Chrome**. GitHub and OneDrive
 previews do not execute the HTML. There is no hosted URL or tenant deployment
 to visit. This is one offline HTML file, not a custom application or live backend.
 
-The plugin candidate is **1.10.0 UNRELEASED INTERNAL CANDIDATE**. The gallery
+The plugin is **release build 1.10.0**. Check
+[GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
+for actual publication status; this example is not publication evidence. The gallery
 retains its core example scope: identity, ordinary value and explicitly
 requested Ontology, with 17 route identities and no FinOps data.
 FinOps Preview is a separate, explicitly acknowledged profile, not a hidden
 cost estimate in this sample. Read the actual captured version and hashes from
-the [manifest](manifest.json), not this guide's candidate heading.
+the [manifest](manifest.json), not this guide's heading.
 
 ## Overview
 
@@ -132,7 +134,7 @@ build and review the customer projection before permitted external sharing.
 
 ## Separate optional baseline exercise
 
-The candidate bundles eight skills: seven non-FinOps GA wrappers and optional
+The plugin bundles eight skills: seven non-FinOps GA wrappers and optional
 Preview FinOps. The HTML and ten images here stay **core-only**, with explicitly
 requested ontology; ordinary value and identity do not require FinOps.
 

@@ -38,8 +38,9 @@ The HTML follows the Innovation Hub journey; optional data determines the view s
 
 Agent identity icons mark agents everywhere; Microsoft product icons mark products, design areas and factory tools (only the icons used are embedded).
 
-Part labels and descriptions can be overridden with `parts`. **1.10.0 is an
-unreleased internal candidate.** Seven non-FinOps skills are GA product wrappers, not a guarantee of
+Part labels and descriptions can be overridden with `parts`.
+**Release build 1.10.0.** Build metadata is not publication evidence.
+Seven non-FinOps skills are GA product wrappers, not a guarantee of
 result confidence, provider GA, release/deployment or external/IP clearance.
 Fabric ontology/agent/operations features remain Preview with dated source and
 mapping gaps; MOS3 `devPreview` remains a separate packaging protocol.

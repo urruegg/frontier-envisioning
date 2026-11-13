@@ -5,7 +5,7 @@
 For requested new work, use the versioned offline
 `frontier-finops-baseline/1.0` path inside the existing optional Preview skill.
 The older `frontier-finops/1.0` CHF path remains explicit and backward-compatible;
-there is no automatic conversion. **1.10.0 is an unreleased internal candidate**;
+there is no automatic conversion. **Release build 1.10.0**;
 FinOps remains optional Preview.
 
 ## Preview boundary

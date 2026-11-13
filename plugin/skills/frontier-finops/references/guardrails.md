@@ -83,7 +83,7 @@ operate loop or live connector. The four public concept sources checked on
 12 November 2026 are [reference metadata](baseline-sources.json), not rate
 quotes, implemented APIs or FOCUS conformance. Future factories, live billing/
 provider imports, cloud deployment and identity provisioning remain outside
-this offline procedure. **1.10.0 is an unreleased internal candidate**; this
+this offline procedure. **Release build 1.10.0**; this
 offline baseline capability does not promote FinOps to GA.
 
 **Never** design a guardrail that measures individual employees; aggregate per agent, team or process.

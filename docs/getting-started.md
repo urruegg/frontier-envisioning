@@ -2,18 +2,20 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
+| Version | 0.5 |
 | Date | 2026-11-13 |
 | Author | Copilot; AI-assisted documentation |
 | Status | Maintained internal guide; not release or sharing approval |
-| Scope | Core-first use of the 1.10.0 internal candidate and optional baseline follow-up; document revision, not product version |
+| Scope | Core-first use of release build 1.10.0 and optional baseline follow-up; document revision, not product version |
 | References | [Documentation](README.md), [Plugin guide](../plugin/README.md), [Gallery](demo/README.md), [Starter prompts](starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Guidance #39](https://github.com/urruegg/frontier-envisioning/issues/39) |
 
 Start with the fictitious example, then prepare a small, evidence-led workshop.
-The plugin is **1.10.0 UNRELEASED INTERNAL CANDIDATE**, in the private
+The plugin is **release build 1.10.0**, in the private
 [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning)
 repository. It bundles eight skills: seven non-FinOps GA wrappers and optional
 Preview FinOps.
+Check [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
+for actual publication status and downloads; build metadata is not publication.
 You do not need to install it or deploy anything to inspect the example.
 
 ## Try the example without installing
@@ -37,7 +39,7 @@ ontology, with **17 route identities and no FinOps**. Separate FinOps Preview
 profiles are not part of this download. Optional views depend on requested inputs;
 the sample's Ontology is not a request to add it to every engagement.
 Use the gallery's [manifest](demo/manifest.json) for the actual captured version
-and provenance; this guide's candidate version is not a new capture receipt.
+and provenance; this guide's version is not a new capture receipt.
 
 Notes and verdicts are local browser working state until exported. Use the
 Discovery feedback export and give that file back to Cowork to merge and rebuild;
@@ -45,9 +47,10 @@ do not assume edits update the original source or a shared tenant service.
 
 ## Install in Copilot Cowork
 
-1. Ask [@urruegg](https://github.com/urruegg), the maintainer, for the approved
-   internal candidate `frontier-envisioning-plugin-1.10.0.zip`. Keep it zipped;
-   this is not a published release.
+1. Obtain `frontier-envisioning-plugin-1.10.0.zip` from
+   [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
+   when published, or from [@urruegg](https://github.com/urruegg) for
+   pre-publication testing. Keep it zipped and verify the release checksums.
 2. Start a new Copilot Cowork chat, attach the ZIP and type
    **Install the Frontier PlugIn**.
 3. Review each approval prompt. The installer checks the package inventory;

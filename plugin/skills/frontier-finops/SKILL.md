@@ -24,7 +24,8 @@ metadata:
 
 *AI-assisted procedure maintenance, 13 November 2026; original authorship retained.*
 
-**1.10.0 — UNRELEASED INTERNAL CANDIDATE.** Optional Preview planning costs:
+**Release build 1.10.0.** Build metadata is not publication evidence.
+Optional Preview planning costs:
 credits, licences, models, tools, infrastructure, people and one-time build.
 For a requested new baseline, use `frontier-finops-baseline/1.0` below.
 The legacy CHF model remains available only as an explicit separate path.

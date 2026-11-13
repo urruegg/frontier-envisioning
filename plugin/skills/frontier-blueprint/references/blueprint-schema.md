@@ -1,4 +1,4 @@
-# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.10.0 — unreleased internal candidate)
+# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.10.0 release build)
 
 *AI-assisted procedure maintenance, 13 November 2026; original authorship retained.*
 

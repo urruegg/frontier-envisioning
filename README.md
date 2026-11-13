@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.8 |
+| Version | 0.9 |
 | Date | 2026-11-13 |
 | Author | Urs Rüegg; Copilot AI-assisted maintenance |
 | Status | Maintained internal reader guide; not release approval |
@@ -16,7 +16,9 @@ solution engineers. It helps frame opportunities across business journeys,
 for example Sales and Services, test hypotheses with people and prepare a
 validated MVP for design handover.
 
-**1.10.0 is an UNRELEASED internal candidate**, not a published release.
+**Release build 1.10.0.** Check [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
+for the actual publication status and available downloads; a build is not
+publication evidence.
 This repository is private; internal sharing does not grant public visibility,
 customer redistribution or IP clearance. Maintainer: [@urruegg](https://github.com/urruegg).
 
@@ -64,10 +66,12 @@ flowchart LR
     G --> F
 ```
 
-## Install the internal candidate
+## Install the plugin
 
-Obtain the approved internal `frontier-envisioning-plugin-1.10.0.zip` from the
-maintainer and keep it zipped. In a new Copilot Cowork chat, attach it and type
+Obtain `frontier-envisioning-plugin-1.10.0.zip` from
+[GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases) when
+published, or from the maintainer for pre-publication testing. Keep it zipped.
+In a new Copilot Cowork chat, attach it and type
 **Install the Frontier PlugIn**. Review the installation approval prompts.
 Start a new chat after sync. See the [packaged guide](plugin/README.md) for
 integrity checks, updates, removal and administrator-managed roll-out.

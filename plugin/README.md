@@ -1,6 +1,6 @@
 # Frontier Envisioning — plugin for Copilot Cowork
 
-**Version 1.10.0 · UNRELEASED · Microsoft Innovation Hub Switzerland · 12 November 2026**
+**Version 1.10.0 · Release build · Microsoft Innovation Hub Switzerland · 12 November 2026**
 
 *Guide maintenance: Copilot AI-assisted; original authorship retained.*
 
@@ -12,7 +12,9 @@ and icons. Once MVP scope is validated, it supports PRD, solution design,
 architecture decisions and IT readiness handover; earlier documents are drafts.
 Identity branding is not Entra identity provisioning.
 
-**1.10.0 is an unreleased internal candidate, not a published release.**
+Check [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
+for the actual publication status of **release build 1.10.0**. Build metadata
+alone is not evidence of publication.
 The installation procedure below is not evidence of actual Cowork installation,
 organisation catalogue publication or tenant deployment.
 
@@ -41,13 +43,18 @@ The approved private source/issue/PR host is
 Unreleased builds are development candidates. An offline install-plan check is
 not an actual Cowork install or a published release.
 
+The GitHub Release product download is the versioned plugin ZIP only.
+Checksums, SBOM and the release manifest accompany it as verification assets.
+The engineering complete bundle, standalone demo HTML and identity ZIP are
+not additional product release downloads.
+
 These are technical checks, not public/customer redistribution approval or an
 exhaustive confidentiality assessment. Retain copyright, licences and Microsoft
 product-icon terms. Confirm content/IP clearance before sharing externally.
 
 ## Install it in Copilot Cowork
 
-1. **Obtain the approved internal candidate** `frontier-envisioning-plugin-1.10.0.zip` from the maintainer, [@urruegg](https://github.com/urruegg). Keep it zipped; it is not a published release.
+1. **Obtain the plugin ZIP** `frontier-envisioning-plugin-1.10.0.zip` from [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases) when published, or from the maintainer, [@urruegg](https://github.com/urruegg), for pre-publication testing. Keep it zipped and verify the release checksums.
 2. **Open Copilot Cowork** and start a new chat.
 3. **Attach the zip** to the chat and type:
 
@@ -69,7 +76,7 @@ gate below is separate from installation approval.
 |---|---|
 | Update to a newer version | Same steps with the newer zip: attach it and say **Install the Frontier PlugIn** |
 | Remove the plugin | Say **Delete the frontier skills**, or delete the eight `frontier-…` folders in OneDrive `Documents/Cowork/skills` |
-| Request organisation roll-out | Ask your Microsoft 365 admin to validate the candidate and obtain publication approval; package structure alone does not authorise roll-out (see below) |
+| Request organisation roll-out | Ask your Microsoft 365 admin to validate the package and obtain catalogue publication approval; package structure alone does not authorise roll-out (see below) |
 
 ---
 
@@ -237,7 +244,7 @@ frontier-envisioning-plugin-1.10.0.zip
 
 ## For Copilot Cowork: how to install this plugin
 
-Follow these steps when a user uploads this zip and asks to install it ("Install the Frontier PlugIn", "install the frontier plugin", "set up this plugin"). Do not score, rewrite or rename the skills. Verify the actual package below; unreleased metadata is not proof of release validation.
+Follow these steps when a user uploads this zip and asks to install it ("Install the Frontier PlugIn", "install the frontier plugin", "set up this plugin"). Do not score, rewrite or rename the skills. Verify the actual package below; build metadata is not proof of release validation.
 
 1. **Extract** the uploaded zip from `input/` into `working/frontier-plugin/`, keeping the folder structure (Python `zipfile`; do not repack it).
 2. **Check** the package and get the plan:
@@ -261,7 +268,7 @@ Follow these steps when a user uploads this zip and asks to install it ("Install
 The same zip has the Microsoft 365 app-package structure (eight registered
 agent skills, colour and outline icons). MOS3 `devPreview` remains unchanged.
 Organisation catalogue publication is an admin operation requiring tenant
-validation and approval; this candidate does not certify it. Tenant-specific
+validation and approval; this release build does not certify it. Tenant-specific
 builder metadata, if required, is the admin's responsibility, not a field to
 invent here. Cowork package/skill validators and behavioural prompts remain
 manual checks; an offline plan is not actual Cowork installation.

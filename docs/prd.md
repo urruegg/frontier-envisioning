@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.7 |
+| Version | 1.8 |
 | Date | 2026-11-13 |
 | Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence) |
 | Status | Maintained requirements; 1.10.0 local runtime gates verified, archive/human acceptance separate; no release approval implied |
-| Scope | Approved unreleased 1.10.0 candidate scope, shared product context and preserved 1.9.2/1.9.1 and earlier requirements/history |
+| Scope | Approved 1.10.0 release-build scope, shared product context and preserved 1.9.2/1.9.1 and earlier requirements/history |
 | References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md) |
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Current source references are
@@ -24,9 +24,25 @@ The split preserves historical results and claims, including the original
 approve a release, change pricing or alter plugin behaviour. The 1.6.1 note
 below remains unreleased.
 
+## 1.10.0 release preparation
+
+The maintainer selected a normal **release build 1.10.0** in
+[#43](https://github.com/urruegg/frontier-envisioning/issues/43), rather than
+publishing the earlier internal candidate as a pre-release. Active guides
+identify the release build; actual publication remains a human action and is
+verified separately in [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases).
+Build metadata is not a claim that publication, installation or deployment
+has occurred. Version, runtime scope and archive provenance are unchanged.
+Seven non-FinOps skills retain their GA designation; FinOps remains optional
+Preview. The only product release download is the plugin ZIP, with verification
+assets; the repository remains private.
+
+The following development-candidate section and historical release tables
+retain their scoped requirements and verification context.
+
 ## 1.10.0 development candidate
 
-**1.10.0 remains an unreleased internal candidate.** Scope was approved on
+This section records the pre-publication development of **1.10.0**. Scope was approved on
 12 November; local runtime gates were verified on 13 November 2026.
 This section records requirements and scope-qualified technical evidence,
 not publication, real pricing approval or actual Cowork/tenant acceptance.

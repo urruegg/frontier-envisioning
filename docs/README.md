@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.9 |
+| Version | 1.0 |
 | Date | 2026-11-13 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained catalogue; approval not inferred |
@@ -11,8 +11,10 @@
 
 ## Using the plugin
 
-Start here to evaluate **1.10.0 UNRELEASED INTERNAL CANDIDATE**. No repository
-visibility change, published release or external sharing clearance is implied.
+Start here to evaluate **release build 1.10.0**. Check
+[GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
+for actual publication and downloads. No repository visibility change,
+publication or external sharing clearance is implied by build metadata.
 The sole human maintainer is [@urruegg](https://github.com/urruegg).
 The approved private source/issue/PR host is
 [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning).
@@ -22,7 +24,7 @@ process/ontology is requested separately and retains its Fabric Preview caveats.
 
 | Guide | For |
 |---|---|
-| [Getting started](getting-started.md) | Core-first example, candidate installation procedure and evidence-led workshop; optional baseline follow-up |
+| [Getting started](getting-started.md) | Core-first example, plugin installation procedure and evidence-led workshop; optional baseline follow-up |
 | [Caldova gallery](demo/README.md) | Offline core HTML and ten captures, including architecture/workshop views and requested ontology, no FinOps; actual capture version/hashes belong to the manifest |
 | [Starter prompts](starter-prompts.md) | Scoped core preparation, synthetic Caldova variant and separate awareness-first baseline request |
 | [Packaged plugin guide](../plugin/README.md) | Installation details, eight skills, outputs, data handling and the full FinOps Preview procedure |
@@ -40,8 +42,8 @@ The separate synthetic Caldova baseline is not current pricing or real approval.
 
 | Document | Authority or purpose |
 |---|---|
-| [Product requirements](prd.md) | Approved 1.10.0 development-candidate requirements; prior candidate records and historical Part A are retained |
-| [Solution design](solution-design.md) | Candidate architecture and scope-qualified verification; historical Part B is retained |
+| [Product requirements](prd.md) | Approved 1.10.0 requirements and release-build context; prior candidate records and historical Part A are retained |
+| [Solution design](solution-design.md) | Architecture and scope-qualified verification; historical Part B is retained |
 | [Architecture decisions](adr/README.md) | Repository/engineering rationale; Proposed status is not acceptance |
 | [Engineering handbook](engineering/handbook.md) | Build, test, version, release and deployment practice |
 | [Workstation setup](engineering/workstation-setup.md) | Existing dependency, dev-container and local setup instructions |

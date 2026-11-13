@@ -2,11 +2,17 @@
 
 Releases of the Frontier Envisioning plugin. Engineering changes to the repository are recorded in the pull requests.
 
-## 1.10.0 — unreleased
+## 1.10.0
 
-- **UNRELEASED INTERNAL CANDIDATE (#35, #39).** Baseline-first offline Agent
+- **Release build (#35, #39, #43).** Baseline-first offline Agent
   FinOps inside the existing optional Preview skill. Eight skills remain
   registered: seven non-FinOps GA wrappers and optional Preview FinOps.
+  Publication status and downloadable assets are recorded in
+  [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases),
+  separately from build metadata and local verification.
+- **Release delivery (#43).** The only product asset is the versioned plugin
+  ZIP, accompanied by checksums, SBOM and the release manifest. The private
+  repository boundary and optional FinOps Preview designation remain unchanged.
 - **Versioned financial drafts (#38).** Per-agent profiles, meaningful
   twelve-month low/expected/high scenarios, typed decimal arithmetic, explicit
   pricing/FX evidence and unit economics. Usable supplied stale/unverified
