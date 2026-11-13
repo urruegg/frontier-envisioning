@@ -2,16 +2,16 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Plan/readiness approved; ten actual captures verified; full gate and PR pending |
+| Status | Ten actual captures and full local quality gate verified; draft PR/CI and human sign-off separate |
 | Scope | Five additional real core-gallery captures and navigation guidance |
 | References | [Catalogue](README.md), [Issue #41](https://github.com/urruegg/frontier-envisioning/issues/41), [Idea](../ideas/2026-11-13-caldova-gallery-extension.md), [Design](../specs/2026-11-13-caldova-gallery-extension-design.md), [Plan](../plans/2026-11-13-caldova-gallery-extension-plan.md) |
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#41](https://github.com/urruegg/frontier-envisioning/issues/41) | [Outcome](../ideas/2026-11-13-caldova-gallery-extension.md) | [G41-01 to G41-05](../specs/2026-11-13-caldova-gallery-extension-design.md#5-acceptance-and-verification) | [Tasks 1-4](../plans/2026-11-13-caldova-gallery-extension-plan.md) | `@urruegg` accountable | Actual plan/readiness approval at `8be6aa8` | Inline implementation and real captures verified; full gate pending | RED/GREEN and capture proof below; no PR/full-gate result yet |
+| [#41](https://github.com/urruegg/frontier-envisioning/issues/41) | [Outcome](../ideas/2026-11-13-caldova-gallery-extension.md) | [G41-01 to G41-05](../specs/2026-11-13-caldova-gallery-extension-design.md#5-acceptance-and-verification) | [Tasks 1-4](../plans/2026-11-13-caldova-gallery-extension-plan.md) | `@urruegg` accountable | Actual plan/readiness approval at `8be6aa8` | Local implementation/capture/full-gate proof complete | Source `545a95e`; draft PR/CI and human sign-off separate |
 
 ## Actual decisions and readiness
 
@@ -71,5 +71,42 @@ the document checker validates real HTML anchors, not client-side `#/` routes.
 No checker exemption or new renderer route was added to force deep links.
 Architecture tab selection remains an explicit instruction.
 
-Actual final full-gate and draft PR evidence will be added after execution;
-the successful capture/unit checks alone are not whole-repository verification.
+## Full local quality gate and review
+
+`python tools/dev.py check --strict` against
+`545a95e40c5e765260bab04b3b5534a02318cf6e` ended **ALL GATES PASSED**:
+
+- **712 unit/pipeline tests passed**, one expected unreleased-version skip
+  and **2,360 subtests passed**.
+- **68 plugin self-tests** and **183 DOM tests** passed.
+- Repository rules, Ruff, strict docs, both neutrality scans, template drift,
+  package, actual core rebuild, ten-image documentation drift and the current
+  release-reproduction step passed. ESLint had zero errors and six inherited
+  warnings.
+
+The actual full summary is retained in
+`build/evidence/gallery41-strict-check-545a95e.log` and is to be pasted into
+the draft PR. This is new #41 proof, not reused #40 results.
+
+The bounded inline review covered the capture changes, metadata tests, captions
+and five actual images. Additional pure probes against the actual manifest
+rejected missing/duplicate records, a wrong route and missing/swapped tab state.
+The original five manifest rows/PNG bytes and the actual core HTML match the
+merged base exactly; plugin/renderer sources are unchanged. The generated
+plugin ZIP retains SHA-256
+`ca41bc60f0e7231476528dca6468f3f4222fe49ed1b403380ed3a41eac562b06`.
+No plugin bump, release-bundle change or runtime behaviour is claimed.
+
+| Acceptance | Actual evidence |
+|---|---|
+| G41-01 | Ten gallery images with captions/alt text and existing HTML navigation; original five retained. |
+| G41-02 | Real Playwright captures and direct visual inspection of both selected architecture states and all three workshop views. |
+| G41-03 | Focused state/output-preservation tests and actual-manifest negative probes; full gate passed. |
+| G41-04 | Fresh core comparison and all ten real hashes/dimensions/source fingerprint passed; no FinOps added. |
+| G41-05 | RED/GREEN recorded, full strict gate passed; draft PR and actual CI evidence follow separately. |
+
+No local full L2 was required for this documentation/tooling-only slice;
+the ten screenshots were nevertheless captured with real Chromium.
+No renderer source changed. Subsequent evidence/status Markdown edits are
+checked with strict docs and focused tests, without relabelling them as new
+runtime behaviour or human approval.

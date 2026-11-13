@@ -5,7 +5,7 @@
 | Version | 0.3 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted design |
-| Status | Written spec and plan/readiness approved; implementation verification in progress |
+| Status | Written spec and plan/readiness approved; local implementation verified, PR/CI separate |
 | Scope | Ten reproducible core-gallery captures and existing HTML navigation |
 | References | [Catalogue](README.md), [Issue #41](https://github.com/urruegg/frontier-envisioning/issues/41), [Idea](../ideas/2026-11-13-caldova-gallery-extension.md), [Plan](../plans/2026-11-13-caldova-gallery-extension-plan.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md), [Gallery](../demo/README.md) |
 

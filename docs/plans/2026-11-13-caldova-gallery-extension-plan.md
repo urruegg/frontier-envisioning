@@ -5,7 +5,7 @@
 | Version | 0.2 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Plan/readiness approved at 8be6aa8; inline execution under verification |
+| Status | Plan/readiness approved at 8be6aa8; local inline implementation verified, PR/CI separate |
 | Scope | Five additional core-gallery captures, state validation and reader guidance |
 | References | [Catalogue](README.md), [Issue #41](https://github.com/urruegg/frontier-envisioning/issues/41), [Idea](../ideas/2026-11-13-caldova-gallery-extension.md), [Approved design](../specs/2026-11-13-caldova-gallery-extension-design.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md) |
 
@@ -178,4 +178,6 @@ guardrails or historical sprint evidence are in scope.
 Tasks 1/2 cover G41-02/03; Task 3 covers G41-01/02/04; Task 4 covers G41-05.
 No new plugin state, route, dependency, one-off HTML copy or configuration
 framework is needed. Tests and captures use only the fictitious Caldova.
-All implementation/check commands above are planned, not passing evidence.
+The steps above are the agreed plan, not a substitute for execution evidence.
+Actual RED/GREEN, real captures and the successful full gate at `545a95e`
+are recorded in SPRINT-008; draft PR/CI and human sign-off remain separate.

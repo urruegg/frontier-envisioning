@@ -5,7 +5,7 @@
 | Version | 0.3 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted intake |
-| Status | Written spec and plan/readiness approved; inline implementation under verification |
+| Status | Written spec and plan/readiness approved; local implementation verified, PR/CI separate |
 | Scope | Existing core Blueprint architecture and workshop views; no plugin feature change |
 | References | [Catalogue](README.md), [Issue #41](https://github.com/urruegg/frontier-envisioning/issues/41), [Design](../specs/2026-11-13-caldova-gallery-extension-design.md), [Plan](../plans/2026-11-13-caldova-gallery-extension-plan.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md), [Gallery](../demo/README.md) |
 
