@@ -1072,6 +1072,36 @@ class BlueprintBaselineTests(IOCase):
                 for path, content in before.items():
                     self.assertTrue(path.read_bytes() == content)
 
+    def test_quality_standalone_prepares_all_missing_parents_before_any_product_write(self):
+        for control in ("html-parent", "report-parent"):
+            with self.subTest(control=control), tempfile.TemporaryDirectory(dir=self.dir) as directory:
+                root = Path(directory)
+                html = root / "new-html-parent/view.html" if control == "html-parent" else root / "view.html"
+                report = root / "new-report-parent/report.json" if control == "report-parent" else root / "report.json"
+                normalized = root / "normalized.json"
+                products = (normalized, html, report)
+                before = {p: p.read_bytes() for p in (self.bp, self.source)}
+                writes = []
+                original = Path.write_text
+
+                def observe(path, text, *args, **kwargs):
+                    if path in products:
+                        writes.append((path.name, all(product.parent.is_dir() for product in products)))
+                    return original(path, text, *args, **kwargs)
+
+                with mock.patch.object(Path, "write_text", observe):
+                    code, out, err = self.call(self.builder, [
+                        "--data", self.bp, "--agent-finops", self.source, "--as-of", DAY.isoformat(),
+                        "--acknowledge-finops-preview", "--no-product-icons", "--save-normalized", normalized,
+                        "--report", report, "--out", html])
+                state = {path.name: path.is_file() for path in products}
+                self.assertEqual(code, 0, (out, err, state, writes))
+                self.assertTrue(all(state.values()), "valid missing parents must yield ALL requested products")
+                self.assertTrue(writes and all(ready for _, ready in writes),
+                                "prepare every parent before the first product file write")
+                for path, content in before.items():
+                    self.assertEqual(path.read_bytes(), content)
+
     def test_quality_standalone_consumed_resources_are_readonly_in_every_output_role(self):
         for kind, destination in (("custom-template", "out"), ("custom-template", "normalized"),
                                   ("custom-template", "report"), ("default-template", "out"),

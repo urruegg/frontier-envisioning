@@ -49,7 +49,7 @@
     "examples/caldova-blueprint.json": "6005c5ecd4aa089a6b6af72a0bc7777054bd1fd545bf0ce78009682f44462f4a",
     "references/authoring-guide.md": "dee2fab505334af2dd75e911b6b10e09fb1ab973bc3b020baa9091a625a5a317",
     "references/blueprint-schema.md": "32ccbf172fddceacc8f67de16bd88cf37891eee7e9d0770ded353a8dc072ab6e",
-    "scripts/build_blueprint.py": "34a0d67abf9db35ff2954bf013338feda8211a441aeb8943652fe39162942101",
+    "scripts/build_blueprint.py": "7e57fcfda65d7f58fabab805b86754cbd724420f6a7303ecdd01278f79930ff6",
     "scripts/build_with_identity.py": "b5c2cab439c13c7d9bd5119e73f12c7e83e47419ab958eaadffeaa66faf81866",
     "scripts/canon.py": "025d8adad751805c6bd02d317c56332468176f323437a0824302f6b0b54880c9",
     "scripts/merge_feedback.py": "af300a6434e4ae2d5909c1e585aa9b0bcb33502a8aa8d8fcce970b0a61446b18",

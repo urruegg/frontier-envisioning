@@ -904,6 +904,8 @@ def main(argv=None) -> int:
         # Later OS/I/O failures remain possible; no transactional guarantee is
         # inferred across multiple caller-selected output locations.
         agent_finops_output_paths(consumed_inputs, [path for path, _ in products])
+        for path, _ in products:
+            path.parent.mkdir(parents=True, exist_ok=True)
         for path, text in products:
             path.write_text(text, encoding="utf-8", newline="\n")
     except (OSError, ValueError, TypeError) as error:
