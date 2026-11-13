@@ -748,6 +748,37 @@ class BaselineCalculationTests(unittest.TestCase):
                 self.assert_driver_coverage(self.calculate()["results"], 3 if status == "verified" else 2,
                                             3, "complete" if status == "verified" else "incomplete")
 
+    def test_driver_coverage_consumed_and_unused_transitive_pricing_source_gaps(self):
+        for kind, condition, consumed in itertools.product(("rate", "fx"), ("unverified", "stale"), (True, False)):
+            self.model = example()
+            self.verified_test_data()
+            if kind == "fx":
+                self.add_fx(status="verified")
+            parent_index = len(self.model["sources"])
+            parent = {**copy.deepcopy(self.model["sources"][0]), "id": "TEST-PRICING-PARENT"}
+            if condition == "unverified":
+                parent["validationStatus"] = "unverified"
+                code, field = "unverified-source", f"sources[{parent_index}]"
+            else:
+                parent["lastValidatedAt"] = "2020-01-01"
+                code, field = "stale-source", f"sources[{parent_index}].lastValidatedAt"
+            child = {**copy.deepcopy(self.model["sources"][0]), "id": "TEST-PRICING-CHILD",
+                     "source_id": parent["id"]}
+            self.model["sources"].extend([parent, child])
+            if consumed:
+                self.model["rates" if kind == "rate" else "fx"][0]["source_id"] = child["id"]
+            original = copy.deepcopy(self.model)
+            with self.subTest(kind=kind, condition=condition, consumed=consumed):
+                result = self.calculate()["results"]
+                self.assertIn((code, field), {(gap["code"], gap["field"]) for gap in result["gaps"]})
+                cost = result["scenarios"]["expected"]["months"][0]["lines"][0]["cost"]
+                self.assertEqual(cost["status"], "available")
+                self.assertEqual(cost["amount"], "100.00" if kind == "rate" else "90.00")
+                self.assertEqual(parent["id"] in cost["source_refs"], consumed)
+                self.assertEqual(self.model, original)
+                self.assert_driver_coverage(result, 2 if consumed else 3, 3,
+                                            "incomplete" if consumed else "complete")
+
     def test_driver_coverage_multiline_and_unrepresented_drivers_cannot_disappear(self):
         self.verified_test_data()
         base = copy.deepcopy(self.model)

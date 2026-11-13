@@ -459,11 +459,13 @@ class _Calculation:
                         fields.append(f"baseline.scenarios[{si}].driver_evidence.{key}")
             quantity_meta = self.ancestry(paths, deep=True)
             quantity_paths.extend(paths)
-            fields.extend(f"sources[{self.sources[ref][0]}]" for ref in quantity_meta["source_refs"]
+            records = line_results[li]
+            # Calculated records already close consumed rate/FX source ancestry.
+            source_refs = _combine(quantity_meta, *records)["source_refs"]
+            fields.extend(f"sources[{self.sources[ref][0]}]" for ref in source_refs
                           if ref in self.sources)
             evidence_gaps = any(g["field"] == field or g["field"].startswith(field + ".")
                                 for g in self.gaps for field in fields)
-            records = line_results[li]
             required = 3 * (12 if line.get("frequency") == "monthly" else 1)
             complete_lines[li] = (
                 line.get("frequency") in {"monthly", "one-time"} and len(records) == required

@@ -1745,6 +1745,36 @@ class ProjectionTests(IOCase):
         self.assertEqual(synthetic["driver_coverage"]["priced_driver_count"], 0)
         self.assertFalse(synthetic["handover"]["ready"])
 
+    def test_driver_coverage_transitive_pricing_gap_reaches_receipt_handover_and_reports(self):
+        model = simulated()
+        parent = {**copy.deepcopy(model["sources"][0]), "id": "TEST-PRICE-PARENT",
+                  "validationStatus": "unverified"}
+        child = {**copy.deepcopy(model["sources"][0]), "id": "TEST-PRICE-CHILD", "source_id": parent["id"]}
+        model["sources"].extend([parent, child])
+        model["rates"][0]["source_id"] = child["id"]
+        calculated = self.calculated(model)
+        coverage = calculated["results"]["driver_coverage"]
+        self.assertEqual(coverage["priced_driver_count"], 2)
+        self.assertEqual(coverage["in_scope_driver_count"], 3)
+        self.assertEqual(coverage["status"], "incomplete")
+        self.calc.validate_receipt(calculated, **ACK)
+        _, snapshot = self.snapshot(model)
+        review = self.review(snapshot)
+        readiness = self.records.handover(snapshot, [review], **ACK)
+        self.assertEqual(readiness["driver_coverage"], coverage)
+        self.assertFalse(readiness["ready"])
+        self.assertFalse(readiness["financial_permission"])
+        for audience in ("internal", "customer"):
+            with self.subTest(audience=audience):
+                report = self.projection.project(snapshot, [review], **ACK, audience=audience)
+                self.assertEqual(report["driver_coverage"]["priced_driver_count"], 2)
+                self.assertEqual(report["handover"]["driver_coverage"], report["driver_coverage"])
+                self.assertEqual(report["scenarios"]["expected"]["first_year"]["amount"], "1520.00")
+                self.assertIn("Evidenced priced drivers / in-scope drivers: 2 / 3",
+                              self.projection.render_markdown(report))
+                serialised = json.loads(json.dumps(report, allow_nan=False))
+                self.assertEqual(serialised["driver_coverage"]["status"], "incomplete")
+
     def test_driver_coverage_private_dependencies_withhold_counts_not_public_subset(self):
         cases = {
             "root": lambda m: m,

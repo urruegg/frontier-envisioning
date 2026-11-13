@@ -145,7 +145,7 @@
     "references/guardrails.md": "1073cf80d52c6ac5e8ad72fcfea62ee90d6769ba6fe4819486c0aade2afcd008",
     "scripts/agent_finops.py": "1735d423a100b09ca7ee606e78ace3969b81bb67c17e39124ad16173e40e19d7",
     "scripts/apply_finops.py": "17ebf7ca35f7f2f30414114d6d8c84cc44b762a104b8dc5c2716a32a93306817",
-    "scripts/baseline_calc.py": "9c0037f7aac34a7a64f89fd13f32b22d041cd8433a68512ad4835a0aadd12630",
+    "scripts/baseline_calc.py": "ba12e50d08dd216e7776341670b71a371b35785a32a065e7fb63a8dc54987ecc",
     "scripts/baseline_model.py": "9289f02742e77ba492afad39c3fcb38241695e92e0e1f8c4b1320bb41ba48456",
     "scripts/baseline_projection.py": "472283a4b245f00f25a94ef4cdcffcb57d07a822fc98a1aca8ba80e40244c94b",
     "scripts/baseline_records.py": "8bed10ca3d9b345a652c8c8c284d52e3e3ed6515a35a6b570396068a7f353db4",
