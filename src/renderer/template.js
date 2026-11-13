@@ -332,7 +332,24 @@ function financialEvidence(a){
       Object.keys(v).some(function(k){ return synthetic(v[k]); })));
   }
   function available(m){
-    return baselineObject(m) && m.status === "available" && typeof m.amount === "string" && m.currency === r.currency;
+    return baselineObject(m) && m.status === "available" && m.reason === null &&
+      typeof m.amount === "string" && m.currency === r.currency;
+  }
+  function verifiedContributions(v){
+    var provisional = v && v.provisional_subtotal;
+    /* A genuinely empty provisional group is unavailable, not zero. A nonempty
+       provisional contribution contradicts an evidenced/ready root assertion. */
+    return baselineObject(v) && available(v.verified_subtotal) && available(v.known_priced_subtotal) &&
+      baselineObject(provisional) && provisional.amount === null && provisional.status === "unavailable" &&
+      provisional.reason === "empty-priced-group";
+  }
+  function verifiedLine(line){
+    var evidence = line && line.pricing_evidence;
+    return baselineObject(line) && available(line.cost) && baselineObject(evidence) && evidence.as_of === r.as_of &&
+      Array.isArray(evidence.gaps) && !evidence.gaps.length && Array.isArray(evidence.records) && evidence.records.length > 0 &&
+      evidence.records.every(function(p){
+        return baselineObject(p) && p.verification_status === "verified" && p.source_status === "validated";
+      });
   }
   function units(v){
     return baselineObject(v) && ["per_run","per_success","per_outcome"].every(function(k){
@@ -341,23 +358,42 @@ function financialEvidence(a){
     });
   }
   function completeScenario(sc){
-    return baselineObject(sc) && ["annual_recurring","one_time","first_year"].every(function(k){ return available(sc[k]); }) &&
+    return baselineObject(sc) && ["annual_recurring","one_time","first_year"].every(function(k){ return available(sc[k]) && verifiedContributions(sc[k]); }) &&
       Array.isArray(sc.months) && sc.months.length === 12 &&
-      sc.months.every(function(m){ return baselineObject(m) && available(m.total) && units(m); }) &&
+      sc.months.every(function(m){
+        return baselineObject(m) && available(m.total) && verifiedContributions(m.total) && verifiedContributions(m) &&
+          units(m) && Array.isArray(m.lines) && m.lines.every(verifiedLine);
+      }) && Array.isArray(sc.one_time_lines) && sc.one_time_lines.every(verifiedLine) &&
       baselineObject(sc.unit_metrics) && units(sc.unit_metrics.annual_recurring) && units(sc.unit_metrics.first_year);
+  }
+  function nonblank(v){ return typeof v === "string" && v.trim().length > 0; }
+  function day(v){
+    if (typeof v !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(v) || v.slice(0,4) === "0000") return false;
+    var d = new Date(v + "T00:00:00Z");
+    return isFinite(d.getTime()) && d.toISOString().slice(0,10) === v;
+  }
+  function consistentReview(){
+    var owners = r.profile.owners, owner = baselineObject(owners) && owners.finance;
+    /* Match _review's projected identities and recording/evaluation bounds.
+       frozen_at is not projected: its lower date bound remains producer-owned,
+       never inferred from the authored baseline date or the browser clock. */
+    return nonblank(owner) && nonblank(review.actor) && review.finance_owner === owner &&
+      nonblank(review.evidence_ref) && (review.actor === owner || nonblank(review.delegation_evidence_ref)) &&
+      day(review.date) && day(review.recorded_as_of) && day(r.as_of) &&
+      review.date <= review.recorded_as_of && review.recorded_as_of <= r.as_of;
   }
   /* Consume the dated generated decision, not raw authored status, local NOTES,
      a technical fixture flag or client-side revalidation of financial inputs.
      Customer projection intentionally omits technical target hashes. */
   return !!(!AF.error && r && r.mode === "planning" && r.status === "planning-ready" &&
     g.schema === "frontier-finops-handover/1.0" && g.as_of === r.as_of &&
-    g.financial_permission === false && g.ready === true && g.status === "planning-ready" &&
+    g.financial_permission === false && g.ready === true && g.status === "planning-ready" && g.lifecycle === "approved" &&
     g.structural_validation === "valid" && g.pricing_completeness === "evidenced" &&
     Array.isArray(g.gaps) && !g.gaps.length && !r.gaps.length && !synthetic(r) &&
     ["low","expected","high"].every(function(k){ return completeScenario(r.scenarios[k]); }) &&
     baselineObject(review) && review.schema === "frontier-finops-owner-review/1.0" &&
     review.decision === "approve" && review.mode === "planning" && review.synthetic !== true &&
-    review.assertion === "externally-asserted-not-authenticated" &&
+    review.assertion === "externally-asserted-not-authenticated" && consistentReview() &&
     review.baseline_id === r.baseline.id && review.version === r.baseline.version &&
     (r.audience === "customer" || (baselineObject(g.target) && g.target.baseline_id === r.baseline.id &&
       g.target.version === r.baseline.version && typeof g.target.material_hash === "string" && g.target.material_hash.length > 0 &&
@@ -368,7 +404,7 @@ function financialSummary(a){
   return h("div",{class:"financial-summary callout","data-agent":a.id,"data-financial-ready":String(ready)},
     h("b",null, ready ? "Financial handover planning evidence" : "Financial handover gap"),
     h("p",null, ready ? "Generated planning evidence as of " + r.as_of + "; external review is not authenticated. Not budget, purchase, build or deployment permission."
-      : (AF.error ? AF.error : r ? "Dated financial evidence is blocked, incomplete, withheld, provisional or synthetic. Rebuild and obtain external exact-target review."
+      : (AF.error ? AF.error : r ? "Dated financial evidence is blocked, incomplete, withheld, provisional or synthetic. Verify pricing, the finance owner, actor/delegation and review dates/evidence; rebuild and obtain external exact-target review."
         : "Supply an authoritative per-agent baseline, validate and price every in-scope driver, freeze the target and obtain external finance-owner review.")),
     h("p",{class:"note"},"Required at build handover only. Core drafts and workshops continue with gaps. Notes cannot approve; renew from authoritative sources for changed inputs or dates."),
     AF_PRESENT ? h("button",{type:"button",class:"btn",onclick:function(){ go("finops"); }},"Review FinOps evidence") : null);
@@ -2748,6 +2784,7 @@ function baselineContributions(value){
   return h("div",{class:"baseline-contributions"},
     h("div",null,h("b",null,"Verified contributions"),baselineAmount(v.verified_subtotal)),
     h("div",null,h("b",null,"Provisional contributions \u00b7 draft only"),baselineAmount(v.provisional_subtotal)),
+    h("div",{class:"baseline-known"},h("b",null,"Known-priced subtotal \u00b7 not full cost"),baselineAmount(v.known_priced_subtotal)),
     h("p",{class:"note"},"Contributions are not a replacement full total; missing or withheld dependencies are not zero."));
 }
 function baselineScenario(id, sc){
@@ -2762,10 +2799,10 @@ function baselineScenario(id, sc){
         return [basis].concat(metrics.map(function(k){ return baselineAmount(units[k]); }));
       })),
     h("h5",null,"Monthly recurring \u00b7 no browser annualisation"),
-    dataTable(["Month","Total","Verified contributions","Provisional contributions","Per run","Per success","Per outcome"],
+    dataTable(["Month","Total","Verified contributions","Provisional contributions","Known-priced subtotal (not full cost)","Per run","Per success","Per outcome"],
       arr(sc.months).map(function(m){
         m = m || {};
-        return [m.period || "Withheld",baselineAmount(m.total),baselineAmount(m.verified_subtotal),baselineAmount(m.provisional_subtotal)]
+        return [m.period || "Withheld",baselineAmount(m.total),baselineAmount(m.verified_subtotal),baselineAmount(m.provisional_subtotal),baselineAmount(m.known_priced_subtotal)]
           .concat(metrics.map(function(k){ return baselineAmount(m[k]); }));
       }),"baseline-months"),
     baselineDetails("Projected line quantities, costs and pricing evidence", {

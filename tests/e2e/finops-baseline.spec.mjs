@@ -73,6 +73,10 @@ test("Task6 real successor gates financial exports, preserves independent value,
   expect(json).toEqual(dto);
   expect(json.financial_permission).toBe(false);
   expect(json.handover.ready).toBe(false);
+  const actualLine = json.scenarios.expected.months[0].lines[0];
+  expect(actualLine.cost.status).toBe("provisional");
+  expect(actualLine.pricing_evidence.records[0].verification_status).toBe("synthetic");
+  expect(actualLine.pricing_evidence.records[0].source_status).toBe("synthetic");
   const md = await download(page, "Download projected report Markdown", "projected-report.md");
   for (const token of ["Preview", "1320.00", "1.100000", "2026-11-12", "CHF", "formulas", "gaps", "handover", "not authenticated"]) expect(md).toContain(token);
   await page.locator(".baseline-proposal textarea").fill("Approved CHF 999.123 café ✓ — proposal only");
@@ -175,14 +179,15 @@ core_path = out / "core-input.json"
 core_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
 original = json.loads((root / "plugin/skills/frontier-finops/examples/caldova-agent-baseline.json").read_text(encoding="utf-8"))
 sites = {}
-for kind in ("private", "unpriced"):
+for kind in ("private", "unpriced", "all-unpriced"):
     model = copy.deepcopy(original)
     if kind == "private":
         model["profile"]["sharingClassification"] = "internal-only"
         model["profile"]["name"] = "PRIVATE-PROFILE-TASK6"
         model["baseline"]["id"] = "PRIVATE-TARGET-TASK6"
     else:
-        model["rates"][0]["amount"] = None
+        for rate in (model["rates"] if kind == "all-unpriced" else model["rates"][:1]):
+            rate["amount"] = None
     model_path = out / (kind + "-input.json")
     model_path.write_text(json.dumps(model, ensure_ascii=False), encoding="utf-8")
     fixture = out / kind / "demo"
@@ -226,10 +231,10 @@ async function serve(site, page, run) {
   }
 }
 
-test("Task6 real private/unpriced producer outputs stay blocked, with no private download remainder; core missing baseline remains usable", async ({ page }) => {
+test("Task6 real private/unpriced producer outputs show supplied known subtotals and remain blocked, with no private download remainder", async ({ page }, info) => {
   test.setTimeout(180_000);
   const watched = watch(page), sites = buildVariants();
-  for (const kind of ["private", "unpriced"]) await serve(sites[kind], page, async (origin) => {
+  for (const kind of ["private", "unpriced", "all-unpriced"]) await serve(sites[kind], page, async (origin) => {
     await open(page, origin + "/blueprint-baseline.html#/finops");
     await expect(page.locator(".baseline-export, .baseline-scenario")).toHaveCount(0);
     await ack(page);
@@ -245,8 +250,36 @@ test("Task6 real private/unpriced producer outputs stay blocked, with no private
       expect(jsonText + md + await page.locator("#view").innerText()).not.toMatch(/PRIVATE-PROFILE-TASK6|PRIVATE-TARGET-TASK6|material_hash|1320\.00/);
     } else {
       expect(r.scenarios.expected.annual_recurring.amount).toBe(null);
-      await expect(page.locator('.baseline-scenario[data-scenario="expected"]')).toContainText("incomplete-cost");
+      const expected = page.locator('.baseline-scenario[data-scenario="expected"]');
+      await expect(expected).toContainText("incomplete-cost");
       expect(r.gaps.some((g) => g.code === "unpriced")).toBe(true);
+      const annual = expected.locator(".baseline-contributions .baseline-known").first();
+      await expect(annual).toBeVisible();
+      await expect(annual).toContainText("Known-priced subtotal · not full cost");
+      await expect(expected.locator(".grid3 > div > .baseline-money").first()).toContainText("Unavailable");
+      const headers = await expected.locator(".baseline-months th").allTextContents();
+      const index = headers.findIndex((text) => text.includes("Known-priced subtotal"));
+      expect(index).toBeGreaterThan(-1);
+      const monthly = expected.locator(".baseline-months tbody tr").first().locator("td").nth(index);
+      if (kind === "unpriced") {
+        expect(r.scenarios.expected.annual_recurring.known_priced_subtotal.amount).toBe("120.00");
+        await expect(annual).toContainText("CHF 120.00");
+        await expect(annual).toContainText("provisional");
+        await expect(annual).toContainText("pricing-evidence-incomplete");
+        await expect(monthly).toContainText("CHF 10.00");
+        await expect(monthly).toContainText("provisional");
+        const file = path.join(EVIDENCE, "unpriced-known-priced-subtotals.png");
+        await expected.screenshot({ path: file });
+        await info.attach("unpriced-known-priced-subtotals", { path: file, contentType: "image/png" });
+      } else {
+        expect(r.scenarios.expected.annual_recurring.known_priced_subtotal.amount).toBe(null);
+        await expect(annual).toContainText("Unavailable");
+        await expect(annual).toContainText("empty-priced-group");
+        await expect(monthly).toContainText("Unavailable");
+        await expect(monthly).toContainText("empty-priced-group");
+        await expect(expected).not.toContainText("CHF 0.00");
+      }
+      await scan(page);
     }
     await hash(page, "agents/D3-A05");
     await expect(page.locator(".financial-summary")).toHaveAttribute("data-financial-ready", "false");
