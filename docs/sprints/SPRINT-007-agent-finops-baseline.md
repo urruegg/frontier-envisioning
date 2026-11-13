@@ -2,19 +2,19 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.0 |
-| Date | 2026-11-12 |
+| Version | 1.1 |
+| Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Backend and optional build integration reviewed; explicit test fixture and user guidance in progress; final gates pending |
+| Status | Backend, build integration, fixture and source guidance reviewed; UI and final gates pending |
 | Scope | Offline baseline-first 1.10.0 internal candidate, not live FinOps operations |
 | References | [Catalogue](README.md), [Parent #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Design](../specs/2026-11-12-agent-finops-baseline-design.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
 | [#35](https://github.com/urruegg/frontier-envisioning/issues/35) | [Outcome/input](../ideas/2026-11-12-agent-finops-baseline.md) | [Baseline design](../specs/2026-11-12-agent-finops-baseline-design.md) | [Tasks 0-8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; accountable | Actual D35-09 plan/readiness approval recorded | Approved for bounded implementation; no label change inferred | Spec approval `2e3c0e7`; plan approval `efb3468`; no delivery/PR proof yet |
-| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Engine/records/export checkpoint reviewed at `b623228a` | Integrated wrapper/UI and final installed/distribution proof pending |
-| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | Reviewed D1; fixture preparation before UI | Task 4 reviewed at `11e11f18`; explicit fixture preparation running | Renderer and browser proof not yet delivered |
-| [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | [Verified candidate](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-10/11/12](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D3, Tasks 0/5/7/8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D3, estimated M | Preparation first; final proof after D1/D2 | Task 0 reviewed; remaining D3 work pending | Scoped evidence below, not full 1.10.0 quality/distribution proof |
+| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Engine/records/export reviewed at `b623228a`; wrapper at `11e11f18` | Initial installed CLI proof below; UI and final distribution proof pending |
+| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | Reviewed D1 and explicit fixture | Task 4 reviewed at `11e11f18`; Task 5 quality closed at `39ade060` | Renderer and browser proof not yet delivered |
+| [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | [Verified candidate](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-10/11/12](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D3, Tasks 0/5/7/8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D3, estimated M | Preparation first; final proof after D1/D2 | Source guidance and explicit fixture reviewed | Initial package/CLI evidence below, not full 1.10.0 quality/distribution proof |
 
 ## Human evidence and gates
 
@@ -154,7 +154,8 @@ checkpoint, with zero errors and six inherited ESLint warnings.
 
 These are scoped source-qualified checks, not full L1/L2, actual final installed
 handoff execution, rendered baseline capability or distribution clearance.
-The explicit fixture, self-test and UI work follow this checkpoint.
+Task 5 below records the initial fixture and installed CLI checks. UI and final
+quality/distribution proof remain pending.
 
 ## Task 2: Calculator checkpoint
 
@@ -256,3 +257,81 @@ Protected routing [#8](https://github.com/urruegg/frontier-envisioning/issues/8)
 and release-cache [#30](https://github.com/urruegg/frontier-envisioning/issues/30)
 remain human-owned. No merge, tag/release, deployment or protected edit is
 authorised by this sprint record.
+
+## Task 5: Explicit fixture and initial installed-package checkpoint
+
+The initial tooling checkpoint is
+`969dccca3c3d7dee423976b4ae1ad9850dabcac6`, independently reviewed against
+the documentation-only successor `ca74dc7e`. The default core and legacy
+profiles remain separate from the explicit baseline fixture. Its real data
+island has one dated Preview record, `financial_permission: false` and blocked
+synthetic handover. The local test site computes the page's actual CSP with
+`connect-src 'none'`; this is not browser/UI verification.
+
+The combined profile/site/runner tests went from **53 tests, 17 failures and
+one error** to **55 passing tests**, including added reserved-output controls.
+The actual self-test passed **68 checks**, retaining all 48 prior assertion
+contracts. Its `ALL GATES PASSED` is the self-test step only, not full L1.
+Independent fresh extraction passed **20 actual installed CLI checks**:
+acknowledgement refusal without outputs, acknowledged synthetic lifecycle,
+JSON/Markdown privacy, snapshot/receipt/review integrity, eight read-only
+installer plans and core operation with the FinOps skill removed. Execution
+used extracted scripts/examples/helpers, not working-tree imports.
+
+The initial archive has **101 members**, all checked against source bytes and
+the generated installer recipe. SHA-256:
+
+- Plugin ZIP: `bed02d7ccf8d47382f6c23f71b5457fac49d68881e5f46223e0a57b62990368f`
+- Installer: `257b8c0a2704fc2526fe6a7dd8f12ebf9bc525dd2c84e32e5f6469fbc46a9016`
+
+Independent spec review passed. Subsequent quality review reproduced three
+**Important blockers**, despite the 55 passing tests. They were fixed
+test-first in `39ade06067842b755b5b29df17c13eeec89ffab3`:
+
+1. Relative demo output was validated against caller CWD but interpreted by
+   the child against the repository root, bypassing reserved-core protection.
+   One caller-resolved absolute path now reaches every boundary. Independent
+   real-wrapper probes confirm successful caller-relative output and refusal
+   before touching reserved core.
+2. Site cleanup could delete an explicitly supplied fixture nested inside
+   the output directory after caching its HTML. Resolved equal/ancestry/alias
+   overlaps now refuse before cleanup, preserving every consumed fixture.
+3. Isolated Python `-E` ignored the UTF-8 environment setting, breaking
+   decoded CLI output under a Unicode temporary path on Windows. Explicit
+   `-X utf8` now enables child UTF-8 while retaining environment, user-site and
+   bytecode isolation; no decoding error is suppressed.
+
+The combined suite now passes **60 tests**, retaining the previous 55; all
+**68 self-test checks** passed again. The exact initial ZIP passed **20 checks
+under a Unicode temporary path**, including the original core-helper failure;
+all 93 packaged skill files still match source bytes. The ZIP/installer hashes
+above are unchanged. The controller independently passed the five new
+regression methods; retained quality review passed 15 selected tests and
+re-probed all three original failures without alias skips.
+
+All three findings are closed, with no new high-confidence quality finding.
+This clears Task 5 for Task 6, not human approval or overall merge readiness.
+The initial archive/proof is not final distribution clearance; Task 8 repeats
+execution against the exact final ZIP.
+
+## Task 7: Source-guidance checkpoint
+
+Source guidance was committed in `6228dd00` and `ca74dc7e`. FinOps,
+orchestrator and Blueprint procedures each had a fresh consumer retrieval
+probe before editing: the successor baseline/frozen-review workflow was not
+documented. Sequential updates and repeated scenarios made that workflow
+retrievable while retaining declined-core continuation, independent ordinary
+value, current awareness and external-review limits. These are local procedure
+tests, not live Cowork routing, actual financial consent or authenticated review.
+
+The three descriptions measure **610 / 681 / 720 UTF-16 units**, each below
+900; versions and negative routing remain intact. Parent review covered every
+changed prose diff; strict documentation checks reported **zero errors**.
+The reader journey and five-view gallery stay core-only. The baseline starter
+first shows the full notice and waits for an actual response.
+
+The historical suffix hashes above were rechecked unchanged after the
+candidate-only changelog update. Generated HTML, five genuine captures and
+manifest are still to be rebuilt after Task 6; the manifest owns their actual
+version and hashes. No capture, full-gate or final-package result is inferred
+from the updated guides.
