@@ -13,6 +13,7 @@ from pathlib import Path
 from unittest import mock
 
 from tests.unit._util import ROOT, load
+from tests.unit.test_docs_demo import html as core_demo_html
 
 bump = load("tools/bump_version.py")
 superpowers = load("tools/superpowers.py")
@@ -135,19 +136,31 @@ class ReleaseDocuments(unittest.TestCase):
             (b'{"profile":"core","status":"incomplete","variant":"full"}', None),
             (b'{"profile":"core","status":"built","variant":"svg-only"}', None),
             (b'{"profile":"core","status":"built","variant":"full","value_finops":{"finops":"costs.json"}}', None),
+            (b'{"profile":"core","status":"built","variant":"full","agent_finops":{}}', None),
             (b"malformed", None),
             (b"[]", None),
             *[(b'{"profile":"core","status":"built","variant":"full"}', f"ontology/{name}")
               for name in ("ontology.ttl", "ontology.md", "data-agents.md", "data-products.md")],
             (b'{"profile":"core","status":"built","variant":"full"}', "identity/kit.zip"),
         ]
-        for report, missing in cases:
-            with self.subTest(report=report, missing=missing), tempfile.TemporaryDirectory() as tmp:
+        inputs = [(report, missing, core_demo_html()) for report, missing in cases]
+        inputs.extend(
+            (b'{"profile":"core","status":"built","variant":"full"}', None, raw)
+            for raw in (
+                core_demo_html(agent_finops={"schema": "frontier-agent-finops-view/1.0", "records": []}),
+                core_demo_html(annotations={"agent_finops": {}}),
+                core_demo_html(finops={"agents": []}),
+                b"<html>not a blueprint</html>",
+            )
+        )
+        for report, missing, raw in inputs:
+            with self.subTest(report=report, missing=missing, html=raw[:90]), \
+                    tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 dist, demo, plugin = root / "dist", root / "demo", root / "plugin"
                 files = {
                     dist / "frontier-envisioning-plugin-1.9.1.zip": nested_zip,
-                    demo / bundle.DEMO_HTML_NAME: b"blueprint",
+                    demo / bundle.DEMO_HTML_NAME: raw,
                     demo / "identity" / "caldova-agent-identity" / "catalog.html": b"catalogue",
                     demo / "identity" / "kit.zip": nested_zip,
                     demo / "build-report.json": report,
@@ -200,9 +213,11 @@ class ReleaseDocuments(unittest.TestCase):
             with zipfile.ZipFile(archive_bytes, "w") as archive:
                 archive.writestr("README.md", b"synthetic archive")
             nested_zip = archive_bytes.getvalue()
+            core_html = core_demo_html(meta={"generated": "2026-11-12", "plugin_version": "1.6.1",
+                                            "customer": "Caldova Industrial AG"})
             files = {
                 dist / "frontier-envisioning-plugin-1.6.1.zip": nested_zip,
-                demo / bundle.DEMO_HTML_NAME: b"blueprint",
+                demo / bundle.DEMO_HTML_NAME: core_html,
                 demo / "identity" / "caldova-agent-identity" / "catalog.html": b"catalogue",
                 demo / "identity" / "caldova-agent-identity.zip": nested_zip,
                 demo / "build-report.json": b'{"profile":"core","status":"built","variant":"full"}',
@@ -236,7 +251,7 @@ class ReleaseDocuments(unittest.TestCase):
                 "MIT.md": b"licence",
                 "THIRD-PARTY-NOTICES.md": b"notices",
                 "CHANGELOG.md": b"history",
-                f"demo/{bundle.DEMO_HTML_NAME}": b"blueprint",
+                f"demo/{bundle.DEMO_HTML_NAME}": core_html,
                 "demo/Caldova - agent identity catalogue.html": b"catalogue",
                 "demo/caldova-agent-identity.zip": nested_zip,
                 **{f"demo/ontology/{name}": data for name, data in ontology.items()},

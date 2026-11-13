@@ -198,6 +198,112 @@ def _ancestry_pools(onto: dict, bp: dict | None = None) -> dict:
     return pools
 
 
+def strict_reference_graph(onto: dict, bp: dict | None = None) -> dict:
+    """Opt-in, pure typed-reference validation; never normalise or drop input.
+
+    Nodes/edges use (schema collection, identity), not an any-pool ID lookup.
+    Returned node copies may carry the schema's stable implicit identities.
+    This does not change the GA normalizer's warnings, output or approval policy.
+    Source citations/provenance remain owned by the caller's evidence registry.
+    """
+    if not isinstance(onto, dict) or (bp is not None and not isinstance(bp, dict)):
+        raise ValueError("typed reference inputs must be objects")
+    defaults = {"data_agents": "DA", "operations_agents": "OA", "data_products": "DP",
+                "semantic_models": "SM", "metrics": "M", "rules": "RU"}
+    fields = {
+        "namespaces": {"journey": "blueprint.domains"},
+        "entity_types": {"namespace": "namespaces", "journeys": "blueprint.domains", "source": "sources",
+                         "secondary": "sources", "base": "entity_types"},
+        "relationship_types": {"from": "entity_types", "to": "entity_types"},
+        "sources": {"journeys": "blueprint.domains"},
+        "rules": {"applies_to": "entity_types"},
+        "metrics": {"entity": "entity_types", "journey": "blueprint.domains"},
+        "data_agents": {"entities": "entity_types", "sources": "sources", "journey": "blueprint.domains"},
+        "operations_agents": {"entities": "entity_types", "journeys": "blueprint.domains"},
+        "semantic_models": {"facts": "entity_types", "dimensions": "entity_types",
+                            "namespace": "namespaces", "journey": "blueprint.domains"},
+        "data_products": {"entities": "entity_types", "agents": "data_agents", "journey": "blueprint.domains"},
+        "domains": {"namespace": "namespaces", "journey": "blueprint.domains"},
+        "risks": {"entity": "entity_types", "entities": "entity_types", "source": "sources", "sources": "sources",
+                  "secondary": "sources", "namespace": "namespaces", "data_agents": "data_agents",
+                  "operations_agents": "operations_agents", "data_products": "data_products",
+                  "journey": "blueprint.domains", "journeys": "blueprint.domains"},
+        "readiness": {"journey": "blueprint.domains"},
+        "decisions": {"journey": "blueprint.domains"},
+    }
+    nodes, pools, edges = {}, {}, {}
+
+    def index(pool, rows, implicit=False):
+        pools[pool] = set()
+        for i, original in enumerate(rows, 1):
+            if pool == "rules" and isinstance(original, str):
+                original = {"text": original}
+            if not isinstance(original, dict):
+                raise ValueError("typed collections require object records")
+            row = copy.deepcopy(original)
+            identity = row.get("id")
+            if "id" not in row and implicit:
+                identity = (f"{defaults[pool]}-{i:02d}" if pool in defaults else
+                            f"{row.get('from')}_{row.get('name', 'relates_to')}_{row.get('to')}"
+                            if pool == "relationship_types" else f"@{i}")
+                row["id"] = identity
+            if not isinstance(identity, str) or not identity.strip() or identity in pools[pool]:
+                raise ValueError("typed namespace requires unique nonblank identities")
+            pools[pool].add(identity)
+            nodes[(pool, identity)] = row
+            edges[(pool, identity)] = set()
+
+    for pool in fields:
+        index(pool, as_list(onto.get(pool)), implicit=pool not in {"entity_types", "sources", "namespaces"})
+    # A parent node is its ownership/provenance header, not an implicit
+    # dependency on every sibling agent in that domain.
+    index("blueprint.domains", [
+        {key: value for key, value in domain.items() if key not in {"agents", "lead", "orchestrator", "data_agent"}}
+        for domain in business_domains(bp)
+    ])
+    index("blueprint.agents", list(agent_ids(bp).values()))
+
+    def link(owner, row, field, target, builtins=()):
+        value = row.get(field)
+        if value is None or value == "":
+            return
+        for reference in as_list(value):
+            if not isinstance(reference, str) or not reference.strip():
+                raise ValueError("typed reference must be a nonblank identity")
+            if reference in builtins:
+                continue
+            if reference not in pools[target]:
+                raise ValueError(f"unresolved or wrong-namespace reference to {target}")
+            edges[owner].add((target, reference))
+
+    for owner, row in nodes.items():
+        pool = owner[0]
+        for field, target in fields.get(pool, {}).items():
+            builtins = (("ontology",) if (pool, field) == ("data_agents", "sources") else
+                        ("Date",) if pool == "semantic_models" and field in {"facts", "dimensions"} else ())
+            link(owner, row, field, target, builtins)
+        if pool == "data_agents":
+            for consumer in as_list(row.get("consumers")):
+                consumer = {"kind": consumer} if isinstance(consumer, str) else consumer
+                if not isinstance(consumer, dict) or consumer.get("kind") not in CONSUMER_KINDS:
+                    raise ValueError("invalid typed data-agent consumer kind")
+                link(owner, consumer, "agents", "blueprint.agents")
+            for product in as_list(row.get("products")):
+                if isinstance(product, str):
+                    continue  # the schema also accepts a product's authored name
+                if not isinstance(product, dict):
+                    raise ValueError("invalid data-agent product definition")
+                link(owner, product, "entities", "entity_types")
+        if pool == "data_products":
+            for use in as_list(row.get("uses")):
+                if not isinstance(use, dict) or use.get("use") not in USES:
+                    raise ValueError("invalid typed data-product use")
+                target = {"analytics": "semantic_models", "grounding": "data_agents",
+                          "actions": "operations_agents"}[use["use"]]
+                link(owner, use, "via", target)
+    return {"nodes": nodes, "edges": {key: tuple(sorted(edges[key])) for key in sorted(edges)}}
+
+
 def _content_metadata(node: dict) -> dict:
     """Only provenance is snapshotted, never the private descriptive payload."""
     fields = ("src", "content_src", "internal", "visibility", "content_origins")
@@ -234,7 +340,8 @@ def feedback_ancestry(onto: dict, ident: str, bp: dict | None = None) -> list[di
             **{key: copy.deepcopy(onto[key]) for key in ("src", "content_src", "internal", "visibility", "content_origins") if key in onto}}}
     seen = set()
     references = ("entity", "entities", "source", "sources", "secondary", "namespace", "base", "from", "to",
-                  "applies_to", "agents", "data_agents", "operations_agents", "data_products", "journey", "journeys", "via")
+                  "applies_to", "agents", "data_agents", "operations_agents", "data_products", "journey", "journeys", "via",
+                  "facts", "dimensions")
     while queue:
         pool, key = queue.pop(0)
         if (pool, key) in seen:

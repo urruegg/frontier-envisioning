@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.9 |
+| Version | 1.1 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
@@ -11,6 +11,7 @@
 
 | Spec | Design state | Execution state |
 |---|---|---|
+| [Agent FinOps baseline](2026-11-12-agent-finops-baseline-design.md) | Written spec explicitly approved at `2e3c0e7` on [#35](https://github.com/urruegg/frontier-envisioning/issues/35); [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36) | [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md) and [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md); subagent-driven plan/readiness approved at `efb3468`, implementation in progress |
 | [Version 1.9.2](2026-11-12-version-1.9.2-design.md) | Direct version-only request; no release approval | [#33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](../sprints/SPRINT-006-version-1.9.2.md) |
 | [Internal user documentation](2026-11-12-internal-user-documentation-design.md) | Execution directed; local implementation verified, no protected label inferred | [#31](https://github.com/urruegg/frontier-envisioning/issues/31), [SPRINT-005](../sprints/SPRINT-005-internal-user-documentation.md) |
 | [1.9 intake and optional Preview FinOps](2026-11-11-handover-1.9-preview-finops-design.md) | Design and written plan separately approved on #25 | [Plan](../plans/2026-11-11-handover-1.9-preview-finops-plan.md), [receipt](../intake/handover-1.9.0.md), [SPRINT-004](../sprints/SPRINT-004-handover-1.9-preview-finops.md); D0–D5 local technical delivery complete, human-merged [PR #29](https://github.com/urruegg/frontier-envisioning/pull/29), 11 November; release/manual acceptance separate |

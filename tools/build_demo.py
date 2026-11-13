@@ -4,7 +4,7 @@
 """Build the core Caldova demo, or an explicitly acknowledged FinOps Preview variant.
 
   python tools/build_demo.py [--out build/demo] [--no-png]
-         [--with-finops-preview --acknowledge-finops-preview]
+         [--with-finops-preview | --with-finops-baseline] [--acknowledge-finops-preview]
 
 Runs the plugin's one-step build (frontier-blueprint/scripts/build_with_identity.py) on the Caldova
 examples with the reviewed identity config/palette, value case and process ontology.
@@ -28,6 +28,7 @@ import shutil
 import subprocess
 import sys
 import zipfile
+from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -40,6 +41,7 @@ EXAMPLES = {
     "palette": SKILLS / "frontier-agent-identity/examples/caldova-palette.json",
     "value": SKILLS / "frontier-value-case/examples/caldova-value.json",
     "finops": SKILLS / "frontier-finops/examples/caldova-finops.json",
+    "agent-finops": SKILLS / "frontier-finops/examples/caldova-agent-baseline.json",
     "ontology": SKILLS / "frontier-process/examples/caldova-ontology.json",
 }
 
@@ -98,15 +100,18 @@ def build_at_release_date(out: Path, summary: dict, day: str, *, acknowledge_fin
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--out", default=str(DEMO_DIR))
+    ap.add_argument("--out", help="output folder (core: build/demo; baseline: build/demo-agent-finops-preview)")
     ap.add_argument("--no-png", action="store_true", help="skip PNG copies (faster; the identity zip then differs from the release)")
-    ap.add_argument("--with-finops-preview", action="store_true", help="explicitly build the optional Preview cost demo")
+    modes = ap.add_mutually_exclusive_group()
+    modes.add_argument("--with-finops-preview", action="store_true", help="explicitly build the legacy Preview cost demo")
+    modes.add_argument("--with-finops-baseline", action="store_true", help="explicitly build the synthetic agent baseline fixture")
     ap.add_argument("--acknowledge-finops-preview", action="store_true", help="acknowledge non-GA grounding/model limits for this invocation")
     a = ap.parse_args(argv)
-    if a.acknowledge_finops_preview and not a.with_finops_preview:
-        print("ERROR: Preview acknowledgement requires --with-finops-preview")
+    preview = a.with_finops_preview or a.with_finops_baseline
+    if a.acknowledge_finops_preview and not preview:
+        print("ERROR: Preview acknowledgement requires --with-finops-preview or --with-finops-baseline")
         return 2
-    if a.with_finops_preview:
+    if preview:
         try:
             guard = load_module(SKILLS / "frontier-finops/scripts/finops_preview.py", "fe_demo_preview")
         except FileNotFoundError:
@@ -117,8 +122,21 @@ def main(argv=None) -> int:
         except guard.FinOpsPreviewError as exc:
             print(f"ERROR: {exc}")
             return 2
+    as_of = None
+    if a.with_finops_baseline:
+        try:
+            authored = json.loads(EXAMPLES["agent-finops"].read_text(encoding="utf-8"))
+            as_of = date.fromisoformat(authored["baseline"]["as_of"]).isoformat()
+        except (OSError, ValueError, KeyError, TypeError):
+            print("ERROR: the synthetic baseline fixture needs its explicit authored as_of date")
+            return 2
     frozen_profile = not a.no_png and plugin_version() in demo_raster.SUPPORTED_VERSIONS | demo_raster.PREVIEW_VERSIONS
-    out = Path(a.out)
+    out = (Path(a.out) if a.out else (ROOT / "build/demo-agent-finops-preview" if a.with_finops_baseline else DEMO_DIR)).resolve()
+    if a.with_finops_baseline:
+        reserved = (DEMO_DIR.resolve(), (ROOT / "build/demo-finops-preview").resolve())
+        if any(out == path or out in path.parents or path in out.parents for path in reserved):
+            print("ERROR: the baseline fixture must not replace or nest inside the core or legacy Preview fixture")
+            return 2
     if out.exists():
         shutil.rmtree(out)
     cmd = [sys.executable, "-B", str(SKILLS / "frontier-blueprint/scripts/build_with_identity.py"),
@@ -126,8 +144,12 @@ def main(argv=None) -> int:
     for key, path in EXAMPLES.items():
         if key == "finops" and not a.with_finops_preview:
             continue
+        if key == "agent-finops" and not a.with_finops_baseline:
+            continue
         cmd += [f"--{key}", str(path)]
-    if a.with_finops_preview:
+    if as_of is not None:
+        cmd += ["--as-of", as_of]
+    if preview:
         cmd.append("--acknowledge-finops-preview")
     if a.no_png or frozen_profile:
         cmd.append("--no-png")
@@ -141,8 +163,8 @@ def main(argv=None) -> int:
         print("ERROR: demo wrapper did not return a JSON summary")
         return 1
     summary = json.loads(proc.stdout[i:])
-    summary["profile"] = "finops-preview" if a.with_finops_preview else "core"
-    if not a.with_finops_preview and (summary.get("value_finops") or {}).get("finops"):
+    summary["profile"] = "agent-finops-preview" if a.with_finops_baseline else "finops-preview" if a.with_finops_preview else "core"
+    if not preview and ((summary.get("value_finops") or {}).get("finops") or "agent_finops" in summary):
         print("ERROR: the core demo unexpectedly produced optional FinOps results")
         return 1
     manifest = ROOT / "releases" / plugin_version() / "manifest.json"

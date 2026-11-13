@@ -1,6 +1,10 @@
-# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.9.2 — unreleased)
+# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.10.0 — unreleased internal candidate)
+
+*AI-assisted procedure maintenance, 13 November 2026; original authorship retained.*
 
 Every field is optional unless marked required. Missing fields render as "To be confirmed". Unknown fields are kept but not shown. `src` is always a list of evidence ids.
+Financial inputs and generated reports follow the stricter contracts below;
+optional Blueprint fields never supply default prices, quantities or approval.
 
 ## parts (four-part journey; optional views)
 
@@ -223,6 +227,12 @@ The canon adds one domain with `kind: "factory"` (id `D<n>`, lead and five speci
 | superpowers_note, resources, sources | Notes and https links |
 
 An agent's factory stage is computed in the HTML from `lifecycle` text and the eight handover checks; nothing to store.
+For agents actually in build-handover scope, the `cost` criterion requires the
+[strict per-agent baseline check](../../frontier-finops/references/guardrails.md#strict-financial-build-handover),
+not legacy F1/F2 or an approved status. Keep it within the existing handover
+checks; other checks and the declared build/release/operate
+stages remain unchanged. Core draft workshops can continue with named
+financial gaps; do not infer financial readiness or start cost work from a gap.
 
 `board` (Part 3 > Plan): `{title, intro, phases[{id, name, stages[], what}],
 wip{stage id: limit}}`. Default phases: Idea (hypothesis, validated), Design
@@ -263,10 +273,20 @@ check embedded JSON and downloadable Markdown, not only the rendered page.
 Customer export is not external/IP clearance; private/internal distribution
 and icon/copyright terms in the plugin guide still apply.
 
+For successor `agent_finops`, project against current consumed Blueprint
+root/domain/agent parents and transitive source dependencies before JSON/HTML
+or identity ZIP products. Rates, FX, outcomes and review evidence carry
+restrictions too. Unknown sharing/ancestry fails closed; unresolved references
+and ambiguous source collisions refuse before outputs. Valid combined ontology/
+baseline sources resolve on a detached, namespace-aware copy without changing
+originals or imposing that opt-in strict graph on ordinary GA process work.
+Cached views cannot weaken current restrictions or customer scopes.
+
 ## identity (agent identity kit)
 Written by frontier-agent-identity (`apply_identity.py`, or `build_with_identity.py` in this skill); never by hand. Without it the Agent identity page is hidden.
 
 Top level `identity`: `kit`, `version`, `date`, `status` (for example "proposal for <Customer> approval"), `customer`, `rule` (`<PO> <Domain> [<Scope>] [DEV | TEST]`), `max_length` (30), `prefix`, `prefix_note`, `solution_prefix`, `environments[]` (`name`, `postfix`, `production`, `band`, `label`, `band_name`, `label_contrast`, `banner`), `journeys[]` (`id`, `name`, `po`, `colour`, `glyph`, `colour_name`, `contrast`), `po_areas[]` (`token`, `owner`, `journeys`, `assumed`), `decisions[]` (`id`, `decision`, `owner`, `when`), `rules[]` (Microsoft guidance: `title`, `url` (https only), `text`), `brand` (`source`, `status`), `validation` (`errors`, `warnings`), `package` (zip file name).
+Identity branding is not Entra identity provisioning.
 
 Per agent (lead, specialist, `data_agent`) `identity`: `display_name`, `names` {ENV: name}, `icon` (production) and `icons` {ENV: icon} as base64 SVG/PNG data URIs, `outline`, `tokens` (`po`, `domain`, `scope`), `kind`, `schema`, `solution`, `repo`, `colour`, `contrast`, `glyph`, `status`, `status_class`, `short_description`, `description`, `slug`, `kit`. Invalid icons and colours are dropped with a warning.
 
@@ -283,7 +303,111 @@ mappings, source visibility and workshop `onto:<id>` verdicts. Native Fabric
 import and tenant agents remain manual Preview checks, not consequences of
 local file generation. This path does not require FinOps.
 
+## agent_finops (optional versioned Preview derivative)
+
+Generated from explicitly supplied authoritative
+`frontier-finops-baseline/1.0` models or `frontier-finops-snapshot/1.0` frozen
+snapshots, with matching `frontier-finops-owner-review/1.0` records where
+reviewed. Follow the [FinOps versioned Quick Start](../../frontier-finops/SKILL.md#quick-start--requested-versioned-baseline);
+new cost work requires the full notice and actual current-scenario confirmation.
+Every top-level invocation or changed scope/model/rates/grounding renews that
+awareness. The CLI flag is a technical assertion for one wrapper chain only.
+Core/default builds do not need or automatically invoke FinOps.
+
+### Authoritative build inputs
+
+Both `build_with_identity.py` and standalone `build_blueprint.py` accept:
+
+| Flag | Contract |
+|---|---|
+| `--agent-finops <baseline-or-snapshot.json>` | Repeat for separate agents' active authoritative models/snapshots, never reports |
+| `--agent-finops-review <recorded-review.json>` | Repeat for externally asserted reviews of explicitly supplied frozen targets; omit for unreviewed drafts |
+| `--as-of YYYY-MM-DD` | Explicit financial evaluation date |
+| `--audience internal` or `--audience customer` | Intended projection audience |
+| `--customer-scope <matching-scope>` | Matching authored/inherited scope for customer-specific output, not authorisation |
+| `--acknowledge-finops-preview` | Current technical acknowledgement after actual confirmation, not approval |
+
+The wrapper combines these sources with ordinary `--value`, requested
+`--ontology` and default identity. It uses `--out-dir` and optional `--html`,
+`--save-normalized` and `--report`. Standalone rendering consumes embedded
+ontology/value/identity from `--data`, uses `--out` for HTML and accepts
+`--save-normalized`/`--report`; it has no wrapper `--value`/`--ontology` flags.
+See the [Blueprint procedure](../SKILL.md#requested-versioned-baseline--authoritative-sources)
+for exact examples and output paths.
+
+Rebuild/revalidation requires the actual current models/snapshots, matching
+recorded reviews, date, audience/scope and fresh acknowledgement. A valid cached
+view is replaceable derivative data, not sufficient authority; malformed
+caches cannot be blessed by supplying sources. Conflicting active revisions,
+unmatched reviews or mixed legacy `finops`/successor sources refuse rather
+than selecting a silent winner. Preserve originals; migration is explicit and
+creates a draft, with no inherited approval, acknowledgement or implied FX.
+
+### Generated view and projected records
+
+Never hand-author financial fields or embed full private baselines here.
+The exact generated envelope is:
+
+```text
+agent_finops: {
+  schema: "frontier-agent-finops-view/1.0",
+  notice, maturity: "Preview", as_of, audience,
+  records: [projected report DTO, ...],
+  financial_permission: false, limitations
+}
+```
+
+Each record is an **already projected**
+`frontier-agent-finops-report/1.0` report. The authoritative field definitions
+and complete shape are in the [baseline projection contract](../../frontier-finops/references/agent-finops-baseline.md#audience-projection-and-exact-derivative-dto).
+Its permitted profile/baseline context, scenario inputs/results, formulas,
+evidence, gaps and dated handover context are derivatives, not a re-importable
+model or owner-review record. Keep `agent_finops` separate from ordinary
+`value_case` and legacy `finops`/`finops_preview`. An unconsumed new baseline
+does not make independent ordinary value Preview; legacy-derived value stays
+Preview with its provenance. Do not automatically feed successor amounts into
+legacy CHF NPV/ROI.
+
+Use projected decimal-string amounts, status/reason and already calculated
+monthly/annual/unit metrics as supplied. No JavaScript recosting or numeric
+coercion of financial decimals. Missing required arithmetic inputs remain
+unavailable; known usable stale/unverified prices may yield labelled
+provisional drafts with verified/provisional contributions, never readiness.
+Withheld money has `amount: null`, `status: withheld` and a reason; restricted
+identities, evidence, headers and hashes must not be reconstructed. Public rows
+are not a complete total. Never substitute zero or old legacy costs, or rebuild
+raw sources client-side. Customer JSON/Markdown and Blueprint records use the
+same projected report contract; internal reports may retain private context.
+Classification and matching customer scope are not clearance or access control.
+
+Figures and financial exports require separate transient, document-local viewer
+acknowledgement; reload resets it, with no localStorage consent. Keep the notice
+visible and gate linked assumptions/derived costs as well as flat/nested
+figures. Ordinary independent value remains available.
+
+### Financial handover and workshop feedback
+
+At build handover, every agent in scope needs a complete validated profile and
+meaningful twelve-month low/expected/high scenarios/denominators, every in-scope
+driver priced with current applicable evidenced rates/FX, the frozen exact
+baseline ID/version/material hash, matching external finance-owner or evidenced
+delegation review, and current lineage/audience/scope validation. There is no
+conditional unpriced exception; provisional or synthetic data cannot establish
+real financial readiness.
+
+Local workshop notes/proposals create new draft inputs; they neither mutate
+frozen data nor approve a baseline. Material changes need a new version and
+exact-target review. Raw status and legacy F1/F2 are not financial approval.
+Structural validity, pricing, external review and dated readiness are separate.
+Review records are externally asserted, not authenticated financial, build or
+deployment permission; local snapshots/hashes are not tamper-proof archives.
+The offline baseline slice adds no dedicated FinOps Agent factory, operating
+loop, live billing/provider imports, cloud deployment or identity provisioning.
+
 ## value_case and finops (business value and FinOps)
+
+The `finops` and `finops_preview` shapes below describe the explicit legacy
+`frontier-finops/1.0` cost path, not successor defaults or its financial gate.
 Written by frontier-value-case (`apply_value.py`) and optional frontier-finops
 (`apply_finops.py`), never by hand. Ordinary value-only wrapper use is
 `build_with_identity.py --data blueprint.json --value value.json --out-dir working/core`.

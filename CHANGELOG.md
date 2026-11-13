@@ -2,6 +2,47 @@
 
 Releases of the Frontier Envisioning plugin. Engineering changes to the repository are recorded in the pull requests.
 
+## 1.10.0 — unreleased
+
+- **UNRELEASED INTERNAL CANDIDATE (#35, #39).** Baseline-first offline Agent
+  FinOps inside the existing optional Preview skill. Eight skills remain
+  registered: seven non-FinOps GA wrappers and optional Preview FinOps.
+- **Versioned financial drafts (#38).** Per-agent profiles, meaningful
+  twelve-month low/expected/high scenarios, typed decimal arithmetic, explicit
+  pricing/FX evidence and unit economics. Usable supplied stale/unverified
+  prices may support labelled provisional drafts; unknown amounts remain
+  unavailable and all financial handover evidence must be complete.
+- **Frozen review and safe reports (#38).** Exact-version/material-hash
+  snapshots, externally asserted owner/delegation review and audience-projected
+  JSON/Markdown reports. Reviews are not authentication or financial permission;
+  synthetic evidence and unpriced costs cannot pass real financial handover.
+  Legacy migration is explicit and preserves originals without inherited
+  approval or implicit FX.
+- **Optional build integration (#37).** Authoritative baseline/review inputs
+  work with ordinary value, identity and requested ontology, with current
+  acknowledgement, date and sharing scope. Current source ancestry is resolved
+  before customer projection; cached views and workshop notes cannot supply
+  financial authority. Core and legacy paths remain independent.
+- **Baseline review in the Blueprint (#37).** The existing optional FinOps view
+  shows projected profiles, scenarios, unit economics and pricing/review gaps,
+  with exact decimal text and acknowledgement-gated JSON/Markdown exports.
+  Canvas, Factory and Plan use the financial evidence criterion within their
+  existing checks; notes cannot approve it or rewrite production stages.
+  Reviewed recurring-only scope does not require out-of-scope one-time costs
+  or invent a zero amount.
+- **Evidenced driver coverage (#38).** Priced/in-scope driver counts cover all
+  applicable lines, periods and consumed rate/FX evidence. Restricted
+  dependencies withhold both counts; no public-subset ratio or unknowable
+  monetary exposure percentage is presented.
+- **Core-only sharing artefacts (#39).** The gallery and complete bundle check
+  actual demo content. Legacy or successor FinOps data cannot enter the core
+  sample merely because a stale build report calls it core.
+- **Measured identity provenance.** All 205 generated non-raster input paths
+  and SHA-256 values match the approved 1.9.2/A6 mapping. The named 1.10.0
+  record retains the historical base profile and all 223 PNG assets.
+  Future versions are not enabled. The fixed archive date is build provenance,
+  not publication, deployment or release approval.
+
 ## 1.9.2 — unreleased
 
 - **Current-state internal candidate (#33).** Version-only preparation from

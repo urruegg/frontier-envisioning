@@ -100,7 +100,7 @@ def require_core(raw: bytes) -> dict:
 
     def has_costs(value):
         if isinstance(value, dict):
-            return any((key in ("finops", "finops_preview") and item is not None)
+            return any((key in ("finops", "finops_preview", "agent_finops") and item is not None)
                        or has_costs(item) for key, item in value.items())
         return isinstance(value, list) and any(has_costs(item) for item in value)
 

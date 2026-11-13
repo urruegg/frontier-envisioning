@@ -94,7 +94,8 @@ class DocsDemo(unittest.TestCase):
         for name in ("plugin/skills/frontier-agent-identity/kit/glyph.svg",
                      "plugin/skills/frontier-agent-identity/kit/scripts/builder.py",
                      "tools/fe_lib.py", "plugin/.claude-plugin/plugin.json", "plugin/package/manifest.json",
-                     "tests/fixtures/caldova-raster-1.9.2-inputs.json"):
+                     "tests/fixtures/caldova-raster-1.9.2-inputs.json",
+                     "tests/fixtures/caldova-raster-1.10.0-inputs.json"):
             with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 path = root.joinpath(*name.split("/"))
@@ -162,6 +163,8 @@ class DocsDemo(unittest.TestCase):
 
     def test_refuses_preview_or_invalid_inputs_without_replacing_previous_output(self):
         for data in (html(finops={"agents": []}), html(value_case={"finops_preview": {"maturity": "preview"}}),
+                     html(agent_finops={"schema": "frontier-agent-finops-view/1.0", "records": []}),
+                     html(annotations={"agent_finops": {}}),
                      b"<html>not a blueprint</html>"):
             with self.subTest(data=data[:60]), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)

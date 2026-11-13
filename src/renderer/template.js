@@ -274,6 +274,207 @@ var FINOPS_NOTICE = "Frontier FinOps is Preview. Its grounding and cost model ar
 /* Viewer awareness only, scoped to this document instance. Artifact metadata is neither
    human approval nor encryption/access control. Never read or save consent in NOTES. */
 var previewAcknowledged = false;
+/* Successor DTO boundary only. Projection, Decimal arithmetic, lineage/scope and
+   exact-target review validation belong to the offline producer, not this UI.
+   Never select a last revision or silently fall back to legacy cost caches. */
+function baselineObject(v){ return !!v && typeof v === "object" && !Array.isArray(v); }
+var AF_PRESENT = Object.prototype.hasOwnProperty.call(BP,"agent_finops");
+var AF = resolveAgentFinops();
+function resolveAgentFinops(){
+  var v = BP.agent_finops, seen = Object.create(null);
+  if (!AF_PRESENT) return {records:[],error:null};
+  var error = "Financial data incomplete: unsupported, malformed or conflicting FinOps derivative. Rebuild from authoritative sources, date, audience/scope and external review; do not reuse cached reports.";
+  if (Object.prototype.hasOwnProperty.call(BP,"finops") || !baselineObject(v) ||
+      v.schema !== "frontier-agent-finops-view/1.0" || v.maturity !== "Preview" ||
+      v.financial_permission !== false || !/^\d{4}-\d{2}-\d{2}$/.test(v.as_of || "") ||
+      ["internal","customer"].indexOf(v.audience) < 0 || !Array.isArray(v.records) ||
+      typeof v.notice !== "string" || typeof v.limitations !== "string") return {records:[],error:error};
+  function decimals(value){
+    if (!value || typeof value !== "object") return true;
+    if (Object.prototype.hasOwnProperty.call(value,"amount") &&
+        value.amount !== null && (typeof value.amount !== "string" || !/^-?\d+(?:\.\d+)?$/.test(value.amount))) return false;
+    return Object.keys(value).every(function(k){ return decimals(value[k]); });
+  }
+  var valid = v.records.every(function(r){
+    if (!baselineObject(r) || r.schema !== "frontier-agent-finops-report/1.0" ||
+        r.maturity !== "Preview" || r.financial_permission !== false ||
+        r.as_of !== v.as_of || r.audience !== v.audience ||
+        typeof r.notice !== "string" || typeof r.limitations !== "string" ||
+        !baselineObject(r.profile) || !baselineObject(r.context) || !baselineObject(r.formulas) ||
+        !baselineObject(r.scenarios) || !Array.isArray(r.scenario_inputs) ||
+        !baselineObject(r.evidence) || !Array.isArray(r.gaps) || !baselineObject(r.handover) ||
+        !decimals(r.scenarios)) return false;
+    /* Only typed financial locations, not arbitrary source annotations with an
+       authored key called amount. Rate records are not result-money objects. */
+    if (r.evidence.rates !== undefined && (!Array.isArray(r.evidence.rates) ||
+        !r.evidence.rates.every(function(rate){
+          return baselineObject(rate) && (rate.amount === undefined || rate.amount === null ||
+            (typeof rate.amount === "string" && /^-?\d+(?:\.\d+)?$/.test(rate.amount)));
+        }))) return false;
+    if (r.agent_id === null) return r.status === "withheld" && r.baseline === null && r.currency === null;
+    if (typeof r.agent_id !== "string" || !AG[r.agent_id] || seen[r.agent_id] ||
+        !baselineObject(r.baseline) || (r.currency !== null && typeof r.currency !== "string")) return false;
+    seen[r.agent_id] = true;
+    return ["low","expected","high"].every(function(id){
+      var sc = r.scenarios[id];
+      return !sc || (baselineObject(sc) && Array.isArray(sc.months) &&
+        Array.isArray(sc.one_time_lines) && baselineObject(sc.unit_metrics));
+    });
+  });
+  return valid ? {records:v.records,error:null} : {records:[],error:error};
+}
+/* The producer copies the explicit profile binding to the report envelope.
+   Do not relabel an unrelated agent's report or discard independent records. */
+function baselineBinding(r){ return r.agent_id === null || r.profile.agent_id === r.agent_id; }
+function baselineFor(a){ return AF.records.filter(function(r){ return r.agent_id === a.id && baselineBinding(r); })[0] || null; }
+function baselineNoOneTime(sc){
+  var m = sc && sc.one_time;
+  /* The producer's empty period is unavailable, not zero. This exception is
+     never applicable to a declared line, withheld money or incomplete inputs. */
+  return baselineObject(sc) && Array.isArray(sc.one_time_lines) && sc.one_time_lines.length === 0 &&
+    baselineObject(m) && m.amount === null && m.status === "incomplete" && m.reason === "incomplete-cost" &&
+    ["verified_subtotal","provisional_subtotal","known_priced_subtotal"].every(function(k){
+      var group = m[k];
+      return baselineObject(group) && group.amount === null && group.status === "unavailable" && group.reason === "empty-priced-group";
+    });
+}
+var DRIVER_COVERAGE_LABEL = "Evidenced priced drivers / in-scope drivers";
+function baselineCoverageState(c){
+  var missing = {text:"Unavailable \u00b7 rebuild projected driver coverage from authoritative inputs",complete:false};
+  if (!baselineObject(c)) return missing;
+  if (c.status === "withheld") return {
+    text:"Withheld \u00b7 withheld \u00b7 restricted-dependency",complete:false
+  };
+  var priced = c.priced_driver_count, scope = c.in_scope_driver_count;
+  if (!Number.isSafeInteger(priced) || !Number.isSafeInteger(scope) || priced < 0 || scope < 0) return missing;
+  /* Validate the supplied count/status combination, never count lines, price
+     drivers, sum amounts or turn this declared-scope metric into exposure %. */
+  var complete = c.status === "complete" && scope > 0 && priced === scope && c.reason === null;
+  var partial = c.status === "incomplete" && scope > 0 && priced < scope && c.reason === "incomplete-evidenced-pricing";
+  var empty = c.status === "unavailable" && scope === 0 && priced === 0 && c.reason === "empty-scope";
+  if (!complete && !partial && !empty) return missing;
+  return {text:String(priced) + " / " + String(scope) + " \u00b7 " + c.status + (c.reason ? " \u00b7 " + c.reason : ""),complete:complete};
+}
+function baselineCoverageReady(r){
+  var c = r.driver_coverage, dated = r.handover.driver_coverage;
+  return baselineCoverageState(c).complete && baselineCoverageState(dated).complete &&
+    ["priced_driver_count","in_scope_driver_count","status","reason"].every(function(k){ return c[k] === dated[k]; });
+}
+function baselineCoverage(c, compact){
+  return h(compact ? "span" : "div",{class:"driver-coverage " + (compact ? "note" : "panel"),role:"status","aria-label":DRIVER_COVERAGE_LABEL},
+    previewAcknowledged ? [
+      h("b",null,DRIVER_COVERAGE_LABEL),": ",baselineCoverageState(c).text,
+      compact ? null : h("p",{class:"note"},"Across all scenarios and applicable periods; declared scope only, not full real-world cost discovery, a commercial quote or approval.")
+    ] : "Driver coverage withheld until fresh viewer acknowledgement.");
+}
+function financialEvidence(a){
+  var r = baselineFor(a), g = r && r.handover, review = g && g.owner_review;
+  function synthetic(v){
+    return !!(v && typeof v === "object" && (v.synthetic === true ||
+      ["type","status","validationStatus","mode"].some(function(k){ return v[k] === "synthetic"; }) ||
+      Object.keys(v).some(function(k){ return !(v === r && k === "evidence") && synthetic(v[k]); })));
+  }
+  function available(m){
+    return baselineObject(m) && m.status === "available" && m.reason === null &&
+      typeof m.amount === "string" && m.currency === r.currency;
+  }
+  function verifiedContributions(v){
+    var provisional = v && v.provisional_subtotal;
+    /* A genuinely empty provisional group is unavailable, not zero. A nonempty
+       provisional contribution contradicts an evidenced/ready root assertion. */
+    return baselineObject(v) && available(v.verified_subtotal) && available(v.known_priced_subtotal) &&
+      baselineObject(provisional) && provisional.amount === null && provisional.status === "unavailable" &&
+      provisional.reason === "empty-priced-group";
+  }
+  function verifiedLine(line){
+    var evidence = line && line.pricing_evidence;
+    return baselineObject(line) && available(line.cost) && baselineObject(evidence) && evidence.as_of === r.as_of &&
+      Array.isArray(evidence.gaps) && !evidence.gaps.length && Array.isArray(evidence.records) && evidence.records.length > 0 &&
+      evidence.records.every(function(p){
+        return baselineObject(p) && p.verification_status === "verified" && p.source_status === "validated" && consistentPrice(p);
+      });
+  }
+  function evidenceRecord(rows, id){
+    if (!Array.isArray(rows) || !nonblank(id)) return null;
+    var matches = rows.filter(function(v){ return baselineObject(v) && v.id === id; });
+    return matches.length === 1 ? matches[0] : null;
+  }
+  function consistentPrice(p){
+    var rows = p.kind === "rate" ? r.evidence.rates : p.kind === "fx" ? r.evidence.fx : null;
+    var cached = evidenceRecord(rows,p.id), source = evidenceRecord(r.evidence.sources,p.source_id);
+    /* Check only consumed records. Copied pricing statuses cannot override a
+       missing/contradictory supplied rate, FX or source. Legacy aliases may be
+       stripped by projection; an explicit remaining alias must agree. */
+    return !!(cached && source && baselineObject(cached.verification) &&
+      cached.verification.status === p.verification_status && source.validationStatus === p.source_status &&
+      !synthetic(cached) && !synthetic(source) &&
+      (!Object.prototype.hasOwnProperty.call(cached,"source_id") || cached.source_id === p.source_id) &&
+      (!Object.prototype.hasOwnProperty.call(cached,"version") || cached.version === p.version));
+  }
+  function units(v){
+    return baselineObject(v) && ["per_run","per_success","per_outcome"].every(function(k){
+      var m = v[k];
+      return available(m) && typeof m.denominator === "string" && /^\d+(?:\.\d+)?$/.test(m.denominator) && !/^0+(?:\.0+)?$/.test(m.denominator);
+    });
+  }
+  function completeScenario(sc){
+    return baselineObject(sc) && ["annual_recurring","first_year"].every(function(k){ return available(sc[k]) && verifiedContributions(sc[k]); }) &&
+      Array.isArray(sc.months) && sc.months.length === 12 &&
+      sc.months.every(function(m){
+        return baselineObject(m) && available(m.total) && verifiedContributions(m.total) && verifiedContributions(m) &&
+          units(m) && Array.isArray(m.lines) && m.lines.every(verifiedLine);
+      }) && (baselineNoOneTime(sc) || (Array.isArray(sc.one_time_lines) && sc.one_time_lines.length > 0 &&
+        available(sc.one_time) && verifiedContributions(sc.one_time) && sc.one_time_lines.every(verifiedLine))) &&
+      baselineObject(sc.unit_metrics) && units(sc.unit_metrics.annual_recurring) && units(sc.unit_metrics.first_year);
+  }
+  function nonblank(v){ return typeof v === "string" && v.trim().length > 0; }
+  function day(v){
+    if (typeof v !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(v) || v.slice(0,4) === "0000") return false;
+    var d = new Date(v + "T00:00:00Z");
+    return isFinite(d.getTime()) && d.toISOString().slice(0,10) === v;
+  }
+  function consistentReview(){
+    var owners = r.profile.owners, owner = baselineObject(owners) && owners.finance;
+    /* Match _review's projected identities and recording/evaluation bounds.
+       frozen_at is not projected: its lower date bound remains producer-owned,
+       never inferred from the authored baseline date or the browser clock. */
+    return nonblank(owner) && nonblank(review.actor) && review.finance_owner === owner &&
+      nonblank(review.evidence_ref) && (review.actor === owner || nonblank(review.delegation_evidence_ref)) &&
+      day(review.date) && day(review.recorded_as_of) && day(r.as_of) &&
+      review.date <= review.recorded_as_of && review.recorded_as_of <= r.as_of;
+  }
+  /* Consume the dated generated decision, not raw authored status, local NOTES,
+     a technical fixture flag or client-side revalidation of financial inputs.
+     Customer projection intentionally omits technical target hashes. */
+  return !!(!AF.error && r && baselineCoverageReady(r) &&
+    nonblank(r.baseline.id) && Number.isInteger(r.baseline.version) && r.baseline.version > 0 &&
+    r.mode === "planning" && r.status === "planning-ready" &&
+    g.schema === "frontier-finops-handover/1.0" && g.as_of === r.as_of &&
+    g.financial_permission === false && g.ready === true && g.status === "planning-ready" && g.lifecycle === "approved" &&
+    g.structural_validation === "valid" && g.pricing_completeness === "evidenced" &&
+    Array.isArray(g.gaps) && !g.gaps.length && !r.gaps.length && !synthetic(r) &&
+    ["low","expected","high"].every(function(k){ return completeScenario(r.scenarios[k]); }) &&
+    baselineObject(review) && review.schema === "frontier-finops-owner-review/1.0" &&
+    review.decision === "approve" && review.mode === "planning" && review.synthetic !== true &&
+    review.assertion === "externally-asserted-not-authenticated" && consistentReview() &&
+    review.baseline_id === r.baseline.id && review.version === r.baseline.version &&
+    (r.audience === "customer" || (baselineObject(g.target) && g.target.baseline_id === r.baseline.id &&
+      g.target.version === r.baseline.version && typeof g.target.material_hash === "string" && g.target.material_hash.length > 0 &&
+      review.material_hash === g.target.material_hash)));
+}
+function financialSummary(a){
+  var r = baselineFor(a), ready = financialEvidence(a);
+  var bindingConflict = AF.records.some(function(v){ return v.agent_id === a.id && !baselineBinding(v); });
+  return h("div",{class:"financial-summary callout","data-agent":a.id,"data-financial-ready":String(ready)},
+    h("b",null, ready ? "Financial handover planning evidence" : "Financial handover gap"),
+    h("p",null, ready ? "Generated planning evidence as of " + r.as_of + "; external review is not authenticated. Not budget, purchase, build or deployment permission."
+      : (AF.error ? AF.error : bindingConflict ? "Projected agent binding conflicts. Rebuild from authoritative sources; another agent's report cannot supply this financial criterion."
+        : r ? "Dated financial evidence is blocked, incomplete, withheld, provisional or synthetic. Verify supplied driver coverage, pricing, the finance owner, actor/delegation and review dates/evidence; rebuild and obtain external exact-target review."
+        : "Supply an authoritative per-agent baseline, validate and price every in-scope driver, freeze the target and obtain external finance-owner review.")),
+    r ? baselineCoverage(r.driver_coverage,true) : null,
+    h("p",{class:"note"},"Required at build handover only. Core drafts and workshops continue with gaps. Notes cannot approve; renew from authoritative sources for changed inputs or dates."),
+    AF_PRESENT ? h("button",{type:"button",class:"btn",onclick:function(){ go("finops"); }},"Review FinOps evidence") : null);
+}
 function previewDerived(value){
   return !!(value && (Object.prototype.hasOwnProperty.call(value,"finops_preview") || value.finops));
 }
@@ -310,7 +511,7 @@ function portfolioPreview(){
     UCS.some(function(u){ return u.business_value && casePreview(u); }) ||
     arr(VC && VC.assumptions).some(assumptionPreview);
 }
-function previewPresent(){ return portfolioPreview() || Object.keys(ASSM).some(function(id){ return assumptionPreview(ASSM[id]); }); }
+function previewPresent(){ return AF_PRESENT || portfolioPreview() || Object.keys(ASSM).some(function(id){ return assumptionPreview(ASSM[id]); }); }
 function previewNotice(){
   return h("aside",{class:"preview-notice",role:"note","aria-label":"FinOps Preview notice"},
     h("p",null, FINOPS_NOTICE),
@@ -462,7 +663,7 @@ var VIEWS = [
   {id:"readiness", label:"IT readiness", part:"Design", need:function(){ return !!(BP.it_readiness && typeof BP.it_readiness === "object"); }},
   {id:"roadmap", label:"Roadmap", part:"Build", need:function(){ return has(BP.next_steps) || has(BP.mvp_options) || D.some(function(d){ return has(d.horizon_plan); }); }},
   {id:"plan", label:"Plan", part:"Build", need:function(){ return ALL.length > 0; }},
-  {id:"finops", label:"FinOps", part:"Build", need:function(){ return !!FO; }},
+  {id:"finops", label:"FinOps", part:"Build", need:function(){ return AF_PRESENT || !!FO; }},
   {id:"attendees", label:"Attendees", part:"Workshop", need:function(){ return has(BP.attendees && BP.attendees.people); }},
   {id:"discovery", label:"Discovery", part:"Workshop", need:function(){ return D.some(function(d){ return has(d.discovery); }); }},
   {id:"risks", label:"Risks", part:"Workshop", need:function(){ return has(BP.risks && BP.risks.items); }},
@@ -1899,7 +2100,7 @@ function renderAgents(){
     h("div",{class:"jhead"}, h("div",null, h("h2",{class:"anm"}, idIcon(a, "aicon lg"), nameOf(a)), h("p",null, a.capability || a.mission || "")), agentPills(a)),
     h("div",{class:"btnrow"}, h("button",{type:"button",class:"btn",onclick:function(){ openAgent(a.id); }},"Role card"), h("button",{type:"button",class:"btn",onclick:function(){ openProfile(a); }},"Role profile"), evPills(a.src)),
     a.identity ? [h("h3",{class:"sub"},"Agent identity"), idPanel(a)] : null,
-    h("h3",{class:"sub"},"Agentic trigger canvas"), canvas);
+    h("h3",{class:"sub"},"Agentic trigger canvas"), canvas, financialSummary(a));
   var flow = h("div",{class:"agfull"}, h("h3",{class:"sub", id:"workflow"},"Workflow \u00b7 from trigger to outcome"), wfSection(a));
   var rest = h("div",{class:"agrest"},
     h("h3",{class:"sub"},"Readiness \u00b7 the seven declarations"), declBox,
@@ -1961,8 +2162,9 @@ function agentChecks(a){
   var nDecl = DECL.filter(function(x){ return has(decl[x[0]]); }).length;
   var vals = UCS.filter(function(u){ return arr(u.agents).some(function(n){ return agentByName(n) === a; }); }).map(valueOf).filter(Boolean);
   var vOk = vals.length && vals.every(function(v){ return v.status === "validated"; }) ? 1 : (vals.some(function(v){ return v.status === "validated" || v.status === "partly validated"; }) ? .5 : 0);
-  /* A model is evidence to verify, never budget approval or a passed readiness check. */
-  var cost = FO && arr(FO.agents).some(function(x){ return x.id === a.id && num(x.total_month); }) ? .5 : 0;
+  /* Only generated dated planning evidence supplies this one criterion.
+     Legacy F1/F2, raw approval and generic validation.cost notes cannot pass it. */
+  var cost = financialEvidence(a) ? 1 : 0;
   var rd = readinessShare(["workshop","prototype","build"]);
   var full = has(c.trigger) && has(c.plan) && has(c.outcome) && has(c.data_sources);
   return {validated: st === "validated" || st === "adjusted" ? 1 : 0, canvas: full ? 1 : (has(c.trigger) || has(c.plan) ? .5 : 0),
@@ -2003,7 +2205,7 @@ function factoryBoard(L){
   }));
 }
 function handoverTable(){
-  var H = arr(FAC.handover); if (!H.length) return null;
+  var H = handoverDef(); if (!H.length) return null;
   var ags = ALL.filter(function(a){ return !isFactory(a._d) && (isMvp(a) || STAGE_ORDER.indexOf(agentStage(a)) >= 1); });
   if (!ags.length) return h("p",{class:"note"},"No agent is validated yet: the handover check fills once the workshop validates the MVP agents.");
   var mark = function(v){ return v === 1 ? h("span",{class:"hv ok",title:"Done"},"\u2713") : (v ? h("span",{class:"hv part",title:"Partly done"},"\u25d0") : h("span",{class:"hv no",title:"Missing"},"\u2715")); };
@@ -2011,7 +2213,10 @@ function handoverTable(){
     h("thead",null, h("tr",null, h("th",{scope:"col"},"Agent"), H.map(function(x){ return h("th",{scope:"col"}, x[1]); }), h("th",{scope:"col"},"Ready for build"))),
     h("tbody",null, ags.map(function(a){
       var c = agentChecks(a), ok = H.every(function(x){ return c[x[0]] === 1; });
-      return h("tr",null, h("td",null, agentChip(a, true)), H.map(function(x){ return h("td",{class:"c"}, mark(c[x[0]])); }), h("td",null, h("span",{class:"pill " + (ok ? "val" : "open")}, ok ? "Ready" : "Not yet")));
+      return h("tr",null, h("td",null, agentChip(a, true)), H.map(function(x){
+        var r = x[0] === "cost" && baselineFor(a);
+        return h("td",{class:"c"}, mark(c[x[0]]),r ? baselineCoverage(r.driver_coverage,true) : null);
+      }), h("td",null, h("span",{class:"pill " + (ok ? "val" : "open")}, ok ? "Planning checks met" : "Not yet"), c.cost !== 1 ? h("div",{class:"note"},"Financial handover gap") : null));
     }))));
 }
 function factorySteps(){
@@ -2543,6 +2748,7 @@ function agentCell(a){
   return ag ? h("button",{type:"button",class:"agentlink",onclick:function(){ openAgent(a.id); }}, label) : label;
 }
 function renderFinops(){
+  if (AF_PRESENT) return renderAgentFinops();
   if (!previewAcknowledged) return [h("h2",{class:"sec"},"FinOps \u00b7 what the agents cost"), h("p",{class:"note"},"Cost figures, purchase comparisons and guardrail settings require viewer acknowledgement. Missing budget evidence remains a gap."), valBox("finops","model")];
   var F = FO || {}, T = F.totals || {}, L = T.lines || {}, agents = arr(F.agents);
   var opts = arr(F.purchase_options), low = opts.filter(function(o){ return o.lowest; })[0];
@@ -2612,6 +2818,140 @@ function renderFinops(){
     arr(F.sources).length ? h("ul",{class:"clean idrules"}, F.sources.map(function(x){ return h("li",null, h("b",null, (x.id || "") + " "), /^https:\/\//.test(x.url || "") ? h("a",{href:x.url,target:"_blank",rel:"noopener"}, x.title || x.url) : (x.title || ""), x.date ? " \u00b7 checked " + x.date : ""); })) : null,
     F.note ? h("p",{class:"note"}, F.note) : null,
     h("h3",{class:"sub"},"Validate in the workshop"), valBox("finops","model")];
+  return out;
+}
+
+/* ---------------- versioned Agent FinOps: projected derivative, never a model ---------------- */
+function baselineMoney(value){
+  if (!baselineObject(value) || value.amount === null || value.amount === undefined) return "Unavailable";
+  return (typeof value.currency === "string" ? value.currency + " " : "") + value.amount;
+}
+function baselineAmount(value){
+  var v = baselineObject(value) ? value : {};
+  return h("div",{class:"baseline-money"}, h("b",null, baselineMoney(v)),
+    h("span",{class:"note"}," \u00b7 " + (v.status || "unavailable") + (v.reason ? " \u00b7 " + v.reason : "")),
+    v.synthetic ? h("span",{class:"pill open"},"synthetic \u00b7 draft only") : null,
+    v.denominator !== undefined ? h("div",{class:"note"},"Denominator: " + v.denominator + " " + (v.denominator_unit || "") + " \u00b7 " + (v.period || "")) : null);
+}
+/* Native text nodes, including authored map keys and evidence references. Do not
+   turn opaque URLs into active links, reconstruct withheld context or use HTML. */
+function baselineTree(value){
+  if (value === null || value === undefined) return h("span",{class:"note"},"Unavailable");
+  if (Array.isArray(value)) return value.length ? h("ol",{class:"baseline-list"}, value.map(function(v){ return h("li",null, baselineTree(v)); })) : h("span",{class:"note"},"No projected entries; not zero cost or proof of completeness.");
+  if (typeof value !== "object") return String(value);
+  if (Object.prototype.hasOwnProperty.call(value,"amount") && typeof value.status === "string" &&
+      (Object.prototype.hasOwnProperty.call(value,"basis") || value.status === "withheld")) return baselineAmount(value);
+  return h("dl",{class:"baseline-fields"}, Object.keys(value).map(function(k){
+    return [h("dt",null,k),h("dd",null,baselineTree(value[k]))];
+  }));
+}
+function baselineDetails(title, value){
+  return h("details",{class:"acc baseline-details"}, h("summary",null,title), h("div",{class:"bd"},baselineTree(value)));
+}
+function baselineContributions(value){
+  var v = value || {};
+  return h("div",{class:"baseline-contributions"},
+    h("div",null,h("b",null,"Verified contributions"),baselineAmount(v.verified_subtotal)),
+    h("div",null,h("b",null,"Provisional contributions \u00b7 draft only"),baselineAmount(v.provisional_subtotal)),
+    h("div",{class:"baseline-known"},h("b",null,"Known-priced subtotal \u00b7 not full cost"),baselineAmount(v.known_priced_subtotal)),
+    h("p",{class:"note"},"Contributions are not a replacement full total; missing or withheld dependencies are not zero."));
+}
+function baselineScenario(id, sc){
+  var metrics = ["per_run","per_success","per_outcome"], totals = [["annual_recurring","Annual recurring"],["one_time","One-time"],["first_year","First year"]];
+  return h("section",{class:"panel baseline-scenario","data-scenario":id},
+    h("h4",null,id + " \u00b7 twelve-month scenario"),
+    h("div",{class:"grid3"},totals.map(function(k){ return h("div",null,h("b",null,k[1]),baselineAmount(sc[k[0]]),
+      k[0] === "one_time" && baselineNoOneTime(sc) ? h("p",{class:"note"},"No one-time lines in the supplied scope; no zero cost is asserted.") : null,
+      baselineContributions(sc[k[0]])); })),
+    h("h5",null,"Unit economics \u00b7 supplied period metrics"),
+    dataTable(["Basis","Per attempted run","Per successful run","Per confirmed outcome"],
+      ["annual_recurring","first_year"].map(function(basis){
+        var units = sc.unit_metrics && sc.unit_metrics[basis] || {};
+        return [basis].concat(metrics.map(function(k){ return baselineAmount(units[k]); }));
+      })),
+    h("h5",null,"Monthly recurring \u00b7 no browser annualisation"),
+    dataTable(["Month","Total","Verified contributions","Provisional contributions","Known-priced subtotal (not full cost)","Per run","Per success","Per outcome"],
+      arr(sc.months).map(function(m){
+        m = m || {};
+        return [m.period || "Withheld",baselineAmount(m.total),baselineAmount(m.verified_subtotal),baselineAmount(m.provisional_subtotal),baselineAmount(m.known_priced_subtotal)]
+          .concat(metrics.map(function(k){ return baselineAmount(m[k]); }));
+      }),"baseline-months"),
+    baselineDetails("Projected line quantities, costs and pricing evidence", {
+      months:arr(sc.months).map(function(m){ return {period:m && m.period,lines:m && m.lines}; }),
+      one_time_lines:sc.one_time_lines
+    }));
+}
+function baselineProposal(r){
+  /* Reuse the free-form FinOps validation note, not a new feedback schema or a
+     local owner-review object. The merge/rebuild remains an external new draft. */
+  if (!r.agent_id) return h("p",{class:"note"},"Target withheld: obtain an appropriately projected report before proposing target-specific changes.");
+  var key = "val|finops|baseline-" + r.agent_id, id = "v-finops-baseline-" + r.agent_id.replace(/\W/g,"_") + "-note";
+  var st = h("span",{class:"status",role:"status"});
+  return h("div",{class:"valbox baseline-proposal"},
+    h("label",{for:id},h("b",null,"Workshop proposal \u00b7 input to a new draft only")),
+    h("p",{class:"note"},"Saved locally; not approval. Does not change frozen model, results, review or readiness. Material changes require authoritative sources, a new version and external exact-target review."),
+    h("textarea",{id:id,placeholder:"Proposed answer, missing evidence and responsible owner",
+      oninput:function(e){ setNote(key,{note:e.target.value}); st.textContent = "Proposal saved locally; not financial approval"; }},note(key).note || ""),st);
+}
+function baselineMarkdown(r){
+  function esc(v){ return String(v === null || v === undefined ? "Unavailable" : v)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/([\\`*_[\]()!#|])/g,"\\$1").replace(/\r?\n/g," / "); }
+  var lines = ["# Agent FinOps \u2014 Preview derivative","",esc(FINOPS_NOTICE),"",
+    "Not an authoritative model or approval. External review is not authenticated. Renew from authoritative sources for changed inputs or dates.",""];
+  lines.push(DRIVER_COVERAGE_LABEL + ": " + esc(baselineCoverageState(r.driver_coverage).text),
+    "Counts across all scenarios and applicable periods describe declared scope only, not full real-world cost discovery or a quote.","");
+  function detail(v, path){
+    if (v && typeof v === "object") {
+      var keys = Object.keys(v).sort();
+      if (!keys.length) lines.push("- " + esc(path) + ": No projected entries; incomplete/withheld is not zero.");
+      keys.forEach(function(k){ detail(v[k],path ? path + " / " + k : k); });
+    } else lines.push("- " + esc(path) + ": " + esc(v));
+  }
+  detail(r,"report");
+  return lines.join("\n") + "\n";
+}
+function renderAgentFinops(){
+  var out = [h("h2",{class:"sec"},"Agent FinOps \u00b7 versioned baseline review"),
+    h("p",{class:"lead"},"Preview planning derivatives, not authoritative baselines. External review is not authenticated. No budget, purchase, build or deployment permission. Core drafts and workshops continue with financial gaps.")];
+  if (AF.error) return out.concat(h("p",{class:"callout baseline-error",role:"status"},AF.error));
+  AF.records.filter(function(r){ return !baselineBinding(r); }).forEach(function(r){
+    out.push(h("p",{class:"callout baseline-error",role:"status"},"Financial data incomplete: agent binding conflicts for " + r.agent_id + ". Rebuild from authoritative sources; this report is not associated with that agent."));
+  });
+  if (!previewAcknowledged) return out.concat(h("p",{class:"note"},"Financial figures, linked assumptions, proposals and financial exports are withheld until fresh viewer acknowledgement for this document. Reload resets acknowledgement."));
+  out.push(h("p",{class:"note"},"Evaluation date: " + BP.agent_finops.as_of + " \u00b7 audience: " + BP.agent_finops.audience + ". " + BP.agent_finops.limitations));
+  if (!AF.records.length) out.push(h("p",{class:"callout baseline-gap",role:"status"},"Financial handover gap: no projected records. Supply authoritative per-agent baselines, date, audience/scope, freeze and external review; rebuild. Missing records are not zero cost."));
+  AF.records.forEach(function(r,i){
+    if (!baselineBinding(r)) return;
+    var st = h("span",{class:"status",role:"status"}), identity = r.agent_id || "withheld-" + (i + 1);
+    out.push(h("article",{class:"baseline-record","data-agent":r.agent_id || "withheld"},
+      h("h3",{class:"sub"},r.agent_id ? r.agent_id + " \u00b7 " + (r.profile.name || "Agent baseline") : "Target withheld"),
+      h("p",{class:"note"},r.notice),
+      h("div",{class:"idstrip"},[r.maturity,r.mode,r.status,r.as_of,r.currency || "Currency unavailable",r.distribution].map(function(v){ return h("span",{class:"pill"},v); })),
+      h("p",{class:"note"},r.limitations),
+      h("h4",null,"Profile and discovery"),baselineTree(r.profile),
+      baselineDetails("Baseline version and projected scope / discovery inputs",{baseline:r.baseline,context:r.context,scenario_inputs:r.scenario_inputs}),
+      h("h4",null,"Scenarios \u00b7 low / expected / high"),
+      baselineCoverage(r.driver_coverage,false),
+      ["low","expected","high"].map(function(id){ return r.scenarios[id] ? baselineScenario(id,r.scenarios[id]) : h("p",{class:"baseline-gap callout"},id + ": unavailable or withheld scenario; financial handover gap."); }),
+      baselineDetails("Formulas and supplied rounding",r.formulas),
+      h("h4",null,"Projected evidence"),h("p",{class:"note"},"Sources, applicable rates and FX as supplied. Provisional and synthetic contributions are draft only, not verified prices or actual provider quotes."),
+      baselineDetails("Inspect projected sources, rates and FX",r.evidence),
+      h("h4",null,"Validation and external review"),
+      r.agent_id ? financialSummary(AG[r.agent_id]) : h("p",{class:"baseline-gap callout"},"Financial handover gap: target and review context withheld."),
+      baselineDetails("Dated structural validation, pricing completeness and external review",r.handover),
+      baselineDetails("Gaps and incomplete states",r.gaps),
+      baselineProposal(r),
+      h("h4",null,"Projected exports \u00b7 not a model or approval"),
+      h("p",{class:"note"},"Downloads contain this already audience-projected report only. Internal private context is not shareable. Export proposals from Discovery as separate workshop feedback for a new draft, never a replacement frozen model."),
+      h("div",{class:"btnrow"},
+        h("button",{type:"button",class:"btn baseline-export",onclick:function(){
+          if (previewAcknowledged && !AF.error) download(fileSlug() + "-" + identity + "-finops-report.json",JSON.stringify(r,null,2),"application/json",st);
+        }},"Download projected report JSON"),
+        h("button",{type:"button",class:"btn baseline-export",onclick:function(){
+          if (previewAcknowledged && !AF.error) download(fileSlug() + "-" + identity + "-finops-report.md",baselineMarkdown(r),"text/markdown;charset=utf-8",st);
+        }},"Download projected report Markdown"),pageLink("discovery"),st)));
+  });
   return out;
 }
 
@@ -2975,10 +3315,14 @@ function feedbackObject(){
   Object.keys(NOTES).forEach(function(k){
     var p = k.split("|");
     if (p[0] === "val") out.validations[p[1] + ":" + p.slice(2).join("|")] =
-      p[1] === "ass" ? presentedAssumptionVerdict(ASSM[p.slice(2).join("|")], NOTES[k]) : NOTES[k];
+      p[1] === "finops" ? presentedFinopsNote(NOTES[k]) : p[1] === "ass" ? presentedAssumptionVerdict(ASSM[p.slice(2).join("|")], NOTES[k]) : NOTES[k];
     else if (p[0] === "q") out.discovery[p.slice(1).join("|")] = NOTES[k];
   });
   return out;
+}
+function presentedFinopsNote(n){
+  if (!previewAcknowledged) return {note:"Financial proposal withheld until fresh viewer acknowledgement."};
+  return Object.assign({},n,{note:"Input to a new draft only; not financial approval. " + (n.note || "")});
 }
 function notesText(){
   var L = [(M.customer || "Customer") + " \u2014 Frontier blueprint workshop notes", "Exported " + new Date().toLocaleString(), ""];
@@ -2996,7 +3340,9 @@ function notesText(){
   Object.keys(NOTES).filter(function(k){ return k.indexOf("val|ready|") === 0; }).sort().forEach(function(k){ var n = NOTES[k]; if (n.status || n.note) L.push("- IT readiness " + k.slice(10) + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });
   Object.keys(NOTES).filter(function(k){ return k.indexOf("val|adr|") === 0; }).sort().forEach(function(k){ var n = NOTES[k]; if (n.status || n.note) L.push("- Decision " + k.slice(8) + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });
   PILLAR_ORDER.forEach(function(pk){ var n = note("val|loop|" + pk); if (n.status || n.note) L.push("- Feedback loop \u00b7 " + PILLARS[pk].label + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : "")); });
-  var nf = note("val|finops|model"); if (nf.status || nf.note) L.push("- FinOps model: " + (nf.status || "") + (nf.note ? " \u2014 " + nf.note : ""));
+  Object.keys(NOTES).filter(function(k){ return k.indexOf("val|finops|") === 0; }).sort().forEach(function(k){
+    L.push("- FinOps proposal " + k.slice(11) + ": " + presentedFinopsNote(NOTES[k]).note);
+  });
   Object.keys(NOTES).filter(function(k){ return k.indexOf("val|onto|") === 0; }).sort().forEach(function(k){
     var n = NOTES[k], id = k.slice(9);
     L.push("- Ontology " + id + (ontFeedbackIds().indexOf(id) < 0 ? " (unknown feedback ID)" : "") + ": " + (n.status || "") + (n.note ? " \u2014 " + n.note : ""));
@@ -3172,7 +3518,9 @@ function prdMarkdown(){
   var P = BP.prd || {}, L = ["# Product Requirements \u2014 " + (M.customer || "Customer"), "",
     "Status: " + prdStatus(), "Owner: " + (P.owner || TBC), "Basis: " + (P.basis || TBC), "",
     "## 1. Problem and vision", "", P.problem || "", "", P.vision || ""];
-  if (previewPresent()) L.unshift(FINOPS_NOTICE, previewAcknowledged ? "Provisional comparisons, not recommendations." : "Preview-derived figures withheld; viewer acknowledgement required.", "");
+  if (previewPresent()) L.unshift(FINOPS_NOTICE, portfolioPreview() ?
+    (previewAcknowledged ? "Provisional comparisons, not recommendations." : "Preview-derived figures withheld; viewer acknowledgement required.") :
+    "The separate optional FinOps report remains acknowledgement-gated. Ordinary business value is independent, not FinOps Preview.", "");
   function bullets(items){ arr(items).forEach(function(x){ L.push("- " + x); }); L.push(""); }
   function table(cols, rows){ L = L.concat(mdTable(cols, rows)); }
   arr(P.problems).forEach(function(pr){ bullets(arr(pr.items).map(function(x){ return pr.name + " (" + x[0] + "): " + x[1]; })); });
@@ -3218,7 +3566,9 @@ function boardCfg(){
   var B = FAC && FAC.board || {}, phases = arr(B.phases).filter(function(p){ return p && arr(p.stages).length; });
   return {title:B.title || "Plan: the Agent Factory board",intro:B.intro || "Every agent from idea to design, build and deploy. Cards follow the live handover checks, not permission to build.",phases:phases.length ? phases : DEF_PHASES,wip:B.wip || {}};
 }
-function handoverDef(){ return FAC && arr(FAC.handover).length ? FAC.handover : DEF_HANDOVER; }
+function handoverDef(){ return (FAC && arr(FAC.handover).length ? FAC.handover : DEF_HANDOVER).map(function(x){
+  return x[0] === "cost" ? ["cost","Financial handover: dated, fully priced and externally reviewed planning evidence"] : x;
+}); }
 function stageLabel(id){ var st = arr(FAC && FAC.lifecycle).filter(function(x){ return x.id === id; })[0]; return st && st.name || DEF_STAGE[id] || id; }
 function nextStep(a){
   var st = agentStage(a), checks = agentChecks(a), miss = handoverDef().filter(function(x){ return checks[x[0]] !== 1; });
@@ -3229,11 +3579,13 @@ function planAgents(){
     .filter(function(x){ return (state.planLane === "all" || x[0].id === state.planLane) && x[1].length; });
 }
 function kanbanCard(a){
-  var d = a._d || {}, checks = agentChecks(a), H = handoverDef(), done = H.filter(function(x){ return checks[x[0]] === 1; }).length, au = autonomyOf(a);
+  var d = a._d || {}, checks = agentChecks(a), H = handoverDef(), done = H.filter(function(x){ return checks[x[0]] === 1; }).length, au = autonomyOf(a), r = baselineFor(a);
   return h("button",{type:"button",class:"kcard",style:domainStyle(d.color),title:nameOf(a) + " \u00b7 next: " + nextStep(a),onclick:function(){ openAgent(a.id); }},
     h("span",{class:"kch"}, idIcon(a) || h("span",{class:"aicon ini",style:filled(d.color)}, initials(shortOf(a))), h("b",null, shortOf(a)), isMvp(a) ? h("span",{class:"pill acc"},"MVP") : null),
     h("span",{class:"kmeta"}, au ? h("span",{class:"pill"},"L" + au.n + " \u00b7 " + au.label) : null, h("span",{class:"note"}, a.owner || TBC)),
     h("span",{class:"kprog","aria-label":done + " of " + H.length + " checks"}, h("i",{style:"width:" + Math.round(done / H.length * 100) + "%"})),
+    h("span",{class:"note"},checks.cost === 1 ? "Financial handover: planning evidence, not permission" : "Financial handover gap \u00b7 required before build handover"),
+    r ? baselineCoverage(r.driver_coverage,true) : null,
     h("span",{class:"knext"}, h("b",null,"Next \u00b7 "), nextStep(a)));
 }
 function renderPlan(){
@@ -3265,7 +3617,7 @@ function renderPlan(){
       if (e.key === "ArrowRight" || e.key === "ArrowLeft") e.stopPropagation();
     }}, grid) : h("p",{class:"note",role:"status"},"No agent matches the filter."),
     h("h3",{class:"sub"},"What moves a card"), h("ol",{class:"clean dor"}, handoverDef().map(function(x){ return h("li",null, x[1]); })),
-    h("p",{class:"note"},"Stages reflect workshop validation, design checks and lifecycle. WIP limits are advisory, not approval. Exported CSV is a handover format: map destination fields explicitly for Azure Boards or GitHub Projects; no native import is performed.")];
+    h("p",{class:"note"},"Stages reflect workshop validation, design checks and lifecycle. Financial handover requires dated planning evidence, not approval or permission. Explicit existing build/release/operate stages are preserved even with gaps. Core drafts and workshops continue without FinOps. WIP limits are advisory, not approval. Exported CSV is a handover format: map destination fields explicitly for Azure Boards or GitHub Projects; no native import is performed.")];
 }
 function csvCell(v){
   var text = String(v === undefined || v === null ? "" : v);

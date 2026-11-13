@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.1 |
-| Date | 2026-11-12 |
+| Version | 1.5 |
+| Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Linked work, dependencies, blockers and validation evidence |
@@ -11,6 +11,7 @@
 
 | Sprint | Goal | State |
 |---|---|---|
+| [SPRINT-007](SPRINT-007-agent-finops-baseline.md) | Versioned offline Agent FinOps baseline before build handover | [#35](https://github.com/urruegg/frontier-envisioning/issues/35), [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36); spec approved at `2e3c0e7`, plan/readiness at `efb3468`; owner `@urruegg`; local strict L1/L2, exact-ZIP execution and independent two-build identity verified; PR/CI, human sign-off and publication remain separate |
 | [SPRINT-006](SPRINT-006-version-1.9.2.md) | Verified 1.9.2 build from the current merged product | [#33](https://github.com/urruegg/frontier-envisioning/issues/33); local verification complete, PR/CI and publication separate |
 | [SPRINT-005](SPRINT-005-internal-user-documentation.md) | Internal user guide, Caldova HTML/gallery and starter prompt | [#31](https://github.com/urruegg/frontier-envisioning/issues/31); local implementation/gates verified; live PR/CI and human review separate |
 | [SPRINT-004](SPRINT-004-handover-1.9-preview-finops.md) | Selective 1.9 process intake and optional acknowledged Preview FinOps | [#25](https://github.com/urruegg/frontier-envisioning/issues/25), children #28/#26/#27; D0–D5 local technical delivery complete, human-merged [PR #29](https://github.com/urruegg/frontier-envisioning/pull/29), 11 November; release/manual acceptance separate |
@@ -20,3 +21,9 @@
 
 Sprint state records delivery, not design approval, permissions or an invented
 schedule. Each ready item has a real issue and governing idea/spec/plan links.
+
+SPRINT-007 began as an early draft row. Its full work-item record now links
+the real implementation plan, written after explicit written-spec approval.
+The later plan/readiness approval at `efb3468` is a separate actual decision.
+The sprint now records actual source-qualified local engineering and handoff
+proof, not inferred labels, human acceptance, publication or deployment.

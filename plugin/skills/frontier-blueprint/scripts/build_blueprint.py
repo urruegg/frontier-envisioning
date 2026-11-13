@@ -28,7 +28,9 @@ import argparse
 import copy
 import datetime as _dt
 import html
+import importlib.util
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -52,7 +54,139 @@ DECLARATIONS = ("write_envelope", "refusal_set", "escalation_path", "grounding_s
 DEFAULT_TEMPLATE = Path(__file__).resolve().parent.parent / "templates" / "frontier-blueprint-template.html"
 DEFAULTS = Path(__file__).resolve().parent.parent / "templates" / "blueprint-defaults.json"
 ICONS = Path(__file__).resolve().parent.parent / "templates" / "product-icons.json"
-PLUGIN_VERSION = "1.9.2"
+PLUGIN_VERSION = "1.10.0"
+FIN_SCRIPTS = Path(__file__).resolve().parents[2] / "frontier-finops" / "scripts"
+
+
+def agent_finops_arguments(parser):
+    """Successor inputs are opt-in; no optional FinOps import on core paths."""
+    parser.add_argument("--agent-finops", action="append", default=[],
+                        help="repeatable authoritative agent baseline or frozen snapshot; not a report")
+    parser.add_argument("--agent-finops-review", action="append", default=[],
+                        help="repeatable external review of an explicitly supplied frozen snapshot")
+    parser.add_argument("--as-of", help="explicit FinOps evaluation date, YYYY-MM-DD")
+    parser.add_argument("--customer-scope", help="matching authored customer scope; not distribution permission")
+
+
+def read_document(path):
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate JSON object keys are ambiguous")
+            result[key] = value
+        return result
+
+    def nonfinite(_value):
+        raise ValueError("nonfinite JSON is not supported")
+
+    document = json.loads(Path(path).read_text(encoding="utf-8-sig"),
+                          object_pairs_hook=unique, parse_constant=nonfinite)
+    if not isinstance(document, dict):
+        raise ValueError("JSON input must be an object")
+    return document
+
+
+def agent_finops_library():
+    required = ("agent_finops", "baseline_calc", "baseline_model", "baseline_records",
+                "baseline_projection", "finops_preview")
+    if any(not (FIN_SCRIPTS / f"{name}.py").is_file() for name in required):
+        raise ValueError("Requested agent FinOps requires the optional frontier-finops skill; "
+                         "install it next to frontier-blueprint")
+    previous = sys.path[:]
+    try:
+        sys.path.insert(0, str(FIN_SCRIPTS))
+        spec = importlib.util.spec_from_file_location("blueprint_agent_finops", FIN_SCRIPTS / "agent_finops.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+    finally:
+        sys.path[:] = previous
+
+
+def agent_finops_preflight(blueprint, *, baselines=(), reviews=(), as_of=None, audience="internal",
+                          customer_scope=None, acknowledge_finops_preview=False):
+    """Validate all sources and original BP ancestry, without I/O effects.
+
+    The returned view is derivative. It must not be used as an authoritative
+    input on a later invocation. Raw inputs are calculated on detached copies;
+    existing receipts and frozen wrappers are validated, never silently repaired.
+    """
+    requested = bool(baselines or reviews or "agent_finops" in blueprint)
+    if not requested:
+        return None
+    if acknowledge_finops_preview is not True:
+        raise ValueError("Agent FinOps Preview requires --acknowledge-finops-preview for this invocation; "
+                         "saved source metadata is not acknowledgement")
+    if not baselines:
+        raise ValueError("Agent FinOps derivative view requires explicit authoritative --agent-finops sources")
+    if "finops" in blueprint:
+        raise ValueError("ambiguous legacy/new financial sources; select one explicit cost source")
+    if "agent_finops" in blueprint:
+        cached = blueprint["agent_finops"]
+        if (not isinstance(cached, dict) or cached.get("schema") != "frontier-agent-finops-view/1.0"
+                or not isinstance(cached.get("records"), list) or cached.get("financial_permission") is not False):
+            raise ValueError("invalid agent_finops source cache; supply a clean Blueprint and authoritative sources")
+        if any(not isinstance(record, dict) or record.get("schema") != "frontier-agent-finops-report/1.0"
+               or record.get("financial_permission") is not False for record in cached["records"]):
+            raise ValueError("invalid agent_finops report cache; authoritative sources cannot bless malformed imports")
+    if isinstance(as_of, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", as_of):
+        try:
+            as_of = _dt.date.fromisoformat(as_of)
+        except ValueError:
+            raise ValueError("--as-of must be an explicit valid YYYY-MM-DD date") from None
+    if type(as_of) is not _dt.date:
+        raise ValueError("--as-of must be an explicit valid YYYY-MM-DD date")
+    lib = agent_finops_library()
+    common = {"as_of": as_of, "acknowledge_finops_preview": True}
+    clean = copy.deepcopy(blueprint)
+    clean.pop("agent_finops", None)  # replace ONLY the generated cache, never authored sources
+    documents, decisions = [], []
+    try:
+        for path in baselines:
+            document = lib._read(path)
+            schema = document.get("schema")
+            if schema == "frontier-finops-baseline/1.0":
+                if "results" in document or "finops_preview" in document:
+                    lib.validate_receipt(document, **common)
+                document = lib.calculate(document, **common)
+            elif schema != lib.SNAPSHOT_SCHEMA:
+                raise ValueError("unsupported authoritative baseline schema")
+            documents.append(document)
+        decisions = [lib._read(path) for path in reviews]
+        applied = lib.apply_models(clean, documents, decisions, audience=audience,
+                                   customer_scope=customer_scope, **common)
+    except (ValueError, KeyError, TypeError, OSError, UnicodeError):
+        # Contract paths, source IDs, rates and OS filenames may be private.
+        raise ValueError("Agent FinOps source preflight refused: invalid baseline, review, Blueprint linkage "
+                         "or receipt; no financial permission") from None
+    return {"blueprint": clean, "view": applied["agent_finops"], "sources": documents,
+            "reviews": decisions, "library": lib}
+
+
+def agent_finops_output_paths(inputs, outputs):
+    """Check readonly inputs and deterministic file/parent constraints.
+
+    These checks cannot guarantee future filesystem availability or I/O success.
+    """
+    sources = {Path(p).resolve() for p in inputs if p}
+    original = [Path(p) for p in outputs if p]
+    targets = [path.resolve() for path in original]
+    if sources.intersection(targets) or len(targets) != len(set(targets)):
+        raise ValueError("Agent FinOps outputs must not alias inputs or each other")
+    # Treat a planned destination as a FILE, not as a possible parent directory.
+    # Resolve links first and compare portable case-folded paths so the complete
+    # publication plan is safe on Windows as well as case-sensitive hosts.
+    files = {path.as_posix().casefold() for path in targets}
+    if len(files) != len(targets) or any(
+        parent.as_posix().casefold() in files for path in targets for parent in path.parents
+    ):
+        raise ValueError("Agent FinOps output files must not alias or be ancestors of other output files")
+    for path in [*original, *targets]:
+        if os.path.lexists(path) and not path.is_file():
+            raise ValueError("Blueprint output must be a regular file, not a directory or dangling link")
+        if any(os.path.lexists(parent) and not parent.is_dir() for parent in path.parents):
+            raise ValueError("Blueprint output parent is unavailable, a file or a dangling link")
 
 
 class Report:
@@ -305,6 +439,8 @@ def clean_attendees(bp: dict, rep: "Report") -> None:
 
 
 def normalise(bp: dict, rep: Report) -> dict:
+    if "agent_finops" in bp:
+        raise ValueError("agent_finops is derivative; run explicit authoritative source preflight before normalisation")
     meta = bp.setdefault("meta", {})
     if not str(meta.get("customer", "")).strip():
         rep.err("meta.customer is required")
@@ -540,7 +676,9 @@ def prepare_ontology_privacy(bp: dict, rep: Report | None = None) -> None:
                     rep.warn(message)
 
 
-def customer_version(bp: dict, rep: Report) -> dict:
+def customer_version(bp: dict, rep: Report, *, _consumed_inputs=None) -> dict:
+    if "agent_finops" in bp:
+        raise ValueError("agent_finops is derivative; project authoritative sources before customer serialisation")
     out = copy.deepcopy(bp)
     prepare_ontology_privacy(out, rep)
     internal_ids = {e["id"] for e in as_list(out.get("evidence")) if str(e.get("visibility", "")).lower() == "internal"}
@@ -591,6 +729,8 @@ def customer_version(bp: dict, rep: Report) -> dict:
         if authored is None:
             out.pop("ontology")
         else:
+            if _consumed_inputs is not None:
+                _consumed_inputs.extend([lib.TEMPLATES / "fabric-iq-canon.json", lib.TEMPLATES / "cdm-map.json"])
             onto = lib.normalize(authored, out, rep)
             entities = {e["id"]: e for e in onto["entity_types"]}
             for agent in onto["data_agents"]:
@@ -668,24 +808,48 @@ def main(argv=None) -> int:
     ap.add_argument("--canon", action="store_true", help="add missing Innovation Hub canon: Agent Factory journey and plan board, landing zone, canon ADRs, IT readiness, digital feedback loop, canon risks")
     ap.add_argument("--defaults", default=str(DEFAULTS), help="canon defaults (templates/blueprint-defaults.json)")
     ap.add_argument("--no-product-icons", action="store_true", help="do not embed Microsoft and GitHub product icons")
+    agent_finops_arguments(ap)
+    ap.add_argument("--acknowledge-finops-preview", action="store_true",
+                    help="fresh acknowledgement for this invocation, not approval")
     a = ap.parse_args(argv)
 
     rep = Report()
+    consumed_inputs = [a.data, *a.agent_finops, *a.agent_finops_review]
     try:
-        bp = json.loads(Path(a.data).read_text(encoding="utf-8-sig"))
+        bp = read_document(a.data)
     except (OSError, ValueError) as e:
         print(f"ERROR: cannot read {a.data}: {e}", file=sys.stderr)
         return 2
     if not isinstance(bp, dict):
         print("ERROR: the blueprint must be a JSON object", file=sys.stderr)
         return 2
+    try:
+        audience = a.audience or str((bp.get("meta") or {}).get("audience", "internal")).lower()
+        successor = agent_finops_preflight(
+            bp, baselines=a.agent_finops, reviews=a.agent_finops_review, as_of=a.as_of,
+            audience=audience, customer_scope=a.customer_scope,
+            acknowledge_finops_preview=a.acknowledge_finops_preview)
+        if successor:
+            bp = successor["blueprint"]
+            if isinstance(bp.get("ontology"), dict):
+                process = process_library()
+                consumed_inputs.extend([process.TEMPLATES / "fabric-iq-canon.json", process.TEMPLATES / "cdm-map.json"])
+    except (OSError, ValueError, KeyError, TypeError, UnicodeError) as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 2
     if a.canon:
-        added = add_canon(bp, load_defaults(a.defaults))
+        consumed_inputs.append(a.defaults)
+        try:
+            added = add_canon(bp, load_defaults(a.defaults))
+        except (OSError, ValueError) as error:
+            print(f"ERROR: cannot prepare canon defaults: {error}", file=sys.stderr)
+            return 2
         if added:
             rep.removed.append("canon added: " + ", ".join(added))
     bp = normalise(bp, rep)
     if isinstance(bp.get("feedback_loop"), dict):
         try:
+            consumed_inputs.append(a.defaults)
             fill_feedback_loop(bp, load_defaults(a.defaults))
         except (OSError, ValueError) as e:
             rep.warn(f"feedback loop not completed from the journeys: {e}")
@@ -696,36 +860,61 @@ def main(argv=None) -> int:
         # Resolve bound content privacy while the original source still exists.
         # Scrubbing it first loses new flags and legacy provenance recovery.
         fill_risks(bp, rep)
-        bp = customer_version(bp, rep)
+        bp = customer_version(bp, rep, _consumed_inputs=consumed_inputs)
     else:
         bp.setdefault("meta", {})["audience"] = "internal"
     # Final models are derived from the scrubbed sources.
     fill_risks(bp, rep)
     fill_prd(bp, rep)
     if not a.no_product_icons:
+        consumed_inputs.append(ICONS)
         embed_product_icons(bp, rep, ICONS)
+    if successor:
+        # Attach after ordinary normalisation/customer scrub. Its safe DTO was
+        # projected against the ORIGINAL root/domain/selected-agent/source closure.
+        bp["agent_finops"] = successor["view"]
     if a.strict and rep.warnings:
         rep.errors += [f"(strict) {w}" for w in rep.warnings]
 
     result = {"status": "error" if rep.errors else "ok", "audience": audience, "stats": stats(bp),
               "errors": rep.errors, "warnings": rep.warnings, "removed_for_customer": rep.removed}
-    if not rep.errors:
-        if a.save_normalized:
-            Path(a.save_normalized).write_text(json.dumps(bp, ensure_ascii=False, indent=1), encoding="utf-8")
-            result["normalized"] = a.save_normalized
-        if a.out:
-            try:
+    if successor and audience == "customer":
+        # Ordinary diagnostic paths/IDs can identify removed private evidence.
+        # Financial diagnostics remain in their safely projected report DTOs.
+        for key in ("errors", "warnings", "removed_for_customer"):
+            count = len(result[key])
+            result[key] = [f"{count} Blueprint {key.replace('_', ' ')}; private details withheld"] if count else []
+    try:
+        requested = ([a.save_normalized, a.out] if not rep.errors else []) + [a.report]
+        if not rep.errors and a.out:
+            consumed_inputs.append(a.template)
+        agent_finops_output_paths(consumed_inputs, requested)
+        products = []
+        if not rep.errors:
+            if a.save_normalized:
+                products.append((Path(a.save_normalized), json.dumps(bp, ensure_ascii=False, indent=1)))
+                result["normalized"] = a.save_normalized
+            if a.out:
                 tpl = Path(a.template).read_text(encoding="utf-8")
-                Path(a.out).write_text(render(bp, tpl), encoding="utf-8")
+                products.append((Path(a.out), render(bp, tpl)))
                 result["out"] = a.out
-            except (OSError, ValueError) as e:
-                print(f"ERROR: {e}", file=sys.stderr)
-                return 2
-    if a.report:
-        Path(a.report).write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
-    for e in rep.errors:
+        if a.report:
+            products.append((Path(a.report), json.dumps(result, ensure_ascii=False, indent=1)))
+        # All deterministic validation, rendering and serialization is complete.
+        # Later OS/I/O failures remain possible; no transactional guarantee is
+        # inferred across multiple caller-selected output locations.
+        agent_finops_output_paths(consumed_inputs, [path for path, _ in products])
+        for path, _ in products:
+            path.parent.mkdir(parents=True, exist_ok=True)
+        for path, text in products:
+            path.write_text(text, encoding="utf-8", newline="\n")
+    except (OSError, ValueError, TypeError) as error:
+        message = "Agent FinOps output operation refused; no financial permission" if successor else str(error)
+        print(f"ERROR: {message}", file=sys.stderr)
+        return 2
+    for e in result["errors"]:
         print("ERROR:", e)
-    for w in rep.warnings:
+    for w in result["warnings"]:
         print("WARN:", w)
     print(json.dumps({k: result[k] for k in ("status", "audience", "stats")}, ensure_ascii=False))
     return 1 if rep.errors else 0

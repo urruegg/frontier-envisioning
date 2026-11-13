@@ -4,13 +4,14 @@
 """Assemble the showcase site for Azure Static Web Apps from the built demo.
 
   python tools/build_site.py [--out build/site] [--auth none|entra] [--tenant-id GUID] [--demo build/demo]
-         [--preview-demo build/demo-finops-preview]
+         [--preview-demo build/demo-finops-preview] [--baseline-demo build/demo-agent-finops-preview]
 
 Output:
   index.html                 landing page (site/index.html with version, date and commit filled in)
   blueprint.html             the Caldova blueprint (from build/demo)
   identity-catalogue.html    the agent identity catalogue (from build/demo)
   blueprint-preview.html    only when an explicit developer Preview fixture is supplied
+  blueprint-baseline.html   only when an explicit synthetic baseline fixture is supplied
   downloads/<plugin zip>     the plugin package, when dist/ holds it
   staticwebapp.config.json   routes, security headers and sign-in
 
@@ -79,9 +80,16 @@ def commit_id() -> str:
         return "local"
 
 
-def build(out: Path, demo: Path, auth: str, tenant: str | None, *, preview_demo: Path | None = None) -> dict:
+def build(out: Path, demo: Path, auth: str, tenant: str | None, *, preview_demo: Path | None = None,
+          baseline_demo: Path | None = None) -> dict:
     if auth == "entra" and not (tenant and GUID.match(tenant)):
         raise SystemExit("--auth entra needs --tenant-id (a GUID) or SITE_AUTH_TENANT_ID")
+    destination = out.resolve()
+    for fixture in (demo, preview_demo, baseline_demo):
+        if fixture is not None:
+            source = fixture.resolve()
+            if destination == source or destination in source.parents or source in destination.parents:
+                raise SystemExit("site output must not overlap a consumed demo fixture")
     src_html = demo / DEMO_HTML_NAME
     catalogue = demo / "identity" / "caldova-agent-identity" / "catalog.html"
     if not src_html.exists() and demo.resolve() == DEMO_DIR.resolve():
@@ -91,13 +99,15 @@ def build(out: Path, demo: Path, auth: str, tenant: str | None, *, preview_demo:
     for need in (src_html, catalogue):
         if not need.exists():
             raise SystemExit(f"missing {need} - run: python tools/dev.py demo")
-    preview_page = None
-    if preview_demo is not None:
-        preview_html = preview_demo / DEMO_HTML_NAME
-        if not preview_html.is_file():
-            raise SystemExit(f"missing {preview_html} - build the explicitly acknowledged Preview demo first")
-        preview_page = preview_html.read_text(encoding="utf-8")
-        csp_for(preview_page)
+    optional_pages = {}
+    for name, fixture in (("blueprint-preview.html", preview_demo), ("blueprint-baseline.html", baseline_demo)):
+        if fixture is not None:
+            fixture_html = fixture / DEMO_HTML_NAME
+            if not fixture_html.is_file():
+                raise SystemExit(f"missing {fixture_html} - build the explicitly acknowledged Preview fixture first")
+            page = fixture_html.read_text(encoding="utf-8")
+            csp_for(page)  # preflight before replacing an existing site
+            optional_pages[name] = page
     if out.exists():
         shutil.rmtree(out)
     (out / "downloads").mkdir(parents=True)
@@ -105,8 +115,7 @@ def build(out: Path, demo: Path, auth: str, tenant: str | None, *, preview_demo:
     pkg = DIST / f"frontier-envisioning-plugin-{version}.zip"
     pages = {"blueprint.html": src_html.read_text(encoding="utf-8"),
              "identity-catalogue.html": catalogue.read_text(encoding="utf-8")}
-    if preview_page is not None:
-        pages["blueprint-preview.html"] = preview_page
+    pages.update(optional_pages)
     package_href = "#"
     if pkg.exists():
         shutil.copyfile(pkg, out / "downloads" / pkg.name)
@@ -150,11 +159,13 @@ def main(argv=None) -> int:
     ap.add_argument("--demo", default=str(DEMO_DIR))
     ap.add_argument("--preview-demo", default=os.environ.get("FRONTIER_PREVIEW_DEMO"),
                     help="explicit developer Preview fixture; omitted by default")
+    ap.add_argument("--baseline-demo", help="explicit synthetic baseline test fixture; omitted by default")
     ap.add_argument("--auth", choices=("none", "entra"), default=os.environ.get("SITE_AUTH_MODE") or "none")
     ap.add_argument("--tenant-id", default=os.environ.get("SITE_AUTH_TENANT_ID"))
     a = ap.parse_args(argv)
     print(json.dumps(build(Path(a.out), Path(a.demo), a.auth, a.tenant_id,
-                           preview_demo=Path(a.preview_demo) if a.preview_demo else None), indent=1))
+                           preview_demo=Path(a.preview_demo) if a.preview_demo else None,
+                           baseline_demo=Path(a.baseline_demo) if a.baseline_demo else None), indent=1))
     return 0
 
 

@@ -5,6 +5,7 @@ import base64
 import hashlib
 import json
 import os
+import subprocess
 import tempfile
 import threading
 import unittest
@@ -34,6 +35,135 @@ def fake_demo(root: Path) -> Path:
 
 
 class BuildSite(unittest.TestCase):
+    def test_consumed_fixture_output_overlap_refuses_before_writes(self):
+        for kind in ("core", "preview", "baseline"):
+            for relation in ("equal", "fixture-inside-output", "output-inside-fixture"):
+                with self.subTest(kind=kind, relation=relation), tempfile.TemporaryDirectory() as tmp:
+                    root = Path(tmp) / "controlled"
+                    demo = fake_demo(root)
+                    fixture = demo if kind == "core" else root / kind
+                    if kind != "core":
+                        fixture.mkdir()
+                        (fixture / fe_lib.DEMO_HTML_NAME).write_text(PAGE, encoding="utf-8")
+                    out = fixture if relation == "equal" else fixture.parent if relation == "fixture-inside-output" else fixture / "site"
+                    out.mkdir(parents=True, exist_ok=True)
+                    (out / "keep").write_bytes(b"existing output")
+                    before = {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+                    options = {kind + "_demo": fixture} if kind != "core" else {}
+                    try:
+                        with self.assertRaisesRegex(SystemExit, "overlap"):
+                            build_site.build(out, demo, "none", None, **options)
+                    except OSError as exc:
+                        self.fail(f"cleanup reached a consumed source before overlap refusal: {exc}")
+                    self.assertEqual(before, {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()})
+
+    def test_resolved_directory_alias_overlap_preserves_sources(self):
+        for alias_role in ("fixture", "output"):
+            with self.subTest(alias_role=alias_role), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                demo = fake_demo(root)
+                output = root / "site"
+                fixture = output / "baseline"
+                fixture.mkdir(parents=True)
+                original = fixture / fe_lib.DEMO_HTML_NAME
+                original.write_text(PAGE, encoding="utf-8")
+                (output / "keep").write_bytes(b"existing output")
+                target = fixture if alias_role == "fixture" else output
+                alias = root / "alias"
+                try:
+                    alias.symlink_to(target, target_is_directory=True)
+                except OSError:
+                    if os.name != "nt":
+                        self.skipTest("directory symlinks unavailable")
+                    link_text = str(alias).replace("'", "''")
+                    target_text = str(target).replace("'", "''")
+                    result = subprocess.run([
+                        "powershell.exe", "-NoProfile", "-NonInteractive", "-Command",
+                        f"New-Item -ItemType Junction -Path '{link_text}' -Target '{target_text}' -ErrorAction Stop | Out-Null",
+                    ], capture_output=True, text=True, timeout=30)
+                    if result.returncode:
+                        self.skipTest("directory symlinks and junctions unavailable")
+                self.assertEqual(alias.resolve(), target.resolve())
+                try:
+                    with self.assertRaisesRegex(SystemExit, "overlap"):
+                        build_site.build(alias if alias_role == "output" else output, demo, "none", None,
+                                         baseline_demo=alias if alias_role == "fixture" else fixture)
+                except OSError as exc:
+                    self.fail(f"cleanup reached a directory alias before overlap refusal: {exc}")
+                self.assertEqual(original.read_text(encoding="utf-8"), PAGE)
+                self.assertEqual((output / "keep").read_bytes(), b"existing output")
+                self.assertEqual(alias.resolve(), target.resolve())
+                self.assertFalse((output / "staticwebapp.config.json").exists())
+
+    def test_explicit_baseline_is_isolated_and_uses_its_exact_csp(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            demo = fake_demo(root)
+            baseline = root / "baseline"
+            baseline.mkdir()
+            page = PAGE.replace('console.log("hi");', 'console.log("baseline");')
+            (baseline / fe_lib.DEMO_HTML_NAME).write_text(page, encoding="utf-8")
+            preview = root / "preview"
+            preview.mkdir()
+            preview_page = PAGE.replace('console.log("hi");', 'console.log("legacy");')
+            (preview / fe_lib.DEMO_HTML_NAME).write_text(preview_page, encoding="utf-8")
+            out = root / "site"
+            try:
+                build_site.build(out, demo, "entra", TENANT, preview_demo=preview, baseline_demo=baseline)
+            except TypeError as exc:
+                self.fail(f"explicit baseline site support missing: {exc}")
+            self.assertEqual((out / "blueprint-baseline.html").read_text(encoding="utf-8"), page)
+            cfg = json.loads((out / "staticwebapp.config.json").read_text(encoding="utf-8"))
+            routes = {route["route"]: route for route in cfg["routes"]}
+            policy = routes["/blueprint-baseline.html"]["headers"]["Content-Security-Policy"]
+            self.assertEqual(policy, build_site.csp_for(page))
+            self.assertNotEqual(policy, routes["/blueprint.html"]["headers"]["Content-Security-Policy"])
+            self.assertEqual(routes["/blueprint-preview.html"]["headers"]["Content-Security-Policy"],
+                             build_site.csp_for(preview_page))
+            self.assertNotEqual(policy, routes["/blueprint-preview.html"]["headers"]["Content-Security-Policy"])
+            self.assertEqual(routes["/blueprint-baseline.html"]["allowedRoles"], ["authenticated"])
+            self.assertEqual(cfg["globalHeaders"], build_site.GLOBAL_HEADERS)
+            self.assertIn("connect-src 'none'", policy)
+            self.assertNotIn("blueprint-baseline", (out / "index.html").read_text(encoding="utf-8"))
+            self.assertNotIn("blueprint-baseline.html", [p.name for p in (out / "downloads").iterdir()])
+            default = root / "default"
+            build_site.build(default, demo, "none", None)
+            self.assertFalse((default / "blueprint-baseline.html").exists())
+
+    def test_baseline_cli_is_explicit_and_has_no_environment_toggle(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with mock.patch.dict(os.environ, {"FRONTIER_BASELINE_DEMO": str(root / "ignored")}), \
+                    mock.patch.object(build_site, "build", return_value={}) as build:
+                self.assertEqual(build_site.main([]), 0)
+                self.assertIsNone(build.call_args.kwargs.get("baseline_demo"))
+                try:
+                    code = build_site.main(["--baseline-demo", str(root / "baseline")])
+                except SystemExit as exc:
+                    code = exc.code
+                self.assertEqual(code, 0)
+                self.assertEqual(build.call_args.kwargs.get("baseline_demo"), root / "baseline")
+
+    def test_invalid_baseline_preserves_site_before_cleanup(self):
+        for invalid in (None, '<script src="https://cdn.example.com/x.js"></script>'):
+            with self.subTest(invalid=invalid), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                demo = fake_demo(root)
+                baseline = root / "baseline"
+                baseline.mkdir()
+                if invalid:
+                    (baseline / fe_lib.DEMO_HTML_NAME).write_text(invalid, encoding="utf-8")
+                out = root / "site"
+                out.mkdir()
+                sentinel = out / "keep"
+                sentinel.write_bytes(b"good")
+                try:
+                    with self.assertRaises(SystemExit):
+                        build_site.build(out, demo, "none", None, baseline_demo=baseline)
+                except TypeError as exc:
+                    self.fail(f"baseline preflight missing: {exc}")
+                self.assertEqual(sentinel.read_bytes(), b"good")
+
     def test_explicit_preview_fixture_has_its_own_real_csp_and_auth(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
