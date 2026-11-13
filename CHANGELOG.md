@@ -23,6 +23,9 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
   acknowledgement, date and sharing scope. Current source ancestry is resolved
   before customer projection; cached views and workshop notes cannot supply
   financial authority. Core and legacy paths remain independent.
+- **Core-only sharing artefacts (#39).** The gallery and complete bundle check
+  actual demo content. Legacy or successor FinOps data cannot enter the core
+  sample merely because a stale build report calls it core.
 - **Measured identity provenance.** All 205 generated non-raster input paths
   and SHA-256 values match the approved 1.9.2/A6 mapping. The named 1.10.0
   record retains the historical base profile and all 223 PNG assets.

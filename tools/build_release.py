@@ -19,6 +19,7 @@ import zipfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_docs_demo import require_core  # noqa: E402
 from fe_lib import DEMO_DIR, DEMO_HTML_NAME, DIST, PLUGIN, ROOT, load_module, plugin_version, sha256_file  # noqa: E402
 
 ONTOLOGY_DOCUMENTS = ("ontology.ttl", "ontology.md", "data-agents.md", "data-products.md")
@@ -91,8 +92,14 @@ def main(argv=None) -> int:
         print("ERROR: the complete bundle requires a built full core demo, not an optional Preview or incomplete variant")
         return 1
     model = report.get("value_finops")
-    if report.get("finops") or (model is not None and (not isinstance(model, dict) or model.get("finops"))):
+    if report.get("agent_finops") is not None or report.get("finops") \
+            or (model is not None and (not isinstance(model, dict) or model.get("finops"))):
         print("ERROR: the core demo unexpectedly contains optional Preview FinOps output")
+        return 1
+    try:
+        require_core(demo_html.read_bytes())
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(f"ERROR: the complete bundle requires core-only demo HTML: {exc}")
         return 1
     entries = [
         (START.format(v=v).encode("utf-8"), "START-HERE.md"),
