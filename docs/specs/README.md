@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.1 |
-| Date | 2026-11-12 |
+| Version | 1.2 |
+| Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Agreed behaviour, acceptance and constraints for new work packages |
@@ -11,6 +11,7 @@
 
 | Spec | Design state | Execution state |
 |---|---|---|
+| [Caldova gallery extension](2026-11-13-caldova-gallery-extension-design.md) | Written spec approved at `4ef63d1` on [#41](https://github.com/urruegg/frontier-envisioning/issues/41) | [Plan](../plans/2026-11-13-caldova-gallery-extension-plan.md) and [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md); inline plan/readiness at `8be6aa8`, local capture/full-gate proof verified; PR/CI separate |
 | [Agent FinOps baseline](2026-11-12-agent-finops-baseline-design.md) | Written spec explicitly approved at `2e3c0e7` on [#35](https://github.com/urruegg/frontier-envisioning/issues/35); [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36) | [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md) and [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md); subagent-driven plan/readiness approved at `efb3468`, implementation in progress |
 | [Version 1.9.2](2026-11-12-version-1.9.2-design.md) | Direct version-only request; no release approval | [#33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](../sprints/SPRINT-006-version-1.9.2.md) |
 | [Internal user documentation](2026-11-12-internal-user-documentation-design.md) | Execution directed; local implementation verified, no protected label inferred | [#31](https://github.com/urruegg/frontier-envisioning/issues/31), [SPRINT-005](../sprints/SPRINT-005-internal-user-documentation.md) |

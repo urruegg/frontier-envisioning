@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.1 |
-| Date | 2026-11-12 |
+| Version | 1.2 |
+| Date | 2026-11-13 |
 | Author | Original catalogue author not recorded; Copilot SDK in VS Code, AI-assisted consolidation |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Current and historical implementation plans; specifications live in docs/specs |
@@ -11,6 +11,7 @@
 
 | Plan | Owner during execution | Tracking and delivery evidence |
 |---|---|---|
+| [Caldova gallery extension](2026-11-13-caldova-gallery-extension-plan.md) | `@urruegg` accountable; inline plan/readiness approval at `8be6aa8` after written spec `4ef63d1` | [#41](https://github.com/urruegg/frontier-envisioning/issues/41), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md); ten real captures and full local gate verified; PR/CI separate |
 | [Agent FinOps baseline](2026-11-12-agent-finops-baseline-plan.md) | `@urruegg` accountable; actual subagent-driven plan/readiness approval at `efb3468` | [#35](https://github.com/urruegg/frontier-envisioning/issues/35), [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), D1 #38 / D2 #37 / D3 #39 and [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md); implementation in progress, delivery not yet verified |
 | [Version 1.9.2](2026-11-12-version-1.9.2-plan.md) | `@urruegg` accountable; mechanical preparation | [#33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](../sprints/SPRINT-006-version-1.9.2.md); local gates/rebuild proof pass, live PR/CI separate |
 | [Internal user documentation](2026-11-12-internal-user-documentation-plan.md) | `@urruegg` accountable; execution directed in conversation | [#31](https://github.com/urruegg/frontier-envisioning/issues/31), [SPRINT-005](../sprints/SPRINT-005-internal-user-documentation.md); local gates pass, PR/CI and human review separate |

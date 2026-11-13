@@ -16,7 +16,7 @@ Commands
   selftest        the plugin's end-to-end self-test against the Caldova examples
   package         build the plugin package into dist/ (and refresh plugin/install/plugin-install.json)
   demo            build the Caldova demo into build/demo (blueprint, identity kit, catalogue)
-  docs-demo       regenerate the tracked offline Caldova HTML and five documentation images
+  docs-demo       regenerate the tracked offline Caldova HTML and ten documentation images
   verify-release  compare dist/ and build/demo with releases/<version>/manifest.json
   dom             core and explicitly acknowledged Preview fixture tests in a headless DOM
   site            assemble the showcase site into build/site (SITE_AUTH_MODE / SITE_AUTH_TENANT_ID)

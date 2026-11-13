@@ -2,7 +2,7 @@
   "schema": "frontier-docs-demo/1.0",
   "profile": "core",
   "plugin_version": "1.10.0",
-  "source_sha256": "90252d29a5b675e0d7e6fddd9ec394e44ef1235896ba00b566a9d8ad78536ec4",
+  "source_sha256": "90647a52fe3b96739fee6398281746de8b3b8f1540903e19c1d4d086de57323f",
   "html": {
     "file": "caldova-blueprint.html",
     "sha256": "2e8d837642dd65659d20cb513884824d2ee0158c6a5cd0cbaa39880943d65bd2",
@@ -60,6 +60,48 @@
         "width": 1440,
         "height": 1000,
         "sha256": "e313335afbc9342942ece1fbcc92f46af936357ba6ec5b9c426023784bc386a2"
+      },
+      {
+        "name": "landing-zone",
+        "route": "#/architecture",
+        "file": "landing-zone.png",
+        "width": 1440,
+        "height": 1000,
+        "selected_tab": "lz",
+        "sha256": "d7181d960bf06606bf17156d1413fe2e620ae98394141013d8e664b5a6afa045"
+      },
+      {
+        "name": "architecture-layers",
+        "route": "#/architecture",
+        "file": "architecture-layers.png",
+        "width": 1440,
+        "height": 1000,
+        "selected_tab": "layers",
+        "sha256": "feeaed35e9b69066f3cb0c5441aa8c2dc9f725811b7c40de6cf4bea75b0663c4"
+      },
+      {
+        "name": "discovery",
+        "route": "#/discovery",
+        "file": "discovery.png",
+        "width": 1440,
+        "height": 1000,
+        "sha256": "af65979caf6fada7b31524c425d7d60c095a8ce30e08830b6ee581f602dae05c"
+      },
+      {
+        "name": "risks",
+        "route": "#/risks",
+        "file": "risks.png",
+        "width": 1440,
+        "height": 1000,
+        "sha256": "acb9a3cbe4cb60ce4b26d53ec5dbe75cb143bcd1b5eab2b79b5f4478507e95cd"
+      },
+      {
+        "name": "evidence",
+        "route": "#/evidence",
+        "file": "evidence.png",
+        "width": 1440,
+        "height": 1000,
+        "sha256": "d3749ea6449b5cfdfff9064dcba632b1a61a7e4aa8bd3177b38753941cb7deb3"
       }
     ]
   }
