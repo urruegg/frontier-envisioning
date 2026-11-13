@@ -2,20 +2,23 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted design |
-| Status | Scope approved; written-spec review and implementation readiness pending |
+| Status | Written spec approved; plan/readiness confirmation pending |
 | Scope | Ten reproducible core-gallery captures and existing HTML navigation |
-| References | [Catalogue](README.md), [Issue #41](https://github.com/urruegg/frontier-envisioning/issues/41), [Idea](../ideas/2026-11-13-caldova-gallery-extension.md), [Gallery](../demo/README.md), [Original documentation design](2026-11-12-internal-user-documentation-design.md) |
+| References | [Catalogue](README.md), [Issue #41](https://github.com/urruegg/frontier-envisioning/issues/41), [Idea](../ideas/2026-11-13-caldova-gallery-extension.md), [Plan](../plans/2026-11-13-caldova-gallery-extension-plan.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md), [Gallery](../demo/README.md) |
 
 ## 1. Outcome and actual choice
 
 Expand **Caldova Blueprint gallery** from five to ten captioned screenshots
 of the same interactive offline core HTML. Accountable human owner: `@urruegg`.
 The 13 November conversation choice **`approve-ten-captures`** approved this
-scope over links-only documentation. Written-spec review and a linked plan
-still precede implementation; no ready/approved labels are inferred.
+scope over links-only documentation. The separate
+**`approve-written-gallery-spec`** response approves the written spec at
+`4ef63d110a72dc9a301496317e2e5ef1311becee`. The linked implementation plan and
+readiness/execution confirmation still precede implementation; no ready/
+approved labels are inferred.
 
 The base is human-merged PR #40, commit `9115ccc8`. Product version remains
 the unreleased internal candidate 1.10.0. No plugin runtime changes are needed.

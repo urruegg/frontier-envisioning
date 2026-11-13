@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted intake |
-| Status | Five additional captures approved in conversation; written spec/readiness pending |
+| Status | Written spec approved; plan/readiness confirmation pending |
 | Scope | Existing core Blueprint architecture and workshop views; no plugin feature change |
-| References | [Catalogue](README.md), [Issue #41](https://github.com/urruegg/frontier-envisioning/issues/41), [Design](../specs/2026-11-13-caldova-gallery-extension-design.md), [Gallery](../demo/README.md), [Original documentation plan](../plans/2026-11-12-internal-user-documentation-plan.md) |
+| References | [Catalogue](README.md), [Issue #41](https://github.com/urruegg/frontier-envisioning/issues/41), [Design](../specs/2026-11-13-caldova-gallery-extension-design.md), [Plan](../plans/2026-11-13-caldova-gallery-extension-plan.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md), [Gallery](../demo/README.md) |
 
 ## Outcome and request
 
@@ -21,6 +21,10 @@ retain the original five images and add five genuine captures, captions and
 navigation instructions for the existing offline HTML. The links-only
 alternative was not selected. This is design-scope evidence, not written-plan
 approval or a protected label-field change.
+
+The separate **`approve-written-gallery-spec`** response approves the written
+design at `4ef63d110a72dc9a301496317e2e5ef1311becee`. The linked plan was
+written afterwards and awaits readiness/execution confirmation.
 
 ## Boundaries
 
