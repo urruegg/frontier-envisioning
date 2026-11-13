@@ -693,6 +693,125 @@ class BaselineCalculationTests(unittest.TestCase):
             "freshness_policy": {"max_age_days": 30}, "sharingClassification": "customer-shareable",
         }]
 
+    def assert_driver_coverage(self, result, priced, scope, status):
+        coverage = result.get("driver_coverage")
+        self.assertIsInstance(coverage, dict, "Calculated results must expose evidenced driver coverage")
+        self.assertEqual(coverage.get("priced_driver_count"), priced)
+        self.assertEqual(coverage.get("in_scope_driver_count"), scope)
+        self.assertIs(type(coverage["priced_driver_count"]), int)
+        self.assertIs(type(coverage["in_scope_driver_count"]), int)
+        self.assertEqual(coverage.get("status"), status)
+        self.assertEqual(coverage.get("reason"),
+                         None if status == "complete" else
+                         "empty-scope" if status == "unavailable" else "incomplete-evidenced-pricing")
+        return coverage
+
+    def test_driver_coverage_complete_and_unpriced_keep_integer_scope_counts(self):
+        self.verified_test_data()
+        complete = self.calculate()
+        self.assert_driver_coverage(complete["results"], 3, 3, "complete")
+        self.model["rates"][0]["amount"] = None
+        partial = self.calculate()
+        self.assert_driver_coverage(partial["results"], 2, 3, "incomplete")
+        month = partial["results"]["scenarios"]["expected"]["months"][0]
+        self.assertEqual(month["known_priced_subtotal"]["amount"], "10.00")
+        self.assertIsNone(month["total"]["amount"])
+
+    def test_driver_coverage_requires_every_scenario_period_and_evidenced_price(self):
+        cases = [
+            (("rates", 0, "verification", "status"), "unverified"),
+            (("rates", 0, "verification", "verified_at"), "2026-01-01"),
+            (("rates", 0, "source_id"), None),
+            (("rates", 0, "effective_to"), "2026-12-31"),
+            (("baseline", "scenarios", 2, "drivers", "tokens_per_run"), None),
+            (("baseline", "scenarios", 2, "monthly_runs", 11), None),
+            (("baseline", "scenarios", 2, "driver_evidence", "tokens_per_run", "source_id"), None),
+        ]
+        for path, value in cases:
+            self.model = example()
+            self.verified_test_data()
+            put(self.model, path, value)
+            with self.subTest(path=path):
+                result = self.calculate()["results"]
+                self.assert_driver_coverage(result, 2, 3, "incomplete")
+                if path[-1] in {"status", "verified_at", "source_id"} and path[0] == "rates":
+                    month = result["scenarios"]["expected"]["months"][0]
+                    self.assertEqual(month["total"]["amount"], "110.00")
+                    self.assertEqual(month["total"]["status"], "provisional")
+        for status in ("verified", "unverified", None):
+            self.model = example()
+            self.verified_test_data()
+            self.add_fx(status=status or "verified")
+            if status is None:
+                self.model["fx"] = []
+            with self.subTest(fx=status):
+                self.assert_driver_coverage(self.calculate()["results"], 3 if status == "verified" else 2,
+                                            3, "complete" if status == "verified" else "incomplete")
+
+    def test_driver_coverage_multiline_and_unrepresented_drivers_cannot_disappear(self):
+        self.verified_test_data()
+        base = copy.deepcopy(self.model)
+        extra_rate = {**copy.deepcopy(self.model["rates"][0]), "id": "TEST-SECOND-RATE", "amount": None}
+        self.model["rates"].append(extra_rate)
+        self.model["baseline"]["lines"].append({
+            **copy.deepcopy(self.model["baseline"]["lines"][0]),
+            "id": "TEST-SECOND-LINE", "rate_id": extra_rate["id"],
+        })
+        self.assert_driver_coverage(self.calculate()["results"], 2, 3, "incomplete")
+        self.model = copy.deepcopy(base)
+        self.model["baseline"]["lines"].pop(0)
+        self.assert_driver_coverage(self.calculate()["results"], 2, 3, "incomplete")
+        self.model = base
+        self.model["baseline"]["scope"].append({
+            "cost_driver_id": "TEST-UNREPRESENTED", "description": "Unrepresented declared scope",
+            "sharingClassification": "customer-shareable",
+        })
+        self.assert_driver_coverage(self.calculate()["results"], 3, 4, "incomplete")
+
+    def test_driver_coverage_empty_unpriced_and_recurring_only_scopes(self):
+        self.verified_test_data()
+        base = copy.deepcopy(self.model)
+        for rate in self.model["rates"]:
+            rate["amount"] = None
+        self.assert_driver_coverage(self.calculate()["results"], 0, 3, "incomplete")
+        self.model = copy.deepcopy(base)
+        self.model["baseline"]["scope"] = []
+        self.model["baseline"]["lines"] = []
+        self.assert_driver_coverage(self.calculate()["results"], 0, 0, "unavailable")
+        self.model = copy.deepcopy(base)
+        self.model["baseline"]["scenarios"] = []
+        self.model["baseline"]["lines"] = []
+        self.assert_driver_coverage(self.calculate()["results"], 0, 3, "incomplete")
+        self.model = base
+        build_driver = self.model["baseline"]["lines"][-1]["cost_driver_id"]
+        self.model["baseline"]["lines"] = [line for line in self.model["baseline"]["lines"]
+                                           if line["frequency"] == "monthly"]
+        self.model["baseline"]["scope"] = [row for row in self.model["baseline"]["scope"]
+                                           if row["cost_driver_id"] != build_driver]
+        self.model["baseline"]["exclusions"][0]["description"] = (
+            "Test-only reviewed exclusion: no one-time build costs are in this scope.")
+        self.assert_driver_coverage(self.calculate()["results"], 2, 2, "complete")
+
+    def test_driver_coverage_is_recomputed_and_receipt_bound_not_cached_authority(self):
+        self.verified_test_data()
+        before = copy.deepcopy(self.model)
+        document = self.calculate()
+        self.assert_driver_coverage(document["results"], 3, 3, "complete")
+        self.assertEqual(self.model, before)
+        for remove in (False, True):
+            bad = copy.deepcopy(document)
+            if remove:
+                bad["results"].pop("driver_coverage")
+            else:
+                bad["results"]["driver_coverage"]["priced_driver_count"] = 2
+            bad["finops_preview"]["calculations"]["baseline"]["results_fingerprint"] = (
+                baseline_module("finops_preview").fingerprint(bad["results"]))
+            with self.subTest(remove=remove), self.assertRaisesRegex(ValueError, "recalculate"):
+                self.calc.validate_receipt(bad, as_of=DAY, acknowledge_finops_preview=True)
+            fresh = self.calculate(bad)
+            self.assertEqual(fresh["results"], document["results"])
+            self.assertEqual(baseline_module().model_fingerprint(bad), baseline_module().model_fingerprint(before))
+
     def test_known_answers_and_period_bases(self):
         result = self.calculate()["results"]
         expected = result["scenarios"]["expected"]

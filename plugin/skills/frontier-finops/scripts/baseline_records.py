@@ -495,6 +495,7 @@ def handover(snapshot, reviews, *, as_of, acknowledge_finops_preview=False):
         "schema": "frontier-finops-handover/1.0", "as_of": today, "target": target,
         "lifecycle": lifecycle, "structural_validation": "valid-with-gaps" if current["results"]["gaps"] else "valid",
         "pricing_completeness": "incomplete" if pricing else "evidenced",
+        "driver_coverage": copy.deepcopy(current["results"]["driver_coverage"]),
         "ready": not gaps, "status": "blocked" if gaps else "planning-ready", "gaps": gaps,
         "owner_review": checked[0] if checked else None, "financial_permission": False, "limitations": BOUNDARY,
     }

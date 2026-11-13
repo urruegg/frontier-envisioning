@@ -24,6 +24,8 @@ _TECHNICAL = {"dependency_refs", "source_refs", "fx_refs", "src", "content_src",
               "customer_scopes", "internal", "visibility", "model_fingerprint", "results_fingerprint",
               "material_hash", "blueprint_fingerprint", "legacy_fingerprint"}
 _WITHHELD = {"amount": None, "status": "withheld", "reason": "restricted-dependency"}
+_WITHHELD_COVERAGE = {"priced_driver_count": None, "in_scope_driver_count": None,
+                      "status": "withheld", "reason": "restricted-dependency"}
 LIMITATIONS = BOUNDARY + " Customer scope is not authorisation. Internal output is private context, not shareable."
 _DIGEST_FAMILIES = {
     "fingerprint": ("fingerprint", "fingerprints"),
@@ -287,6 +289,8 @@ class _Projection:
     def derived(self, value):
         if isinstance(value, dict):
             if self.derived_restricted(value):
+                if "priced_driver_count" in value:
+                    return dict(_WITHHELD_COVERAGE)
                 if "cost" in value:  # withhold identity, quantity, evidence AND money
                     return {"status": "withheld", "quantity": None, "cost": dict(_WITHHELD)}
                 return dict(_WITHHELD) if "amount" in value else {"status": "withheld"}
@@ -294,6 +298,7 @@ class _Projection:
             # aliases. Monetary/unit scalars are governed by dependency privacy,
             # never by coincident text tokens (e.g. private source ID "10").
             financial = {"amount", "currency", "quantity", "quantity_unit", "denominator",
+                         "priced_driver_count", "in_scope_driver_count",
                          "denominator_unit", "period", "basis", "status", "reason",
                          "date", "effective_from", "effective_to", "verified_at", "source_date"}
             return {k: copy.deepcopy(v) if k in financial else self.derived(v)
@@ -349,6 +354,7 @@ def _withheld_report(base):
     return {**safe, "mode": "withheld", "status": "withheld", "agent_id": None, "baseline": None, "currency": None,
             "profile": {"status": "withheld"}, "context": {"status": "withheld"},
             "scenarios": {}, "scenario_inputs": [], "evidence": {"status": "withheld"},
+            "driver_coverage": dict(_WITHHELD_COVERAGE),
             "gaps": [{"code": "withheld-context", "blocks": ["handover"]}],
             "handover": {"status": "withheld", "ready": False, "financial_permission": False},
             "formulas": {"status": "withheld"}}
@@ -420,7 +426,7 @@ def project(model, reviews=(), *, as_of, audience, customer_scope=None, acknowle
                          "limitations": BOUNDARY}
             visible_gaps = [{"code": "withheld-context", "blocks": ["handover"]}]
         else:
-            readiness = projector.raw(readiness, "handover")
+            readiness = projector.raw({k: v for k, v in readiness.items() if k != "driver_coverage"}, "handover")
             # Hashes bind all material, not only visible arithmetic dependencies.
             readiness.pop("target", None)
             if isinstance(readiness.get("owner_review"), dict):
@@ -429,6 +435,8 @@ def project(model, reviews=(), *, as_of, audience, customer_scope=None, acknowle
                             for g in gaps]
     else:
         visible_gaps = copy.deepcopy(gaps)
+    coverage = projector.derived(current["results"]["driver_coverage"])
+    readiness["driver_coverage"] = copy.deepcopy(coverage)
     baseline = _mapping(material, "baseline", "baseline")
     baseline_private = projector.restricted(baseline, field="baseline",
                                             inherited_scope=material.get("customer_scope"))
@@ -453,6 +461,7 @@ def project(model, reviews=(), *, as_of, audience, customer_scope=None, acknowle
                      "units": "period cost / attempted runs, successful runs or confirmed outcome units",
                      "rounding": "HALF_UP: final money 2 places; final unit ratios 6 places; no JS financial arithmetic"},
         "scenarios": {} if baseline_private else projector.derived(current["results"]["scenarios"]),
+        "driver_coverage": coverage,
         "scenario_inputs": [] if baseline_private else projector.scenario_inputs(),
         "evidence": {"status": "withheld"} if baseline_private else {
                      k: projector.raw(_rows(material, k, k), k, material.get("customer_scope"))
@@ -473,9 +482,16 @@ def render_markdown(report):
         raise ValueError("render_markdown requires a projected report DTO")
     rows = ["# Agent FinOps — Preview", "", _cell(report.get("notice")), "", _cell(report.get("limitations")), "",
             f"Status: {_cell(report.get('status'))}; date: {_cell(report.get('as_of'))}; "
-            f"currency: {_cell(report.get('currency'))}", "",
+            f"currency: {_cell(report.get('currency'))}", ""]
+    coverage = report.get("driver_coverage", {})
+    counts = ("withheld" if coverage.get("status") == "withheld" else
+              f"{coverage.get('priced_driver_count')} / {coverage.get('in_scope_driver_count')}")
+    rows.extend([
+            f"Evidenced priced drivers / in-scope drivers: {_cell(counts)}"
+            f" — {_cell(coverage.get('status'))}; reason: {_cell(coverage.get('reason'))}", "",
+            "Declared scope only; not full real-world cost discovery or a commercial quote.", "",
             "| Scenario | Annual recurring | One-time | First year |",
-            "|---|---|---|---|"]
+            "|---|---|---|---|"])
     for identity in ("low", "expected", "high"):
         if identity not in report.get("scenarios", {}):
             continue

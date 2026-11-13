@@ -1717,6 +1717,124 @@ class ProjectionTests(IOCase):
                 json.dumps({"agent_finops": {"schema": "frontier-agent-finops-view/1.0",
                                             "records": [report]}}))
 
+    def test_driver_coverage_report_handover_and_markdown_use_current_evidenced_counts(self):
+        model = simulated()
+        report = self.project(model)
+        coverage = report.get("driver_coverage")
+        self.assertIsInstance(coverage, dict, "Projected reports must expose safe driver coverage")
+        self.assertEqual(coverage, {"priced_driver_count": 3, "in_scope_driver_count": 3,
+                                    "status": "complete", "reason": None,
+                                    "sharingClassification": "customer-shareable"})
+        self.assertIn("Evidenced priced drivers / in-scope drivers: 3 / 3",
+                      self.projection.render_markdown(report))
+        _, snapshot = self.snapshot(model)
+        review = self.review(snapshot)
+        readiness = self.records.handover(snapshot, [review], **ACK)
+        self.assertEqual(readiness.get("driver_coverage"), snapshot["model"]["results"]["driver_coverage"])
+        self.assertTrue(readiness["ready"])
+        self.assertFalse(readiness["financial_permission"])
+        projected = self.projection.project(snapshot, [review], **ACK, audience="customer")
+        self.assertEqual(projected["handover"]["driver_coverage"], coverage)
+        # A current evaluation cannot reuse frozen complete evidence indefinitely.
+        later = self.projection.project(snapshot, [review], as_of=date(2027, 1, 15),
+                                        acknowledge_finops_preview=True, audience="internal")
+        self.assertEqual(later["driver_coverage"]["priced_driver_count"], 0)
+        self.assertEqual(later["driver_coverage"]["status"], "incomplete")
+        self.assertFalse(later["handover"]["ready"])
+        synthetic = self.project()
+        self.assertEqual(synthetic["driver_coverage"]["priced_driver_count"], 0)
+        self.assertFalse(synthetic["handover"]["ready"])
+
+    def test_driver_coverage_private_dependencies_withhold_counts_not_public_subset(self):
+        cases = {
+            "root": lambda m: m,
+            "scope": lambda m: m["baseline"]["scope"][0],
+            "missing-line-scope": lambda m: m["baseline"]["scope"][0],
+            "line": lambda m: m["baseline"]["lines"][0],
+            "quantity": lambda m: m["baseline"]["scenarios"][2]["driver_evidence"]["tokens_per_run"],
+            "rate": lambda m: m["rates"][0],
+            "source": lambda m: m["sources"][0],
+            "unknown": lambda m: m["rates"][0],
+            "missing-sharing": lambda m: m["baseline"]["scope"][0],
+            "customer-specific": lambda m: m["baseline"]["scope"][0],
+            "fx": lambda m: m["fx"][0],
+        }
+        for kind, locate in cases.items():
+            model = simulated()
+            if kind == "fx":
+                model["rates"][0]["currency"] = "USD"
+                model["fx"] = [{
+                    "id": "PRIVATE-COVERAGE-FX", "from_currency": "USD", "to_currency": "CHF",
+                    "rate": "0.9", "date": DAY.isoformat(), "method": "spot", "source_id": "SYN-ENGINEERING",
+                    "verification": {"status": "verified", "verified_at": DAY.isoformat()},
+                    "freshness_policy": {"max_age_days": 30}, "sharingClassification": "customer-shareable",
+                }]
+            private = locate(model)
+            private.update(sharingClassification="unknown" if kind == "unknown" else
+                           "customer-specific" if kind == "customer-specific" else "internal-only",
+                           note="PRIVATE-COVERAGE-SENTINEL")
+            if kind == "missing-sharing":
+                private.pop("sharingClassification")
+            if kind == "customer-specific":
+                private["customer_scope"] = "caldova-coverage"
+            if kind == "missing-line-scope":
+                model["baseline"]["lines"].pop(0)
+            with self.subTest(kind=kind):
+                report = self.project(model)
+                self.assertEqual(report.get("driver_coverage"), {
+                    "priced_driver_count": None, "in_scope_driver_count": None,
+                    "status": "withheld", "reason": "restricted-dependency",
+                })
+                for text in self.serialisations(report):
+                    self.assertNotIn("PRIVATE-COVERAGE", text)
+                    self.assertNotIn(self.model.model_fingerprint(model), text)
+                    self.assertNotIn("dependency_refs", text)
+                    self.assertNotIn("Evidenced priced drivers / in-scope drivers: 2 / 2", text)
+                if kind not in {"root", "source"}:
+                    self.assertEqual(report["scenarios"]["expected"]["months"][0]["lines"][-1]["cost"]["amount"],
+                                     "10.00")
+                if kind == "customer-specific":
+                    scoped = self.project(model, customer_scope="caldova-coverage")
+                    self.assertEqual(scoped["driver_coverage"]["priced_driver_count"], 3)
+
+    def test_driver_coverage_ignores_unused_evidence_and_private_outcome_inputs(self):
+        model = simulated()
+        model["sources"].append({**copy.deepcopy(model["sources"][0]), "id": "UNUSED-COVERAGE-PRIVATE",
+                                 "sharingClassification": "unknown", "validationStatus": "unverified",
+                                 "lastValidatedAt": "2020-01-01"})
+        model["profile"]["outcome"]["sharingClassification"] = "internal-only"
+        for scenario in model["baseline"]["scenarios"]:
+            scenario["driver_evidence"]["success_share"]["sharingClassification"] = "internal-only"
+            scenario["driver_evidence"]["outcomes_per_success"]["sharingClassification"] = "internal-only"
+        report = self.project(model)
+        self.assertEqual(report.get("driver_coverage", {}).get("priced_driver_count"), 3)
+        self.assertEqual(report["driver_coverage"]["in_scope_driver_count"], 3)
+        self.assertEqual(report["driver_coverage"]["status"], "complete")
+        self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+        self.assertEqual(report["scenarios"]["expected"]["unit_metrics"]["annual_recurring"]["per_outcome"]["status"],
+                         "withheld")
+
+    def test_driver_coverage_real_cli_exports_projected_json_and_markdown(self):
+        for private in (False, True):
+            model = simulated()
+            if private:
+                model["rates"][0]["sharingClassification"] = "internal-only"
+            source = self.write("coverage-input.json", self.calculated(model))
+            out = self.dir / ("coverage-private" if private else "coverage-public")
+            result = self.run_cli("export", "--baseline", source, "--out-dir", out,
+                                  "--audience", "customer", "--as-of", DAY, "--acknowledge-finops-preview")
+            with self.subTest(private=private):
+                self.assertEqual(result.returncode, 0, result.stderr)
+                report = json.loads((out / "report.json").read_text(encoding="utf-8"))
+                self.assertEqual(report.get("driver_coverage", {}).get("status"),
+                                 "withheld" if private else "complete")
+                self.assertEqual(report["driver_coverage"]["priced_driver_count"], None if private else 3)
+                markdown = (out / "report.md").read_text(encoding="utf-8")
+                self.assertEqual(markdown, self.projection.render_markdown(report))
+                self.assertIn("Evidenced priced drivers / in-scope drivers: " +
+                              ("withheld" if private else "3 / 3"), markdown)
+                self.assertNotIn("dependency_refs", markdown)
+
     def test_public_report_is_derivative_with_scenarios_units_evidence_and_notice(self):
         report = self.project()
         self.assertEqual(report["schema"], "frontier-agent-finops-report/1.0")

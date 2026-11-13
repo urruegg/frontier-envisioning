@@ -104,6 +104,43 @@ make full totals and dependent metrics `null`, not zero or a public/priced
 subset labelled as the total. `available` means computable, not approved.
 `unavailable`, `incomplete`, `provisional` and `withheld` are distinct states.
 
+`results.driver_coverage` is one derived metric across all three scenarios and
+all applicable months/one-time lines:
+
+```text
+{
+  priced_driver_count: integer,
+  in_scope_driver_count: integer,
+  status: "complete" | "incomplete" | "unavailable",
+  reason: null | "incomplete-evidenced-pricing" | "empty-scope",
+  ...derived dependency/sharing lineage
+}
+```
+
+The denominator includes every declared in-scope cost-driver ID, including
+drivers with no line. Reviewed exclusions outside that scope are not counted.
+A driver enters the numerator only when **every** applicable line has
+calculable quantities and current applicable evidenced rates and required FX.
+Known provisional prices may contribute draft money but never complete
+evidenced coverage. Missing consumed quantity evidence also prevents completion;
+unconsumed evidence and outcome-only inputs do not determine cost coverage.
+Counts are not monetary amounts or an exposure percentage. Actual `0 / N`
+is valid incomplete coverage; empty scope is `0 / 0`, `unavailable`, never complete.
+Coverage describes declared scope, not full real-world cost discovery or a quote.
+
+`handover(...).driver_coverage` is copied from current dated recomputation, not
+cached results or an external review assertion. `project(...)` exposes the same
+metric at report root and in its handover summary; `render_markdown(...)` labels
+it **Evidenced priced drivers / in-scope drivers**. Both counts become `null`,
+with `status: "withheld"` and `reason: "restricted-dependency"`, when any
+contributing scope, cost-line, quantity, rate, FX or source dependency is
+restricted or unresolved for that audience/scope. Projection uses the existing
+dependency policy; it never substitutes a public-only ratio or reveals a private
+remainder. Customer output strips the metric's technical lineage. Whole-report
+withholding also withholds both counts. Coverage is receipt-fingerprinted derived
+output; additive older cached results need recalculation. It grants no approval,
+sharing clearance or financial permission and does not change the strict gate.
+
 Arithmetic is isolated from the caller's Decimal context. Intermediate
 arithmetic must be exact within the calculator's 80-digit context and bounded
 exponents. Non-terminating intermediate line-price division and unsupported
@@ -181,7 +218,7 @@ directory creation. Reviews do not authenticate the actor or validate the
 external evidence. Files and hashes are **not tamper-proof audit storage**.
 
 `handover` returns schema `frontier-finops-handover/1.0`, `as_of`, `target`,
-`lifecycle`, `structural_validation`, `pricing_completeness`, `ready`, `status`,
+`lifecycle`, `structural_validation`, `pricing_completeness`, `driver_coverage`, `ready`, `status`,
 `gaps`, `owner_review`, `financial_permission: false` and `limitations`.
 Structural validity, pricing completeness, external lifecycle and dated
 readiness are separate. An external approve decision can remain historically
@@ -273,7 +310,7 @@ The exact top-level report schema is `frontier-agent-finops-report/1.0`:
 schema, notice, maturity, forecast_kind, audience, distribution, as_of,
 limitations, financial_permission, mode, status, agent_id, profile,
 baseline, currency, context, formulas, scenarios, scenario_inputs,
-evidence, gaps, handover
+evidence, gaps, handover, driver_coverage
 ```
 
 - `baseline`: safe ID/version/authored date/start month/currency/sharing envelope.

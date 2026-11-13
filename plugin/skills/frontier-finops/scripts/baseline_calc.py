@@ -20,6 +20,8 @@ Task3 consumption contract:
   all sharing_classes and combined sharingClassification, plus inherited
   internal/visibility/src/content_src/customer_scopes. Source ancestry closes
   transitively over BOTH legacy source-reference fields and source_id.
+* results.driver_coverage counts evidenced priced drivers / in-scope drivers
+  across every scenario/period. Counts are integers, not money or percentages.
 * Derived gaps (root and pricing_evidence) have canonical content ordering,
   independent of authored object-key order. Authored arrays are never sorted.
 * Available means computable, NOT approved. Provisional means usable supplied
@@ -438,6 +440,51 @@ class _Calculation:
                              "denominator": _count(denominator), "denominator_unit": unit}
         return metrics
 
+    def driver_coverage(self, line_results):
+        """Count evidenced drivers across all scenarios/periods, never money."""
+        lines = self.baseline.get("lines") or []
+        scenarios = self.baseline.get("scenarios") or []
+        complete_lines = {}
+        quantity_paths = []
+        for li, line in enumerate(lines):
+            paths = [("baseline", "lines", li)]
+            fields = [f"baseline.lines[{li}]"]
+            for si, _ in enumerate(scenarios):
+                keys = [line.get("driver_id")]
+                if line.get("quantity_mode") == "per-run":
+                    keys.append("monthly_runs")
+                for key in keys:
+                    if key is not None:
+                        paths.append(("baseline", "scenarios", si, "driver_evidence", key))
+                        fields.append(f"baseline.scenarios[{si}].driver_evidence.{key}")
+            quantity_meta = self.ancestry(paths, deep=True)
+            quantity_paths.extend(paths)
+            fields.extend(f"sources[{self.sources[ref][0]}]" for ref in quantity_meta["source_refs"]
+                          if ref in self.sources)
+            evidence_gaps = any(g["field"] == field or g["field"].startswith(field + ".")
+                                for g in self.gaps for field in fields)
+            records = line_results[li]
+            required = 3 * (12 if line.get("frequency") == "monthly" else 1)
+            complete_lines[li] = (
+                line.get("frequency") in {"monthly", "one-time"} and len(records) == required
+                and not evidence_gaps
+                and all(r["cost"]["amount"] is not None and r["cost"]["status"] == "available" for r in records))
+        priced = 0
+        for driver in self.scope:
+            indices = [li for li, line in enumerate(lines) if line.get("cost_driver_id") == driver]
+            if indices and all(complete_lines[li] for li in indices):
+                priced += 1
+        count = len(self.scope)
+        complete = (count > 0 and priced == count
+                    and count == len(self.baseline.get("scope") or [])
+                    and all(line.get("cost_driver_id") in self.scope for line in lines)
+                    and {s.get("id") for s in scenarios} == {"low", "expected", "high"})
+        meta = _combine(self.common, self.ancestry([("baseline", "scope"), *quantity_paths], deep=True),
+                        *(record for records in line_results.values() for record in records))
+        return {**meta, "priced_driver_count": priced, "in_scope_driver_count": count,
+                "status": "complete" if complete else "incomplete" if count else "unavailable",
+                "reason": None if complete else "incomplete-evidenced-pricing" if count else "empty-scope"}
+
     def results(self):
         start = self.text(self.baseline, "start_month", "baseline")
         periods = []
@@ -453,6 +500,7 @@ class _Calculation:
             else:
                 periods.append((None, None, None))
         scenarios = {}
+        line_results = {li: [] for li, _ in enumerate(self.baseline.get("lines") or [])}
         for si, scenario in enumerate(self.baseline.get("scenarios") or []):
             if not scenario.get("id"):
                 continue
@@ -467,6 +515,7 @@ class _Calculation:
                     frequency = line.get("frequency")
                     if frequency == "monthly" or (frequency == "one-time" and mi == 0):
                         entry, record = self.line(scenario, si, line, li, mi, period, first, last)
+                        line_results[li].append(record)
                         if frequency == "monthly":
                             entries.append(entry)
                             recurring.append(entry)
@@ -494,7 +543,8 @@ class _Calculation:
                 "internal": True, "sharingClassification": "internal-only", "forecast_kind": "estimate",
                 "synthetic": self.model.get("mode") == "synthetic", "notice": NOTICE,
                 "handover_blocked": True, "financial_approval": False,
-                "scenarios": scenarios, "gaps": _canonical_gaps(self.gaps)}
+                "scenarios": scenarios, "driver_coverage": self.driver_coverage(line_results),
+                "gaps": _canonical_gaps(self.gaps)}
 
 
 def calculate(model, *, as_of, acknowledge_finops_preview=False):
