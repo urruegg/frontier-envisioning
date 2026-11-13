@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.7 |
+| Version | 0.8 |
 | Date | 2026-11-13 |
 | Author | Urs Rüegg; Copilot AI-assisted maintenance |
 | Status | Maintained internal reader guide; not release approval |
@@ -33,8 +33,8 @@ customer redistribution or IP clearance. Maintainer: [@urruegg](https://github.c
 
 *Overview preview — proposed mission, Frontier phases and illustrative business
 outcomes, not operational results.
-The [five-view gallery](docs/demo/README.md) also shows Org model, Agents,
-Agent identity and requested Ontology.*
+The [ten-capture gallery](docs/demo/README.md) also shows Org model, Agents,
+Agent identity, Target architecture, requested Ontology and workshop views.*
 
 ## What you get
 

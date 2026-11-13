@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.8 |
+| Version | 0.9 |
 | Date | 2026-11-13 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained catalogue; approval not inferred |
@@ -23,7 +23,7 @@ process/ontology is requested separately and retains its Fabric Preview caveats.
 | Guide | For |
 |---|---|
 | [Getting started](getting-started.md) | Core-first example, candidate installation procedure and evidence-led workshop; optional baseline follow-up |
-| [Caldova gallery](demo/README.md) | Offline core HTML and five captures with requested ontology, no FinOps; actual capture version/hashes belong to the manifest |
+| [Caldova gallery](demo/README.md) | Offline core HTML and ten captures, including architecture/workshop views and requested ontology, no FinOps; actual capture version/hashes belong to the manifest |
 | [Starter prompts](starter-prompts.md) | Scoped core preparation, synthetic Caldova variant and separate awareness-first baseline request |
 | [Packaged plugin guide](../plugin/README.md) | Installation details, eight skills, outputs, data handling and the full FinOps Preview procedure |
 | [Versioned FinOps procedure](../plugin/skills/frontier-finops/SKILL.md#quick-start--requested-versioned-baseline) | Explicitly requested offline per-agent baseline, meaningful twelve-month scenarios, frozen-target external review and projected JSON/Markdown |

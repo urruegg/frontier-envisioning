@@ -34,6 +34,8 @@ def png_chunk(kind, payload):
 PNG = (b"\x89PNG\r\n\x1a\n" + png_chunk(b"IHDR", struct.pack(">IIBBBBB", 1440, 1000, 8, 6, 0, 0, 0))
        + png_chunk(b"IDAT", zlib.compress(bytes(1000 * (1 + 1440 * 4))))
        + png_chunk(b"IEND", b""))
+GALLERY_NAMES = ("overview", "org-model", "agents", "agent-identity", "ontology",
+                 "landing-zone", "architecture-layers", "discovery", "risks", "evidence")
 
 
 class DocsDemo(unittest.TestCase):
@@ -47,7 +49,10 @@ class DocsDemo(unittest.TestCase):
         for name, route in self.tool.VIEWS:
             path = output / (name + ".png")
             path.write_bytes(PNG)
-            shots.append({"name": name, "route": route, "file": path.name, "width": 1440, "height": 1000})
+            row = {"name": name, "route": route, "file": path.name, "width": 1440, "height": 1000}
+            if name in {"landing-zone", "architecture-layers"}:
+                row["selected_tab"] = "lz" if name == "landing-zone" else "layers"
+            shots.append(row)
         return {"browser": "Chromium fixture", "playwright": "test fixture", "screenshots": shots,
                 "viewport": {"width": 1440, "height": 1000}, "color_scheme": "light",
                 "reduced_motion": "reduce", "locale": "en-GB", "timezone": "UTC"}
@@ -59,14 +64,14 @@ class DocsDemo(unittest.TestCase):
         self.tool.publish(source, root, capture=capture or self.capture)
         return source
 
-    def test_publishes_exactly_five_images_and_checks_the_actual_html(self):
+    def test_publishes_exactly_ten_images_and_checks_the_actual_html(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             source = self.publish(root)
             self.assertEqual(self.tool.verify(root, source), [])
             self.assertEqual((root / "docs/demo/caldova-blueprint.html").read_bytes(), source.read_bytes())
             self.assertEqual({p.name for p in (root / "docs/images/caldova").iterdir()},
-                             {"overview.png", "org-model.png", "agents.png", "agent-identity.png", "ontology.png"})
+                             {name + ".png" for name in GALLERY_NAMES})
             manifest = json.loads((root / "docs/demo/manifest.json").read_text())
             self.assertEqual(manifest["profile"], "core")
             self.assertEqual(manifest["plugin_version"], "1.9.1")
@@ -191,6 +196,37 @@ class DocsDemo(unittest.TestCase):
                 self.tool.publish(source, root, capture=incomplete)
             self.assertTrue(all(path.read_bytes() == data for path, data in previous.items()))
 
+    def test_wrong_or_missing_capture_tab_state_preserves_assets_and_fails_verification(self):
+        for name, state in (("landing-zone", None), ("landing-zone", "layers"),
+                            ("architecture-layers", None), ("architecture-layers", "lz"),
+                            ("overview", "layers")):
+            with self.subTest(name=name, state=state), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                source = self.publish(root)
+                previous = {p: p.read_bytes() for p in (root / "docs").rglob("*") if p.is_file()}
+
+                def alter(report):
+                    row = next((r for r in report["screenshots"] if r["name"] == name), None)
+                    self.assertIsNotNone(row, f"capture {name} is missing")
+                    if state is None:
+                        row.pop("selected_tab", None)
+                    else:
+                        row["selected_tab"] = state
+
+                def wrong_state(source, output):
+                    report = self.capture(source, output)
+                    alter(report)
+                    return report
+
+                with self.assertRaisesRegex(ValueError, "tab"):
+                    self.tool.publish(source, root, capture=wrong_state)
+                self.assertTrue(all(path.read_bytes() == data for path, data in previous.items()))
+                manifest = root / "docs/demo/manifest.json"
+                document = json.loads(manifest.read_text(encoding="utf-8"))
+                alter(document["capture"])
+                manifest.write_text(json.dumps(document), encoding="utf-8")
+                self.assertTrue(self.tool.verify(root, source))
+
     def test_check_reports_malformed_manifest_and_missing_image(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -239,7 +275,7 @@ class DocsDemo(unittest.TestCase):
 
 
 class ReaderDocumentation(unittest.TestCase):
-    def test_reader_entry_points_and_five_view_gallery(self):
+    def test_reader_entry_points_and_ten_view_gallery(self):
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         self.assertNotIn("## Local intake status", readme)
         self.assertIn("docs/getting-started.md", readme)
@@ -247,7 +283,7 @@ class ReaderDocumentation(unittest.TestCase):
         gallery = ROOT / "docs/demo/README.md"
         self.assertTrue(gallery.is_file(), "Caldova gallery is missing")
         text = gallery.read_text(encoding="utf-8")
-        for name in ("overview", "org-model", "agents", "agent-identity", "ontology"):
+        for name in GALLERY_NAMES:
             self.assertIn(f"{name}.png", text)
         self.assertIn("caldova-blueprint.html", text)
 

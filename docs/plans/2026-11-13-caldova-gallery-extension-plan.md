@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Written after actual spec approval; plan/readiness confirmation pending |
+| Status | Plan/readiness approved at 8be6aa8; inline execution under verification |
 | Scope | Five additional core-gallery captures, state validation and reader guidance |
 | References | [Catalogue](README.md), [Issue #41](https://github.com/urruegg/frontier-envisioning/issues/41), [Idea](../ideas/2026-11-13-caldova-gallery-extension.md), [Approved design](../specs/2026-11-13-caldova-gallery-extension-design.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md) |
 
@@ -26,8 +26,10 @@ Chromium capture tool and Markdown. Reuse installed dependencies.
 
 Owner: `@urruegg`. The maintainer selected `approve-ten-captures`, then
 `approve-written-gallery-spec` for the written design at `4ef63d110a72dc9a301496317e2e5ef1311becee`.
-This plan follows that separate written-spec decision. Implementation/readiness
-confirmation remains pending; no ready/approved labels are asserted.
+This plan follows that separate written-spec decision. The subsequent actual
+**`approve-inline-gallery`** response approved plan/readiness at
+`8be6aa815ca54878bd6d7e95f454c9b2e3364d80` and selected inline execution.
+No ready/approved labels are asserted.
 
 Use the existing isolated worktree on `docs/41-caldova-gallery`, based on
 human-merged main `9115ccc8`. Do not modify the primary main checkout or the

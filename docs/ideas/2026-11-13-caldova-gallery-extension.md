@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted intake |
-| Status | Written spec approved; plan/readiness confirmation pending |
+| Status | Written spec and plan/readiness approved; inline implementation under verification |
 | Scope | Existing core Blueprint architecture and workshop views; no plugin feature change |
 | References | [Catalogue](README.md), [Issue #41](https://github.com/urruegg/frontier-envisioning/issues/41), [Design](../specs/2026-11-13-caldova-gallery-extension-design.md), [Plan](../plans/2026-11-13-caldova-gallery-extension-plan.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md), [Gallery](../demo/README.md) |
 
@@ -24,7 +24,9 @@ approval or a protected label-field change.
 
 The separate **`approve-written-gallery-spec`** response approves the written
 design at `4ef63d110a72dc9a301496317e2e5ef1311becee`. The linked plan was
-written afterwards and awaits readiness/execution confirmation.
+written afterwards. The subsequent **`approve-inline-gallery`** response
+approved plan/readiness at `8be6aa815ca54878bd6d7e95f454c9b2e3364d80` and
+selected inline execution, separately from the earlier design decisions.
 
 ## Boundaries
 

@@ -11,7 +11,7 @@
 
 | Idea | State | Governing work |
 |---|---|---|
-| [Caldova gallery extension](2026-11-13-caldova-gallery-extension.md) | Written spec approved at `4ef63d1`; plan/readiness pending | [#41](https://github.com/urruegg/frontier-envisioning/issues/41), [design](../specs/2026-11-13-caldova-gallery-extension-design.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md) |
+| [Caldova gallery extension](2026-11-13-caldova-gallery-extension.md) | Written spec approved at `4ef63d1`; inline plan/readiness approved at `8be6aa8`; verification in progress | [#41](https://github.com/urruegg/frontier-envisioning/issues/41), [design](../specs/2026-11-13-caldova-gallery-extension-design.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md) |
 | [Agent FinOps baseline](2026-11-12-agent-finops-baseline.md) | Spec approved at `2e3c0e7`; subagent-driven plan/readiness approval at `efb3468`; implementation in progress | [#35](https://github.com/urruegg/frontier-envisioning/issues/35), [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md) |
 | [Version 1.9.2](2026-11-12-version-1.9.2.md) | Locally built and verified; PR/CI and human release decisions separate | [#33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](../sprints/SPRINT-006-version-1.9.2.md) |
 | [Internal user documentation](2026-11-12-internal-user-documentation.md) | Locally implemented and verified; PR/CI and human review separate | [#31](https://github.com/urruegg/frontier-envisioning/issues/31), [SPRINT-005](../sprints/SPRINT-005-internal-user-documentation.md) |

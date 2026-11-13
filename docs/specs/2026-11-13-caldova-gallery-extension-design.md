@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted design |
-| Status | Written spec approved; plan/readiness confirmation pending |
+| Status | Written spec and plan/readiness approved; implementation verification in progress |
 | Scope | Ten reproducible core-gallery captures and existing HTML navigation |
 | References | [Catalogue](README.md), [Issue #41](https://github.com/urruegg/frontier-envisioning/issues/41), [Idea](../ideas/2026-11-13-caldova-gallery-extension.md), [Plan](../plans/2026-11-13-caldova-gallery-extension-plan.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md), [Gallery](../demo/README.md) |
 
@@ -16,9 +16,10 @@ of the same interactive offline core HTML. Accountable human owner: `@urruegg`.
 The 13 November conversation choice **`approve-ten-captures`** approved this
 scope over links-only documentation. The separate
 **`approve-written-gallery-spec`** response approves the written spec at
-`4ef63d110a72dc9a301496317e2e5ef1311becee`. The linked implementation plan and
-readiness/execution confirmation still precede implementation; no ready/
-approved labels are inferred.
+`4ef63d110a72dc9a301496317e2e5ef1311becee`. The later
+**`approve-inline-gallery`** response approved the linked plan/readiness at
+`8be6aa815ca54878bd6d7e95f454c9b2e3364d80` and selected inline execution
+before implementation. No ready/approved labels are inferred.
 
 The base is human-merged PR #40, commit `9115ccc8`. Product version remains
 the unreleased internal candidate 1.10.0. No plugin runtime changes are needed.

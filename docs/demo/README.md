@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
+| Version | 0.4 |
 | Date | 2026-11-13 |
 | Author | Copilot; AI-assisted documentation |
 | Status | Maintained internal example; not deployment or release evidence |
-| Scope | Offline core sample, five viewport captures and regeneration; document revision, not product or capture version |
-| References | [Documentation](../README.md), [Getting started](../getting-started.md), [Starter prompts](../starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Guidance #39](https://github.com/urruegg/frontier-envisioning/issues/39) |
+| Scope | Offline core sample, ten viewport captures and regeneration; document revision, not product or capture version |
+| References | [Documentation](../README.md), [Getting started](../getting-started.md), [Starter prompts](../starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Gallery #41](https://github.com/urruegg/frontier-envisioning/issues/41), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md) |
 
 See what the standard Frontier Company Blueprint produces before installing
 the plugin. **Caldova Industrial AG is fictitious.** All business details,
@@ -64,6 +64,29 @@ The identity proposal makes names, colours and DEV/TEST variants consistent.
 This is branding, not Entra identity provisioning or approval of brand rights.
 Open **Agent identity** (`#/identity`) in the [HTML](caldova-blueprint.html).
 
+## Target architecture
+
+### Landing zone
+
+![Caldova Target architecture with Landing zone selected, showing the proposed agent platform and governance boundaries](../images/caldova/landing-zone.png)
+
+The landing-zone diagram places proposed agent workloads, platform services
+and governance boundaries in context. It supports architecture discussion;
+it does not provision infrastructure or establish tenant readiness.
+Open **Target architecture** (`#/architecture`) in the [HTML](caldova-blueprint.html) and select
+**Landing zone**. Use the lenses in the HTML to explore the diagram.
+
+### Layers and integrations
+
+![Caldova Target architecture with Layers and integrations selected, showing architecture principles and proposed service layers](../images/caldova/architecture-layers.png)
+
+This view relates architecture principles, service layers and integration
+patterns. The components and connections are proposals, not running services
+or verified integrations. Open **Target architecture** (`#/architecture`) in
+the [HTML](caldova-blueprint.html), then select **Layers and integrations**. Both tabs share the same route;
+the link does not select this tab automatically. Scroll down for the full layers
+and orchestration patterns.
+
 ## Ontology
 
 ![Caldova optional Ontology view showing proposed business entities and their relationships](../images/caldova/ontology.png)
@@ -74,10 +97,43 @@ data-agent and operations capabilities remain Preview; no tenant import or
 data-agent execution is demonstrated.
 Open **Ontology** (`#/ontology`) in the [HTML](caldova-blueprint.html).
 
+## Workshop
+
+### Discovery
+
+![Caldova Discovery view showing workshop questions, answer status and discussion controls](../images/caldova/discovery.png)
+
+Discovery organises questions by journey and distinguishes what is known
+from what still needs an answer. Open **Discovery** (`#/discovery`) in the
+[HTML](caldova-blueprint.html), choose a journey and capture discussion notes. Browser changes are working
+state until exported and given back to Cowork to merge and rebuild; they do
+not update a shared service or the original HTML automatically.
+
+### Risks, assumptions and open decisions
+
+![Caldova Risks view showing the illustrative likelihood-impact heat map and selected risk details](../images/caldova/risks.png)
+
+The risk view combines the register, likelihood/impact ratings and open
+assumptions and decisions. These synthetic ratings support discussion, not
+an accepted assessment or approval. Open **Risks** (`#/risks`) in the
+[HTML](caldova-blueprint.html) and scroll below the register for assumptions
+to confirm and decisions to take.
+Export workshop feedback before asking Cowork to merge changes.
+
+### Evidence behind the blueprint
+
+![Caldova Evidence view showing synthetic source types, dates, visibility and the claims each source informs](../images/caldova/evidence.png)
+
+The evidence register makes source provenance, dates and visibility visible.
+Open **Evidence** (`#/evidence`) in the [HTML](caldova-blueprint.html), then select a source ID
+to inspect its details. All records here are invented for the Caldova example,
+not retrieved engagement evidence. Visibility labels are not sharing clearance;
+build and review the customer projection before permitted external sharing.
+
 ## Separate optional baseline exercise
 
 The candidate bundles eight skills: seven non-FinOps GA wrappers and optional
-Preview FinOps. The HTML and five images here stay **core-only**, with explicitly
+Preview FinOps. The HTML and ten images here stay **core-only**, with explicitly
 requested ontology; ordinary value and identity do not require FinOps.
 
 For separately requested cost work, use the [awareness-first starter](../starter-prompts.md#optional-follow-up-versioned-agent-baseline)
@@ -96,13 +152,13 @@ workshop notes or these screenshots.
 
 ## Capture provenance and limits
 
-The five images are Playwright/Chromium **1440 × 1000 viewport captures** in
+The ten images are Playwright/Chromium **1440 × 1000 viewport captures** in
 light mode, reduced motion, `en-GB` locale and UTC, with fresh browser storage.
 They show selected views, not complete page coverage or an accessibility audit.
 
 The generated [manifest](manifest.json) records the actual HTML/source and
-screenshot SHA-256 values, plugin and browser/tool versions, routes and capture
-settings. Use it for captured provenance, not a claim that PNG bytes are
+screenshot SHA-256 values, plugin and browser/tool versions, routes, selected
+architecture tabs and capture settings. Use it for captured provenance, not a claim that PNG bytes are
 deterministic across platforms. Screenshots do not establish actual Cowork
 installation, provider availability, manual tenant acceptance or publication.
 
@@ -111,7 +167,8 @@ The historical 1.9.2 regeneration and fresh core comparison are recorded in
 capture version, date and hashes; updating this guide does not regenerate or
 relabel those assets. Source-qualified evidence for the 1.10.0 work is kept in
 [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md), not inferred from
-the guide version or screenshots.
+the guide version or screenshots. The ten-capture extension is tracked in
+[SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md).
 
 ## Regenerate and check
 
@@ -124,7 +181,7 @@ python tools/build_docs_demo.py --check --demo build/demo
 ```
 
 `docs-demo` uses `tools/build_docs_demo.py` to build the core example and capture
-the actual offline HTML. It generates the tracked HTML, five images and manifest;
+the actual offline HTML. It generates the tracked HTML, ten images and manifest;
 **never hand-edit those outputs**. Review the real images after regeneration.
 
 Strict L1 checks the stored assets, hashes and source fingerprint against a

@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
+| Version | 0.4 |
 | Date | 2026-11-13 |
 | Author | Copilot; AI-assisted documentation |
 | Status | Maintained internal guide; not release or sharing approval |
@@ -18,7 +18,8 @@ You do not need to install it or deploy anything to inspect the example.
 
 ## Try the example without installing
 
-1. Open the [Caldova gallery](demo/README.md) for five captioned views.
+1. Open the [Caldova gallery](demo/README.md) for ten captioned captures,
+   including architecture and workshop views.
 2. Download the actual [caldova-blueprint.html](demo/caldova-blueprint.html)
    file using GitHub's raw-file download, rather than saving the GitHub page.
 3. Open the downloaded file locally in **Edge or Chrome**. GitHub and OneDrive

@@ -29,7 +29,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fe_lib import DEMO_DIR, DEMO_HTML_NAME, ROOT, call_main, load_module, sha256_bytes  # noqa: E402
 
 VIEWS = (("overview", "#/overview"), ("org-model", "#/org"), ("agents", "#/agents/D3-A05"),
-         ("agent-identity", "#/identity"), ("ontology", "#/ontology"))
+         ("agent-identity", "#/identity"), ("ontology", "#/ontology"),
+         ("landing-zone", "#/architecture"), ("architecture-layers", "#/architecture"),
+         ("discovery", "#/discovery"), ("risks", "#/risks"), ("evidence", "#/evidence"))
 DATA = re.compile(rb'<script\b[^>]*\bid="bp-data"[^>]*>(.*?)</script>', re.S)
 HTML = Path("docs") / "demo" / "caldova-blueprint.html"
 MANIFEST = Path("docs") / "demo" / "manifest.json"
@@ -206,7 +208,10 @@ def require_capture(report: dict) -> list[dict]:
     actual = [(row.get("name"), row.get("route"), row.get("file"))
               for row in rows if isinstance(row, dict)]
     if len(actual) != len(rows) or actual != [(name, route, name + ".png") for name, route in VIEWS]:
-        raise ValueError("capture must contain exactly the five requested views")
+        raise ValueError(f"capture must contain exactly the {len(VIEWS)} requested views")
+    architecture_tabs = {"landing-zone": "lz", "architecture-layers": "layers"}
+    if any(row.get("selected_tab") != architecture_tabs.get(row["name"]) for row in rows):
+        raise ValueError("capture architecture tab state differs from the requested views")
     if any((row.get("width"), row.get("height")) != (1440, 1000) for row in rows):
         raise ValueError("capture dimensions must be 1440 x 1000")
     return rows
@@ -238,7 +243,7 @@ def publish(source: Path, root: Path = ROOT, *, capture=capture_views) -> dict:
         report = capture(staged_html, images)
         rows = require_capture(report)
         if {p.name for p in images.iterdir()} != {name + ".png" for name, _ in VIEWS}:
-            raise ValueError("capture must contain exactly the five requested views")
+            raise ValueError(f"capture must contain exactly the {len(VIEWS)} requested views")
         outputs = {HTML: raw}
         for row in rows:
             payload = (images / row["file"]).read_bytes()
@@ -305,7 +310,7 @@ def main(argv=None) -> int:
                 for error in errors:
                     print("ERROR:", error)
                 return 1
-            print("Documentation demo: core HTML, source fingerprint and five screenshots verified.")
+            print(f"Documentation demo: core HTML, source fingerprint and {len(VIEWS)} screenshots verified.")
         else:
             if args.demo is None:
                 code, output = call_main(load_module(ROOT / "tools" / "build_demo.py", "fe_docs_core"), [])
