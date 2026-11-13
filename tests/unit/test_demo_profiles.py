@@ -6,6 +6,7 @@ import re
 import subprocess
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 from unittest import mock
 
@@ -125,6 +126,70 @@ class DemoProfiles(unittest.TestCase):
                     self.assertEqual(code, 2, text.getvalue())
                     self.assertEqual(sentinel.read_bytes(), b"existing fixture")
                     run.assert_not_called()
+
+    def test_relative_output_from_other_cwd_is_resolved_once(self):
+        module = load("tools/build_demo.py")
+
+        def wrapper(command, **kwargs):
+            output = Path(command[command.index("--out-dir") + 1])
+            if not output.is_absolute():
+                output = Path(kwargs["cwd"]) / output
+            kit = output / "identity/kit"
+            kit.mkdir(parents=True)
+            catalogue = kit / "catalog.html"
+            catalogue.write_text("<p>fixture</p>", encoding="utf-8")
+            archive = output / "identity.zip"
+            with zipfile.ZipFile(archive, "w") as package:
+                package.writestr("kit/catalog.html", catalogue.read_bytes())
+            (output / module.DEMO_HTML_NAME).write_text("<p>baseline fixture</p>", encoding="utf-8")
+            return subprocess.CompletedProcess(command, 0, stdout=json.dumps({
+                "identity": {"kit": str(kit), "zip": str(archive), "catalogue": str(catalogue),
+                             "tests": "passed", "validation": {"errors": []}, "without_identity": []},
+            }), stderr="")
+
+        with tempfile.TemporaryDirectory() as directory:
+            root, caller = Path(directory) / "repo", Path(directory) / "caller"
+            caller.mkdir()
+            reserved = [root / "build/demo", root / "build/demo-finops-preview"]
+            for path in reserved:
+                path.mkdir(parents=True)
+                (path / "keep").write_bytes(b"original fixture")
+            for relative in ("build/demo", "different-output"):
+                with self.subTest(relative=relative):
+                    messages = io.StringIO()
+                    with contextlib.chdir(caller), mock.patch.object(module, "ROOT", root), \
+                            mock.patch.object(module, "DEMO_DIR", reserved[0]), \
+                            mock.patch.object(module.subprocess, "run", side_effect=wrapper) as run, \
+                            contextlib.redirect_stdout(messages):
+                        code = module.main(["--out", relative, "--no-png", "--with-finops-baseline",
+                                            "--acknowledge-finops-preview"])
+                    self.assertEqual(code, 0, messages.getvalue())
+                    output = (caller / relative).resolve()
+                    self.assertEqual(run.call_args.args[0][run.call_args.args[0].index("--out-dir") + 1], str(output))
+                    self.assertEqual(run.call_args.kwargs["cwd"], root)
+                    self.assertEqual(json.loads(messages.getvalue())["out"], str(output))
+                    self.assertEqual(json.loads((output / "build-report.json").read_text(encoding="utf-8"))["status"], "built")
+                    for path in reserved:
+                        self.assertEqual(list(path.iterdir()), [path / "keep"])
+                        self.assertEqual((path / "keep").read_bytes(), b"original fixture")
+
+    def test_relative_reserved_output_from_other_cwd_refuses_before_cleanup(self):
+        module = load("tools/build_demo.py")
+        with tempfile.TemporaryDirectory() as directory:
+            root, caller = Path(directory) / "repo", Path(directory) / "caller"
+            caller.mkdir()
+            reserved = root / "build/demo"
+            reserved.mkdir(parents=True)
+            (reserved / "keep").write_bytes(b"original fixture")
+            with contextlib.chdir(caller), mock.patch.object(module, "ROOT", root), \
+                    mock.patch.object(module, "DEMO_DIR", reserved), \
+                    mock.patch.object(module.subprocess, "run") as run, contextlib.redirect_stdout(io.StringIO()):
+                code = module.main(["--out", "../repo/build/demo", "--no-png", "--with-finops-baseline",
+                                    "--acknowledge-finops-preview"])
+            self.assertEqual(code, 2)
+            run.assert_not_called()
+            self.assertEqual(list(reserved.iterdir()), [reserved / "keep"])
+            self.assertEqual((reserved / "keep").read_bytes(), b"original fixture")
 
     def test_real_baseline_fixture_is_a_dated_derivative_not_viewer_consent(self):
         module = load("tools/build_demo.py")

@@ -144,7 +144,7 @@ def process_checks(t: Path, sample: Path, check) -> None:
 def installed_run(script: Path, argv: list[str], work: Path) -> subprocess.CompletedProcess:
     """Run the supplied installation, not in-process working-tree modules or PYTHONPATH."""
     env = {key: value for key, value in os.environ.items() if key not in {"PYTHONPATH", "PYTHONHOME"}}
-    return subprocess.run([sys.executable, "-E", "-s", "-B", str(script), *argv], cwd=work,
+    return subprocess.run([sys.executable, "-E", "-s", "-B", "-X", "utf8", str(script), *argv], cwd=work,
                           env=env, capture_output=True, text=True, encoding="utf-8", timeout=120)
 
 

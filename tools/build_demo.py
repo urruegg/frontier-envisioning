@@ -131,11 +131,10 @@ def main(argv=None) -> int:
             print("ERROR: the synthetic baseline fixture needs its explicit authored as_of date")
             return 2
     frozen_profile = not a.no_png and plugin_version() in demo_raster.SUPPORTED_VERSIONS | demo_raster.PREVIEW_VERSIONS
-    out = Path(a.out) if a.out else (ROOT / "build/demo-agent-finops-preview" if a.with_finops_baseline else DEMO_DIR)
+    out = (Path(a.out) if a.out else (ROOT / "build/demo-agent-finops-preview" if a.with_finops_baseline else DEMO_DIR)).resolve()
     if a.with_finops_baseline:
-        target = out.resolve()
         reserved = (DEMO_DIR.resolve(), (ROOT / "build/demo-finops-preview").resolve())
-        if any(target == path or target in path.parents or path in target.parents for path in reserved):
+        if any(out == path or out in path.parents or path in out.parents for path in reserved):
             print("ERROR: the baseline fixture must not replace or nest inside the core or legacy Preview fixture")
             return 2
     if out.exists():

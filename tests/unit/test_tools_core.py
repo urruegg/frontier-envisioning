@@ -360,6 +360,29 @@ class PreviewGateFixtures(unittest.TestCase):
 
 
 class BaselineSelftest(unittest.TestCase):
+    def test_unicode_installed_child_explicitly_uses_utf8(self):
+        selftest = load("tools/selftest.py")
+        with tempfile.TemporaryDirectory(prefix="task5-\u00fc-") as directory:
+            root = Path(directory)
+            script = root / "probe.py"
+            script.write_text(
+                "import json, sys\n"
+                "from pathlib import Path\n"
+                "if len(sys.argv) > 1:\n"
+                "    print(str(Path(__file__)))\n"
+                "else:\n"
+                "    print(json.dumps({'utf8_mode': sys.flags.utf8_mode, 'encoding': sys.stdout.encoding}))\n",
+                encoding="utf-8")
+            facts_run = selftest.installed_run(script, [], root)
+            self.assertEqual(facts_run.returncode, 0, facts_run.stderr)
+            facts = json.loads(facts_run.stdout)
+            self.assertEqual(facts["utf8_mode"], 1, facts)
+            self.assertEqual(facts["encoding"].lower().replace("_", "-"), "utf-8")
+            raw_run = selftest.installed_run(script, ["raw"], root)
+            self.assertEqual(raw_run.returncode, 0, raw_run.stderr)
+            self.assertEqual(raw_run.stdout.strip(), str(script))
+            self.assertIn("\u00fc", raw_run.stdout)
+
     def test_cli_subprocess_has_no_pythonpath_or_in_process_import_substitute(self):
         selftest = load("tools/selftest.py")
         with tempfile.TemporaryDirectory() as directory:

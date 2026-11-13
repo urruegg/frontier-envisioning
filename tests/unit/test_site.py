@@ -5,6 +5,7 @@ import base64
 import hashlib
 import json
 import os
+import subprocess
 import tempfile
 import threading
 import unittest
@@ -34,6 +35,66 @@ def fake_demo(root: Path) -> Path:
 
 
 class BuildSite(unittest.TestCase):
+    def test_consumed_fixture_output_overlap_refuses_before_writes(self):
+        for kind in ("core", "preview", "baseline"):
+            for relation in ("equal", "fixture-inside-output", "output-inside-fixture"):
+                with self.subTest(kind=kind, relation=relation), tempfile.TemporaryDirectory() as tmp:
+                    root = Path(tmp) / "controlled"
+                    demo = fake_demo(root)
+                    fixture = demo if kind == "core" else root / kind
+                    if kind != "core":
+                        fixture.mkdir()
+                        (fixture / fe_lib.DEMO_HTML_NAME).write_text(PAGE, encoding="utf-8")
+                    out = fixture if relation == "equal" else fixture.parent if relation == "fixture-inside-output" else fixture / "site"
+                    out.mkdir(parents=True, exist_ok=True)
+                    (out / "keep").write_bytes(b"existing output")
+                    before = {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+                    options = {kind + "_demo": fixture} if kind != "core" else {}
+                    try:
+                        with self.assertRaisesRegex(SystemExit, "overlap"):
+                            build_site.build(out, demo, "none", None, **options)
+                    except OSError as exc:
+                        self.fail(f"cleanup reached a consumed source before overlap refusal: {exc}")
+                    self.assertEqual(before, {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()})
+
+    def test_resolved_directory_alias_overlap_preserves_sources(self):
+        for alias_role in ("fixture", "output"):
+            with self.subTest(alias_role=alias_role), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                demo = fake_demo(root)
+                output = root / "site"
+                fixture = output / "baseline"
+                fixture.mkdir(parents=True)
+                original = fixture / fe_lib.DEMO_HTML_NAME
+                original.write_text(PAGE, encoding="utf-8")
+                (output / "keep").write_bytes(b"existing output")
+                target = fixture if alias_role == "fixture" else output
+                alias = root / "alias"
+                try:
+                    alias.symlink_to(target, target_is_directory=True)
+                except OSError:
+                    if os.name != "nt":
+                        self.skipTest("directory symlinks unavailable")
+                    link_text = str(alias).replace("'", "''")
+                    target_text = str(target).replace("'", "''")
+                    result = subprocess.run([
+                        "powershell.exe", "-NoProfile", "-NonInteractive", "-Command",
+                        f"New-Item -ItemType Junction -Path '{link_text}' -Target '{target_text}' -ErrorAction Stop | Out-Null",
+                    ], capture_output=True, text=True, timeout=30)
+                    if result.returncode:
+                        self.skipTest("directory symlinks and junctions unavailable")
+                self.assertEqual(alias.resolve(), target.resolve())
+                try:
+                    with self.assertRaisesRegex(SystemExit, "overlap"):
+                        build_site.build(alias if alias_role == "output" else output, demo, "none", None,
+                                         baseline_demo=alias if alias_role == "fixture" else fixture)
+                except OSError as exc:
+                    self.fail(f"cleanup reached a directory alias before overlap refusal: {exc}")
+                self.assertEqual(original.read_text(encoding="utf-8"), PAGE)
+                self.assertEqual((output / "keep").read_bytes(), b"existing output")
+                self.assertEqual(alias.resolve(), target.resolve())
+                self.assertFalse((output / "staticwebapp.config.json").exists())
+
     def test_explicit_baseline_is_isolated_and_uses_its_exact_csp(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

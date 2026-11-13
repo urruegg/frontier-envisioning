@@ -84,6 +84,12 @@ def build(out: Path, demo: Path, auth: str, tenant: str | None, *, preview_demo:
           baseline_demo: Path | None = None) -> dict:
     if auth == "entra" and not (tenant and GUID.match(tenant)):
         raise SystemExit("--auth entra needs --tenant-id (a GUID) or SITE_AUTH_TENANT_ID")
+    destination = out.resolve()
+    for fixture in (demo, preview_demo, baseline_demo):
+        if fixture is not None:
+            source = fixture.resolve()
+            if destination == source or destination in source.parents or source in destination.parents:
+                raise SystemExit("site output must not overlap a consumed demo fixture")
     src_html = demo / DEMO_HTML_NAME
     catalogue = demo / "identity" / "caldova-agent-identity" / "catalog.html"
     if not src_html.exists() and demo.resolve() == DEMO_DIR.resolve():
