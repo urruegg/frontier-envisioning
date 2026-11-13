@@ -331,6 +331,23 @@ class StrictTypedReferences(unittest.TestCase):
         self.assertIn(("data_agents", "DA-01"), graph[("data_products", "DP-01")])
         self.assertNotIn(("semantic_models", "DA-01"), graph[("data_products", "DP-01")])
 
+    def test_reached_blueprint_domain_node_keeps_parent_metadata_not_sibling_agents(self):
+        model, bp = self.fixture()
+        domain = bp["domains"][0]
+        domain.update(sharingClassification="customer-specific", customer_scope="synthetic-owner-scope",
+                      ownership={"source_id": "OWNER-EVIDENCE"},
+                      data_agent={"id": "UNRELATED-DATA-AGENT", "internal": True})
+        model["data_agents"][0]["journey"] = "D1"
+        before = copy.deepcopy((model, bp))
+        graph = self.operation()(model, bp)
+        self.assertIn(("blueprint.domains", "D1"), graph["edges"][("data_agents", "DA-01")])
+        header = graph["nodes"][("blueprint.domains", "D1")]
+        self.assertEqual(header["ownership"], domain["ownership"])
+        self.assertEqual(header["customer_scope"], "synthetic-owner-scope")
+        for field in ("agents", "lead", "orchestrator", "data_agent"):
+            self.assertNotIn(field, header, "a reached parent is not all its unrelated children")
+        self.assertEqual((model, bp), before)
+
 
 class Canon(unittest.TestCase):
     def test_sources_are_microsoft_learn(self):

@@ -255,7 +255,12 @@ def strict_reference_graph(onto: dict, bp: dict | None = None) -> dict:
 
     for pool in fields:
         index(pool, as_list(onto.get(pool)), implicit=pool not in {"entity_types", "sources", "namespaces"})
-    index("blueprint.domains", business_domains(bp))
+    # A parent node is its ownership/provenance header, not an implicit
+    # dependency on every sibling agent in that domain.
+    index("blueprint.domains", [
+        {key: value for key, value in domain.items() if key not in {"agents", "lead", "orchestrator", "data_agent"}}
+        for domain in business_domains(bp)
+    ])
     index("blueprint.agents", list(agent_ids(bp).values()))
 
     def link(owner, row, field, target, builtins=()):

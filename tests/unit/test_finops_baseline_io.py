@@ -960,6 +960,223 @@ class BlueprintBaselineTests(IOCase):
                 for path, content in before.items():
                     self.assertEqual(path.read_bytes(), content)
 
+    def test_quality_safe_html_does_not_authorise_identity_name_paths(self):
+        for kind in ("absolute", "parent", "windows-parent", "control"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory(dir=self.dir) as directory:
+                root = Path(directory)
+                short = {"absolute": str(root / "escaped"), "parent": "../escaped",
+                         "windows-parent": r"..\escaped", "control": "bad\nname"}[kind]
+                bp = seed_blueprint()
+                bp["meta"]["short"] = short
+                data = self.write(str(root / "blueprint.json"), bp)
+                # make_kit appends .zip. The absolute case targets an actual
+                # authoritative JSON baseline, not a sacrificial output file.
+                source = self.write(str(root / "escaped - agent identity package v1.0.zip"), example())
+                before = {p: p.read_bytes() for p in (data, source)}
+                calls = []
+                original = self.wrapper.run
+
+                def trace(script, *args):
+                    if script.parent == self.wrapper.ID_SCRIPTS:
+                        calls.append(script.name)
+                    return original(script, *args)
+
+                with mock.patch.object(self.wrapper, "run", side_effect=trace):
+                    code, out, err = self.call(self.wrapper, [
+                        "--data", data, "--agent-finops", source, "--out-dir", root / "output",
+                        "--html", "safe.html", "--as-of", DAY.isoformat(), "--acknowledge-finops-preview",
+                        "--no-png", "--save-normalized", root / "normalized.json", "--report", root / "report.json"])
+                for path, content in before.items():
+                    self.assertTrue(path.read_bytes() == content, "identity name must never overwrite an input")
+                self.assertEqual(code, 2, (out, err))
+                self.assertFalse(calls, "reject every derived identity path before invoking identity scripts")
+                for name in ("output", "normalized.json", "report.json"):
+                    self.assertFalse((root / name).exists())
+
+    def test_quality_reached_blueprint_journey_metadata_constrains_finance_not_co_consumers(self):
+        for control in ("public", "private-parent", "scope-parent", "provenance-parent", "unrelated-sibling",
+                        "co-consumer"):
+            with self.subTest(control=control):
+                bp = seed_blueprint()
+                parent = next(d for d in bp["domains"] if d["id"] == "D1")
+                if control == "private-parent":
+                    parent["sharingClassification"] = "internal-only"
+                elif control == "scope-parent":
+                    parent.update(sharingClassification="customer-specific", customer_scope="other-synthetic-scope")
+                elif control == "provenance-parent":
+                    parent["ownership"] = {"source_id": "PARENT-CITATION"}
+                    bp["evidence"] += [
+                        {"id": "PARENT-CITATION", "title": "Synthetic parent citation", "source_id": "PRIVATE-OWNER",
+                         "visibility": "customer", "sharingClassification": "customer-shareable"},
+                        {"id": "PRIVATE-OWNER", "title": "Private synthetic owner evidence", "visibility": "internal",
+                         "sharingClassification": "internal-only"}]
+                elif control == "unrelated-sibling":
+                    parent["agents"][0].update(internal=True, sharingClassification="internal-only")
+                elif control == "co-consumer":
+                    parent.update(internal=True, sharingClassification="internal-only")
+                onto = self.ontology()
+                onto["data_agents"] = [{
+                    "id": "DA-OWNER", "name": "Synthetic shared agent", "sources": ["ontology"],
+                    "journey": "D3" if control == "co-consumer" else "D1",
+                    "consumers": [{"kind": "copilot_studio", "agents": (
+                        ["D3-A05", "D1-A01"] if control == "co-consumer" else ["D3-A05"])}],
+                }]
+                bp["ontology"] = onto
+                before = copy.deepcopy(bp)
+                result = self.cli.apply_models(bp, [self.calculated()], **ACK, audience="customer",
+                                               customer_scope="caldova-scope")
+                report = result["agent_finops"]["records"][0]
+                if control in {"private-parent", "scope-parent", "provenance-parent"}:
+                    self.assertEqual(report["status"], "withheld")
+                else:
+                    self.assertIn("expected", report["scenarios"])
+                    self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+                self.assertEqual(bp, before)
+                self.write("blueprint.json", bp)
+                code, out, err = self.call(self.builder, self.args(audience="customer"))
+                self.assertEqual(code, 0, (out, err))
+                published = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))
+                self.assertEqual(published["agent_finops"], result["agent_finops"])
+
+    def test_quality_standalone_prepares_all_outputs_before_any_write(self):
+        for control in ("directory-out", "parent-file", "invalid-template", "render-failure"):
+            with self.subTest(control=control), tempfile.TemporaryDirectory(dir=self.dir) as directory:
+                root = Path(directory)
+                html, normalized, report = root / "view.html", root / "normalized.json", root / "report.json"
+                args = ["--data", self.bp, "--agent-finops", self.source, "--as-of", DAY.isoformat(),
+                        "--acknowledge-finops-preview", "--no-product-icons", "--save-normalized", normalized,
+                        "--report", report, "--out", html]
+                before = {p: p.read_bytes() for p in (self.bp, self.source)}
+                if control == "directory-out":
+                    html.mkdir()
+                elif control == "parent-file":
+                    parent = root / "not-a-directory"
+                    parent.write_text("unchanged parent file", encoding="utf-8")
+                    before[parent] = parent.read_bytes()
+                    args[args.index(html)] = parent / "view.html"
+                elif control == "invalid-template":
+                    template = root / "bad-template.html"
+                    template.write_text("<html>No data placeholder</html>", encoding="utf-8")
+                    before[template] = template.read_bytes()
+                    args += ["--template", template]
+                if control == "render-failure":
+                    with mock.patch.object(self.builder, "render", side_effect=ValueError("deterministic render refusal")):
+                        code, out, err = self.call(self.builder, args)
+                else:
+                    code, out, err = self.call(self.builder, args)
+                self.assertEqual(code, 2, (out, err))
+                self.assertFalse(normalized.exists(), "no partial financial normalized JSON")
+                self.assertFalse(report.exists(), "no partial report")
+                if control != "directory-out":
+                    self.assertFalse(html.exists())
+                for path, content in before.items():
+                    self.assertTrue(path.read_bytes() == content)
+
+    def test_quality_standalone_consumed_resources_are_readonly_in_every_output_role(self):
+        for kind, destination in (("custom-template", "out"), ("custom-template", "normalized"),
+                                  ("custom-template", "report"), ("default-template", "out"),
+                                  ("defaults", "normalized"), ("icons", "report")):
+            with self.subTest(kind=kind, destination=destination), tempfile.TemporaryDirectory(dir=self.dir) as directory:
+                root = Path(directory)
+                if kind in {"custom-template", "default-template"}:
+                    source = root / "template.html"
+                    source.write_bytes(self.builder.DEFAULT_TEMPLATE.read_bytes())
+                elif kind == "defaults":
+                    source = root / "defaults.json"
+                    source.write_bytes(self.builder.DEFAULTS.read_bytes())
+                else:
+                    source = root / "icons.json"
+                    source.write_bytes(self.builder.ICONS.read_bytes())
+                outputs = {"out": root / "view.html", "normalized": root / "normalized.json",
+                           "report": root / "report.json"}
+                outputs[destination] = source
+                args = ["--data", self.bp, "--agent-finops", self.source, "--as-of", DAY.isoformat(),
+                        "--acknowledge-finops-preview", "--out", outputs["out"], "--save-normalized",
+                        outputs["normalized"], "--report", outputs["report"]]
+                if kind != "icons":
+                    args.append("--no-product-icons")
+                patch = None
+                if kind == "custom-template":
+                    args += ["--template", source]
+                elif kind == "default-template":
+                    patch = mock.patch.object(self.builder, "DEFAULT_TEMPLATE", source)
+                elif kind == "defaults":
+                    args.append("--canon")
+                    patch = mock.patch.object(self.builder, "DEFAULTS", source)
+                else:
+                    patch = mock.patch.object(self.builder, "ICONS", source)
+                before = source.read_bytes()
+                if patch:
+                    with patch:
+                        code, out, err = self.call(self.builder, args)
+                else:
+                    code, out, err = self.call(self.builder, args)
+                self.assertTrue(source.read_bytes() == before, "every consumed resource must remain readonly")
+                self.assertEqual(code, 2, (out, err))
+                for name, path in outputs.items():
+                    if name != destination:
+                        self.assertFalse(path.exists())
+
+    def test_quality_unused_optional_resources_are_not_required(self):
+        bp = seed_blueprint()
+        bp.pop("feedback_loop", None)
+        self.write("blueprint.json", bp)
+        args = self.args()
+        index = args.index("--out")
+        del args[index:index + 2]
+        args += ["--template", self.dir / "unused-missing.html", "--defaults", self.dir / "unused-missing.json"]
+        with mock.patch.object(self.builder, "ICONS", self.dir / "unused-missing-icons.json"):
+            code, out, err = self.call(self.builder, args)
+        self.assertEqual(code, 0, (out, err))
+
+    def test_quality_dangling_output_parent_is_refused_without_partial_products(self):
+        target, link = self.dir / "removed-target", self.dir / "dangling-parent"
+        target.mkdir()
+        try:
+            link.symlink_to(target, target_is_directory=True)
+        except OSError:
+            if os.name != "nt":
+                raise
+            command = ("New-Item -ItemType Junction -Path '" + str(link).replace("'", "''")
+                       + "' -Target '" + str(target).replace("'", "''") + "' | Out-Null")
+            result = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", command],
+                                    cwd=ROOT, capture_output=True, text=True, check=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        target.rmdir()
+        self.assertTrue(os.path.lexists(link))
+        self.assertFalse(link.exists())
+        args = self.args()
+        args[args.index(self.dir / "output.html")] = link / "view.html"
+        before = {p: p.read_bytes() for p in (self.bp, self.source)}
+        code, out, err = self.call(self.builder, args)
+        self.assertEqual(code, 2, (out, err))
+        self.assertFalse((self.dir / "normalized.json").exists())
+        self.assertFalse((self.dir / "report.json").exists())
+        self.assertFalse(target.exists())
+        for path, content in before.items():
+            self.assertEqual(path.read_bytes(), content)
+
+    def test_quality_core_template_alias_through_directory_link_is_readonly(self):
+        resources, link = self.dir / "resources", self.dir / "linked-resources"
+        resources.mkdir()
+        template = resources / "template.html"
+        template.write_bytes(self.builder.DEFAULT_TEMPLATE.read_bytes())
+        try:
+            link.symlink_to(resources, target_is_directory=True)
+        except OSError:
+            if os.name != "nt":
+                raise
+            command = ("New-Item -ItemType Junction -Path '" + str(link).replace("'", "''")
+                       + "' -Target '" + str(resources).replace("'", "''") + "' | Out-Null")
+            result = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", command],
+                                    cwd=ROOT, capture_output=True, text=True, check=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        before = template.read_bytes()
+        code, out, err = self.call(self.builder, ["--data", self.bp, "--template", template,
+                                                 "--out", link / "template.html", "--no-product-icons"])
+        self.assertTrue(template.read_bytes() == before, "destructive aliases are not a legacy/core feature")
+        self.assertEqual(code, 2, (out, err))
+
 
 class LifecycleTests(IOCase):
     def test_receipt_survives_canonical_json_before_frozen_record_consumption(self):

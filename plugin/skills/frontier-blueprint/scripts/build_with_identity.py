@@ -76,6 +76,48 @@ def slugify(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-") or "customer"
 
 
+def identity_component(value):
+    """Untrusted identity labels must be filename components, never paths."""
+    if (not isinstance(value, str) or not value.strip() or value in {".", ".."}
+            or any(c in '<>:"/\\|?*' or unicodedata.category(c) in {"Cc", "Cs"} for c in value)):
+        raise IdentityError("Identity filenames require plain components without paths or control characters")
+    return value
+
+
+def identity_layout(a, out, short, slug):
+    # Inspect supplied configuration before theme/seed/kit scripts run. The seed
+    # command below pins the same documented 1.0.0 version explicitly.
+    config = json.loads(Path(a.identity_config).read_text(encoding="utf-8")) if a.identity_config else None
+    if config is not None and not isinstance(config, dict):
+        raise IdentityError("Identity configuration must be an object")
+    identity_component(short)
+    identity_component(slug)
+    version = identity_component(config.get("version", "1.0.0") if config is not None else "1.0.0")
+    ver = identity_component(".".join(version.split(".")[:2]))
+    kitname = identity_component(f"{slug}-agent-identity")
+    bpiname = identity_component(f"{slug}-blueprint-identity.json")
+    zipname = identity_component(f"{short} - agent identity package v{ver}")
+    identity_component(zipname + ".zip")
+    work = out / "identity"
+    kit, bpi = work / kitname, work / bpiname
+    files = [kit / "catalog.html", bpi, work / (zipname + ".zip")]
+    targets = [work, kit, *files]
+    if not a.identity_config:
+        files += [work / "config/agent-identity.json", work / "config/palette.json", work / "config/seed-report.md"]
+        targets += [work / "config", *files[-3:]]
+    if a.theme and not a.brand:
+        files.append(work / "brand.json")
+        targets.append(files[-1])
+    root = out.resolve()
+    if any(not path.resolve().is_relative_to(root) for path in targets):
+        raise IdentityError("Derived identity destination escapes its owned staging directory")
+    inputs = [getattr(a, name, None) for name in ("data", "identity_config", "palette", "brand", "theme")]
+    for source in (Path(p).resolve() for p in inputs if p):
+        if source.is_relative_to(kit.resolve()) or any(source == target.resolve() for target in files):
+            raise IdentityError("Derived identity destination aliases an input")
+    return work, kit, bpi, zipname, config
+
+
 def blueprint_library():
     spec = importlib.util.spec_from_file_location("wrapper_blueprint", HERE / "build_blueprint.py")
     module = importlib.util.module_from_spec(spec)
@@ -301,7 +343,7 @@ def publish_successor(a, lib, private_work, summary, inputs):
 def build_identity(a, out: Path, short: str, slug: str, summary: dict, *, seed_data: Path | None = None) -> Path:
     if not (ID_SCRIPTS / "make_kit.py").is_file():
         raise IdentityError("the frontier-agent-identity skill is not installed next to frontier-blueprint")
-    work = out / "identity"
+    work, kit, bpi, zipname, config = identity_layout(a, out, short, slug)
     work.mkdir(parents=True, exist_ok=True)
     brand = Path(a.brand) if a.brand else None
     if a.theme and not brand:
@@ -316,7 +358,7 @@ def build_identity(a, out: Path, short: str, slug: str, summary: dict, *, seed_d
         cfg, pal, seeded = Path(a.identity_config), Path(a.palette), False
     else:
         cdir = work / "config"
-        args = ["--blueprint", seed_data or a.data, "--out-dir", cdir]
+        args = ["--blueprint", seed_data or a.data, "--out-dir", cdir, "--version", "1.0.0"]
         for flag, value in (("--brand", brand), ("--prefix", a.prefix), ("--po", a.po), ("--envs", a.envs)):
             if value:
                 args += [flag, value]
@@ -327,16 +369,15 @@ def build_identity(a, out: Path, short: str, slug: str, summary: dict, *, seed_d
         summary["seed_report"] = str(cdir / "seed-report.md")
         if not brand:
             summary["notes"].append("No brand file: journey colours come from the blueprint. Collect the customer's Office theme and build again.")
-    config = json.loads(cfg.read_text(encoding="utf-8"))
-    ver = ".".join(str(config.get("version", "1.0.0")).split(".")[:2])
-    kit = work / f"{slug}-agent-identity"
-    zipname = f"{short} - agent identity package v{ver}"
+    if config is None:
+        config = json.loads(cfg.read_text(encoding="utf-8"))
+    # Recheck the actual seed output before invoking the next script.
+    identity_component(config.get("version", "1.0.0"))
     args = ["--config", cfg, "--palette", pal, "--out", kit, "--zip", zipname] + (["--no-png"] if a.no_png else [])
     code, so, err = run(ID_SCRIPTS / "make_kit.py", *args)
     res = summary_json(so) or {}
     if code or (res.get("validation") or {}).get("errors"):
         raise IdentityError("the identity kit did not validate: " + json.dumps(res.get("validation") or err.strip()[-300:])[:400])
-    bpi = work / f"{slug}-blueprint-identity.json"
     code, so, err = run(ID_SCRIPTS / "apply_identity.py", "--blueprint", a.data, "--kit", kit, "--out", bpi,
                         "--colours", "--package", zipname + ".zip")
     if code:

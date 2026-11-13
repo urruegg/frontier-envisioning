@@ -167,7 +167,10 @@ def resolve_blueprint_sources(blueprint, agent_id):
                 continue
             visited.add(key)
             keep.add(key)
-            pending.extend(target for target in edges[key] if target not in visited)
+            # Consumer backlinks identify who uses a component; other consumers
+            # are not dependencies of the selected agent's financial context.
+            pending.extend(target for target in edges[key] if target not in visited
+                           and (target[0] != "blueprint.agents" or target[1] == agent_id))
             # Include generated products of an actually consumed producer, then
             # follow their typed dependencies (including analytics/action uses).
             if key[0] == "data_agents":
@@ -185,6 +188,12 @@ def resolve_blueprint_sources(blueprint, agent_id):
                 rows.append(row)
             if pool in onto or rows:
                 onto[pool] = rows
+        parents = [copy.deepcopy(nodes[key]) for key in sorted(keep) if key[0] == "blueprint.domains"]
+        if parents:
+            # Private resolver-only context. Preserve any authored value under
+            # this key rather than shadowing it; never serialize this view.
+            key = "_agent_finops_consumed_parents"
+            resolved[key] = ([resolved[key]] if key in resolved else []) + parents
     return resolved
 
 

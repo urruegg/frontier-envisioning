@@ -30,6 +30,7 @@ import datetime as _dt
 import html
 import importlib.util
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -164,9 +165,13 @@ def agent_finops_preflight(blueprint, *, baselines=(), reviews=(), as_of=None, a
 
 
 def agent_finops_output_paths(inputs, outputs):
-    """Never overwrite authored sources or alias two successor destinations."""
+    """Check readonly inputs and deterministic file/parent constraints.
+
+    These checks cannot guarantee future filesystem availability or I/O success.
+    """
     sources = {Path(p).resolve() for p in inputs if p}
-    targets = [Path(p).resolve() for p in outputs if p]
+    original = [Path(p) for p in outputs if p]
+    targets = [path.resolve() for path in original]
     if sources.intersection(targets) or len(targets) != len(set(targets)):
         raise ValueError("Agent FinOps outputs must not alias inputs or each other")
     # Treat a planned destination as a FILE, not as a possible parent directory.
@@ -177,6 +182,11 @@ def agent_finops_output_paths(inputs, outputs):
         parent.as_posix().casefold() in files for path in targets for parent in path.parents
     ):
         raise ValueError("Agent FinOps output files must not alias or be ancestors of other output files")
+    for path in [*original, *targets]:
+        if os.path.lexists(path) and not path.is_file():
+            raise ValueError("Blueprint output must be a regular file, not a directory or dangling link")
+        if any(os.path.lexists(parent) and not parent.is_dir() for parent in path.parents):
+            raise ValueError("Blueprint output parent is unavailable, a file or a dangling link")
 
 
 class Report:
@@ -666,7 +676,7 @@ def prepare_ontology_privacy(bp: dict, rep: Report | None = None) -> None:
                     rep.warn(message)
 
 
-def customer_version(bp: dict, rep: Report) -> dict:
+def customer_version(bp: dict, rep: Report, *, _consumed_inputs=None) -> dict:
     if "agent_finops" in bp:
         raise ValueError("agent_finops is derivative; project authoritative sources before customer serialisation")
     out = copy.deepcopy(bp)
@@ -719,6 +729,8 @@ def customer_version(bp: dict, rep: Report) -> dict:
         if authored is None:
             out.pop("ontology")
         else:
+            if _consumed_inputs is not None:
+                _consumed_inputs.extend([lib.TEMPLATES / "fabric-iq-canon.json", lib.TEMPLATES / "cdm-map.json"])
             onto = lib.normalize(authored, out, rep)
             entities = {e["id"]: e for e in onto["entity_types"]}
             for agent in onto["data_agents"]:
@@ -802,6 +814,7 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
 
     rep = Report()
+    consumed_inputs = [a.data, *a.agent_finops, *a.agent_finops_review]
     try:
         bp = read_document(a.data)
     except (OSError, ValueError) as e:
@@ -817,19 +830,26 @@ def main(argv=None) -> int:
             audience=audience, customer_scope=a.customer_scope,
             acknowledge_finops_preview=a.acknowledge_finops_preview)
         if successor:
-            agent_finops_output_paths([a.data, *a.agent_finops, *a.agent_finops_review],
-                                     [a.out, a.save_normalized, a.report])
             bp = successor["blueprint"]
+            if isinstance(bp.get("ontology"), dict):
+                process = process_library()
+                consumed_inputs.extend([process.TEMPLATES / "fabric-iq-canon.json", process.TEMPLATES / "cdm-map.json"])
     except (OSError, ValueError, KeyError, TypeError, UnicodeError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2
     if a.canon:
-        added = add_canon(bp, load_defaults(a.defaults))
+        consumed_inputs.append(a.defaults)
+        try:
+            added = add_canon(bp, load_defaults(a.defaults))
+        except (OSError, ValueError) as error:
+            print(f"ERROR: cannot prepare canon defaults: {error}", file=sys.stderr)
+            return 2
         if added:
             rep.removed.append("canon added: " + ", ".join(added))
     bp = normalise(bp, rep)
     if isinstance(bp.get("feedback_loop"), dict):
         try:
+            consumed_inputs.append(a.defaults)
             fill_feedback_loop(bp, load_defaults(a.defaults))
         except (OSError, ValueError) as e:
             rep.warn(f"feedback loop not completed from the journeys: {e}")
@@ -840,13 +860,14 @@ def main(argv=None) -> int:
         # Resolve bound content privacy while the original source still exists.
         # Scrubbing it first loses new flags and legacy provenance recovery.
         fill_risks(bp, rep)
-        bp = customer_version(bp, rep)
+        bp = customer_version(bp, rep, _consumed_inputs=consumed_inputs)
     else:
         bp.setdefault("meta", {})["audience"] = "internal"
     # Final models are derived from the scrubbed sources.
     fill_risks(bp, rep)
     fill_prd(bp, rep)
     if not a.no_product_icons:
+        consumed_inputs.append(ICONS)
         embed_product_icons(bp, rep, ICONS)
     if successor:
         # Attach after ordinary normalisation/customer scrub. Its safe DTO was
@@ -864,17 +885,28 @@ def main(argv=None) -> int:
             count = len(result[key])
             result[key] = [f"{count} Blueprint {key.replace('_', ' ')}; private details withheld"] if count else []
     try:
+        requested = ([a.save_normalized, a.out] if not rep.errors else []) + [a.report]
+        if not rep.errors and a.out:
+            consumed_inputs.append(a.template)
+        agent_finops_output_paths(consumed_inputs, requested)
+        products = []
         if not rep.errors:
             if a.save_normalized:
-                Path(a.save_normalized).write_text(json.dumps(bp, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")
+                products.append((Path(a.save_normalized), json.dumps(bp, ensure_ascii=False, indent=1)))
                 result["normalized"] = a.save_normalized
             if a.out:
                 tpl = Path(a.template).read_text(encoding="utf-8")
-                Path(a.out).write_text(render(bp, tpl), encoding="utf-8", newline="\n")
+                products.append((Path(a.out), render(bp, tpl)))
                 result["out"] = a.out
         if a.report:
-            Path(a.report).write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")
-    except (OSError, ValueError) as error:
+            products.append((Path(a.report), json.dumps(result, ensure_ascii=False, indent=1)))
+        # All deterministic validation, rendering and serialization is complete.
+        # Later OS/I/O failures remain possible; no transactional guarantee is
+        # inferred across multiple caller-selected output locations.
+        agent_finops_output_paths(consumed_inputs, [path for path, _ in products])
+        for path, text in products:
+            path.write_text(text, encoding="utf-8", newline="\n")
+    except (OSError, ValueError, TypeError) as error:
         message = "Agent FinOps output operation refused; no financial permission" if successor else str(error)
         print(f"ERROR: {message}", file=sys.stderr)
         return 2
