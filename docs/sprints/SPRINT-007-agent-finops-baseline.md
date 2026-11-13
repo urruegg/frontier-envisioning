@@ -2,19 +2,19 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.4 |
+| Version | 1.5 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Strict local L1/L2 passed; final archive and draft PR evidence pending |
+| Status | Local gates and final handoff archives verified; draft PR, CI and human sign-off remain separate |
 | Scope | Offline baseline-first 1.10.0 internal candidate, not live FinOps operations |
 | References | [Catalogue](README.md), [Parent #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Design](../specs/2026-11-12-agent-finops-baseline-design.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#35](https://github.com/urruegg/frontier-envisioning/issues/35) | [Outcome/input](../ideas/2026-11-12-agent-finops-baseline.md) | [Baseline design](../specs/2026-11-12-agent-finops-baseline-design.md) | [Tasks 0-8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; accountable | Actual D35-09 plan/readiness approval recorded | Approved for bounded implementation; no label change inferred | Spec approval `2e3c0e7`; plan approval `efb3468`; no delivery/PR proof yet |
-| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Engine/records reviewed at `b623228a`; driver coverage at `7dfdb79f` | Final integrated source/UI reviewed; full gates and final archive proof pending |
-| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | Reviewed D1 and explicit fixture | Final recurring-only/coverage UI integration reviewed at `e2f5d9c1` | Scoped DOM/browser evidence below; full L2 pending |
-| [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | [Verified candidate](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-10/11/12](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D3, Tasks 0/5/7/8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D3, estimated M | Preparation first; final proof after D1/D2 | Source guidance and explicit fixture reviewed | Initial package/CLI evidence below, not full 1.10.0 quality/distribution proof |
+| [#35](https://github.com/urruegg/frontier-envisioning/issues/35) | [Outcome/input](../ideas/2026-11-12-agent-finops-baseline.md) | [Baseline design](../specs/2026-11-12-agent-finops-baseline-design.md) | [Tasks 0-8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; accountable | Actual D35-09 plan/readiness approval recorded | Local engineering proof complete; no label change inferred | Spec `2e3c0e7`, plan `efb3468`; draft PR/CI and human sign-off separate |
+| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Engine/records reviewed at `b623228a`; driver coverage at `7dfdb79f` | Full local gates/final archive verified; real finance authority external |
+| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | Reviewed D1 and explicit fixture | Final recurring-only/coverage UI integration reviewed at `e2f5d9c1` | Strict local L2: 75 passed; CI/manual acceptance separate |
+| [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | [Verified candidate](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-10/11/12](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D3, Tasks 0/5/7/8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D3, estimated M | Preparation first; final proof after D1/D2 | Local candidate verification complete | Strict L1/L2, 21 final-ZIP checks and two-build byte identity below |
 
 ## Human evidence and gates
 
@@ -543,3 +543,57 @@ live Cowork routing/installation, authenticated finance authority, manual
 assistive-technology acceptance, external/IP clearance, publication or deployment.
 Archive-specific execution, repeat-build identity, hashes and the draft PR
 are recorded only after the remaining checks.
+
+## Exact final handoff and independent repeat build
+
+The handoff binds package sources and bundled product-document evidence at
+`79ed0da0b0ee32914c01b19d405f25822f5e50dc`. Subsequent sprint/PR evidence is
+not bundled and does not change these archive bytes. Both actual standard
+builds completed successfully:
+
+```powershell
+python tools\build_package.py --dist dist\distribution-1.10.0
+python tools\build_release.py --dist dist\distribution-1.10.0
+```
+
+Between builds, `python tools/build_demo.py --out build/distribution-repro-core-79ed0da`
+made a genuinely fresh, independently named full core build, verifying all
+205 inputs and restoring the same 223 rasters. The first core was preserved
+separately; the new core was moved into the builder's `build/demo` consumption
+slot before rerunning both unmodified build CLIs. No golden ZIP or module-path
+substitution supplied the second output. All **three handoff files compare
+byte-for-byte identical** to the first actual build.
+
+| File in `dist/distribution-1.10.0/` | Bytes | SHA-256 |
+|---|---:|---|
+| `frontier-envisioning-plugin-1.10.0.zip` | 816603 | `ca41bc60f0e7231476528dca6468f3f4222fe49ed1b403380ed3a41eac562b06` |
+| `frontier-envisioning-1.10.0-complete.zip` | 4578116 | `4b7061722ec506f405efe6d80ef70666aa95ba89746293d1cc82c351376e947f` |
+| `SHA256SUMS.txt` | 212 | `2ef9980a5d21e9b44fda1d51360566604e318b824da9f6c7786d38084dae4c03` |
+
+Actual inspection verified all **101 plugin members / 93 skill files** against
+source bytes and the normal installer recipe. The complete archive has exactly
+the current **15 allowlisted entries**, with its embedded plugin byte-identical
+to the standalone ZIP. Actual core HTML remains FinOps-free. Fixed ZIP metadata,
+recursive member/comment privacy and exact two-line checksums passed.
+
+After each build, the exact ZIP was freshly extracted under a Unicode temporary
+path. **21 actual installed checks passed** using extracted scripts, examples
+and helpers with `-E -s -B -X utf8`, not working-tree program imports:
+eight verified read-only installer plans; seven GA/one optional Preview with
+no installation consent; fresh-ack refusal/no output; seed/calculate/freeze/
+review/apply/export; synthetic handover blocking; immutable originals/snapshot;
+calculation/snapshot/review-target tamper refusal; overwrite preservation;
+private-dependent customer JSON/Markdown withholding; and ordinary value/
+ontology core operation with the FinOps skill removed. Temporary installations
+were cleaned; no real OneDrive/Cowork installation or finance approval occurred.
+
+All **319 frozen files**, all three product-document historical suffixes and
+the finite 1.10.0 profile remain unchanged. The independently rebuilt identity
+ZIP is still
+`e40b132d2e1d396ad7ee681d09931b3e35cd5728081cb01235b17396059cfdf9`.
+The fresh core still passes the tracked-gallery comparison.
+
+This verifies an **unreleased internal candidate**, not publication,
+deployment, actual tenant/financial authority, manual AT or IP clearance.
+Draft PR/CI results and maintainer sign-off remain separate. Protected routing
+#8 and release-cache #30 remain human-owned.
