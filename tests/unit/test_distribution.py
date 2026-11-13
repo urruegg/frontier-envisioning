@@ -15,6 +15,7 @@ from pathlib import Path
 from unittest import mock
 
 from tests.unit._util import ROOT, load
+from tests.unit.test_docs_demo import html as core_demo_html
 
 packager = load("tools/build_package.py")
 
@@ -123,7 +124,10 @@ class DistributionPrivacy(unittest.TestCase):
             dist, demo, plugin = root / "dist", root / "demo", root / "plugin"
             files = {
                 dist / "frontier-envisioning-plugin-1.6.1.zip": zip_bytes({"README.md": b"@sample_microsoft"}),
-                demo / bundle.DEMO_HTML_NAME: b"demo",
+                demo / bundle.DEMO_HTML_NAME: core_demo_html(meta={
+                    "generated": "2026-11-12", "plugin_version": "1.6.1",
+                    "customer": "Caldova Industrial AG",
+                }),
                 demo / "identity" / "caldova-agent-identity" / "catalog.html": b"catalogue",
                 demo / "identity" / "kit.zip": zip_bytes({"README.md": b"identity"}),
                 demo / "build-report.json": b'{"profile":"core","status":"built","variant":"full"}',
