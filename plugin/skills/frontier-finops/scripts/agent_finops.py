@@ -84,7 +84,7 @@ def resolve_blueprint_sources(blueprint, agent_id):
     onto = resolved.get("ontology")
     if onto is not None and (not isinstance(onto, dict) or onto.get("schema") != "frontier-ontology/1.0"):
         raise ValueError("unsupported ontology source namespace")
-    registered, physical = {}, set()
+    registered = {}
 
     def register(owner, field, namespace):
         rows = owner.get(field, [])
@@ -101,51 +101,35 @@ def resolve_blueprint_sources(blueprint, agent_id):
             if namespace == "ontology-binding" and identity == "ontology":
                 raise ValueError("source identity collides with the reserved ontology-model sentinel")
             registered[identity] = copy.deepcopy(row)
-            if namespace == "ontology-binding":
-                physical.add(identity)
 
     # These are named, typed registries, not a search for arbitrary `sources`
     # keys. Validate all identities before resolving any reference.
     for field in ("evidence", "sources"):
         register(resolved, field, "blueprint")
     if onto is not None:
-        register(onto, "sources_doc", "ontology-citation")
-        register(onto, "sources", "ontology-binding")
-        # Validate the COMPLETE raw process graph before selecting any financial
-        # consumers. Use the existing process schema and typed ancestry walker,
-        # including consumers[].agents and data-product uses[].via. Defaults are
-        # checked on a copy, not imported as authored evidence or approval.
         process = _process_library()
-        if any(row.get("unresolved") for row in process.feedback_ancestry(onto, "model", blueprint)):
-            raise ValueError("invalid or unresolved raw typed ontology source graph")
+        # This is the process schema's declared default registry, selected
+        # BEFORE lookup when sources_doc is omitted/empty. It is not a fallback
+        # for unknown IDs; custom registries and all collisions remain strict.
+        supplied = onto.get("sources_doc", [])
+        citations = {"sources_doc": process.load_canon()["sources"]} if supplied is None or supplied == [] else onto
+        register(citations, "sources_doc", "ontology-citation")
+        register(onto, "sources", "ontology-binding")
+        # Validate authored references before any normalisation can discard one.
+        # The strict graph resolves schema-specific namespaces; the workshop's
+        # any-pool ancestry walker is not a foreign-key validator.
+        graph = process.strict_reference_graph(onto, blueprint)
+        raw_context = copy.deepcopy(resolved)
+        raw_context.pop("evidence", None)
+        raw_context["sources"] = list(registered.values())
+        _blueprint_ancestry(raw_context, agent_id)
         rep = process.Rep()
         checked = process.normalize(copy.deepcopy(onto), blueprint, rep)
-        if rep.errors or any(row.get("unresolved") for row in process.feedback_ancestry(checked, "model", blueprint)):
+        if rep.errors:
             raise ValueError("invalid or unresolved typed ontology source graph")
+        process.strict_reference_graph(checked, blueprint)
         onto.pop("sources_doc", None)
         onto.pop("sources", None)
-
-        # A `source` elsewhere may be prose, not a OneLake relationship.
-        # Only the existing typed entity/data-agent schema positions add edges.
-        for collection, fields in (("entity_types", ("source", "secondary")), ("data_agents", ("sources",))):
-            rows = onto.get(collection, [])
-            if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
-                raise ValueError("ontology collection must be an explicit object list")
-            for row in rows:
-                bindings = []
-                for field in fields:
-                    value = row.get(field)
-                    if value is None:
-                        continue
-                    values = value if isinstance(value, list) else [value]
-                    for identity in values:
-                        if collection == "data_agents" and identity == "ontology":
-                            continue  # explicit ontology-model sentinel, not a source fallback
-                        if not isinstance(identity, str) or identity not in physical:
-                            raise ValueError("unknown ontology binding source")
-                        bindings.append(identity)
-                if bindings:
-                    row["src"] = list(dict.fromkeys([*_refs({"src": row.get("src")}), *bindings]))
 
     # Source records stay out of consumed root/ontology context. The existing
     # walker validates their complete reference graph, but only reached records
@@ -156,23 +140,51 @@ def resolve_blueprint_sources(blueprint, agent_id):
     # and every registry definition. It does NOT merge their privacy flags.
     _blueprint_ancestry(resolved, agent_id)
     if onto is not None:
-        consumed = set()
-        for collection in ("data_agents", "operations_agents"):
-            rows = onto.get(collection, [])
-            if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
-                raise ValueError("ontology agent collection must be an explicit object list")
-            for row in rows:
-                consumers = process.as_list(row.get("consumers"))
-                selected = (row.get("id") == agent_id or row.get("agent_id") == agent_id
-                            or any(isinstance(c, dict) and agent_id in process.as_list(c.get("agents"))
-                                   for c in consumers))
-                if selected:
-                    consumed.add((collection, row.get("id")))
-                    consumed.update((anchor["pool"], anchor["id"])
-                                    for anchor in process.feedback_ancestry(checked, row.get("id"), blueprint)
-                                    if anchor["pool"] in {"data_agents", "operations_agents"})
-        for collection in ("data_agents", "operations_agents"):
-            onto[collection] = [row for row in onto.get(collection, []) if (collection, row.get("id")) in consumed]
+        nodes, edges = graph["nodes"], graph["edges"]
+
+        def derived(key):
+            pool, _ = key
+            row = nodes[key]
+            if pool == "data_products":
+                return (row.get("origin") in {"data agent", "derived"}
+                        and any(target[0] == "data_agents" for target in edges[key]))
+            return pool in {"semantic_models", "domains"} and row.get("origin") == "derived"
+
+        # Genuine authored root context remains binding. Registry definitions
+        # and unconsumed generated products are not themselves consumption.
+        keep = {key for key in nodes if not key[0].startswith("blueprint.")
+                and key[0] not in {"sources", "data_agents", "operations_agents"} and not derived(key)}
+        # Retain the old explicit identity seam only when no typed consumers
+        # were supplied. A same-spelled ID cannot override actual consumer edges.
+        keep.update(key for key, row in nodes.items() if key[0] in {"data_agents", "operations_agents"}
+                    and (("blueprint.agents", agent_id) in edges[key]
+                         or ((key[0] != "data_agents" or not process.as_list(row.get("consumers")))
+                             and (key[1] == agent_id or row.get("agent_id") == agent_id))))
+        pending, visited = list(keep), set()
+        while pending:
+            key = pending.pop()
+            if key in visited:
+                continue
+            visited.add(key)
+            keep.add(key)
+            pending.extend(target for target in edges[key] if target not in visited)
+            # Include generated products of an actually consumed producer, then
+            # follow their typed dependencies (including analytics/action uses).
+            if key[0] == "data_agents":
+                pending.extend(product for product in nodes if product[0] == "data_products"
+                               and derived(product) and key in edges[product] and product not in visited)
+        for pool in {key[0] for key in nodes if not key[0].startswith("blueprint.") and key[0] != "sources"}:
+            rows = []
+            for key, original in nodes.items():
+                if key[0] != pool or key not in keep:
+                    continue
+                row = copy.deepcopy(original)
+                bindings = [target[1] for target in edges[key] if target[0] == "sources"]
+                if bindings:
+                    row["src"] = list(dict.fromkeys([*_refs({"src": row.get("src")}), *bindings]))
+                rows.append(row)
+            if pool in onto or rows:
+                onto[pool] = rows
     return resolved
 
 

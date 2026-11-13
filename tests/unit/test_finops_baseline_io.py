@@ -856,6 +856,110 @@ class BlueprintBaselineTests(IOCase):
         self.assertIn("value", err.lower())
         self.assert_no_output()
 
+    def test_rereview_wrapper_validates_original_consumer_before_normalizer_can_drop_it(self):
+        onto = self.ontology()
+        onto["namespaces"] = [{"id": "core", "name": "Synthetic shared namespace"}]
+        onto["sources_doc"] += self.builder.process_library().load_canon()["sources"]
+        for source in onto["sources_doc"]:
+            source.setdefault("url", f"https://example.org/caldova/{source['id']}")
+        onto["data_agents"][0]["consumers"] = [{"kind": "INVALID-KIND", "agents": ["NO-AGENT"]}]
+        ontology = self.write("original-ontology.json", onto)
+        before = {p: p.read_bytes() for p in (ontology, self.bp, self.source)}
+        bp = {**seed_blueprint(), "ontology": onto}
+        with self.assertRaises(ValueError):
+            self.cli.apply_models(bp, [self.calculated()], **ACK, audience="customer",
+                                  customer_scope="caldova-scope")
+        code, out, err = self.call(self.wrapper, self.args(wrapper=True, audience="customer") + [
+            "--ontology", ontology])
+        self.assertEqual(code, 2, (out, err))
+        self.assert_no_output()
+        for path, content in before.items():
+            self.assertEqual(path.read_bytes(), content)
+
+    def test_rereview_entity_id_is_not_a_blueprint_agent_foreign_key(self):
+        onto = self.ontology()
+        onto["data_agents"][0]["consumers"] = [{"kind": "copilot_studio", "agents": ["SyntheticRecord"]}]
+        onto["data_agents"][0].pop("internal", None)
+        bp = {**seed_blueprint(), "ontology": onto}
+        before = copy.deepcopy(bp)
+        with self.assertRaises(ValueError):
+            self.cli.apply_models(bp, [self.calculated()], **ACK, audience="customer",
+                                  customer_scope="caldova-scope")
+        self.assertEqual(bp, before)
+        self.write("blueprint.json", bp)
+        for module, wrapper in ((self.builder, False), (self.wrapper, True)):
+            code, out, err = self.call(module, self.args(wrapper=wrapper, audience="customer"))
+            self.assertEqual(code, 2, (out, err))
+            self.assert_no_output()
+        calculated = self.write("calculated.json", self.calculated())
+        target = self.dir / "wrong-pool.json"
+        result = self.run_cli("apply", "--blueprint", self.bp, "--baseline", calculated, "--out", target,
+                              "--as-of", DAY.isoformat(), "--audience", "customer",
+                              "--customer-scope", "caldova-scope", "--acknowledge-finops-preview")
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertFalse(target.exists())
+
+    def test_rereview_normalized_unrelated_private_derived_products_do_not_taint(self):
+        process = self.builder.process_library()
+        for control in ("public", "unrelated-private", "same-named-unrelated", "consumed-private",
+                        "authored-root-private"):
+            with self.subTest(control=control):
+                bp = seed_blueprint()
+                onto = self.ontology()
+                onto["namespaces"] = [{"id": "core", "name": "Synthetic shared namespace"}]
+                onto["sources_doc"] += process.load_canon()["sources"]
+                onto["data_agents"] = [{
+                    "id": "D3-A05" if control == "same-named-unrelated" else "DA-SYNTHETIC",
+                    "name": "Synthetic data agent", "entities": ["SyntheticRecord"],
+                    "sources": ["ontology"],
+                    "internal": control in {"unrelated-private", "same-named-unrelated", "consumed-private"},
+                    "consumers": [{"kind": "copilot_studio", "agents": [
+                        "D3-A05" if control == "consumed-private" else "D1-A01"]}],
+                    "products": [{"name": "Synthetic generated product", "entities": ["SyntheticRecord"]}],
+                }]
+                normalized = self.wrapper.prepare_agent_ontology(bp, onto)["ontology"]
+                # This is an explicitly simulated public-source fixture. Empty
+                # generated provenance must not obscure the private-product case.
+                for row in self.records._walk(normalized):
+                    for field in ("src", "content_src", "source_id"):
+                        if field in row and not self.records._refs({field: row[field]}):
+                            row[field] = "LOCAL-DOC" if field == "source_id" else ["LOCAL-DOC"]
+                if control == "authored-root-private":
+                    normalized["sharingClassification"] = "internal-only"
+                bp["ontology"] = normalized
+                original = copy.deepcopy(bp)
+                applied = self.cli.apply_models(bp, [self.calculated()], **ACK, audience="customer",
+                                                customer_scope="caldova-scope")
+                report = applied["agent_finops"]["records"][0]
+                if control in {"consumed-private", "authored-root-private"}:
+                    self.assertEqual(report["status"], "withheld")
+                else:
+                    self.assertIn("expected", report["scenarios"], "unrelated generated privacy cannot taint the target")
+                    self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+                self.assertEqual(bp, original)
+                self.write("blueprint.json", bp)
+                code, out, err = self.call(self.builder, self.args(audience="customer"))
+                self.assertEqual(code, 0, (out, err))
+                published = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))
+                self.assertEqual(published["agent_finops"], applied["agent_finops"])
+
+    def test_rereview_all_publication_file_ancestor_conflicts_refuse_before_any_public_write(self):
+        for control in ("html-parent", "report-parent", "case-parent"):
+            with self.subTest(control=control):
+                args = self.args(wrapper=True)
+                if control == "report-parent":
+                    args[args.index(self.dir / "report.json")] = self.dir / "output/agent-finops"
+                else:
+                    parent = "blueprint.html" if control == "html-parent" else "BLUEPRINT.HTML"
+                    args += ["--html", "blueprint.html"]
+                    args[args.index(self.dir / "normalized.json")] = self.dir / "output" / parent / "normalized.json"
+                before = {p: p.read_bytes() for p in (self.bp, self.source)}
+                code, out, err = self.call(self.wrapper, args)
+                self.assertEqual(code, 2, (out, err))
+                self.assert_no_output()
+                for path, content in before.items():
+                    self.assertEqual(path.read_bytes(), content)
+
 
 class LifecycleTests(IOCase):
     def test_receipt_survives_canonical_json_before_frozen_record_consumption(self):

@@ -107,20 +107,25 @@ def agent_finops_preflight(a, data, *, acknowledge_finops_preview=False):
     baselines = getattr(a, "agent_finops", ()) or ()
     if getattr(a, "finops", None) and (baselines or "agent_finops" in bp):
         raise ValueError("ambiguous legacy/new financial sources: --finops and --agent-finops are mutually exclusive")
+    common = {
+        "baselines": baselines, "reviews": getattr(a, "agent_finops_review", ()) or (),
+        "as_of": getattr(a, "as_of", None),
+        "audience": getattr(a, "audience", None) or str((bp.get("meta") or {}).get("audience", "internal")).lower(),
+        "customer_scope": getattr(a, "customer_scope", None),
+        "acknowledge_finops_preview": acknowledge_finops_preview,
+    }
     if baselines and getattr(a, "ontology", None) and acknowledge_finops_preview is True:
-        # Use the real process applier on a detached copy BEFORE any identity,
-        # output directories or input copies. Do not invent a second registry
-        # resolver here: apply_models owns D35-11 for every entrypoint.
-        bp = prepare_agent_ontology(bp, lib.read_document(a.ontology))
+        ontology = lib.read_document(a.ontology)
+        original = copy.deepcopy(bp)
+        original["ontology"] = ontology
+        # Shared policy must see the ORIGINAL authored graph before the process
+        # applier can drop an invalid consumer or reference. No output effects.
+        lib.agent_finops_preflight(original, **common)
+        bp = prepare_agent_ontology(bp, ontology)
     value = None
     if baselines and getattr(a, "value", None) and acknowledge_finops_preview is True:
         bp, value = prepare_agent_value(bp, lib.read_document(a.value))
-    audience = getattr(a, "audience", None) or str((bp.get("meta") or {}).get("audience", "internal")).lower()
-    prepared = lib.agent_finops_preflight(
-        bp, baselines=baselines, reviews=getattr(a, "agent_finops_review", ()) or (),
-        as_of=getattr(a, "as_of", None), audience=audience,
-        customer_scope=getattr(a, "customer_scope", None),
-        acknowledge_finops_preview=acknowledge_finops_preview)
+    prepared = lib.agent_finops_preflight(bp, **common)
     if prepared is not None:
         prepared["value"] = value
     return lib, bp, prepared

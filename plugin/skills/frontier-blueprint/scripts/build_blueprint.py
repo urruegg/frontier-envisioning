@@ -169,6 +169,14 @@ def agent_finops_output_paths(inputs, outputs):
     targets = [Path(p).resolve() for p in outputs if p]
     if sources.intersection(targets) or len(targets) != len(set(targets)):
         raise ValueError("Agent FinOps outputs must not alias inputs or each other")
+    # Treat a planned destination as a FILE, not as a possible parent directory.
+    # Resolve links first and compare portable case-folded paths so the complete
+    # publication plan is safe on Windows as well as case-sensitive hosts.
+    files = {path.as_posix().casefold() for path in targets}
+    if len(files) != len(targets) or any(
+        parent.as_posix().casefold() in files for path in targets for parent in path.parents
+    ):
+        raise ValueError("Agent FinOps output files must not alias or be ancestors of other output files")
 
 
 class Report:

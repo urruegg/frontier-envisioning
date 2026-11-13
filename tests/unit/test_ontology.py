@@ -264,6 +264,74 @@ class SemanticAncestry(unittest.TestCase):
                 self.assertIn("unresolved:MISSING-ENTITY", gaps)
 
 
+class StrictTypedReferences(unittest.TestCase):
+    def fixture(self):
+        model = mini()
+        model["data_agents"][0].update(id="DA-01", sources=["s-fs"],
+                                       consumers=[{"kind": "copilot_studio", "agents": ["BP-AGENT"]}])
+        model["operations_agents"] = [{"id": "OA-01", "entities": ["Asset"], "rules": ["Synthetic rule"]}]
+        model["semantic_models"] = [{"id": "SM-01", "facts": ["WorkOrder"], "dimensions": ["Asset", "Date"]}]
+        model["data_products"] = [{"id": "DP-01", "entities": ["Asset"], "agents": ["DA-01"],
+                                   "uses": [{"use": "analytics", "via": ["SM-01"]}]}]
+        model["metrics"] = [{"id": "M-01", "name": "Synthetic metric", "entity": "WorkOrder"}]
+        bp = {"domains": [{"id": "D1", "agents": [{"id": "BP-AGENT"}]}]}
+        return model, bp
+
+    def operation(self):
+        operation = getattr(lib, "strict_reference_graph", None)
+        self.assertTrue(callable(operation), "an opt-in schema-specific process reference helper is required")
+        return operation
+
+    def test_strict_graph_is_pure_typed_deterministic_and_keeps_date_builtin(self):
+        model, bp = self.fixture()
+        before = copy.deepcopy((model, bp))
+        result = self.operation()(model, bp)
+        graph = result["edges"]
+        self.assertIn(("blueprint.agents", "BP-AGENT"), graph[("data_agents", "DA-01")])
+        self.assertIn(("sources", "s-fs"), graph[("data_agents", "DA-01")])
+        self.assertIn(("entity_types", "Asset"), graph[("semantic_models", "SM-01")])
+        self.assertNotIn(("entity_types", "Date"), graph[("semantic_models", "SM-01")])
+        self.assertIn(("semantic_models", "SM-01"), graph[("data_products", "DP-01")])
+        self.assertEqual(result, self.operation()(model, bp))
+        self.assertEqual((model, bp), before)
+
+    def test_strict_graph_rejects_wrong_pools_and_original_invalid_consumers(self):
+        mutations = (
+            lambda m: m["data_agents"][0]["consumers"][0].update(agents=["Asset"]),
+            lambda m: m["data_agents"][0]["consumers"][0].update(kind="INVALID", agents=["NO-AGENT"]),
+            lambda m: m["data_agents"][0].update(entities=["s-fs"]),
+            lambda m: m["data_agents"][0].update(sources=["Asset"]),
+            lambda m: m["entity_types"][0].update(source="WorkOrder"),
+            lambda m: m["entity_types"][0].update(namespace="Asset"),
+            lambda m: m["entity_types"][0].update(base="s-fs"),
+            lambda m: m["relationship_types"][0].update(to="s-fs"),
+            lambda m: m["semantic_models"][0].update(dimensions=["s-fs", "Date"]),
+            lambda m: m["metrics"][0].update(entity="s-fs"),
+            lambda m: m["data_products"][0].update(agents=["SM-01"]),
+            lambda m: m["data_products"][0]["uses"][0].update(via=["DA-01"]),
+        )
+        operation = self.operation()
+        for mutate in mutations:
+            model, bp = self.fixture()
+            mutate(model)
+            before = copy.deepcopy((model, bp))
+            with self.subTest(mutation=mutate), self.assertRaises(ValueError):
+                operation(model, bp)
+            self.assertEqual((model, bp), before)
+
+    def test_same_spelling_in_another_namespace_does_not_change_the_typed_edge(self):
+        model, bp = self.fixture()
+        bp["domains"][0]["agents"].append({"id": "Asset"})
+        model["data_agents"][0]["consumers"][0]["agents"] = ["Asset"]
+        model["data_agents"][0]["entities"] = ["WorkOrder"]
+        model["semantic_models"].append({"id": "DA-01", "dimensions": ["Date"]})
+        graph = self.operation()(model, bp)["edges"]
+        self.assertIn(("blueprint.agents", "Asset"), graph[("data_agents", "DA-01")])
+        self.assertNotIn(("entity_types", "Asset"), graph[("data_agents", "DA-01")])
+        self.assertIn(("data_agents", "DA-01"), graph[("data_products", "DP-01")])
+        self.assertNotIn(("semantic_models", "DA-01"), graph[("data_products", "DP-01")])
+
+
 class Canon(unittest.TestCase):
     def test_sources_are_microsoft_learn(self):
         c = lib.load_canon()
