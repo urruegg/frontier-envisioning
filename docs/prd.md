@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.6 |
-| Date | 2026-11-12 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation) |
-| Status | Maintained requirements; 1.10.0 implementation/verification pending, no release approval implied |
+| Version | 1.7 |
+| Date | 2026-11-13 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence) |
+| Status | Maintained requirements; 1.10.0 local runtime gates verified, archive/human acceptance separate; no release approval implied |
 | Scope | Approved unreleased 1.10.0 candidate scope, shared product context and preserved 1.9.2/1.9.1 and earlier requirements/history |
 | References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md) |
 
@@ -26,10 +26,12 @@ below remains unreleased.
 
 ## 1.10.0 development candidate
 
-**12 November 2026: 1.10.0 is an unreleased internal candidate.** This section
-records approved product scope, not delivery, completed validation or a release.
+**1.10.0 remains an unreleased internal candidate.** Scope was approved on
+12 November; local runtime gates were verified on 13 November 2026.
+This section records requirements and scope-qualified technical evidence,
+not publication, real pricing approval or actual Cowork/tenant acceptance.
 The [solution design](solution-design.md#1100-development-candidate) owns the
-companion architecture and pending verification. Historical A.12/A.13 and all
+companion architecture and verification. Historical A.12/A.13 and all
 sections from the 1.9.2 heading onwards retain their original chronological
 meaning; they are not new 1.10.0 evidence.
 
@@ -96,7 +98,7 @@ The following are requirements, not an implemented-feature inventory.
 | FR-0144 | Use exactly low/expected/high scenarios with twelve monthly demand values each. Demand and another referenced, sourced cost/outcome uncertainty must differ and affect the model; neither final-total multipliers nor an unused driver-name whitelist suffices (AFB-03). | M | T |
 | FR-0145 | Use Decimal quantities, pricing units/blocks, preserved rate precision and declared rounding. Report monthly/annual recurring, one-time/first-year and per-run/success/outcome costs with matching period/basis; zero/missing denominators are unavailable. Support CHF/EUR/USD, one reporting currency per baseline, explicit dated FX pair/method only and no mixed-currency portfolio total. Forecasts remain estimates; measured/allocated inputs retain basis/lineage (AFB-04). | M | T |
 | FR-0146 | Keep missing required arithmetic inputs unavailable, never zero. Apply D35-10 only to known usable supplied prices/FX with incomplete evidence, with explicit provisional status, source/date gaps and separate verified/provisional contributions; do not imply verified prices or financial readiness (AFB-05). | M | T, evidence review |
-| FR-0147 | Block financial build handover for any unresolved in-scope driver, invalid model, missing quantity, missing/stale/unverified/inapplicable rate/FX evidence or missing review/measurement/guardrail/sharing evidence. Empty scope, forged status, workshop notes, decline and Preview acknowledgement cannot pass; no conditional unpriced exception (AFB-06). | M | T |
+| FR-0147 | Block financial build handover for any unresolved in-scope driver, invalid model, missing quantity, missing/stale/unverified/inapplicable rate/FX evidence or missing review/measurement/guardrail/sharing evidence. Report evidenced priced/in-scope driver counts across all applicable lines/periods, withholding private-dependent counts. Empty scope, forged status, workshop notes, decline and Preview acknowledgement cannot pass; no conditional unpriced exception (AFB-06). | M | T |
 | FR-0148 | Require externally evidenced owner review with explicit decision, actor, date, evidence reference and frozen version/material hash. Keep structural validity, pricing completeness, lifecycle and dated planning readiness separate. Offline records are not authenticated financial authority, tamper-proof storage, access control, budget/purchase approval or deployment permission (AFB-07). | M | T, owner evidence |
 | FR-0149 | Keep editable drafts and preserve frozen reviewed snapshots. Bind material inputs, rates, FX, scenarios, sources/privacy and results to receipts/review; material change creates a new version without inherited review. Stale sources block new handover without rewriting historical review (AFB-08). | M | T |
 | FR-0150 | Preserve customer-shareable/customer-specific/internal-only/validation-required provenance and legacy internal/visibility/src/content_src ancestry. Unknown sharing fails closed; template class is not IP clearance. Project dependencies, nested notes/rates/sources/FX, aggregates, readiness and hashes before JSON/Markdown/HTML; never reconstruct private amounts, zero-fill withheld values or label a public subset the full total. Customer output is scope-specific, not public clearance (AFB-09). | M | T, projection review |
@@ -107,31 +109,37 @@ The following are requirements, not an implemented-feature inventory.
 ### Candidate acceptance targets
 
 These rows retain the exact [AFB-01–AFB-12 criteria](specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance)
-under new PRD identifiers. All remain **Pending integrated verification**;
-scoped contract tests are not whole-flow acceptance.
+under new PRD identifiers. The statuses distinguish local automated evidence
+from manual acceptance. Strict L1/L2 passed against `5262db5`; exact archive
+execution and repeat-build bindings belong to [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md),
+not assumptions based on the version or these rows.
 
 | ID | Spec ID | Acceptance criterion | Status |
 |---|---|---|---|
-| AC-045 | AFB-01 | Core/ordinary value builds and sparse/legacy blueprints work without the FinOps skill; no financial operation or figure write occurs before fresh acknowledgement. | Pending integrated verification |
-| AC-046 | AFB-02 | Profile and baseline refer to a real existing agent ID; unknown/duplicate IDs, unsupported schemas and invalid units/numbers/dates produce explicit diagnostics. | Pending integrated verification |
-| AC-047 | AFB-03 | All three scenarios expose demand plus another differing uncertainty driver; final-total multipliers alone fail validation. | Pending integrated verification |
-| AC-048 | AFB-04 | Focused known-answer calculations verify recurring, annual, one-time, first-year and unit economics, including pricing-block conversion and explicit FX. Different currencies are not silently summed. | Pending integrated verification |
-| AC-049 | AFB-05 | Missing required rates/FX or unquantified lines yield unavailable full totals/dependent metrics, not zero. Known supplied stale/unverified rates may yield D35-10 provisional draft figures, with evidence gaps and distinguished contributions; never verified/financially ready claims. | Pending integrated verification |
-| AC-050 | AFB-06 | Every unresolved in-scope driver blocks financial handover. Empty scope, forged status fields, local feedback and technical acknowledgement cannot pass it. | Pending integrated verification |
-| AC-051 | AFB-07 | A positive, fully evidenced handover case requires matching owner review/version/hash, current source evidence, measurement, guardrails and other required fields. Planning status never grants financial or deployment authority. | Pending integrated verification |
-| AC-052 | AFB-08 | Changing reviewed inputs/rates/FX/scenarios/privacy invalidates the old review for the new revision. Historical snapshots remain intact and stale/mismatched receipts reject. | Pending integrated verification |
-| AC-053 | AFB-09 | Parent/component/nested private or unknown sharing provenance is withheld before each output format; no private total/rate/note/derived readiness leaks or zero substitutions. | Pending integrated verification |
-| AC-054 | AFB-10 | The synthetic Caldova flow is runnable offline and clearly distinguished from real pricing/approval. Explicit legacy migration preserves originals/restrictions, yields a draft and leaves legacy numerical regressions unchanged. | Pending integrated verification |
-| AC-055 | AFB-11 | DOM/browser tests verify navigation, gaps, gated figures/exports, reload reset, feedback-not-approval, keyboard/focus access and both colour schemes under the existing CSP/offline rules. | Pending integrated verification |
-| AC-056 | AFB-12 | Strict L1/L2 pass, the actual extracted eight-skill package runs the new flow, distribution/privacy checks pass and repeat builds match. Version/provenance/docs changes use existing generators, not hand-edited outputs. | Pending integrated verification |
+| AC-045 | AFB-01 | Core/ordinary value builds and sparse/legacy blueprints work without the FinOps skill; no financial operation or figure write occurs before fresh acknowledgement. | Automated flow verified; live Cowork behaviour pending |
+| AC-046 | AFB-02 | Profile and baseline refer to a real existing agent ID; unknown/duplicate IDs, unsupported schemas and invalid units/numbers/dates produce explicit diagnostics. | Locally verified — automated |
+| AC-047 | AFB-03 | All three scenarios expose demand plus another differing uncertainty driver; final-total multipliers alone fail validation. | Locally verified — automated |
+| AC-048 | AFB-04 | Focused known-answer calculations verify recurring, annual, one-time, first-year and unit economics, including pricing-block conversion and explicit FX. Different currencies are not silently summed. | Locally verified — automated |
+| AC-049 | AFB-05 | Missing required rates/FX or unquantified lines yield unavailable full totals/dependent metrics, not zero. Known supplied stale/unverified rates may yield D35-10 provisional draft figures, with evidence gaps and distinguished contributions; never verified/financially ready claims. | Locally verified — automated |
+| AC-050 | AFB-06 | Every unresolved in-scope driver blocks financial handover. Empty scope, forged status fields, local feedback and technical acknowledgement cannot pass it. | Locally verified — automated |
+| AC-051 | AFB-07 | A positive, fully evidenced handover case requires matching owner review/version/hash, current source evidence, measurement, guardrails and other required fields. Planning status never grants financial or deployment authority. | Mechanical matching verified with simulated evidence; actual authority external |
+| AC-052 | AFB-08 | Changing reviewed inputs/rates/FX/scenarios/privacy invalidates the old review for the new revision. Historical snapshots remain intact and stale/mismatched receipts reject. | Locally verified — automated |
+| AC-053 | AFB-09 | Parent/component/nested private or unknown sharing provenance is withheld before each output format; no private total/rate/note/derived readiness leaks or zero substitutions. | Locally verified — automated |
+| AC-054 | AFB-10 | The synthetic Caldova flow is runnable offline and clearly distinguished from real pricing/approval. Explicit legacy migration preserves originals/restrictions, yields a draft and leaves legacy numerical regressions unchanged. | Offline synthetic flow and legacy compatibility verified |
+| AC-055 | AFB-11 | DOM/browser tests verify navigation, gaps, gated figures/exports, reload reset, feedback-not-approval, keyboard/focus access and both colour schemes under the existing CSP/offline rules. | Automated DOM/browser checks passed; manual AT pending |
+| AC-056 | AFB-12 | Strict L1/L2 pass, the actual extracted eight-skill package runs the new flow, distribution/privacy checks pass and repeat builds match. Version/provenance/docs changes use existing generators, not hand-edited outputs. | Strict L1/L2 passed; exact archive evidence is recorded separately in SPRINT-007 |
 
 ### Candidate release position and remaining boundaries
 
-Task 0 version/provenance and the Task 1 contract review at `4454974a` are
-bounded checkpoints recorded in SPRINT-007, not calculator, integration or
-final-candidate proof. Calculator/integration work, full gates and final
-archive remain **in progress/pending**. The requirements are not a completed
-product claim; source-qualified delivery evidence belongs to SPRINT-007.
+The engine, records/projection/CLI, authoritative build integration and renderer
+have reviewed source checkpoints in SPRINT-007. Strict local L1 passed
+711 tests, 2,355 subtests, 68 self-tests and 183 DOM tests, with one expected
+unreleased-version skip. Strict local L2 passed 75 browser tests.
+These results bind the program source at `5262db5`; subsequent changes in this
+section record evidence only. Exact archive hashes, extracted execution,
+repeatability and CI results belong to SPRINT-007 and the draft PR.
+No release, actual Cowork installation, real pricing verification or customer
+financial approval follows from local automation.
 
 Later work, outside this slice: the dedicated Copilot Studio/GitHub
 harness/Foundry FinOps Agent blueprint factory; observed actuals,

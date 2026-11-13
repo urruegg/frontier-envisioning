@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.3 |
+| Version | 1.4 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Final integrated source and regenerated core example reviewed; strict gates pending |
+| Status | Strict local L1/L2 passed; final archive and draft PR evidence pending |
 | Scope | Offline baseline-first 1.10.0 internal candidate, not live FinOps operations |
 | References | [Catalogue](README.md), [Parent #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Design](../specs/2026-11-12-agent-finops-baseline-design.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
@@ -511,3 +511,35 @@ and source fingerprint
 `90252d29a5b675e0d7e6fddd9ec394e44ef1235896ba00b566a9d8ad78536ec4`.
 The five genuine recaptures remain byte-identical to the five manually
 inspected views. Core still has 17 routes and no FinOps.
+
+## Full strict local gates
+
+The final program/test source is `5262db5b8a42ef63fb4bdd4b0a3e3c12832fd0db`.
+Both full commands ran sequentially and ended **ALL GATES PASSED**:
+
+| Command | Actual result |
+|---|---|
+| `python tools/dev.py check --strict` | 711 tests passed, one expected unreleased-version skip, 2,355 subtests passed; 68 plugin self-tests and 183 DOM tests passed. Repository rules/Ruff/docs/neutrality passed; ESLint had zero errors and six inherited warnings. |
+| `python tools/dev.py site e2e --strict` | 75 Chromium tests passed; the showcase step and full browser gate passed. |
+
+The first L1 attempt found one directly dependent old test fixture: its bare
+`b"demo"` HTML was now correctly rejected before the intended nested-package
+privacy check. The controller reproduced the failure, supplied the existing
+valid core fixture and preserved all privacy/error/no-overwrite assertions.
+Commit `5262db5` changes only that test fixture. All 28 focused privacy and
+core-consumer tests then passed before the full rerun. No production guard,
+skip or exception policy was relaxed.
+
+The successful L1 unit/pipeline run took 1,127.82 seconds; the full browser
+suite reported 12.3 minutes, with 884.1 seconds for its preparation/execution
+step. Raw command summaries are retained in
+`build/evidence/finops-strict-l1-5262db5.log` and
+`build/evidence/finops-strict-l2-5262db5.log`. Browser reports contain attached
+actual screenshots and downloads; CI evidence remains separate.
+
+After these program-source gates, PRD/solution-design changes record actual
+automation evidence only. They do not change executable behaviour or claim
+live Cowork routing/installation, authenticated finance authority, manual
+assistive-technology acceptance, external/IP clearance, publication or deployment.
+Archive-specific execution, repeat-build identity, hashes and the draft PR
+are recorded only after the remaining checks.

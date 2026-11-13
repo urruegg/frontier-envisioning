@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.6 |
-| Date | 2026-11-12 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation) |
-| Status | Maintained design; 1.10.0 implementation/verification pending, no release approval implied |
-| Scope | Approved unreleased 1.10.0 candidate architecture and pending proof; preserved 1.9.2/1.9.1 and earlier design/verification/inventory |
+| Version | 1.7 |
+| Date | 2026-11-13 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence) |
+| Status | Maintained design; 1.10.0 local runtime gates verified, archive/human acceptance separate; no release approval implied |
+| Scope | Approved unreleased 1.10.0 architecture and scope-qualified verification; preserved 1.9.2/1.9.1 and earlier design/verification/inventory |
 | References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md) |
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Both builders reuse the package
@@ -30,10 +30,10 @@ remains separate from these historical claims.
 
 ## 1.10.0 development candidate
 
-**12 November 2026: approved candidate architecture, not a delivered flow or
-new B.9 result.** Working version 1.10.0 is an unreleased internal candidate.
+**1.10.0 remains an unreleased internal candidate.** The architecture was
+approved on 12 November; local runtime gates were verified on 13 November 2026.
 The [PRD candidate section](prd.md#1100-development-candidate) owns requirements,
-release position and D35-01–D35-10. The
+release position and D35-01–D35-11. The
 [idea](ideas/2026-11-12-agent-finops-baseline.md),
 [approved spec](specs/2026-11-12-agent-finops-baseline-design.md),
 [plan](plans/2026-11-12-agent-finops-baseline-plan.md) and
@@ -43,12 +43,13 @@ release position and D35-01–D35-10. The
 [ADR-0028](adr/0028-versioned-agent-finops-baselines.md) remains **Proposed**,
 not permission or accepted financial authority.
 
-Task 0 version/provenance and Task 1 contract review at `4454974a` are
-scoped evidence in SPRINT-007. Calculator, records/projection/CLI,
-integration, full gates and final archive are still in progress/pending.
-The design below is the intended boundary, not a claim that those components
-are implemented or validated. All material from the 1.9.2 heading onwards,
-including B.9 results, remains historical rather than new candidate proof.
+The engine, records/projection/CLI, build integration and renderer now have
+reviewed implementation checkpoints in SPRINT-007. The local strict runtime
+results below bind program source `5262db5`; exact archive/CI and remaining
+human checks are recorded separately. They do not prove real prices,
+authenticated owner authority or a published/deployed product.
+All material from the 1.9.2 heading onwards, including historical B.9 results,
+retains its original chronological meaning.
 
 ### Offline file boundaries
 
@@ -59,13 +60,13 @@ calling FinOps, including on decline. Financial completeness gates build
 handover only; non-numeric gaps are safe core output, not an automatic pass.
 
 Use the existing Python 3.11+ standard-library, offline deterministic file
-architecture. The planned files below are relative to
+architecture. The files below are relative to
 `plugin/skills/frontier-finops/`; this is not a new server/application layout.
 
 | File/boundary | Candidate responsibility |
 |---|---|
-| `scripts/baseline_model.py` | Contract/reference validation, explicit gaps, Decimal parsing, source freshness and material-input fingerprint; Task 1 review is limited to this contract checkpoint. |
-| `scripts/baseline_calc.py` | Guarded deterministic arithmetic, typed rate/FX resolution, calculation receipts and integrity checks. |
+| `scripts/baseline_model.py` | Contract/reference validation, explicit gaps, Decimal parsing, source freshness and material-input fingerprint. |
+| `scripts/baseline_calc.py` | Guarded deterministic arithmetic, typed rate/FX resolution, evidenced driver coverage, calculation receipts and integrity checks. |
 | `scripts/baseline_records.py` | Draft seed/explicit migration, exclusive frozen versions, external review records and dated financial-handover evaluation. |
 | `scripts/baseline_projection.py` | Audience/dependency projection and report shaping before Markdown/JSON/Blueprint serialisation. |
 | `scripts/agent_finops.py` | Thin CLI over those modules; diagnostics and acknowledgement preflight before financial writes. |
@@ -87,16 +88,16 @@ colliding identities during preflight before any output. Original inputs and
 ontology references remain intact; unrelated agents/sources do not taint an
 independent financial record.
 
-### Planned flow and external trust boundary
+### Offline flow and external trust boundary
 
 ```mermaid
 flowchart LR
     C["Existing Agent Canvas"] --> D["Editable profile and baseline draft"]
     C --> W["Core workshop continues with non-numeric finance gaps"]
     D --> V["Validate scope, scenarios, units and sources"]
-    V --> F["Freeze version and material hash"]
-    F --> K["Calculate and bind receipt"]
-    K --> R["Externally evidenced owner review of frozen content"]
+    V --> K["Calculate and bind receipt"]
+    K --> F["Freeze version and material hash"]
+    F --> R["Externally evidenced owner review of frozen content"]
     R --> H["Dated planning handover checks"]
     K --> P["Audience and dependency projection"]
     H --> P
@@ -144,8 +145,8 @@ cost/outcome uncertainty must actually vary and affect calculation dependencies,
 not merely match a permitted name or multiply a final total.
 
 Calculate monthly/annual recurring, one-time and first-year estimates from
-the declared demand profile. Preserve supplied rate precision; the approved
-plan declares final monetary aggregation to cents with `ROUND_HALF_UP` and
+the declared demand profile. Preserve supplied rate precision; final monetary
+aggregation uses cents with `ROUND_HALF_UP` and
 unit metrics to six decimal places. Per-run, successful-run and defined-outcome
 metrics identify the same period and recurring/first-year basis as their costs.
 Zero/missing denominators are unavailable with reasons, never zero/infinity.
@@ -167,6 +168,12 @@ The provisional allowance verifies neither actual prices nor financial
 handover. Coverage is complete evidenced cost drivers over declared in-scope
 drivers, not an invented monetary exposure percentage. Empty scope is not
 complete, and omissions/exclusions need explicit reasons and review.
+The supplied `driver_coverage` metric carries integer priced/in-scope counts,
+status and reason across all applicable lines/periods and consumed rate/FX
+source ancestry. Restricted dependencies withhold both counts, not a misleading
+public-only ratio. The renderer displays this metric without counting drivers
+or recalculating prices. Reviewed recurring-only scope does not require
+out-of-scope one-time costs or replace unavailable amounts with zero.
 
 ### Preview and source-projection boundaries
 
@@ -197,7 +204,7 @@ reports are not authoritative baseline snapshots or importable approval.
 
 ### Existing views and handover
 
-Planned Canvas and Factory/Plan summaries show active baseline version,
+Canvas and Factory/Plan summaries show active baseline version,
 pricing completeness, owner-review evidence, evaluation date and actionable
 gaps. Core-only builds report shareable non-numeric gaps without FinOps.
 Other readiness checks and declared build/release/operate history remain
@@ -212,27 +219,24 @@ incomplete/withheld states. The standard tracked Caldova demo stays core-only;
 the distinct synthetic baseline illustrates mechanics, not real commercial
 prices, commercial verification or human financial sign-off.
 
-### Candidate B.9 verification — pending
+### Candidate B.9 verification
 
 [AFB-01–AFB-12](specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance)
 map to the [new PRD acceptance targets](prd.md#candidate-acceptance-targets).
-Task 0/1 focused evidence is not integrated acceptance. The following are
-**planned parent/CI checks, not commands run or passed by this prose task**:
+Focused source checkpoints are not substituted for the full runtime gates.
+The following local commands completed sequentially at `5262db5`:
 
-```powershell
-python -m unittest tests.unit.test_finops_baseline tests.unit.test_finops_baseline_io tests.unit.test_finops_preview -v
-python tools\dev.py check --strict
-python tools\dev.py site e2e --strict
-python tools\build_package.py --dist dist\distribution-1.10.0
-python tools\build_release.py --dist dist\distribution-1.10.0
-```
+| Command | Actual result |
+|---|---|
+| `python tools/dev.py check --strict` | `ALL GATES PASSED`: 711 tests passed, one expected unreleased-version skip, 2,355 subtests, 68 self-tests and 183 DOM tests. Lint had zero errors and six inherited warnings. |
+| `python tools/dev.py site e2e --strict` | `ALL GATES PASSED`: 75 browser tests passed, with actual projected downloads and attached screenshots. |
 
-Run L1 and L2 sequentially against shared generated outputs; both must return
-`ALL GATES PASSED`. Preserve legacy numerical/cache/Preview/privacy/value
-regressions. DOM/browser proof must cover core independence, navigation, gaps,
+These are local automation results, not CI or actual Cowork/tenant acceptance.
+Legacy numerical/cache/Preview/privacy/value regressions remain covered.
+DOM/browser proof covers core independence, navigation, gaps,
 gated figures/exports, reload reset, feedback-not-approval, keyboard/focus,
-both colour schemes and existing CSP/offline rules. Record actual checked
-heads, results, counts and expected skips only after execution.
+both colour schemes and existing CSP/offline rules. Source-qualified reports
+and exact command summaries are retained in SPRINT-007 and the draft PR.
 
 Final proof must execute the new flow from the actual extracted eight-skill
 plugin ZIP, not working-tree imports: refusal without acknowledgement,
@@ -247,8 +251,9 @@ suffix hashes against the read-only Task 0 receipt
 `build/evidence/agent-finops-110-preservation.json`. Historical A.12/A.13/B.9
 and prior candidate results are evidence of their own scope only.
 Documentation-only metadata/link and suffix-preservation evidence belongs to
-SPRINT-007. Full gates, package/demo regeneration and final archive verification
-remain pending; a documentation check is not integrated B.9 proof.
+SPRINT-007. Archive-bound execution, repeat-build results and CI status are
+recorded there separately, never inferred from the runtime table, package
+version or a documentation check.
 
 Actual Cowork installation, tenant/financial authority verification, manual
 assistive-technology acceptance, external/IP clearance and human release
