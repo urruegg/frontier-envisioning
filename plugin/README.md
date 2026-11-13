@@ -12,7 +12,7 @@ and icons. Once MVP scope is validated, it supports PRD, solution design,
 architecture decisions and IT readiness handover; earlier documents are drafts.
 Identity branding is not Entra identity provisioning.
 
-**1.9.2 is an unreleased internal candidate, not a published release.**
+**1.10.0 is an unreleased internal candidate, not a published release.**
 The installation procedure below is not evidence of actual Cowork installation,
 organisation catalogue publication or tenant deployment.
 
@@ -90,6 +90,7 @@ gate below is separate from installation approval.
 | "Build the value case for *customer*" | Ordinary non-FinOps value evidence and assumptions, with supported ranges/NPV/ROI only and missing cost/budget evidence stated |
 | "Build the process ontology for *customer*" | Optional local ontology/Turtle, proposed CDM mappings, data-agent and product documents plus the Ontology page; tenant import remains manual |
 | "What will the *customer* agents cost per month?" | The full FinOps Preview notice and a request for actual current-scenario confirmation first; only then provisional costs/comparisons and guardrails |
+| "Prepare a versioned Agent FinOps baseline for D3-A05" | The Preview notice and current confirmation first; then an offline twelve-month draft, evidence gaps, unit economics and projected JSON/Markdown reports, with frozen-target external review recorded separately |
 | "Update the value case with the workshop feedback" (attach the exported feedback file) | The workshop's verdicts on the assumptions applied, recalculated, with a change log |
 | "Show the agent identity in the blueprint" | The Agent identity page: naming rule, journey colours, DEV/TEST bands, agent family, MVP identity sheet and all names per environment |
 | "Prepare the IT readiness and architecture design workshop for *customer*" | The IT readiness page and `it-readiness.md`: preparation items with owners, readiness checks, builder workstation, questions and decisions for IT; the landing zone and the ADRs to decide |
@@ -113,7 +114,7 @@ OneDrive previews do not execute it. The view set follows requested optional dat
 Agent identity icons and Microsoft product icons make each part easy to read. Notes and verdicts stay in your browser until you export them from Discovery; give the exported file back to Cowork to merge.
 
 The core example with explicitly requested Ontology has seventeen route
-identities and no FinOps; the explicit Preview profile has eighteen.
+identities and no FinOps; the explicit legacy Preview profile has eighteen.
 The process canon records a source check dated 11 November 2026, not
 independent current availability or
 native Fabric import verification. The catalogue's eleven unverified F&O entries
@@ -130,8 +131,9 @@ and metadata do not authorise a build, deployment or distribution.
 
 ## Optional FinOps Preview — awareness first
 
-Loading FinOps to explain limitations is allowed. Before any cost seed/calc/
-apply, recommendation or figure, show this exact notice and obtain actual
+Loading FinOps to explain limitations is allowed. Before any cost seed,
+migration, calculation, freeze, review recording, apply, export,
+recommendation or figure, show this exact notice and obtain actual
 confirmation for the current scenario:
 
 > Frontier FinOps is Preview. Its grounding and cost model are not GA and need refinement. Results are provisional planning estimates, not validated pricing, budget approval or purchase/commitment advice. Verify rates and assumptions independently before decisions.
@@ -164,6 +166,48 @@ are gated, while ordinary own non-FinOps value stays available. Private
 components/rankings/outcomes are withheld, not zero; never recover
 `internal_notes`. Viewer acknowledgement is not encryption or access control.
 See the [FinOps skill](skills/frontier-finops/SKILL.md) for exact CLI examples.
+
+### Versioned offline baselines
+
+For requested new work, use the
+[baseline lifecycle](skills/frontier-finops/SKILL.md#quick-start--requested-versioned-baseline)
+inside the existing FinOps skill. No additional skill or cloud connection is
+needed. Prepare each agent's owners, outcome, scope, measurement and guardrails;
+twelve monthly demand values for low/expected/high scenarios; another meaningful
+cost or outcome driver; and dated, applicable prices and sharing evidence.
+Amounts use decimal strings, typed units and an explicit reporting currency
+(CHF, EUR or USD). Cross-currency costs need evidenced FX.
+
+The lifecycle is **seed → complete draft → calculate → freeze → obtain external
+review → record review → apply/export**. Each invocation needs current
+acknowledgement. Review names the exact baseline ID, version and material hash.
+The local record asserts external finance-owner or delegated review; it does
+not authenticate anyone or confer financial permission. Material edits need a
+new version and review. Local snapshot guards are not tamper-proof storage.
+
+Known usable supplied stale/unverified prices may produce explicitly
+provisional draft figures with source/date gaps and separated contributions.
+Unknown quantities, prices or necessary FX remain unavailable, not zero.
+Missing or zero outcome denominators do not produce unit costs.
+Synthetic Caldova examples are invented, not commercial pricing or real
+approval; they cannot establish real financial readiness.
+
+Draft/core preparation can continue without FinOps. **Build handover requires
+each scoped agent's complete, evidenced, fully priced baseline and matching
+external review**; unpriced costs have no conditional exception. Workshop
+notes, cached acknowledgements and raw `approved` fields cannot pass that check.
+Even planning-ready evidence grants no budget, purchase, build or deployment
+permission.
+
+Export JSON and Markdown for the chosen audience and matching customer scope.
+Internal reports may contain private context and are not customer-shareable.
+Use projected records; never reconstruct withheld costs or fall back to legacy
+amounts. Unconsumed baseline data does not make independent ordinary value
+Preview. Legacy `frontier-finops/1.0` work remains separate; migration is explicit
+and preserves originals without inherited approval or implicit FX.
+See the [complete offline contract](skills/frontier-finops/references/agent-finops-baseline.md)
+for exact inputs, commands, review fields and sharing limits. Live billing,
+provider imports, FinOps Agent factories and operating loops are not included.
 
 ---
 

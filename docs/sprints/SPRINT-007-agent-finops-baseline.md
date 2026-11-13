@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.9 |
+| Version | 1.0 |
 | Date | 2026-11-12 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | D1 records/export checkpoint reviewed; Blueprint integration in progress; final gates pending |
+| Status | Backend and optional build integration reviewed; explicit test fixture and user guidance in progress; final gates pending |
 | Scope | Offline baseline-first 1.10.0 internal candidate, not live FinOps operations |
 | References | [Catalogue](README.md), [Parent #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Design](../specs/2026-11-12-agent-finops-baseline-design.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
@@ -13,7 +13,7 @@
 |---|---|---|---|---|---|---|---|
 | [#35](https://github.com/urruegg/frontier-envisioning/issues/35) | [Outcome/input](../ideas/2026-11-12-agent-finops-baseline.md) | [Baseline design](../specs/2026-11-12-agent-finops-baseline-design.md) | [Tasks 0-8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; accountable | Actual D35-09 plan/readiness approval recorded | Approved for bounded implementation; no label change inferred | Spec approval `2e3c0e7`; plan approval `efb3468`; no delivery/PR proof yet |
 | [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Engine/records/export checkpoint reviewed at `b623228a` | Integrated wrapper/UI and final installed/distribution proof pending |
-| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | Reviewed D1; fixture preparation before UI | Task 4 optional build integration in progress | Renderer and browser proof not yet delivered |
+| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | Reviewed D1; fixture preparation before UI | Task 4 reviewed at `11e11f18`; explicit fixture preparation running | Renderer and browser proof not yet delivered |
 | [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | [Verified candidate](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-10/11/12](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D3, Tasks 0/5/7/8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D3, estimated M | Preparation first; final proof after D1/D2 | Task 0 reviewed; remaining D3 work pending | Scoped evidence below, not full 1.10.0 quality/distribution proof |
 
 ## Human evidence and gates
@@ -122,6 +122,39 @@ subtests before the fix; the earlier 13 spec-fix regressions were independently
 replayed against pre-fix code. These are scoped technical checkpoints, not full
 L1/L2, commercial pricing verification, authenticated financial approval or
 final package/distribution acceptance.
+
+## Task 4: Optional build integration checkpoint
+
+The reviewed checkpoint is
+`11e11f18b62810fe72720e50cc03cb2d6fec69bd`. Wrapper and standalone builds
+consume repeatable authoritative baseline/review inputs with explicit date,
+scope and fresh acknowledgement. Core, ordinary value and legacy-only paths
+remain independent. Cached derivative views cannot supply financial authority.
+
+D35-11 source resolution validates original raw and normalized typed graphs
+before privacy selection. It preserves current consumed ancestry, Blueprint
+parent restrictions and relevant derived products without importing unrelated
+private context. The process helper extension is narrow and opt-in; valid
+GA-only normalization remains unchanged.
+
+The successor chain stages raw work privately and publishes customer-projected
+counterparts. Identity-derived filenames, consumed input aliases and the full
+resolved publication plan are checked before scripts/writes. Standalone
+rendering and serialization finish before publication; all valid missing
+parent directories are prepared before the first product file write.
+Later filesystem failures are not presented as an atomicity guarantee.
+
+Independent spec review passed with **394 focused tests** and a scan of
+**776 files/ZIP members**. Quality review closed its identity escape,
+reached-parent privacy and resource-alias findings. The final bounded
+parent-preparation fix was reviewed directly; three selected standalone safety
+tests passed, retaining invalid-path/alias/render controls. The worker's final
+combined run passed **403 tests**. Strict L0 also passed at the earlier backend
+checkpoint, with zero errors and six inherited ESLint warnings.
+
+These are scoped source-qualified checks, not full L1/L2, actual final installed
+handoff execution, rendered baseline capability or distribution clearance.
+The explicit fixture, self-test and UI work follow this checkpoint.
 
 ## Task 2: Calculator checkpoint
 

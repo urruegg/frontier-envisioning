@@ -4,10 +4,25 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
 
 ## 1.10.0 — unreleased
 
-- **UNRELEASED INTERNAL CANDIDATE (#39, 12 November 2026).** Task 0 prepares
-  version carriers and a finite identity-input profile only; no FinOps engine,
-  UI, algorithm or maturity change. Eight skills remain registered: seven
-  non-FinOps GA wrappers and optional Preview FinOps.
+- **UNRELEASED INTERNAL CANDIDATE (#35, #39).** Baseline-first offline Agent
+  FinOps inside the existing optional Preview skill. Eight skills remain
+  registered: seven non-FinOps GA wrappers and optional Preview FinOps.
+- **Versioned financial drafts (#38).** Per-agent profiles, meaningful
+  twelve-month low/expected/high scenarios, typed decimal arithmetic, explicit
+  pricing/FX evidence and unit economics. Usable supplied stale/unverified
+  prices may support labelled provisional drafts; unknown amounts remain
+  unavailable and all financial handover evidence must be complete.
+- **Frozen review and safe reports (#38).** Exact-version/material-hash
+  snapshots, externally asserted owner/delegation review and audience-projected
+  JSON/Markdown reports. Reviews are not authentication or financial permission;
+  synthetic evidence and unpriced costs cannot pass real financial handover.
+  Legacy migration is explicit and preserves originals without inherited
+  approval or implicit FX.
+- **Optional build integration (#37).** Authoritative baseline/review inputs
+  work with ordinary value, identity and requested ontology, with current
+  acknowledgement, date and sharing scope. Current source ancestry is resolved
+  before customer projection; cached views and workshop notes cannot supply
+  financial authority. Core and legacy paths remain independent.
 - **Measured identity provenance.** All 205 generated non-raster input paths
   and SHA-256 values match the approved 1.9.2/A6 mapping. The named 1.10.0
   record retains the historical base profile and all 223 PNG assets.

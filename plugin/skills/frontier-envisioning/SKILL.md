@@ -22,6 +22,8 @@ metadata:
 
 # Frontier solution envisioning (end to end)
 
+*AI-assisted procedure maintenance, 13 November 2026; original authorship retained.*
+
 The Innovation Hub method for helping a customer see itself as a Frontier company: **human-led, agent-operated**. It coordinates the skills over an engagement and keeps every artefact tied to evidence:
 
 1. **Discover** with **frontier-context-discovery**: Work IQ (meetings, transcripts, mail, chats, files) and public sources become a cited context pack.
@@ -35,6 +37,9 @@ Eight skills are bundled: seven non-FinOps GA product wrappers and optional
 Preview FinOps. GA is the maintainer's designation, not result confidence,
 provider GA, release/deployment or public/IP clearance. Fabric ontology/agent/
 operations Preview and unverified mappings remain explicit.
+**1.10.0 is an unreleased internal candidate.** Agent identity branding is not
+Entra identity provisioning; HubWorks is controlled source integration, not
+an assumed runtime loader.
 
 ## Quick Start
 
@@ -45,7 +50,7 @@ User: "Prepare the Frontier envisioning for Caldova, workshop on 12 November"
 3. frontier-blueprint: seed, write the hypothesis, build with the identity kit -> Caldova Frontier Company Blueprint.html + agent identity package (proposal)
 3b. frontier-value-case: value case from ordinary evidence/assumptions, without FinOps (gate V1); missing cost/budget evidence stays open
 3c. If requested, frontier-process: process ontology and local design/import files (Fabric Preview caveats retained)
-3d. Only if cost work is requested: show frontier-finops' full Preview notice and obtain actual current-scenario confirmation before any seed/calc/apply, recommendation or figure; otherwise skip
+3d. Only if cost work is requested: show frontier-finops' full Preview notice and obtain actual current-scenario confirmation, then follow its versioned baseline Quick Start for new work; otherwise skip with named financial gaps
 4. Prepare: customer version, agenda, ten key questions
 5. Save the engagement folder; reply with phase, gates and next actions in a short table
 ```
@@ -97,15 +102,56 @@ add **frontier-value-case** (V1) with `--value value.json`, without FinOps.
 Offer **frontier-process** when process/ontology work is requested; add
 `--ontology ontology.json` and retain its mapping and Fabric Preview gaps.
 
-FinOps is not required for value, identity, blueprint, design or process. For
-requested cost work, follow [frontier-finops](../frontier-finops/SKILL.md):
-show its full notice and obtain actual confirmation for this scenario before
-any operation, cost recommendation or figure. Only then add
-`--finops finops.json --acknowledge-finops-preview` to the wrapper. Each new
+FinOps is not required for draft workshops, ordinary value, identity, blueprint,
+design or optional process work. Financial completeness becomes mandatory only
+at build handover (Step 6c). A financial gap does not trigger a cost operation:
+first follow [frontier-finops](../frontier-finops/SKILL.md), show its full
+Preview notice and obtain actual confirmation for the current scenario before
+any operation, cost recommendation or figure. Each new
 top-level invocation or changed scope/model/rates/grounding needs renewed
 acknowledgement; the wrapper forwards it only within one action chain.
 Installation, an old JSON acknowledgement, notes, a calculation request, an
-old GA claim or a previous run is not consent.
+old approval/GA claim or yesterday's acknowledgement is not consent.
+CLI acknowledgement is technical only, not financial permission.
+
+#### Requested new baseline — optional offline path
+
+Follow the [FinOps versioned Quick Start](../frontier-finops/SKILL.md#quick-start--requested-versioned-baseline)
+and [offline baseline contract](../frontier-finops/references/agent-finops-baseline.md).
+Link each baseline to an existing agent profile and model twelve monthly
+demand values in each low/expected/high scenario, with another meaningful
+cost/outcome dependency. Use decimal-string quantities/rates, explicit units,
+denominators, reporting currency and evidenced FX where necessary. Unknown
+inputs remain gaps, not defaults; supplied usable stale/unverified prices may
+support explicitly provisional drafts, not financial handover.
+
+Pass authoritative drafts or frozen snapshots and matching recorded reviews
+to the existing Blueprint wrapper with
+`--agent-finops <baseline-or-snapshot.json> --as-of YYYY-MM-DD --acknowledge-finops-preview`.
+Repeat `--agent-finops` for additional explicit baselines and
+`--agent-finops-review <recorded-review.json>` for each external review of a
+supplied frozen target. Set `--audience internal` or `--audience customer`;
+for customer-specific output add the matching `--customer-scope <scope>`.
+Scope is not sharing clearance or access control. Reports, applied views and
+cached DTOs are derivatives, not authoritative inputs or review evidence.
+
+Independent ordinary value does not become Preview merely because a new,
+unconsumed baseline is present. Do not feed new amounts automatically into
+legacy CHF NPV/ROI; legacy-derived value remains Preview. The baseline slice
+is offline: no dedicated FinOps Agent factory, operating loop, live billing/
+provider imports, cloud deployment or identity provisioning.
+
+#### Legacy costs — explicit separate path
+
+For explicitly selected `frontier-finops/1.0` work, retain the legacy
+`--finops finops.json --acknowledge-finops-preview` wrapper path after fresh
+confirmation. Do not automatically choose it for new baseline work or mix
+legacy and successor sources. Only [explicit migration](../frontier-finops/SKILL.md#explicit-migration-never-automatic-conversion)
+creates a successor draft: preserve originals and provenance; unproved numeric
+mappings remain context-only gaps. Inherit no approval, acknowledgement,
+licence coverage or implicit legacy FX.
+
+#### Declined or unavailable FinOps
 
 On decline, skip FinOps and state the cost/budget gap. With the optional module
 absent, continue the core without requesting it; a requested-but-missing module
@@ -114,7 +160,9 @@ For a declined core path, use clean core inputs and ordinary non-FinOps value
 assumptions, not a cached Preview-derived value model. There is no automatic
 cleansing or `--no-finops` flag; do not strip provenance or relabel old costs GA.
 Gate B still requires a clean build, MVP canvases/seven declarations and marked
-internal evidence, not an automatically passed budget check.
+internal evidence, not an automatically passed budget check. Assign actual
+owners to financial gaps; continue drafts/core without claiming financial or
+build-handover readiness.
 
 ### Step 4: Prepare the workshop
 1. Build the customer version (`--audience customer`) if the file will be shown or shared outside Microsoft.
@@ -143,12 +191,14 @@ Plan CSV is a mapped handover format, not a live connector or native import cert
 Merge ordinary value verdicts and rebuild without FinOps. V2 requires the five
 most sensitive assumptions confirmed or adjusted by their real owners; missing
 costs are not zero or validated ROI. If FinOps is requested, repeat its awareness
-gate before feedback, recalculation or application. F2 is a guardrail-design
-gate with named owners, not budget or purchase approval. Carry the Preview
+gate before feedback, recalculation or application. Legacy F1 checks model
+completeness and F2 checks guardrail design with named owners; neither is the
+successor's financial handover check, budget or purchase approval. Carry the Preview
 notice, limitations, sources, rates/model versions and assumptions into any
 cost-derived ROI/NPV, PRD/design, comparison and export. The budget owner retains
 accountability. A fresh browser viewer acknowledgement is independent of CLI
-acknowledgement and does not authorise scripts or purchases.
+acknowledgement, transient per document and reset on reload. It does not
+authorise scripts, authenticate review or permit purchases.
 
 ### Step 6b: Agent identity approval (before the agents are built)
 Load **frontier-agent-identity**: the blueprint already carries a proposal kit; collect the customer's own brand, review the names with the user (and the workshop's identity feedback), then rebuild the kit and the blueprint together. Gate E: validator 0 errors, unit tests passed, decisions N-1 to N-6 listed with owners.
@@ -156,7 +206,50 @@ Load **frontier-agent-identity**: the blueprint already carries a proposal kit; 
 ### Step 6c: Architecture design workshop and IT readiness (gate R)
 1. About ten working days before the architecture design workshop, send the preparation items (P-) from the blueprint's IT readiness page, or `design/it-readiness.md` from **frontier-solution-design**, to the customer's IT with owners and due stages.
 2. In the workshop, walk the Target architecture: landing zone per journey (DEV, TEST, PROD; data classes), the ADRs, then the IT readiness decisions (D-01 engineering control plane first). Verdicts and statuses are captured live in the HTML and merged with **frontier-blueprint** step 5.
-3. Move the MVP agents along the Agent Factory board: validated, designed, then ready for build when all eight handover checks pass. Gate R: readiness checks (R-) for the prototype stage passed, D-01 decided, the MVP agents ready for build.
+3. Move the MVP agents along the Agent Factory board: validated, then designed.
+   Record which agent IDs are actually in the agreed build-handover scope.
+   At build handover, mark an agent ready only when the handover checks,
+   including the financial baseline check below, pass. Gate R requires the
+   prototype readiness checks (R-), D-01 decided and the per-agent financial
+   check for every agent in that scope; a subset does not make all MVP agents
+   ready.
+
+#### Financial baseline check — build handover only
+
+For each agent actually in the build-handover scope, use the
+[FinOps handover contract](../frontier-finops/references/agent-finops-baseline.md#frozen-snapshot-and-external-review-shapes)
+and [strict financial guardrails](../frontier-finops/references/guardrails.md#strict-financial-build-handover).
+Require:
+
+- A complete validated linked profile with business, technical and finance
+  owners, explicit scope/outcome, assumptions, exclusions, risks, confidence,
+  measurement and owner-set guardrails.
+- Twelve monthly demand values in each meaningful low/expected/high scenario,
+  differing cost/outcome dependencies, typed quantities and explicit unit
+  denominators and cost/period basis.
+- Every in-scope cost driver priced with current applicable evidenced rates
+  and any necessary evidenced FX. There is **no conditional unpriced
+  exception**; missing, provisional, stale, unverified or synthetic dependencies
+  block financial readiness.
+- The frozen exact baseline ID, version and material hash, with external
+  finance-owner review or externally evidenced delegation matching that target.
+  Material edits need a new version and new review; preserve earlier snapshots.
+- Current receipt/source lineage, evidence freshness and audience/customer-scope
+  validation. Historical approval does not override today's gaps.
+
+Keep structural validity, pricing completeness, recorded review and current
+readiness separate. Raw `approved` status, workshop notes/verdicts, a cached
+view or technical acknowledgement cannot supply review authority. Offline
+review records are externally asserted, not authenticated financial permission;
+local frozen files/hashes are not tamper-proof archival storage. Independently
+verify the finance owner/delegation and evidence. Even planning-ready grants
+no spending, purchase, build, deployment or protected-label authority.
+
+Before any operation to resolve these gaps, obtain fresh actual scenario
+awareness through FinOps; the handover check itself does not authorise cost
+work. On decline, continue draft workshops, design, ordinary value and identity
+with named gaps, but do not claim financial/build-handover readiness or waive
+the mandatory baseline for an agent being handed over.
 
 ### Step 7: Keep the engagement
 Save the folder to OneDrive with `CopyArtifact(surface="user", source="working/frontier/<slug>", destination="frontier-envisioning/<slug>", recursive=true, overwrite=true)` and update `engagement.json`:
@@ -194,3 +287,5 @@ Save the folder to OneDrive with `CopyArtifact(surface="user", source="working/f
 
 - `references/method.md` — phases, gates, timeline, workshop agenda, artefact list
 - `references/hairo-model.md` — the Human-AI Role Organisation model and how it maps to Microsoft's Frontier Firm concepts
+- [FinOps versioned Quick Start](../frontier-finops/SKILL.md#quick-start--requested-versioned-baseline) — requested offline baseline procedure; separate from legacy costs
+- [Offline baseline contract](../frontier-finops/references/agent-finops-baseline.md) — schema, exact commands, frozen review target and projected reports

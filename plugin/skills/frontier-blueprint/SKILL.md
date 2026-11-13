@@ -23,6 +23,8 @@ metadata:
 
 # Frontier Company Blueprint
 
+*AI-assisted procedure maintenance, 13 November 2026; original authorship retained.*
+
 Produces a single, self-contained HTML file a solution engineer can present and work in during the envisioning workshop. It follows the Innovation Hub method: the customer's business context (from **frontier-context-discovery**) becomes a hypothesis of how the company, or one function, could run human-led and agent-operated, grounded in Microsoft's Frontier guidance. The workshop validates it live; the exported feedback is merged into the next version.
 
 The HTML follows the Innovation Hub journey; optional data determines the view set:
@@ -36,8 +38,8 @@ The HTML follows the Innovation Hub journey; optional data determines the view s
 
 Agent identity icons mark agents everywhere; Microsoft product icons mark products, design areas and factory tools (only the icons used are embedded).
 
-Part labels and descriptions can be overridden with `parts`. This is unreleased
-1.9.2. Seven non-FinOps skills are GA product wrappers, not a guarantee of
+Part labels and descriptions can be overridden with `parts`. **1.10.0 is an
+unreleased internal candidate.** Seven non-FinOps skills are GA product wrappers, not a guarantee of
 result confidence, provider GA, release/deployment or external/IP clearance.
 Fabric ontology/agent/operations features remain Preview with dated source and
 mapping gaps; MOS3 `devPreview` remains a separate packaging protocol.
@@ -55,15 +57,78 @@ User: "Build the Frontier blueprint for Caldova"
 ```
 
 **Agent identity (built by default).** `build_with_identity.py` creates the agent identity kit together with the HTML, using the scripts of **frontier-agent-identity** installed next to this skill: it seeds a proposal from the blueprint (names, journey colours, glyphs; the customer's Office theme when one is given), builds and validates the kit, writes the identity into every agent and renders the blueprint with the **Agent identity** page below Agents. Every agent view then uses the display name and icon; the working name stays visible. Names stay a proposal until the customer approves them in the identity review (frontier-agent-identity, Gate E).
+This is branding, not Entra identity provisioning.
 
 Add ordinary `--value value.json` without FinOps when requested. For process
 work, use **frontier-process** and `--ontology ontology.json`. Neither requires
 FinOps. For requested cost work, show the full notice and obtain actual
 current-scenario confirmation from [frontier-finops](../frontier-finops/SKILL.md)
-before any seed/calc/apply, recommendation or cost figure; only then add
-`--finops finops.json --acknowledge-finops-preview`. Every top-level invocation
+before any cost operation, recommendation or figure. Every top-level invocation
 or changed scope/model/rates/grounding needs renewed acknowledgement; the wrapper
-forwards it within one action chain only, not as human approval.
+forwards `--acknowledge-finops-preview` within one action chain only. It is
+technical acknowledgement, not human approval or financial permission.
+
+### Requested versioned baseline — authoritative sources
+
+For new work, follow the [FinOps versioned Quick Start](../frontier-finops/SKILL.md#quick-start--requested-versioned-baseline)
+and [offline baseline contract](../frontier-finops/references/agent-finops-baseline.md)
+for profiles, twelve-month low/expected/high scenarios, calculation, freeze and
+exact-target external review. Do not duplicate that lifecycle in the Blueprint
+or invent a handover CLI command.
+
+After fresh confirmation, the existing wrapper accepts repeatable authoritative
+baseline/snapshot and recorded-review inputs alongside ordinary value,
+requested ontology and default identity:
+
+```text
+python scripts/build_with_identity.py --data blueprint.json --value value.json --ontology ontology.json --agent-finops baseline-A.json --agent-finops baseline-B.json --agent-finops-review recorded-review-A.json --agent-finops-review recorded-review-B.json --as-of YYYY-MM-DD --audience internal --out-dir working/frontier/<slug>/baseline-build --html "<Customer> Frontier Company Blueprint.html" --save-normalized working/frontier/<slug>/baseline-build/blueprint.normalized.json --report working/frontier/<slug>/baseline-build/build-report.json --acknowledge-finops-preview
+```
+
+These are placeholder paths for two different agents' authoritative baselines
+or frozen snapshots and actual matching external review records, not invented
+approvals. Replace the date and paths. Both `--agent-finops` and
+`--agent-finops-review` repeat; omit review flags for unreviewed drafts, without
+claiming approval. Omit unrequested `--value` or `--ontology`; identity remains
+the default. Choose unused outputs outside the input locations.
+
+For customer-specific output, use `--audience customer` and
+`--customer-scope <matching-scope>` with new output paths. The current sources,
+parent restrictions and scope must permit that projection; the flags are not
+clearance or access control. The wrapper writes projected JSON/Markdown reports
+under `agent-finops/report-001.json`, `report-001.md`, and subsequent indices.
+Internal output also retains source/review copies; never share those as
+customer reports.
+
+Standalone rendering accepts the same authoritative source/review/date/scope
+flags, but uses `--out` for HTML, not the wrapper's `--out-dir`/`--html`:
+
+```text
+python scripts/build_blueprint.py --data blueprint-with-ontology.json --agent-finops baseline-A.json --agent-finops-review recorded-review-A.json --as-of YYYY-MM-DD --audience internal --out working/frontier/<slug>/standalone/blueprint.html --save-normalized working/frontier/<slug>/standalone/blueprint.normalized.json --report working/frontier/<slug>/standalone/build-report.json --acknowledge-finops-preview
+```
+
+The standalone input may contain embedded ontology, ordinary value and identity;
+it does not take the wrapper's `--value`/`--ontology` flags or create an identity
+kit. Renew awareness for this invocation too. For a customer audience add the
+matching scope where applicable.
+
+Generated `agent_finops` is an **already projected derivative view**, not a
+baseline or review. Rebuild/revalidation needs current authoritative sources,
+matching reviews, date, scope and fresh acknowledgement; cached reports/DTOs
+alone are insufficient. Do not hand-edit cost fields or embed full private
+baselines. See the [view and authority contract](references/blueprint-schema.md#agent_finops-optional-versioned-preview-derivative).
+Independent ordinary value does not become Preview merely because an
+unconsumed new baseline is present; legacy-derived Preview retains provenance.
+
+### Legacy costs — explicit separate path
+
+For explicitly selected `frontier-finops/1.0` work, retain
+`--finops finops.json --acknowledge-finops-preview` after fresh confirmation.
+Do not auto-select legacy for a new baseline, mix legacy/successor cost sources
+or choose a silent winner. [Explicit migration](../frontier-finops/SKILL.md#explicit-migration-never-automatic-conversion)
+preserves originals/provenance and creates a draft with gaps, not inherited
+approval, acknowledgement or implicit legacy FX.
+
+### Decline or missing evidence
 
 On decline or absent unrequested FinOps, continue core and state missing budget
 evidence. Requested-but-missing FinOps is an explicit error. Old GA claims,
@@ -72,6 +137,9 @@ embedded Preview originals unchanged; use clean core and ordinary non-FinOps
 value inputs for the declined path. Omitting `--finops` does not cleanse old
 fields. Do not invent `--no-finops`, strip provenance or reuse cached Preview
 value as GA. Recalculate before apply after a cache/model/rates mismatch.
+Draft workshops, ordinary value and identity can continue with named financial
+gaps; neither missing costs nor a declined subflow grants financial/build
+readiness. Do not start a cost operation merely because a handover gap exists.
 
 ## When to Use
 
@@ -98,7 +166,7 @@ For "Build the Frontier blueprint demo for Caldova", run
 This curated demo requests process but not FinOps. If the optional process module
 is absent, state that gap and omit `--ontology`; do not claim the Ontology output.
 Publish the HTML, identity ZIP and catalogue after review. Caldova Industrial AG
-is fictitious. A separately requested Preview demo needs the full awareness gate
+is fictitious. A separately requested legacy Preview demo needs the full awareness gate
 and adds `--finops ../frontier-finops/examples/caldova-finops.json --acknowledge-finops-preview`
 with separate output, not the default demo.
 
@@ -132,14 +200,44 @@ retain canon/authored risks. Attendee contributions cite sources and transcript
 times; missing evidence remains a flagged gap.
 
 ### Step 3: Build and check
-1. `python scripts/build_with_identity.py --data working/frontier/<slug>/blueprint.json --out-dir working/frontier/<slug> --html "<Customer> Frontier Company Blueprint.html" --save-normalized working/frontier/<slug>/blueprint.normalized.json --report working/frontier/<slug>/build-report.json` plus `--theme <file>` when a customer-authored deck or template is available (find one with the `SearchM365` tool and download it with `ReadFileContent`, or ask the user to attach it) and `--prefix <publisher prefix>` when known. It writes the identity kit to `identity/` (proposal, `seed-report.md`) and the HTML with the Agent identity page. After the identity review, pass the reviewed `--identity-config` and `--palette` instead; `--no-identity` builds the blueprint without the kit. Ordinary `--value value.json` calculates/applies value on copies without FinOps. Optional process uses `--ontology ontology.json`. Only after the awareness gate, `--finops finops.json --acknowledge-finops-preview` calculates/applies Preview costs in that wrapper chain.
+1. `python scripts/build_with_identity.py --data working/frontier/<slug>/blueprint.json --out-dir working/frontier/<slug> --html "<Customer> Frontier Company Blueprint.html" --save-normalized working/frontier/<slug>/blueprint.normalized.json --report working/frontier/<slug>/build-report.json` plus `--theme <file>` when a customer-authored deck or template is available (find one with the `SearchM365` tool and download it with `ReadFileContent`, or ask the user to attach it) and `--prefix <publisher prefix>` when known. It writes the identity kit to `identity/` (proposal, `seed-report.md`) and the HTML with the Agent identity page. After the identity review, pass the reviewed `--identity-config` and `--palette` instead; `--no-identity` builds the blueprint without the kit. Ordinary `--value value.json` calculates/applies value on copies without FinOps. Optional process uses `--ontology ontology.json`. Requested successor costs use the authoritative-source flags above after awareness; explicitly selected legacy work retains `--finops finops.json --acknowledge-finops-preview` in that wrapper chain.
+   For successor work, use a separate reserved output directory outside the
+   input locations, as in the authoritative-source example above; do not append
+   source flags while retaining this core command's input-containing output folder.
    A blueprint from release 1.3 or earlier gets the canon with `--canon`; `--no-product-icons` leaves the Microsoft product icons out.
 2. Fix every ERROR. Read the WARN lines: unknown agents in stages, uncited evidence ids, MVP agents missing declarations, an unofficial "… IQ" name or unknown area in the feedback loop, an unknown workflow node or trigger type or an unknown agent in a workflow. Rebuild until clean or every remaining warning is deliberate.
 3. Validate the HTML with the html skill's validator when available (`validate.py` must report success).
 4. Customer version (only when asked, or before anything leaves Microsoft): add `--audience customer`. Risk visibility is resolved against original sources before scrubbing; internal-only content, `internal_notes` and cached derived PRD fields are removed, then final risks/PRD derive from scrubbed sources. Attendee contributions follow source visibility. A removed source ID alone is not sanitisation. The build refuses if any `meta.internal_terms` string remains. Name it `<Customer> Frontier Company Blueprint (customer).html` and review embedded data and downloads as well as visible text.
+   For successor costs, revalidate current consumed parent/transitive sources,
+   rates, FX, reviews and customer scopes before JSON, HTML or identity ZIP
+   products. Reject unresolved references/ambiguous source collisions before
+   output; unknown restrictions fail closed. Valid ontology/baseline combinations
+   resolve on detached copies without changing original sources or tightening
+   ordinary GA process handling globally.
+
+#### Financial baseline check — build handover only
+
+Building a draft HTML is not build handover. For every agent actually being
+handed over for build, the financial criterion requires a complete validated
+profile, meaningful twelve-month low/expected/high demand/dependency scenarios,
+denominators and every in-scope cost driver priced with current applicable
+evidenced rates/FX. Require the frozen exact baseline ID/version/material hash,
+matching external finance-owner or evidenced-delegation review and current
+lineage/audience/scope validation. Unpriced has no conditional exception;
+provisional or synthetic evidence cannot establish real financial readiness.
+See the [strict FinOps gate](../frontier-finops/references/guardrails.md#strict-financial-build-handover).
+
+Legacy F1/F2, raw status and workshop verdicts are not financial approval.
+Review is externally asserted, not authenticated financial, build or deployment
+permission; local snapshots/hashes are not tamper-proof archives. Other
+readiness checks and existing build/release/operate stages remain unchanged.
+This offline slice adds no dedicated FinOps Agent factory, operating loop,
+live billing/provider imports or cloud deployment.
 
 ### Step 4: Publish
 1. `CopyArtifact(surface="output", source="working/frontier/<slug>/<file>.html", destination="<file>.html")`; confirm `"ok": true`. Publish the identity kit zip and its `catalog.html` (as `<Customer> - agent identity catalogue.html`) the same way, and the normalized JSON: it is the canonical blueprint for the next version.
+   Its generated `agent_finops` records remain derivatives: retain authoritative
+   baseline/snapshot and review files privately for the next financial rebuild.
 2. Offer to save the engagement folder to OneDrive (`CopyArtifact(surface="user", source="working/frontier/<slug>", destination="frontier-envisioning/<slug>", recursive=true, overwrite=true)`).
 
 ### Step 5: After the workshop (feedback merge)
@@ -153,6 +251,12 @@ times; missing evidence remains a flagged gap.
    edits/reordering must not silently inherit another risk's verdict; discarding
    this history cannot guarantee old ID-only feedback identity. Report unknown
    IDs or invalid ratings rather than treating them as successful updates.
+5. Baseline-related workshop notes and proposals are inputs to a new draft,
+   not edits to frozen data or external finance-owner approval. Changed material
+   needs a new version, calculation/freeze and exact-target review through
+   FinOps after renewed awareness. `meta.status: validated` does not pass
+   financial handover. Rebuild with the current authoritative source flags,
+   not only the cached view.
 
 ## Output format (reply)
 
@@ -177,6 +281,11 @@ times; missing evidence remains a flagged gap.
   `internal_notes`. This is not encryption or access control. Carry limitations,
   assumptions and scenario/model/rate/source provenance into replies and exports.
   Missing budget evidence stays open with the real owner.
+- Consume projected `agent_finops` decimal text, statuses, reasons and already
+  calculated unit metrics. Never recost or coerce financial decimals in
+  JavaScript, recover raw private dependencies, fall back to legacy costs or
+  expose private headers/hashes. Withheld is not zero, and independent public
+  rows are not a complete total.
 - Never fabricate: hypotheses are labelled as hypotheses and only evidence-backed statements cite sources. Never invent customer numbers, quotes, systems or names.
 - Never show Microsoft-internal evidence in a customer version; always build the customer version before sharing outside Microsoft.
 - Always confirm before sharing: show the user the customer version and let them review before it is sent to anyone.
@@ -201,7 +310,12 @@ times; missing evidence remains a flagged gap.
 - If the customer build fails because of an internal term: rewrite the sentence or flag the item `"internal": true`.
 - If the feedback file belongs to another blueprint id: stop and ask which blueprint version was shown.
 - If the context pack is missing and the user wants a quick draft anyway: build from what they provide, mark every statement as hypothesis, and list the evidence still needed.
-- If the identity kit fails (the summary's `notes` say why): the blueprint is still built without identity; report the reason, fix it with **frontier-agent-identity** and build again.
+- On the core/legacy path, if the identity kit fails (the summary's `notes` say why): the blueprint is still built without identity; report the reason, fix it with **frontier-agent-identity** and build again.
+- On the successor source chain, a requested component/source/review failure
+  must not become a successful fallback build. Resolve the error and use new
+  output paths; do not reuse cached reports or legacy costs as authority.
+  Inspect any partial output after an I/O failure rather than assuming an
+  atomic filesystem transaction.
 - If no customer theme is available: the journey colours come from the blueprint and are flagged; say so and ask for a customer-authored deck or template.
 
 ## Files
@@ -213,12 +327,14 @@ times; missing evidence remains a flagged gap.
 - `scripts/seed_blueprint.py` — context pack to blueprint seed
 - `scripts/build_blueprint.py` — validate, normalise, customer version, render
 - `scripts/build_with_identity.py` — core blueprint/identity, ordinary `--value`,
-  optional `--ontology`; requested `--finops` requires `--acknowledge-finops-preview`
-  after actual scenario confirmation
+  optional `--ontology`; requested successor `--agent-finops`/
+  `--agent-finops-review` with explicit date/scope, or separate legacy `--finops`;
+  cost work requires current confirmation and `--acknowledge-finops-preview`
 - `scripts/workflow.py` — the agent workflows: Copilot Studio node and trigger types, derivation from the canvas plan, checks (used by the build)
 - `scripts/prd_model.py` — canonical PRD derivation, identical to the solution-design copy
 - `scripts/risks.py` — risk derivation, ratings and retained source/ID bindings
 - `scripts/merge_feedback.py` — merge the workshop feedback export (identity feedback kept as `identity_feedback`)
 - `references/authoring-guide.md` — how to write the hypothesis, scoring rubric, journey pattern library
 - `references/blueprint-schema.md` — every field of the blueprint JSON
+- [Offline baseline contract](../frontier-finops/references/agent-finops-baseline.md) — authoritative models/reviews and projected `agent_finops` report DTOs
 - `examples/caldova-blueprint.json` — complete fictitious example and demo (Caldova Industrial AG: four business journeys plus the Agent Factory, 29 agents, 8 attendees)
