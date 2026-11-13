@@ -28,6 +28,12 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
   with exact decimal text and acknowledgement-gated JSON/Markdown exports.
   Canvas, Factory and Plan use the financial evidence criterion within their
   existing checks; notes cannot approve it or rewrite production stages.
+  Reviewed recurring-only scope does not require out-of-scope one-time costs
+  or invent a zero amount.
+- **Evidenced driver coverage (#38).** Priced/in-scope driver counts cover all
+  applicable lines, periods and consumed rate/FX evidence. Restricted
+  dependencies withhold both counts; no public-subset ratio or unknowable
+  monetary exposure percentage is presented.
 - **Core-only sharing artefacts (#39).** The gallery and complete bundle check
   actual demo content. Legacy or successor FinOps data cannot enter the core
   sample merely because a stale build report calls it core.

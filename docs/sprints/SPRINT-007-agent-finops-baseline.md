@@ -2,18 +2,18 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.2 |
+| Version | 1.3 |
 | Date | 2026-11-13 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Runtime, fixture, guidance and generated core example reviewed; final gates pending |
+| Status | Final integrated source and regenerated core example reviewed; strict gates pending |
 | Scope | Offline baseline-first 1.10.0 internal candidate, not live FinOps operations |
 | References | [Catalogue](README.md), [Parent #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [Idea](../ideas/2026-11-12-agent-finops-baseline.md), [Design](../specs/2026-11-12-agent-finops-baseline-design.md), [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md), [ADR-0028](../adr/0028-versioned-agent-finops-baselines.md) |
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
 | [#35](https://github.com/urruegg/frontier-envisioning/issues/35) | [Outcome/input](../ideas/2026-11-12-agent-finops-baseline.md) | [Baseline design](../specs/2026-11-12-agent-finops-baseline-design.md) | [Tasks 0-8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; accountable | Actual D35-09 plan/readiness approval recorded | Approved for bounded implementation; no label change inferred | Spec approval `2e3c0e7`; plan approval `efb3468`; no delivery/PR proof yet |
-| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Engine/records/export reviewed at `b623228a`; wrapper at `11e11f18` | Initial installed CLI proof below; UI and final distribution proof pending |
-| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | Reviewed D1 and explicit fixture | Task 4 reviewed at `11e11f18`; Task 6 quality closed at `9a453857` | Scoped DOM/browser evidence below; full L2 pending |
+| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | [Baseline-first](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01 to AFB-10](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D1, Tasks 1-3](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D1, estimated M | Actual plan approval and reviewed Task 0 | Engine/records reviewed at `b623228a`; driver coverage at `7dfdb79f` | Final integrated source/UI reviewed; full gates and final archive proof pending |
+| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | [Canvas/handover](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-01/06/09/11](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D2, Tasks 4/6](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D2, estimated M | Reviewed D1 and explicit fixture | Final recurring-only/coverage UI integration reviewed at `e2f5d9c1` | Scoped DOM/browser evidence below; full L2 pending |
 | [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | [Verified candidate](../ideas/2026-11-12-agent-finops-baseline.md) | [AFB-10/11/12](../specs/2026-11-12-agent-finops-baseline-design.md#9-testable-acceptance) | [D3, Tasks 0/5/7/8](../plans/2026-11-12-agent-finops-baseline-plan.md) | `@urruegg`; D3, estimated M | Preparation first; final proof after D1/D2 | Source guidance and explicit fixture reviewed | Initial package/CLI evidence below, not full 1.10.0 quality/distribution proof |
 
 ## Human evidence and gates
@@ -441,3 +441,73 @@ reduced motion. It owns the actual hashes and capture settings.
 fresh core, source fingerprint and five captures. Strict documentation checks
 reported zero errors. These generated examples remain synthetic internal
 workshop aids, not deployment, pricing verification or sharing clearance.
+
+## Final integrated corrections and review
+
+The fresh cross-component review of `02d3eaf` found two Important gaps that
+the earlier scoped reviews had not caught: valid, reviewed recurring-only
+producer reports were falsely blocked by the UI's one-time check; and approved
+specification section 5.10's evidenced driver-coverage metric was missing.
+Neither was accepted as a limitation.
+
+Producer commits `5163ff0a` and `7dfdb79f` add
+`driver_coverage` to results, dated handover and projected root/nested reports:
+`priced_driver_count`, `in_scope_driver_count`, `status` and `reason`.
+Only drivers whose applicable lines/periods have calculable quantities and
+current applicable evidenced rates/FX count as priced. Unpriced drivers stay
+in the denominator; provisional pricing is not complete evidence. Empty
+scope is unavailable, not complete. Restricted consumed dependencies withhold
+both counts; unrelated unused/private outcome context does not taint them.
+Counts are not monetary exposure or proof that all real-world costs are known.
+
+Actual producer proof includes nine initial failing tests with 29 assertion
+failures, then nine passing tests and a 345-test normal regression pass.
+Independent review then found a transitive consumed rate/FX source-gap case:
+that correction had five expected failures before passing. All four consumed
+stale/unverified parent variants now yield 2/3 incomplete, while unused-parent
+controls remain 3/3 complete. Independent coverage closure passed 11 focused
+tests and actual CLI/JSON/Markdown/receipt/privacy probes. The controller
+separately passed 15 coverage tests. Monetary outputs/statuses and material
+fingerprints remained unchanged. These ratios are test fixtures, not a quote.
+
+Renderer commit `e2f5d9c1aa00056c8f50815ca3ce2c34dd03803a` respects reviewed
+absence of one-time lines without inventing zero or weakening declared
+unpriced/private costs. It displays the supplied coverage metric, gates it
+with financial acknowledgement and preserves projected null counts.
+Actual-producer recurring-only cases had two failures and three valid
+controls before the fix; all five now pass. Seventeen initially failing
+coverage-view cases now pass. The controller passed all 22 new cases.
+
+The final cold DOM run passed **183 tests**, retaining the previous 161.
+Focused real-CSP Chromium passed **18 tests**, including actual producer
+flows, JSON/Markdown downloads, privacy, acknowledgement, keyboard,
+accessibility and reflow; console errors/external requests remained zero.
+Genuine component captures were inspected. Renderer template SHA-256:
+`d43d0105ce3892538b31edeb7949fa8d79852689f709faa1bc3fd237082db006`.
+
+The original final reviewer independently re-probed both findings at clean
+`e2f5d9c1`: **12 audience cases passed**, with no remaining findings in that
+bounded review. One-time-only scope did not establish a producer-ready/UI-blocked
+mismatch. No source was changed by review and no authentication, real finance
+approval or overall merge readiness is inferred.
+
+The earlier generated-example hashes remain qualified to their checkpoint.
+Full strict L1/L2, exact final-ZIP installed execution, two-build distribution
+identity and the draft PR still follow.
+
+Final standard regeneration after `e2f5d9c1` completed successfully:
+`python tools/dev.py template package demo docs-demo`, followed by
+`python tools/build_docs_demo.py --check --demo build/demo` and strict docs.
+All 205 named identity inputs and 223 rasters were verified/restored again.
+The template is 403,143 bytes; the current plugin ZIP SHA-256 is
+`ca41bc60f0e7231476528dca6468f3f4222fe49ed1b403380ed3a41eac562b06`.
+These remain generation checks, not full global/distribution acceptance.
+
+The final core manifest records HTML SHA-256
+`2e8d837642dd65659d20cb513884824d2ee0158c6a5cd0cbaa39880943d65bd2`,
+canonical HTML
+`df012181483342ebefac79ea0d0a5fe09e97695076e28def125eb9278b0c7d5a`,
+and source fingerprint
+`90252d29a5b675e0d7e6fddd9ec394e44ef1235896ba00b566a9d8ad78536ec4`.
+The five genuine recaptures remain byte-identical to the five manually
+inspected views. Core still has 17 routes and no FinOps.
