@@ -327,6 +327,46 @@ function resolveAgentFinops(){
    Do not relabel an unrelated agent's report or discard independent records. */
 function baselineBinding(r){ return r.agent_id === null || r.profile.agent_id === r.agent_id; }
 function baselineFor(a){ return AF.records.filter(function(r){ return r.agent_id === a.id && baselineBinding(r); })[0] || null; }
+function baselineNoOneTime(sc){
+  var m = sc && sc.one_time;
+  /* The producer's empty period is unavailable, not zero. This exception is
+     never applicable to a declared line, withheld money or incomplete inputs. */
+  return baselineObject(sc) && Array.isArray(sc.one_time_lines) && sc.one_time_lines.length === 0 &&
+    baselineObject(m) && m.amount === null && m.status === "incomplete" && m.reason === "incomplete-cost" &&
+    ["verified_subtotal","provisional_subtotal","known_priced_subtotal"].every(function(k){
+      var group = m[k];
+      return baselineObject(group) && group.amount === null && group.status === "unavailable" && group.reason === "empty-priced-group";
+    });
+}
+var DRIVER_COVERAGE_LABEL = "Evidenced priced drivers / in-scope drivers";
+function baselineCoverageState(c){
+  var missing = {text:"Unavailable \u00b7 rebuild projected driver coverage from authoritative inputs",complete:false};
+  if (!baselineObject(c)) return missing;
+  if (c.status === "withheld") return {
+    text:"Withheld \u00b7 withheld \u00b7 restricted-dependency",complete:false
+  };
+  var priced = c.priced_driver_count, scope = c.in_scope_driver_count;
+  if (!Number.isSafeInteger(priced) || !Number.isSafeInteger(scope) || priced < 0 || scope < 0) return missing;
+  /* Validate the supplied count/status combination, never count lines, price
+     drivers, sum amounts or turn this declared-scope metric into exposure %. */
+  var complete = c.status === "complete" && scope > 0 && priced === scope && c.reason === null;
+  var partial = c.status === "incomplete" && scope > 0 && priced < scope && c.reason === "incomplete-evidenced-pricing";
+  var empty = c.status === "unavailable" && scope === 0 && priced === 0 && c.reason === "empty-scope";
+  if (!complete && !partial && !empty) return missing;
+  return {text:String(priced) + " / " + String(scope) + " \u00b7 " + c.status + (c.reason ? " \u00b7 " + c.reason : ""),complete:complete};
+}
+function baselineCoverageReady(r){
+  var c = r.driver_coverage, dated = r.handover.driver_coverage;
+  return baselineCoverageState(c).complete && baselineCoverageState(dated).complete &&
+    ["priced_driver_count","in_scope_driver_count","status","reason"].every(function(k){ return c[k] === dated[k]; });
+}
+function baselineCoverage(c, compact){
+  return h(compact ? "span" : "div",{class:"driver-coverage " + (compact ? "note" : "panel"),role:"status","aria-label":DRIVER_COVERAGE_LABEL},
+    previewAcknowledged ? [
+      h("b",null,DRIVER_COVERAGE_LABEL),": ",baselineCoverageState(c).text,
+      compact ? null : h("p",{class:"note"},"Across all scenarios and applicable periods; declared scope only, not full real-world cost discovery, a commercial quote or approval.")
+    ] : "Driver coverage withheld until fresh viewer acknowledgement.");
+}
 function financialEvidence(a){
   var r = baselineFor(a), g = r && r.handover, review = g && g.owner_review;
   function synthetic(v){
@@ -378,12 +418,13 @@ function financialEvidence(a){
     });
   }
   function completeScenario(sc){
-    return baselineObject(sc) && ["annual_recurring","one_time","first_year"].every(function(k){ return available(sc[k]) && verifiedContributions(sc[k]); }) &&
+    return baselineObject(sc) && ["annual_recurring","first_year"].every(function(k){ return available(sc[k]) && verifiedContributions(sc[k]); }) &&
       Array.isArray(sc.months) && sc.months.length === 12 &&
       sc.months.every(function(m){
         return baselineObject(m) && available(m.total) && verifiedContributions(m.total) && verifiedContributions(m) &&
           units(m) && Array.isArray(m.lines) && m.lines.every(verifiedLine);
-      }) && Array.isArray(sc.one_time_lines) && sc.one_time_lines.every(verifiedLine) &&
+      }) && (baselineNoOneTime(sc) || (Array.isArray(sc.one_time_lines) && sc.one_time_lines.length > 0 &&
+        available(sc.one_time) && verifiedContributions(sc.one_time) && sc.one_time_lines.every(verifiedLine))) &&
       baselineObject(sc.unit_metrics) && units(sc.unit_metrics.annual_recurring) && units(sc.unit_metrics.first_year);
   }
   function nonblank(v){ return typeof v === "string" && v.trim().length > 0; }
@@ -405,7 +446,8 @@ function financialEvidence(a){
   /* Consume the dated generated decision, not raw authored status, local NOTES,
      a technical fixture flag or client-side revalidation of financial inputs.
      Customer projection intentionally omits technical target hashes. */
-  return !!(!AF.error && r && nonblank(r.baseline.id) && Number.isInteger(r.baseline.version) && r.baseline.version > 0 &&
+  return !!(!AF.error && r && baselineCoverageReady(r) &&
+    nonblank(r.baseline.id) && Number.isInteger(r.baseline.version) && r.baseline.version > 0 &&
     r.mode === "planning" && r.status === "planning-ready" &&
     g.schema === "frontier-finops-handover/1.0" && g.as_of === r.as_of &&
     g.financial_permission === false && g.ready === true && g.status === "planning-ready" && g.lifecycle === "approved" &&
@@ -427,8 +469,9 @@ function financialSummary(a){
     h("b",null, ready ? "Financial handover planning evidence" : "Financial handover gap"),
     h("p",null, ready ? "Generated planning evidence as of " + r.as_of + "; external review is not authenticated. Not budget, purchase, build or deployment permission."
       : (AF.error ? AF.error : bindingConflict ? "Projected agent binding conflicts. Rebuild from authoritative sources; another agent's report cannot supply this financial criterion."
-        : r ? "Dated financial evidence is blocked, incomplete, withheld, provisional or synthetic. Verify pricing, the finance owner, actor/delegation and review dates/evidence; rebuild and obtain external exact-target review."
+        : r ? "Dated financial evidence is blocked, incomplete, withheld, provisional or synthetic. Verify supplied driver coverage, pricing, the finance owner, actor/delegation and review dates/evidence; rebuild and obtain external exact-target review."
         : "Supply an authoritative per-agent baseline, validate and price every in-scope driver, freeze the target and obtain external finance-owner review.")),
+    r ? baselineCoverage(r.driver_coverage,true) : null,
     h("p",{class:"note"},"Required at build handover only. Core drafts and workshops continue with gaps. Notes cannot approve; renew from authoritative sources for changed inputs or dates."),
     AF_PRESENT ? h("button",{type:"button",class:"btn",onclick:function(){ go("finops"); }},"Review FinOps evidence") : null);
 }
@@ -2170,7 +2213,10 @@ function handoverTable(){
     h("thead",null, h("tr",null, h("th",{scope:"col"},"Agent"), H.map(function(x){ return h("th",{scope:"col"}, x[1]); }), h("th",{scope:"col"},"Ready for build"))),
     h("tbody",null, ags.map(function(a){
       var c = agentChecks(a), ok = H.every(function(x){ return c[x[0]] === 1; });
-      return h("tr",null, h("td",null, agentChip(a, true)), H.map(function(x){ return h("td",{class:"c"}, mark(c[x[0]])); }), h("td",null, h("span",{class:"pill " + (ok ? "val" : "open")}, ok ? "Planning checks met" : "Not yet"), c.cost !== 1 ? h("div",{class:"note"},"Financial handover gap") : null));
+      return h("tr",null, h("td",null, agentChip(a, true)), H.map(function(x){
+        var r = x[0] === "cost" && baselineFor(a);
+        return h("td",{class:"c"}, mark(c[x[0]]),r ? baselineCoverage(r.driver_coverage,true) : null);
+      }), h("td",null, h("span",{class:"pill " + (ok ? "val" : "open")}, ok ? "Planning checks met" : "Not yet"), c.cost !== 1 ? h("div",{class:"note"},"Financial handover gap") : null));
     }))));
 }
 function factorySteps(){
@@ -2814,7 +2860,9 @@ function baselineScenario(id, sc){
   var metrics = ["per_run","per_success","per_outcome"], totals = [["annual_recurring","Annual recurring"],["one_time","One-time"],["first_year","First year"]];
   return h("section",{class:"panel baseline-scenario","data-scenario":id},
     h("h4",null,id + " \u00b7 twelve-month scenario"),
-    h("div",{class:"grid3"},totals.map(function(k){ return h("div",null,h("b",null,k[1]),baselineAmount(sc[k[0]]),baselineContributions(sc[k[0]])); })),
+    h("div",{class:"grid3"},totals.map(function(k){ return h("div",null,h("b",null,k[1]),baselineAmount(sc[k[0]]),
+      k[0] === "one_time" && baselineNoOneTime(sc) ? h("p",{class:"note"},"No one-time lines in the supplied scope; no zero cost is asserted.") : null,
+      baselineContributions(sc[k[0]])); })),
     h("h5",null,"Unit economics \u00b7 supplied period metrics"),
     dataTable(["Basis","Per attempted run","Per successful run","Per confirmed outcome"],
       ["annual_recurring","first_year"].map(function(basis){
@@ -2851,6 +2899,8 @@ function baselineMarkdown(r){
     .replace(/([\\`*_[\]()!#|])/g,"\\$1").replace(/\r?\n/g," / "); }
   var lines = ["# Agent FinOps \u2014 Preview derivative","",esc(FINOPS_NOTICE),"",
     "Not an authoritative model or approval. External review is not authenticated. Renew from authoritative sources for changed inputs or dates.",""];
+  lines.push(DRIVER_COVERAGE_LABEL + ": " + esc(baselineCoverageState(r.driver_coverage).text),
+    "Counts across all scenarios and applicable periods describe declared scope only, not full real-world cost discovery or a quote.","");
   function detail(v, path){
     if (v && typeof v === "object") {
       var keys = Object.keys(v).sort();
@@ -2882,6 +2932,7 @@ function renderAgentFinops(){
       h("h4",null,"Profile and discovery"),baselineTree(r.profile),
       baselineDetails("Baseline version and projected scope / discovery inputs",{baseline:r.baseline,context:r.context,scenario_inputs:r.scenario_inputs}),
       h("h4",null,"Scenarios \u00b7 low / expected / high"),
+      baselineCoverage(r.driver_coverage,false),
       ["low","expected","high"].map(function(id){ return r.scenarios[id] ? baselineScenario(id,r.scenarios[id]) : h("p",{class:"baseline-gap callout"},id + ": unavailable or withheld scenario; financial handover gap."); }),
       baselineDetails("Formulas and supplied rounding",r.formulas),
       h("h4",null,"Projected evidence"),h("p",{class:"note"},"Sources, applicable rates and FX as supplied. Provisional and synthetic contributions are draft only, not verified prices or actual provider quotes."),
@@ -3528,12 +3579,13 @@ function planAgents(){
     .filter(function(x){ return (state.planLane === "all" || x[0].id === state.planLane) && x[1].length; });
 }
 function kanbanCard(a){
-  var d = a._d || {}, checks = agentChecks(a), H = handoverDef(), done = H.filter(function(x){ return checks[x[0]] === 1; }).length, au = autonomyOf(a);
+  var d = a._d || {}, checks = agentChecks(a), H = handoverDef(), done = H.filter(function(x){ return checks[x[0]] === 1; }).length, au = autonomyOf(a), r = baselineFor(a);
   return h("button",{type:"button",class:"kcard",style:domainStyle(d.color),title:nameOf(a) + " \u00b7 next: " + nextStep(a),onclick:function(){ openAgent(a.id); }},
     h("span",{class:"kch"}, idIcon(a) || h("span",{class:"aicon ini",style:filled(d.color)}, initials(shortOf(a))), h("b",null, shortOf(a)), isMvp(a) ? h("span",{class:"pill acc"},"MVP") : null),
     h("span",{class:"kmeta"}, au ? h("span",{class:"pill"},"L" + au.n + " \u00b7 " + au.label) : null, h("span",{class:"note"}, a.owner || TBC)),
     h("span",{class:"kprog","aria-label":done + " of " + H.length + " checks"}, h("i",{style:"width:" + Math.round(done / H.length * 100) + "%"})),
     h("span",{class:"note"},checks.cost === 1 ? "Financial handover: planning evidence, not permission" : "Financial handover gap \u00b7 required before build handover"),
+    r ? baselineCoverage(r.driver_coverage,true) : null,
     h("span",{class:"knext"}, h("b",null,"Next \u00b7 "), nextStep(a)));
 }
 function renderPlan(){

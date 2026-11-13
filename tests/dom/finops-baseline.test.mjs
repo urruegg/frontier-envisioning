@@ -76,50 +76,94 @@ print(json.dumps(project(calculated, as_of=day, audience="internal", acknowledge
   return structuredClone(projectedFxReport);
 }
 
-// In-memory contract fixture ONLY. Not an authoritative model/review, not shipped
-// evidence or finance approval. No recalculation or alteration of the demo files.
-// All projected pricing/source statuses and contribution groups are made
-// internally consistent, including nested pricing_evidence records. Decimal
-// strings are copied, not recalculated; the test hash is not a real receipt.
-function planningEvidence(data) {
-  const r = record(data);
-  function available(value) {
-    if (!value || typeof value !== "object") return;
-    delete value.synthetic;
-    if (value.status === "provisional") { value.status = "available"; value.reason = null; }
-    if (value.type === "synthetic") value.type = "commercial";
-    if (value.status === "synthetic") value.status = "verified";
-    if (value.validationStatus === "synthetic") value.validationStatus = "validated";
-    if (value.verification_status === "synthetic") value.verification_status = "verified";
-    if (value.source_status === "synthetic") value.source_status = "validated";
-    if (Array.isArray(value.gaps)) value.gaps = [];
-    Object.values(value).forEach(available);
-    if (value.verified_subtotal && value.provisional_subtotal) {
-      const total = value.total || value;
-      Object.assign(value.verified_subtotal, { amount: total.amount, status: "available", reason: null });
-      Object.assign(value.provisional_subtotal, { amount: null, status: "unavailable", reason: "empty-priced-group" });
-    }
+const reviewedScopes = new Map();
+function reviewedScopeReports(kind) {
+  if (!reviewedScopes.has(kind)) {
+    // Real calculate -> freeze -> record-review -> apply control. All source
+    // verification/owner assertions are simulated test inputs, not commercial
+    // evidence. Authoritative files exist only in this owned TemporaryDirectory.
+    const script = String.raw`
+import copy, json, sys, tempfile
+from datetime import date
+from pathlib import Path
+root = Path.cwd()
+with tempfile.TemporaryDirectory(prefix="task6-reviewed-scope-") as folder:
+    out = Path(folder)
+    scripts = root / "plugin/skills/frontier-finops/scripts"
+    sys.path.insert(0, str(scripts))
+    from baseline_calc import calculate
+    from baseline_records import freeze, record_review
+    from agent_finops import apply_models
+    model = json.loads((root / "plugin/skills/frontier-finops/examples/caldova-agent-baseline.json").read_text(encoding="utf-8"))
+    kind = sys.argv[1]
+    if kind != "provisional":
+        model["mode"] = "planning"
+        for source in model["sources"]:
+            source.update(type="customer-evidence", validationStatus="validated")
+        for rate in model["rates"]:
+            rate["verification"]["status"] = "verified"
+    if kind == "recurring-only":
+        model["baseline"]["lines"] = [line for line in model["baseline"]["lines"] if line["frequency"] != "one-time"]
+        model["baseline"]["scope"] = [driver for driver in model["baseline"]["scope"] if driver["cost_driver_id"] != "build"]
+        model["baseline"]["exclusions"].append(dict(id="EXC-BUILD", cost_driver_id="build",
+            description="TEST-ONLY reviewed recurring-only scope excludes one-time build costs.",
+            reason="Build funding is explicitly outside this frozen target; no zero build cost is asserted.",
+            source_id="SYN-ENGINEERING", sharingClassification="customer-shareable"))
+    elif kind == "unpriced-one-time":
+        next(rate for rate in model["rates"] if rate["id"] == "RATE-BUILD")["amount"] = None
+    elif kind == "private-one-time":
+        next(line for line in model["baseline"]["lines"] if line["frequency"] == "one-time")["sharingClassification"] = "internal-only"
+    elif kind == "empty-scope":
+        model["baseline"]["scope"] = []
+        model["baseline"]["lines"] = []
+    elif kind == "private-outcome":
+        model["profile"]["outcome"]["sharingClassification"] = "internal-only"
+    elif kind == "private-unused":
+        source = copy.deepcopy(model["sources"][0])
+        source.update(id="PRIVATE-UNUSED-SOURCE", sharingClassification="internal-only")
+        model["sources"].append(source)
+        rate = copy.deepcopy(model["rates"][0])
+        rate.update(id="PRIVATE-UNUSED-RATE", source_id="PRIVATE-UNUSED-SOURCE", sharingClassification="internal-only")
+        model["rates"].append(rate)
+    elif kind == "full-cost-fx":
+        source = copy.deepcopy(model["sources"][0])
+        source["id"] = "SYN-FX"
+        model["sources"].append(source)
+        model["rates"][0]["currency"] = "USD"
+        model["fx"] = [dict(id="FX-TEST", version=1, from_currency="USD", to_currency="CHF",
+            rate="0.9", date="2026-11-12", method="spot", source_id="SYN-FX",
+            src=["SYN-FX"], content_src=["SYN-FX"],
+            verification=dict(status="verified", verified_at="2026-11-12"),
+            freshness_policy=dict(max_age_days=30), sharingClassification="customer-shareable")]
+    bp = json.loads((root / "plugin/skills/frontier-blueprint/examples/caldova-blueprint.json").read_text(encoding="utf-8"))
+    bp.update(customer_scope="caldova-scope", sharingClassification="customer-shareable")
+    for source in bp["evidence"]:
+        source.update(internal=False, visibility="customer", sharingClassification="customer-specific", customer_scope="caldova-scope")
+    ack = dict(as_of=date(2026, 11, 12), acknowledge_finops_preview=True)
+    calculated = calculate(model, **ack)
+    snapshot = json.loads(freeze(calculated, out / "frozen", **ack).read_text(encoding="utf-8"))
+    review = dict(id="TEST-ONLY-SCOPE-REVIEW", decision="approve",
+        actor=model["profile"]["owners"]["finance"], finance_owner=model["profile"]["owners"]["finance"],
+        date="2026-11-12", evidence_ref="test:external-assertion-only", **snapshot["target"],
+        mode=model["mode"], sharingClassification="customer-shareable")
+    recorded = json.loads(record_review(snapshot, review, out / "reviews", **ack).read_text(encoding="utf-8"))
+    reports = {audience: apply_models(bp, [snapshot], [recorded], **ack, audience=audience,
+        customer_scope="caldova-scope")["agent_finops"] for audience in ("internal", "customer")}
+    print(json.dumps(reports))
+`;
+    const python = process.platform === "win32" ? "python" : "python3";
+    reviewedScopes.set(kind, JSON.parse(execFileSync(python, ["-B", "-c", script, kind],
+      { cwd: process.cwd(), encoding: "utf8", timeout: 60_000 })));
   }
-  available(r);
-  r.mode = "planning";
-  r.status = "planning-ready";
-  r.gaps = [];
-  r.profile.outcome.confirmation_status = "test-only-confirmed";
-  r.handover = {
-    schema: "frontier-finops-handover/1.0", as_of: r.as_of,
-    target: { baseline_id: r.baseline.id, version: r.baseline.version, material_hash: "f".repeat(64) },
-    lifecycle: "approved", structural_validation: "valid", pricing_completeness: "evidenced",
-    ready: true, status: "planning-ready", gaps: [], financial_permission: false,
-    owner_review: {
-      schema: "frontier-finops-owner-review/1.0", id: "TEST-ONLY-REVIEW", decision: "approve",
-      actor: "Finance lead", finance_owner: "Finance lead", date: r.as_of, evidence_ref: "test-only:external",
-      baseline_id: r.baseline.id, version: r.baseline.version, material_hash: "f".repeat(64),
-      mode: "planning", recorded_as_of: r.as_of, assertion: "externally-asserted-not-authenticated",
-      sharingClassification: "customer-shareable",
-      review_boundary: "Test-only external assertion, not authentication or permission."
-    },
-    limitations: "Planning evidence only; not budget, build or deployment permission."
-  };
+  return structuredClone(reviewedScopes.get(kind));
+}
+
+// Real producer-calculated/frozen/reviewed/projected fixture, with simulated
+// test-only verification and owner assertions. Never real approval or a changed
+// shipped example. Newly required derived metrics come from the producer too.
+function planningEvidence(data) {
+  const hasFx = Array.isArray(record(data).evidence.fx) && record(data).evidence.fx.length > 0;
+  data.agent_finops = reviewedScopeReports(hasFx ? "full-cost-fx" : "full-cost").internal;
 }
 
 it("Task6 real successor adds only the eighteenth route, gates figures/exports and leaves ordinary value usable", async () => {
@@ -630,6 +674,172 @@ it("Task6 QUALITY3 unused bad/private cached evidence does not taint consumed ve
   try {
     await bp.go("#/agents/D3-A05");
     assert.equal(summary(bp).getAttribute("data-financial-ready"), "true");
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+for (const audience of ["internal", "customer"]) it(`Task6 FINAL1 actual reviewed recurring-only ${audience} scope passes without inventing one-time cost`, async () => {
+  const view = reviewedScopeReports("recurring-only")[audience];
+  const r = view.records[0];
+  assert.equal(r.handover.ready, true, "actual dated producer decision");
+  assert.deepEqual(r.gaps, []);
+  assert.deepEqual(r.handover.gaps, []);
+  assert.ok(r.context.exclusions.some((e) => e.id === "EXC-BUILD" && e.reason));
+  for (const sc of Object.values(r.scenarios)) {
+    assert.deepEqual(sc.one_time_lines, []);
+    assert.equal(sc.one_time.amount, null);
+    assert.equal(sc.one_time.status, "incomplete");
+    assert.equal(sc.one_time.reason, "incomplete-cost");
+    assert.equal(sc.first_year.amount, sc.annual_recurring.amount);
+    assert.equal(sc.first_year.status, "available");
+  }
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) { data.agent_finops = view; } });
+  try {
+    await bp.go("#/agents/D3-A05");
+    assert.equal(summary(bp).getAttribute("data-financial-ready"), "true");
+    await bp.go("#/finops"); await acknowledgePreview(bp);
+    assert.match(txt(bp.view()), /Unavailable.*incomplete.*incomplete-cost/);
+    assert.match(txt(bp.view()), /No one-time lines in the supplied scope; no zero cost is asserted/);
+    assert.doesNotMatch(txt(bp.view()), /CHF 0\.00/);
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+it("Task6 FINAL1 actual reviewed full-cost controls retain their declared one-time evidence", async () => {
+  const reports = reviewedScopeReports("full-cost");
+  for (const view of Object.values(reports)) {
+    const r = view.records[0];
+    assert.equal(r.handover.ready, true);
+    assert.equal(r.scenarios.expected.one_time_lines.length, 1);
+    assert.equal(r.scenarios.expected.one_time.status, "available");
+    const bp = await openBlueprint(BASELINE_HTML, { change(data) { data.agent_finops = view; } });
+    try {
+      await bp.go("#/agents/D3-A05");
+      assert.equal(summary(bp).getAttribute("data-financial-ready"), "true");
+      assert.deepEqual(bp.errors, []);
+    } finally { await bp.close(); }
+  }
+});
+
+it("Task6 FINAL1 actual declared unpriced one-time lines remain a financial gap", async () => {
+  for (const view of Object.values(reviewedScopeReports("unpriced-one-time"))) {
+    const r = view.records[0];
+    assert.equal(r.handover.ready, false);
+    assert.equal(r.scenarios.expected.one_time_lines.length, 1);
+    assert.equal(r.scenarios.expected.one_time.amount, null);
+    const bp = await openBlueprint(BASELINE_HTML, { change(data) { data.agent_finops = view; } });
+    try {
+      await bp.go("#/agents/D3-A05");
+      assert.equal(summary(bp).getAttribute("data-financial-ready"), "false");
+      assert.deepEqual(bp.errors, []);
+    } finally { await bp.close(); }
+  }
+});
+
+it("Task6 FINAL1 actual customer-withheld one-time costs are not reviewed absence", async () => {
+  const view = reviewedScopeReports("private-one-time").customer, r = view.records[0];
+  assert.equal(r.handover.ready, false);
+  assert.equal(r.scenarios.expected.one_time.amount, null);
+  assert.equal(r.scenarios.expected.one_time.status, "withheld");
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) { data.agent_finops = view; } });
+  try {
+    await bp.go("#/agents/D3-A05");
+    assert.equal(summary(bp).getAttribute("data-financial-ready"), "false");
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+const coverageCore = (coverage) => Object.fromEntries(
+  ["priced_driver_count", "in_scope_driver_count", "status", "reason"].map((key) => [key, coverage[key]]));
+for (const [kind, audience, priced, scope, status, reason] of [
+  ["full-cost", "internal", 3, 3, "complete", null],
+  ["recurring-only", "customer", 2, 2, "complete", null],
+  ["provisional", "internal", 0, 3, "incomplete", "incomplete-evidenced-pricing"],
+  ["unpriced-one-time", "internal", 2, 3, "incomplete", "incomplete-evidenced-pricing"],
+  ["empty-scope", "internal", 0, 0, "unavailable", "empty-scope"],
+  ["private-one-time", "customer", null, null, "withheld", "restricted-dependency"],
+  ["private-unused", "customer", 3, 3, "complete", null],
+  ["private-outcome", "customer", 3, 3, "complete", null]
+]) it(`Task6 FINAL2 displays supplied ${kind}/${audience} coverage without deriving driver counts`, async () => {
+  const view = reviewedScopeReports(kind)[audience], r = view.records[0];
+  assert.deepEqual(coverageCore(r.driver_coverage), {
+    priced_driver_count: priced, in_scope_driver_count: scope, status, reason
+  });
+  assert.deepEqual(coverageCore(r.handover.driver_coverage), coverageCore(r.driver_coverage));
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) { data.agent_finops = view; } });
+  try {
+    await bp.go("#/finops");
+    assert.equal(bp.view().querySelectorAll(".driver-coverage").length, 0, "financial counts require fresh acknowledgement");
+    await acknowledgePreview(bp);
+    const coverage = bp.view().querySelector(".driver-coverage");
+    assert.ok(coverage, "explicit aggregate cost-driver coverage panel");
+    assert.match(txt(coverage), /Evidenced priced drivers \/ in-scope drivers/);
+    assert.ok(txt(coverage).includes(status), status);
+    if (priced === null) {
+      assert.match(txt(coverage), /Withheld.*restricted-dependency/);
+      assert.doesNotMatch(txt(coverage), /0 \/ 0|2 \/ 2|3 \/ 3/);
+    } else assert.ok(txt(coverage).includes(`${priced} / ${scope}`));
+    if (reason) assert.ok(txt(coverage).includes(reason), reason);
+    assert.match(txt(coverage), /all.*scenarios.*periods.*declared scope/i);
+    assert.doesNotMatch(txt(coverage), /%|CHF|EUR|USD/);
+    await bp.go("#/agents/D3-A05");
+    assert.equal(summary(bp).getAttribute("data-financial-ready"), String(r.handover.ready));
+    assert.ok(summary(bp).querySelector(".driver-coverage"));
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+for (const [label, change] of [
+  ["missing report coverage", (r) => { delete r.driver_coverage; }],
+  ["missing dated handover coverage", (r) => { delete r.handover.driver_coverage; }],
+  ["incomplete coverage", (r) => {
+    r.driver_coverage = reviewedScopeReports("unpriced-one-time").internal.records[0].driver_coverage;
+    r.handover.driver_coverage = structuredClone(r.driver_coverage);
+  }],
+  ["withheld coverage", (r) => {
+    r.driver_coverage = reviewedScopeReports("private-one-time").customer.records[0].driver_coverage;
+    r.handover.driver_coverage = structuredClone(r.driver_coverage);
+  }],
+  ["empty coverage", (r) => {
+    r.driver_coverage = reviewedScopeReports("empty-scope").internal.records[0].driver_coverage;
+    r.handover.driver_coverage = structuredClone(r.driver_coverage);
+  }],
+  ["different complete handover scope", (r) => {
+    r.handover.driver_coverage = reviewedScopeReports("recurring-only").internal.records[0].driver_coverage;
+  }],
+  ["non-integer count", (r) => { r.driver_coverage.priced_driver_count = 2.5; }],
+  ["unsafe count", (r) => {
+    Object.assign(r.driver_coverage, { priced_driver_count: Number.MAX_SAFE_INTEGER + 1, in_scope_driver_count: Number.MAX_SAFE_INTEGER + 1 });
+    r.handover.driver_coverage = structuredClone(r.driver_coverage);
+  }]
+]) it(`Task6 FINAL2 ${label} cannot inherit financial readiness from a root assertion`, async () => {
+  const view = reviewedScopeReports("full-cost").internal, r = view.records[0];
+  assert.equal(r.handover.ready, true);
+  change(r);
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) { data.agent_finops = view; } });
+  try {
+    await bp.go("#/agents/D3-A05");
+    assert.equal(summary(bp).getAttribute("data-financial-ready"), "false");
+    assert.match(txt(summary(bp)), /[Rr]ebuild/);
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+it("Task6 FINAL2 coverage JSON and labelled Markdown retain the same supplied metric after acknowledgement", async () => {
+  const view = reviewedScopeReports("full-cost").internal, r = view.records[0];
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) { data.agent_finops = view; } });
+  try {
+    await bp.go("#/agents/D3-A05");
+    assert.doesNotMatch(txt(summary(bp)), /3 \/ 3/, "Canvas must not reveal counts before acknowledgement");
+    await bp.go("#/finops"); await acknowledgePreview(bp);
+    const blobs = downloadsFor(bp);
+    button(bp, "Download projected report JSON").click();
+    button(bp, "Download projected report Markdown").click();
+    assert.deepEqual(JSON.parse(await blobs[0].text()), r);
+    const md = await blobs[1].text();
+    assert.match(md, /Evidenced priced drivers \/ in-scope drivers: 3 \/ 3.*complete/);
+    assert.match(md, /declared scope.*not.*real-world/i);
+    assert.match(md, /priced\\?_driver\\?_count/);
     assert.deepEqual(bp.errors, []);
   } finally { await bp.close(); }
 });
