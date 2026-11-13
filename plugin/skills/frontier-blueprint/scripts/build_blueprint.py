@@ -849,6 +849,12 @@ def main(argv=None) -> int:
 
     result = {"status": "error" if rep.errors else "ok", "audience": audience, "stats": stats(bp),
               "errors": rep.errors, "warnings": rep.warnings, "removed_for_customer": rep.removed}
+    if successor and audience == "customer":
+        # Ordinary diagnostic paths/IDs can identify removed private evidence.
+        # Financial diagnostics remain in their safely projected report DTOs.
+        for key in ("errors", "warnings", "removed_for_customer"):
+            count = len(result[key])
+            result[key] = [f"{count} Blueprint {key.replace('_', ' ')}; private details withheld"] if count else []
     try:
         if not rep.errors:
             if a.save_normalized:
@@ -864,9 +870,9 @@ def main(argv=None) -> int:
         message = "Agent FinOps output operation refused; no financial permission" if successor else str(error)
         print(f"ERROR: {message}", file=sys.stderr)
         return 2
-    for e in rep.errors:
+    for e in result["errors"]:
         print("ERROR:", e)
-    for w in rep.warnings:
+    for w in result["warnings"]:
         print("WARN:", w)
     print(json.dumps({k: result[k] for k in ("status", "audience", "stats")}, ensure_ascii=False))
     return 1 if rep.errors else 0

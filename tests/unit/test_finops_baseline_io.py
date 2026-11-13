@@ -8,11 +8,13 @@ from __future__ import annotations
 import copy
 import io
 import json
+import os
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 from contextlib import redirect_stderr, redirect_stdout
 from datetime import date
 from pathlib import Path
@@ -640,6 +642,219 @@ class BlueprintBaselineTests(IOCase):
             self.assertIn("ERROR:", err)
             self.assertNotIn("1320", out + err)
             self.assertEqual(target.read_text(encoding="utf-8"), "existing output must not be overwritten")
+
+    def test_review_customer_identity_value_and_every_published_artifact_are_projected(self):
+        bp = seed_blueprint()
+        bp["internal_notes"] = "PRIVATE-ROOT-NOTES-SENTINEL"
+        bp["evidence"].append({"id": "PRIVATE-EVIDENCE-SENTINEL", "title": "PRIVATE-EVIDENCE-TITLE",
+                               "visibility": "internal", "sharingClassification": "internal-only"})
+        agent = next(a for d in bp["domains"] for a in d["agents"] if a["id"] == "D3-A05")
+        agent.update(name="PRIVATE-AGENT-SENTINEL", content_src=["PRIVATE-EVIDENCE-SENTINEL"])
+        self.write("blueprint.json", bp)
+        value = self.write("ordinary.json", {"schema": "frontier-value/1.0", "currency": "CHF",
+                                            "use_cases": [], "assumptions": [],
+                                            "internal_notes": "PRIVATE-VALUE-NOTES-SENTINEL"})
+        before = {p: p.read_bytes() for p in (self.bp, self.source, value)}
+        args = [x for x in self.args(wrapper=True, audience="customer") if x != "--no-identity"]
+        code, out, err = self.call(self.wrapper, args + ["--value", value, "--no-png"])
+        self.assertEqual(code, 0, (out, err))
+        paths = [self.dir / "normalized.json", self.dir / "report.json",
+                 *(self.dir / "output").rglob("*")]
+        tokens = ("PRIVATE-ROOT-NOTES-SENTINEL", "PRIVATE-EVIDENCE-SENTINEL", "PRIVATE-EVIDENCE-TITLE",
+                  "PRIVATE-AGENT-SENTINEL", "PRIVATE-VALUE-NOTES-SENTINEL")
+        leaks = []
+        for path in paths:
+            if not path.is_file():
+                continue
+            contents = [path.read_bytes()]
+            if path.suffix == ".zip":
+                with zipfile.ZipFile(path) as archive:
+                    contents += [archive.read(name) for name in archive.namelist()]
+            for content in contents:
+                for token in tokens:
+                    if token.encode() in content:
+                        leaks.append((str(path.relative_to(self.dir)), token))
+        self.assertEqual(leaks, [], "every published artifact, including ZIP members, must be projected")
+        normalized = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))
+        self.assertEqual(normalized["agent_finops"]["records"][0]["status"], "withheld")
+        self.assertTrue(list((self.dir / "output/identity").rglob("*.zip")))
+        for path, content in before.items():
+            self.assertEqual(path.read_bytes(), content)
+
+    def test_review_actual_typed_consumers_constrain_api_builder_and_cli(self):
+        for kind in ("public", "private-agent", "private-dependency", "unrelated-private"):
+            with self.subTest(kind=kind):
+                onto = self.ontology()
+                onto["sources"].append({"id": "consumer-only-source", "name": "Consumer-only source",
+                                         "sharingClassification": "customer-shareable", "src": ["LOCAL-DOC"]})
+                row = {"id": "DA-CONSUMER", "name": "Typed consumer",
+                       "sources": ["consumer-only-source"], "entities": ["SyntheticRecord"],
+                       "consumers": [{"kind": "copilot_studio", "agents": [
+                           "D1-A01" if kind == "unrelated-private" else "D3-A05"]}]}
+                if kind in {"private-agent", "unrelated-private"}:
+                    row.update(internal=True, sharingClassification="internal-only")
+                if kind == "private-dependency":
+                    onto["sources"][-1]["sharingClassification"] = "internal-only"
+                onto["data_agents"] = [row]
+                bp = {**seed_blueprint(), "ontology": onto}
+                original = copy.deepcopy(bp)
+                applied = self.cli.apply_models(bp, [self.calculated()], **ACK, audience="customer",
+                                                customer_scope="caldova-scope")
+                report = applied["agent_finops"]["records"][0]
+                private = kind in {"private-agent", "private-dependency"}
+                if private:
+                    self.assertEqual(report["status"], "withheld")
+                else:
+                    self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+                self.assertEqual(bp, original)
+                self.write("blueprint.json", bp)
+                code, out, err = self.call(self.builder, self.args(audience="customer"))
+                self.assertEqual(code, 0, (out, err))
+                result = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))
+                self.assertEqual(result["agent_finops"], applied["agent_finops"])
+                calculated = self.write("calculated.json", self.calculated())
+                target = self.dir / f"consumer-{kind}.json"
+                cli = self.run_cli("apply", "--blueprint", self.bp, "--baseline", calculated, "--out", target,
+                                   "--as-of", DAY.isoformat(), "--audience", "customer",
+                                   "--customer-scope", "caldova-scope", "--acknowledge-finops-preview")
+                self.assertEqual(cli.returncode, 0, cli.stderr)
+                self.assertEqual(json.loads(target.read_text(encoding="utf-8"))["agent_finops"], applied["agent_finops"])
+
+    def test_review_unrelated_invalid_raw_typed_graph_refuses_every_entrypoint_before_output(self):
+        for kind in ("physical", "citation", "entity", "consumer", "product-binding", "product-entity",
+                     "semantic-dimension"):
+            with self.subTest(kind=kind):
+                onto = self.ontology()
+                row = onto["data_agents"][0]
+                if kind == "physical":
+                    row["sources"] = ["NO-PHYSICAL"]
+                elif kind == "citation":
+                    row["context"] = {"source_id": "NO-CITATION"}
+                elif kind == "entity":
+                    row["entities"] = ["NO-ENTITY"]
+                elif kind == "consumer":
+                    row["consumers"] = [{"kind": "copilot_studio", "agents": ["NO-BLUEPRINT-AGENT"]}]
+                elif kind == "product-binding":
+                    onto["data_products"] = [{"id": "DP-TEST", "name": "Test product",
+                                              "uses": [{"use": "grounding", "via": ["NO-DATA-AGENT"]}]}]
+                elif kind == "product-entity":
+                    onto["data_products"] = [{"id": "DP-TEST", "name": "Test product",
+                                              "entities": ["NO-ENTITY"]}]
+                else:
+                    onto["semantic_models"] = [{"id": "SM-TEST", "name": "Test semantic model",
+                                                "facts": [], "dimensions": ["NO-ENTITY"]}]
+                bp = {**seed_blueprint(), "ontology": onto}
+                with self.assertRaises(ValueError):
+                    self.cli.apply_models(bp, [self.calculated()], **ACK, audience="customer",
+                                          customer_scope="caldova-scope")
+                self.write("blueprint.json", bp)
+                code, out, err = self.call(self.builder, self.args(audience="customer"))
+                self.assertEqual(code, 2, (out, err))
+                self.assert_no_output()
+                calculated = self.write("calculated.json", self.calculated())
+                target = self.dir / "invalid-cli.json"
+                result = self.run_cli("apply", "--blueprint", self.bp, "--baseline", calculated, "--out", target,
+                                      "--as-of", DAY.isoformat(), "--audience", "customer",
+                                      "--customer-scope", "caldova-scope", "--acknowledge-finops-preview")
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertFalse(target.exists())
+                ontology = self.write("ontology.json", onto)
+                self.write("blueprint.json", seed_blueprint())
+                code, out, err = self.call(self.wrapper, self.args(wrapper=True) + ["--ontology", ontology])
+                self.assertEqual(code, 2, (out, err))
+                self.assert_no_output()
+
+    def test_review_inputs_under_output_reserved_paths_never_get_overwritten(self):
+        target = self.dir / "output/value-finops"
+        target.mkdir(parents=True)
+        baseline = self.write("output/value-finops/blueprint-value-finops.json", example())
+        value = self.write("ordinary.json", {"schema": "frontier-value/1.0", "use_cases": [], "assumptions": []})
+        before = {p: p.read_bytes() for p in (baseline, self.bp, value)}
+        files = set((self.dir / "output").rglob("*"))
+        args = self.args(wrapper=True)
+        args[args.index(self.source)] = baseline
+        code, out, err = self.call(self.wrapper, args + ["--value", value])
+        self.assertEqual(code, 2, (out, err))
+        self.assertIn("ERROR:", err)
+        self.assertEqual(set((self.dir / "output").rglob("*")), files)
+        self.assertFalse((self.dir / "normalized.json").exists())
+        self.assertFalse((self.dir / "report.json").exists())
+        for path, content in before.items():
+            self.assertEqual(path.read_bytes(), content)
+
+    def test_review_resolved_directory_link_cannot_publish_over_an_input(self):
+        target = self.dir / "outside"
+        target.mkdir()
+        baseline = self.write("outside/baseline.json", example())
+        link = self.dir / "output"
+        try:
+            link.symlink_to(target, target_is_directory=True)
+        except OSError:
+            if os.name != "nt":
+                raise
+            # Windows directory junctions need no symbolic-link privilege. Both
+            # endpoints belong to this temporary fixture, never the workspace.
+            command = ("New-Item -ItemType Junction -Path '" + str(link).replace("'", "''")
+                       + "' -Target '" + str(target).replace("'", "''") + "' | Out-Null")
+            result = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", command],
+                                    cwd=ROOT, capture_output=True, text=True, check=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(link.resolve(), target.resolve())
+        before = baseline.read_bytes()
+        args = [x for x in self.args(wrapper=True) if x != "--no-identity"]
+        args[args.index(self.source)] = baseline
+        with mock.patch.object(self.wrapper, "build_identity", return_value=self.bp) as identity:
+            code, out, err = self.call(self.wrapper, args)
+        self.assertEqual(code, 2, (out, err))
+        identity.assert_not_called()
+        self.assertEqual(baseline.read_bytes(), before)
+        self.assertEqual({p.name for p in target.iterdir()}, {"baseline.json"})
+        self.assertFalse((self.dir / "normalized.json").exists())
+        self.assertFalse((self.dir / "report.json").exists())
+
+    def test_review_derived_html_name_cannot_escape_reserved_publication_directory(self):
+        bp = seed_blueprint()
+        bp["meta"]["short"] = "../escaped"
+        self.write("blueprint.json", bp)
+        args = [x for x in self.args(wrapper=True) if x != "--no-identity"]
+        with mock.patch.object(self.wrapper, "build_identity", return_value=self.bp) as identity:
+            code, out, err = self.call(self.wrapper, args)
+        self.assertEqual(code, 2, (out, err))
+        identity.assert_not_called()
+        self.assert_no_output()
+
+    def test_review_invalid_requested_value_refuses_before_artifacts_but_legacy_behavior_remains(self):
+        value = self.write("invalid-value.json", {"schema": "frontier-value/1.0", "horizon_years": "invalid",
+                                                 "assumptions": [], "use_cases": [{"id": "TEST-UC", "levers": []}]})
+        before = {p: p.read_bytes() for p in (self.bp, self.source, value)}
+        with mock.patch.object(self.wrapper, "build_identity", return_value=self.bp) as identity:
+            args = [x for x in self.args(wrapper=True) if x != "--no-identity"]
+            code, out, err = self.call(self.wrapper, args + ["--value", value])
+        self.assertEqual(code, 2, (out, err))
+        self.assertIn("value", err.lower())
+        identity.assert_not_called()
+        self.assert_no_output()
+        code, out, err = self.call(self.wrapper, ["--data", self.bp, "--out-dir", self.dir / "legacy",
+                                                 "--value", value, "--no-identity"])
+        self.assertEqual(code, 0, (out, err))
+        self.assertIn("Value case not calculated", out)
+        for path, content in before.items():
+            self.assertEqual(path.read_bytes(), content)
+
+    def test_review_requested_value_subprocess_failure_is_fatal_without_publication(self):
+        value = self.write("ordinary.json", {"schema": "frontier-value/1.0", "assumptions": [], "use_cases": []})
+        original = self.wrapper.run
+
+        def fail_value(script, *args):
+            if script.name == "value_calc.py":
+                return 2, "", "ERROR: simulated calculation failure"
+            return original(script, *args)
+
+        with mock.patch.object(self.wrapper, "run", side_effect=fail_value):
+            code, out, err = self.call(self.wrapper, self.args(wrapper=True) + ["--value", value])
+        self.assertEqual(code, 2, (out, err))
+        self.assertIn("value", err.lower())
+        self.assert_no_output()
 
 
 class LifecycleTests(IOCase):

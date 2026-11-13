@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import importlib.util
 import json
 import sys
 from datetime import date
@@ -52,6 +53,16 @@ def _authored(document, as_of):
         model, _, _ = _snapshot(document, as_of=as_of)
         return model
     return document
+
+
+def _process_library():
+    path = Path(__file__).resolve().parents[2] / "frontier-process" / "scripts" / "ontology_lib.py"
+    if not path.is_file():
+        raise ValueError("Ontology source resolution requires the optional frontier-process skill; install it")
+    spec = importlib.util.spec_from_file_location("finops_process_sources", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def resolve_blueprint_sources(blueprint, agent_id):
@@ -100,13 +111,19 @@ def resolve_blueprint_sources(blueprint, agent_id):
     if onto is not None:
         register(onto, "sources_doc", "ontology-citation")
         register(onto, "sources", "ontology-binding")
+        # Validate the COMPLETE raw process graph before selecting any financial
+        # consumers. Use the existing process schema and typed ancestry walker,
+        # including consumers[].agents and data-product uses[].via. Defaults are
+        # checked on a copy, not imported as authored evidence or approval.
+        process = _process_library()
+        if any(row.get("unresolved") for row in process.feedback_ancestry(onto, "model", blueprint)):
+            raise ValueError("invalid or unresolved raw typed ontology source graph")
+        rep = process.Rep()
+        checked = process.normalize(copy.deepcopy(onto), blueprint, rep)
+        if rep.errors or any(row.get("unresolved") for row in process.feedback_ancestry(checked, "model", blueprint)):
+            raise ValueError("invalid or unresolved typed ontology source graph")
         onto.pop("sources_doc", None)
         onto.pop("sources", None)
-        for collection in ("data_agents", "operations_agents"):
-            rows = onto.get(collection, [])
-            if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
-                raise ValueError("ontology agent collection must be an explicit object list")
-            onto[collection] = [row for row in rows if row.get("id") == agent_id or row.get("agent_id") == agent_id]
 
         # A `source` elsewhere may be prose, not a OneLake relationship.
         # Only the existing typed entity/data-agent schema positions add edges.
@@ -135,6 +152,27 @@ def resolve_blueprint_sources(blueprint, agent_id):
     # contribute privacy restrictions to the selected target.
     resolved.pop("evidence", None)
     resolved["sources"] = list(registered.values())
+    # This first pass validates all raw provenance, including unrelated agents
+    # and every registry definition. It does NOT merge their privacy flags.
+    _blueprint_ancestry(resolved, agent_id)
+    if onto is not None:
+        consumed = set()
+        for collection in ("data_agents", "operations_agents"):
+            rows = onto.get(collection, [])
+            if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
+                raise ValueError("ontology agent collection must be an explicit object list")
+            for row in rows:
+                consumers = process.as_list(row.get("consumers"))
+                selected = (row.get("id") == agent_id or row.get("agent_id") == agent_id
+                            or any(isinstance(c, dict) and agent_id in process.as_list(c.get("agents"))
+                                   for c in consumers))
+                if selected:
+                    consumed.add((collection, row.get("id")))
+                    consumed.update((anchor["pool"], anchor["id"])
+                                    for anchor in process.feedback_ancestry(checked, row.get("id"), blueprint)
+                                    if anchor["pool"] in {"data_agents", "operations_agents"})
+        for collection in ("data_agents", "operations_agents"):
+            onto[collection] = [row for row in onto.get(collection, []) if (collection, row.get("id")) in consumed]
     return resolved
 
 

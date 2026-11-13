@@ -222,6 +222,48 @@ class SemanticModel(unittest.TestCase):
         self.assertEqual(n["sources"][0]["item"], "semantic model")
 
 
+class SemanticAncestry(unittest.TestCase):
+    def model(self):
+        return {
+            "entity_types": [{"id": "Fact", "source": "shared-source"},
+                             {"id": "Dimension", "source": "shared-source"}],
+            "sources": [{"id": "shared-source"}],
+            "semantic_models": [{"id": "SM-TEST", "facts": ["Fact"], "dimensions": ["Dimension", "Date"]}],
+            "data_products": [{"id": "DP-TEST", "uses": [{"use": "analytics", "via": ["SM-TEST"]}]}],
+        }
+
+    def test_semantic_fact_dimension_anchors_retain_private_ancestry_and_retirement(self):
+        for field, index in (("facts", 0), ("dimensions", 1)):
+            with self.subTest(field=field):
+                model = self.model()
+                model["entity_types"][index]["visibility"] = "internal"
+                before = copy.deepcopy(model)
+                anchors = lib.feedback_ancestry(model, "DP-TEST")
+                keys = [(row["pool"], row["id"]) for row in anchors]
+                for key in (("entity_types", "Fact"), ("entity_types", "Dimension"), ("sources", "shared-source")):
+                    self.assertIn(key, keys)
+                self.assertEqual(keys, sorted(set(keys)), "shared acyclic joins remain unique and canonically ordered")
+                self.assertNotIn(("unresolved", "Date"), keys)
+                verdict = {"id": "DP-TEST", "target_ancestry": anchors}
+                self.assertEqual(lib.feedback_privacy(model, verdict), (True, []))
+                self.assertEqual(model, before)
+                model["data_products"] = []
+                self.assertEqual(lib.feedback_privacy(model, verdict), (True, []),
+                                 "retiring only the target cannot erase its private dependency ancestry")
+
+    def test_unknown_semantic_fact_dimension_are_unresolved_but_date_remains_builtin(self):
+        for field in ("facts", "dimensions"):
+            with self.subTest(field=field):
+                model = self.model()
+                model["semantic_models"][0][field] = ["MISSING-ENTITY"] + (["Date"] if field == "dimensions" else [])
+                anchors = lib.feedback_ancestry(model, "DP-TEST")
+                unresolved = [row["id"] for row in anchors if row.get("unresolved")]
+                self.assertEqual(unresolved, ["MISSING-ENTITY"])
+                restricted, gaps = lib.feedback_privacy(model, {"id": "DP-TEST", "target_ancestry": anchors})
+                self.assertTrue(restricted)
+                self.assertIn("unresolved:MISSING-ENTITY", gaps)
+
+
 class Canon(unittest.TestCase):
     def test_sources_are_microsoft_learn(self):
         c = lib.load_canon()

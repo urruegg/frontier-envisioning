@@ -234,7 +234,8 @@ def feedback_ancestry(onto: dict, ident: str, bp: dict | None = None) -> list[di
             **{key: copy.deepcopy(onto[key]) for key in ("src", "content_src", "internal", "visibility", "content_origins") if key in onto}}}
     seen = set()
     references = ("entity", "entities", "source", "sources", "secondary", "namespace", "base", "from", "to",
-                  "applies_to", "agents", "data_agents", "operations_agents", "data_products", "journey", "journeys", "via")
+                  "applies_to", "agents", "data_agents", "operations_agents", "data_products", "journey", "journeys", "via",
+                  "facts", "dimensions")
     while queue:
         pool, key = queue.pop(0)
         if (pool, key) in seen:
