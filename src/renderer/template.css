@@ -945,6 +945,31 @@ table.rreg td:nth-child(2){min-width:240px}
 @media(max-width:900px){.riskgrid{grid-template-columns:minmax(0,1fr)}}
 @media print{.kbwrap{overflow:visible}.kb{min-width:0}}
 
+/* Versioned FinOps uses only projected text and supplied monetary strings. */
+.baseline-record,.baseline-scenario,.financial-summary{min-inline-size:0;overflow-wrap:anywhere}
+.baseline-record{margin-block:18px 28px}
+.baseline-scenario{margin-block:12px;padding:14px}
+.baseline-scenario h4{margin:0 0 12px;font-size:16px;text-transform:capitalize}
+.baseline-scenario h5{font-size:13px;margin:14px 0 6px}
+.baseline-money{margin-block:4px;overflow-wrap:anywhere}
+.baseline-money > .note{display:block}
+.baseline-money .pill{white-space:normal}
+.baseline-contributions{border-block-start:1px solid var(--line-soft);margin-block-start:8px;padding-block-start:6px;font-size:12px}
+.baseline-contributions > div{margin-block:6px}
+.baseline-fields{display:grid;grid-template-columns:minmax(100px,160px) minmax(0,1fr);gap:5px 12px;margin:8px 0}
+.baseline-fields dt{font-weight:700;overflow-wrap:anywhere}
+.baseline-fields dd{margin:0;min-inline-size:0;overflow-wrap:anywhere}
+.baseline-list{padding-inline-start:20px;margin:4px 0}
+.baseline-list > li{margin-block:5px}
+.baseline-details summary{overflow-wrap:anywhere}
+.baseline-proposal textarea{width:100%;min-height:90px}
+.financial-summary p{margin-block:6px}
+@media(max-width:700px){
+  .baseline-scenario .grid3,.baseline-fields{grid-template-columns:minmax(0,1fr)}
+  .baseline-scenario{padding:10px}
+  .baseline-fields dd{padding-inline-start:8px;border-inline-start:2px solid var(--line-soft)}
+}
+
 /* Reflow text and cards, not the contents of locally scrollable 2D diagrams/tables. */
 @media (max-width:700px){
   header.top{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px}
