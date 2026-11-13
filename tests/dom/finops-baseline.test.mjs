@@ -42,6 +42,40 @@ print(json.dumps(project(calculated, as_of=day, audience="internal", acknowledge
   return structuredClone(unpricedReports.get(all));
 }
 
+let projectedFxReport;
+function fxReport() {
+  if (!projectedFxReport) {
+    // Actual producer shape, including consumed FX and a distinct FX source.
+    // This calculated synthetic derivative is only made planning-shaped by the
+    // explicit in-memory fixture below; it is never real approval evidence.
+    const script = String.raw`
+import copy, json, sys
+from datetime import date
+from pathlib import Path
+sys.path.insert(0, "plugin/skills/frontier-finops/scripts")
+from baseline_calc import calculate
+from baseline_projection import project
+model = json.loads(Path("plugin/skills/frontier-finops/examples/caldova-agent-baseline.json").read_text(encoding="utf-8"))
+source = copy.deepcopy(model["sources"][0])
+source["id"] = "SYN-FX"
+model["sources"].append(source)
+model["rates"][0]["currency"] = "USD"
+model["fx"] = [{"id": "FX-TEST", "version": 1, "from_currency": "USD", "to_currency": "CHF",
+    "rate": "0.9", "date": "2026-11-12", "method": "spot", "source_id": "SYN-FX",
+    "src": ["SYN-FX"], "content_src": ["SYN-FX"],
+    "verification": {"status": "synthetic", "verified_at": "2026-11-12"},
+    "freshness_policy": {"max_age_days": 30}, "sharingClassification": "customer-shareable"}]
+day = date.fromisoformat(model["baseline"]["as_of"])
+calculated = calculate(model, as_of=day, acknowledge_finops_preview=True)
+print(json.dumps(project(calculated, as_of=day, audience="internal", acknowledge_finops_preview=True)))
+`;
+    const python = process.platform === "win32" ? "python" : "python3";
+    projectedFxReport = JSON.parse(execFileSync(python, ["-B", "-c", script],
+      { cwd: process.cwd(), encoding: "utf8", timeout: 30_000 }));
+  }
+  return structuredClone(projectedFxReport);
+}
+
 // In-memory contract fixture ONLY. Not an authoritative model/review, not shipped
 // evidence or finance approval. No recalculation or alteration of the demo files.
 // All projected pricing/source statuses and contribution groups are made
@@ -425,6 +459,177 @@ it("Task6 SPEC3 all-unpriced known groups stay unavailable, not zero or financia
     assert.doesNotMatch(txt(bp.view()), /CHF 0\.00/);
     await bp.go("#/agents/D3-A05");
     assert.equal(summary(bp).getAttribute("data-financial-ready"), "false");
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+it("Task6 QUALITY1 a relabelled A05 report cannot complete A04 or taint independent A05", async () => {
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) {
+    planningEvidence(data);
+    const wrong = structuredClone(record(data));
+    wrong.agent_id = "D3-A04";
+    data.agent_finops.records.push(wrong);
+  } });
+  try {
+    await bp.go("#/agents/D3-A04");
+    assert.equal(summary(bp, "D3-A04").getAttribute("data-financial-ready"), "false");
+    await bp.go("#/agents/D3-A05");
+    assert.equal(summary(bp).getAttribute("data-financial-ready"), "true");
+    await bp.go("#/plan");
+    const cards = [...bp.view().querySelectorAll(".kcard")];
+    assert.match(txt(cards.find((c) => txt(c).includes("Service Field Assistant"))), /Financial handover gap/);
+    assert.match(txt(cards.find((c) => txt(c).includes("Service Report"))), /Financial handover: planning evidence/);
+    await bp.go("#/finops");
+    assert.match(txt(bp.view().querySelector(".baseline-error")), /agent.*(binding|association).*rebuild/i);
+    await acknowledgePreview(bp);
+    assert.equal(bp.view().querySelectorAll('.baseline-record[data-agent="D3-A04"]').length, 0);
+    assert.equal(bp.view().querySelectorAll('.baseline-record[data-agent="D3-A05"]').length, 1);
+    assert.equal(bp.view().querySelectorAll(".baseline-export").length, 2);
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+it("Task6 QUALITY1 a conflicting explicit profile binding is not reassigned to either agent", async () => {
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) {
+    planningEvidence(data);
+    record(data).profile.agent_id = "D3-A04";
+  } });
+  try {
+    for (const id of ["D3-A04", "D3-A05"]) {
+      await bp.go("#/agents/" + id);
+      assert.equal(summary(bp, id).getAttribute("data-financial-ready"), "false");
+    }
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+it("Task6 QUALITY1 a consistent agent binding passes only its own financial criterion", async () => {
+  const bp = await openBlueprint(BASELINE_HTML, { change: planningEvidence });
+  try {
+    const r = JSON.parse(bp.doc.getElementById("bp-data").textContent).agent_finops.records[0];
+    assert.equal(r.agent_id, r.profile.agent_id);
+    await bp.go("#/agents/D3-A05");
+    assert.equal(summary(bp).getAttribute("data-financial-ready"), "true");
+    await bp.go("#/agents/D3-A04");
+    assert.equal(summary(bp, "D3-A04").getAttribute("data-financial-ready"), "false");
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+for (const [label, key, value] of [
+  ["missing version", "version", undefined], ["zero version", "version", 0],
+  ["blank version", "version", ""], ["negative version", "version", -1],
+  ["boolean version", "version", true], ["text version", "version", "1"],
+  ["fractional version", "version", 1.5], ["missing ID", "id", undefined],
+  ["blank ID", "id", " "], ["non-string ID", "id", 1]
+]) it(`Task6 QUALITY2 rejects ${label} even when all target copies agree`, async () => {
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) {
+    planningEvidence(data);
+    const r = record(data);
+    const targetKey = key === "id" ? "baseline_id" : key;
+    for (const [object, field] of [[r.baseline, key], [r.handover.target, targetKey], [r.handover.owner_review, targetKey]]) {
+      if (value === undefined) delete object[field]; else object[field] = value;
+    }
+  } });
+  try {
+    await bp.go("#/agents/D3-A05");
+    assert.equal(summary(bp).getAttribute("data-financial-ready"), "false");
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+it("Task6 QUALITY2 a positive integer customer target passes without projected private hashes", async () => {
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) {
+    planningEvidence(data);
+    data.agent_finops.audience = "customer";
+    const r = record(data);
+    r.audience = "customer";
+    r.distribution = "scoped-derivative-not-authorisation";
+    delete r.handover.target;
+    delete r.handover.owner_review.material_hash;
+  } });
+  try {
+    const r = JSON.parse(bp.doc.getElementById("bp-data").textContent).agent_finops.records[0];
+    assert.equal(r.baseline.version, 1);
+    assert.equal(r.handover.target, undefined);
+    assert.equal(r.handover.owner_review.material_hash, undefined);
+    await bp.go("#/agents/D3-A05");
+    assert.equal(summary(bp).getAttribute("data-financial-ready"), "true");
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+for (const [label, change, fx] of [
+  ["unverified cached rate", (r) => { r.evidence.rates[0].verification.status = "unverified"; }],
+  ["unverified cached source", (r) => { r.evidence.sources[0].validationStatus = "unverified"; }],
+  ["missing consumed rate", (r) => { r.evidence.rates.shift(); }],
+  ["missing consumed source", (r) => { r.evidence.sources.shift(); }],
+  ["contradictory explicit rate source", (r) => { r.evidence.rates[0].source_id = "MISSING-SOURCE"; }],
+  ["missing pricing source identity", (r) => { delete priceRecord(r).source_id; }],
+  ["ambiguous cached rate", (r) => { r.evidence.rates.push(structuredClone(r.evidence.rates[0])); }],
+  ["ambiguous cached source", (r) => { r.evidence.sources.push(structuredClone(r.evidence.sources[0])); }],
+  ["unverified consumed FX", (r) => { r.evidence.fx[0].verification.status = "unverified"; }, true],
+  ["missing consumed FX", (r) => { r.evidence.fx = []; }, true],
+  ["contradictory explicit FX source", (r) => { r.evidence.fx[0].source_id = "SYN-ENGINEERING"; }, true],
+  ["unverified consumed FX source", (r) => { r.evidence.sources.find((s) => s.id === "SYN-FX").validationStatus = "unverified"; }, true]
+]) it(`Task6 QUALITY3 rejects ${label} despite verified copied line statuses`, async () => {
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) {
+    if (fx) data.agent_finops.records = [fxReport()];
+    planningEvidence(data);
+    change(record(data));
+  } });
+  try {
+    await bp.go("#/agents/D3-A05");
+    assert.equal(summary(bp).getAttribute("data-financial-ready"), "false");
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+it("Task6 QUALITY3 accepts actual consumed FX links without stripped legacy aliases", async () => {
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) {
+    data.agent_finops.records = [fxReport()];
+    planningEvidence(data);
+  } });
+  try {
+    const r = JSON.parse(bp.doc.getElementById("bp-data").textContent).agent_finops.records[0];
+    const fx = r.evidence.fx[0];
+    assert.equal(fx.src, undefined);
+    assert.equal(fx.content_src, undefined);
+    const used = r.scenarios.expected.months[0].lines[0].pricing_evidence.records.find((p) => p.kind === "fx");
+    assert.equal(used.id, fx.id);
+    assert.equal(used.source_id, fx.source_id);
+    await bp.go("#/agents/D3-A05");
+    assert.equal(summary(bp).getAttribute("data-financial-ready"), "true");
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+it("Task6 QUALITY3 explicit consumed metadata stays sufficient when optional cache aliases are absent", async () => {
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) {
+    data.agent_finops.records = [fxReport()];
+    planningEvidence(data);
+    delete record(data).evidence.rates[0].source_id;
+    delete record(data).evidence.fx[0].source_id;
+  } });
+  try {
+    await bp.go("#/agents/D3-A05");
+    assert.equal(summary(bp).getAttribute("data-financial-ready"), "true");
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+it("Task6 QUALITY3 unused bad/private cached evidence does not taint consumed verified evidence", async () => {
+  const bp = await openBlueprint(BASELINE_HTML, { change(data) {
+    planningEvidence(data);
+    const r = record(data);
+    r.evidence.rates.push({ id: "UNUSED-RATE", amount: "1", currency: "CHF", source_id: "UNUSED-SOURCE",
+      verification: { status: "unverified" }, sharingClassification: "internal-only" });
+    r.evidence.sources.push({ id: "UNUSED-SOURCE", type: "synthetic", validationStatus: "unverified",
+      sharingClassification: "internal-only" });
+  } });
+  try {
+    await bp.go("#/agents/D3-A05");
+    assert.equal(summary(bp).getAttribute("data-financial-ready"), "true");
     assert.deepEqual(bp.errors, []);
   } finally { await bp.close(); }
 });
