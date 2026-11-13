@@ -2,16 +2,18 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-13 |
 | Author | Copilot; AI-assisted adaptation of a user-supplied prompt |
 | Status | Maintained internal examples; outputs require human review |
-| Scope | Core workshop preparation and separate optional baseline follow-up for the 1.10.0 internal candidate; document revision, not product version |
+| Scope | Core workshop preparation and separate optional baseline follow-up for release build 1.10.0; document revision, not product version |
 | References | [Documentation](README.md), [Getting started](getting-started.md), [Caldova gallery](demo/README.md), [Plugin guide](../plugin/README.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Guidance #39](https://github.com/urruegg/frontier-envisioning/issues/39) |
 
-These prompts target **1.10.0 UNRELEASED INTERNAL CANDIDATE**: eight skills,
+These prompts target **release build 1.10.0**: eight skills,
 seven non-FinOps GA wrappers and optional Preview FinOps. Begin with core
 preparation; neither ordinary value nor identity requires FinOps.
+Publication is recorded separately in
+[GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases).
 
 Replace the bracketed inputs before use. Start with one bounded Sales/Services
 question, not an unrestricted search or a complete engagement. Leave

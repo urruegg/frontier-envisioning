@@ -37,7 +37,8 @@ Eight skills are bundled: seven non-FinOps GA product wrappers and optional
 Preview FinOps. GA is the maintainer's designation, not result confidence,
 provider GA, release/deployment or public/IP clearance. Fabric ontology/agent/
 operations Preview and unverified mappings remain explicit.
-**1.10.0 is an unreleased internal candidate.** Agent identity branding is not
+**Release build 1.10.0.** Build metadata is not publication evidence.
+Agent identity branding is not
 Entra identity provisioning; HubWorks is controlled source integration, not
 an assumed runtime loader.
 

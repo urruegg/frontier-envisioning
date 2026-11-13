@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.7 |
+| Version | 1.8 |
 | Date | 2026-11-13 |
 | Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence) |
 | Status | Maintained design; 1.10.0 local runtime gates verified, archive/human acceptance separate; no release approval implied |
-| Scope | Approved unreleased 1.10.0 architecture and scope-qualified verification; preserved 1.9.2/1.9.1 and earlier design/verification/inventory |
+| Scope | Approved 1.10.0 release-build architecture and scope-qualified verification; preserved 1.9.2/1.9.1 and earlier design/verification/inventory |
 | References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md) |
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Both builders reuse the package
@@ -30,7 +30,10 @@ remains separate from these historical claims.
 
 ## 1.10.0 development candidate
 
-**1.10.0 remains an unreleased internal candidate.** The architecture was
+This section records the development/verification context of **1.10.0**.
+The [current release preparation](prd.md#1100-release-preparation) records the
+normal-release metadata choice and separate human publication boundary.
+The architecture was
 approved on 12 November; local runtime gates were verified on 13 November 2026.
 The [PRD candidate section](prd.md#1100-development-candidate) owns requirements,
 release position and D35-01–D35-11. The
