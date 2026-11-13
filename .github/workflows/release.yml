@@ -17,6 +17,8 @@ jobs:
     if: ${{ vars.RELEASE_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/build/playwright-browsers
     permissions:
       contents: read
       id-token: write
@@ -50,11 +52,9 @@ jobs:
           python tools/release_notes.py "$GITHUB_REF_NAME" > release-notes.md
       - name: Collect the release assets
         run: |
+          version="${GITHUB_REF_NAME#v}"
           mkdir -p release
-          cp dist/*.zip release/
-          cp "build/demo/Frontier Company Blueprint - Template (Caldova sample).html" release/
-          cp build/demo/identity/*.zip release/
-          cp build/demo/identity/caldova-agent-identity/catalog.html "release/Caldova - agent identity catalogue.html"
+          cp "dist/frontier-envisioning-plugin-${version}.zip" release/
           cp release-manifest.json release/
       - name: SBOM (SPDX, Microsoft SBOM tool)
         run: |
