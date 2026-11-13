@@ -2,32 +2,46 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.7 |
-| Date | 2026-11-12 |
+| Version | 0.8 |
+| Date | 2026-11-13 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained catalogue; approval not inferred |
 | Scope | Using the plugin, engineering guidance and historical records; document revision, not product version |
-| References | [Repository](../README.md), [Product requirements](prd.md), [Solution design](solution-design.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Issue #35](https://github.com/urruegg/frontier-envisioning/issues/35), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md) |
+| References | [Repository](../README.md), [Product requirements](prd.md), [Solution design](solution-design.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Issue #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Guidance #39](https://github.com/urruegg/frontier-envisioning/issues/39), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md) |
 
 ## Using the plugin
 
-Start here to evaluate the **1.9.2 unreleased internal candidate**. No repository
+Start here to evaluate **1.10.0 UNRELEASED INTERNAL CANDIDATE**. No repository
 visibility change, published release or external sharing clearance is implied.
 The sole human maintainer is [@urruegg](https://github.com/urruegg).
+The approved private source/issue/PR host is
+[urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning).
+Eight skills are bundled: seven non-FinOps GA wrappers and optional Preview
+FinOps. Core workshops, ordinary value and identity work without FinOps;
+process/ontology is requested separately and retains its Fabric Preview caveats.
 
 | Guide | For |
 |---|---|
-| [Getting started](getting-started.md) | Download/open the example, install in Cowork and prepare an evidence-led workshop |
-| [Caldova gallery](demo/README.md) | Offline HTML and five screenshot views of the fictitious example; capture provenance and regeneration |
-| [Starter prompts](starter-prompts.md) | Scoped, read-only preparation prompt and a synthetic Caldova variant |
+| [Getting started](getting-started.md) | Core-first example, candidate installation procedure and evidence-led workshop; optional baseline follow-up |
+| [Caldova gallery](demo/README.md) | Offline core HTML and five captures with requested ontology, no FinOps; actual capture version/hashes belong to the manifest |
+| [Starter prompts](starter-prompts.md) | Scoped core preparation, synthetic Caldova variant and separate awareness-first baseline request |
 | [Packaged plugin guide](../plugin/README.md) | Installation details, eight skills, outputs, data handling and the full FinOps Preview procedure |
+| [Versioned FinOps procedure](../plugin/skills/frontier-finops/SKILL.md#quick-start--requested-versioned-baseline) | Explicitly requested offline per-agent baseline, meaningful twelve-month scenarios, frozen-target external review and projected JSON/Markdown |
+| [Complete baseline contract](../plugin/skills/frontier-finops/references/agent-finops-baseline.md) | Exact CLI, decimal/currency rules, provisional versus unavailable states, review limits and audience/source projection |
+
+FinOps requires fresh actual scenario awareness before cost operations or
+figures, not inferred from a prompt or installation. Decline allows draft/core
+work with named gaps, not financial readiness. At build handover, each agent in
+scope needs the complete currently evidenced/priced baseline and exact-target
+external owner/delegation review, with no conditional unpriced exception.
+The separate synthetic Caldova baseline is not current pricing or real approval.
 
 ## Engineering
 
 | Document | Authority or purpose |
 |---|---|
-| [Product requirements](prd.md) | Approved 1.10.0 development-candidate requirements with integrated proof pending; prior candidate records and historical Part A are retained |
-| [Solution design](solution-design.md) | Candidate architecture and scope-qualified verification; new integrated proof is pending and historical Part B is retained |
+| [Product requirements](prd.md) | Approved 1.10.0 development-candidate requirements; prior candidate records and historical Part A are retained |
+| [Solution design](solution-design.md) | Candidate architecture and scope-qualified verification; historical Part B is retained |
 | [Architecture decisions](adr/README.md) | Repository/engineering rationale; Proposed status is not acceptance |
 | [Engineering handbook](engineering/handbook.md) | Build, test, version, release and deployment practice |
 | [Workstation setup](engineering/workstation-setup.md) | Existing dependency, dev-container and local setup instructions |
@@ -45,10 +59,20 @@ The sole human maintainer is [@urruegg](https://github.com/urruegg).
 | [plans/](plans/README.md) | Test-first implementation plans |
 | [sprints/](sprints/README.md) | Linked delivery records |
 
-Baseline-first FinOps development is [#35](https://github.com/urruegg/frontier-envisioning/issues/35):
-[approved plan](plans/2026-11-12-agent-finops-baseline-plan.md) and
-[SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md). Approval and
-in-progress implementation are not verified delivery or a release.
+Baseline-first FinOps is [#35](https://github.com/urruegg/frontier-envisioning/issues/35),
+governed by the actual [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36),
+[approved design](specs/2026-11-12-agent-finops-baseline-design.md) and
+[plan](plans/2026-11-12-agent-finops-baseline-plan.md).
+
+| Work item | Scope |
+|---|---|
+| [#38](https://github.com/urruegg/frontier-envisioning/issues/38) | Offline profile/model, calculation, frozen records, external review and projection |
+| [#37](https://github.com/urruegg/frontier-envisioning/issues/37) | Optional Blueprint source integration and per-agent financial handover criterion |
+| [#39](https://github.com/urruegg/frontier-envisioning/issues/39) | Source guidance and candidate verification |
+
+Use [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md) for source-qualified
+execution and validation evidence. Design/plan approval grants no financial
+consent, authenticated review, release, publication or deployment authority.
 
 The version-only 1.9.2 preparation is [#33](https://github.com/urruegg/frontier-envisioning/issues/33):
 [plan](plans/2026-11-12-version-1.9.2-plan.md) and

@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
-| Date | 2026-11-12 |
+| Version | 0.3 |
+| Date | 2026-11-13 |
 | Author | Copilot; AI-assisted documentation |
 | Status | Maintained internal example; not deployment or release evidence |
-| Scope | Offline core sample, five viewport captures and regeneration; document revision, not product version |
-| References | [Documentation](../README.md), [Getting started](../getting-started.md), [Starter prompts](../starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33) |
+| Scope | Offline core sample, five viewport captures and regeneration; document revision, not product or capture version |
+| References | [Documentation](../README.md), [Getting started](../getting-started.md), [Starter prompts](../starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Guidance #39](https://github.com/urruegg/frontier-envisioning/issues/39) |
 
 See what the standard Frontier Company Blueprint produces before installing
 the plugin. **Caldova Industrial AG is fictitious.** All business details,
@@ -21,11 +21,12 @@ download and open the file locally in **Edge or Chrome**. GitHub and OneDrive
 previews do not execute the HTML. There is no hosted URL or tenant deployment
 to visit. This is one offline HTML file, not a custom application or live backend.
 
-The **1.9.2 unreleased core** candidate retains the same example scope: identity,
-ordinary value and explicitly requested Ontology, with 17 route identities and
-no FinOps data.
+The plugin candidate is **1.10.0 UNRELEASED INTERNAL CANDIDATE**. The gallery
+retains its core example scope: identity, ordinary value and explicitly
+requested Ontology, with 17 route identities and no FinOps data.
 FinOps Preview is a separate, explicitly acknowledged profile, not a hidden
-cost estimate in this sample.
+cost estimate in this sample. Read the actual captured version and hashes from
+the [manifest](manifest.json), not this guide's candidate heading.
 
 ## Overview
 
@@ -73,6 +74,26 @@ data-agent and operations capabilities remain Preview; no tenant import or
 data-agent execution is demonstrated.
 Open **Ontology** (`#/ontology`) in the [HTML](caldova-blueprint.html).
 
+## Separate optional baseline exercise
+
+The candidate bundles eight skills: seven non-FinOps GA wrappers and optional
+Preview FinOps. The HTML and five images here stay **core-only**, with explicitly
+requested ontology; ordinary value and identity do not require FinOps.
+
+For separately requested cost work, use the [awareness-first starter](../starter-prompts.md#optional-follow-up-versioned-agent-baseline)
+and [versioned FinOps procedure](../../plugin/skills/frontier-finops/SKILL.md#quick-start--requested-versioned-baseline),
+with the [complete offline contract](../../plugin/skills/frontier-finops/references/agent-finops-baseline.md).
+The separate [Caldova D3-A05 baseline](../../plugin/skills/frontier-finops/examples/caldova-agent-baseline.json)
+is invented, not current pricing or real finance approval. Synthetic evidence
+cannot establish real financial readiness. It is not the default gallery
+download, a deployed service or permission to operate costs.
+
+First show the full Preview notice and obtain actual current-scenario awareness;
+the prompt itself is not consent. Decline leaves named financial gaps while
+draft/core work continues. At build handover the strict priced per-agent
+baseline and exact frozen-target external review are mandatory, not supplied by
+workshop notes or these screenshots.
+
 ## Capture provenance and limits
 
 The five images are Playwright/Chromium **1440 × 1000 viewport captures** in
@@ -85,10 +106,12 @@ settings. Use it for captured provenance, not a claim that PNG bytes are
 deterministic across platforms. Screenshots do not establish actual Cowork
 installation, provider availability, manual tenant acceptance or publication.
 
-The HTML, five real captures and manifest have been regenerated for 1.9.2.
-The stored and freshly rebuilt core comparison passes; broader quality and
-distribution evidence is recorded separately in
-[SPRINT-006](../sprints/SPRINT-006-version-1.9.2.md), not inferred from the version.
+The historical 1.9.2 regeneration and fresh core comparison are recorded in
+[SPRINT-006](../sprints/SPRINT-006-version-1.9.2.md). The manifest owns the actual
+capture version, date and hashes; updating this guide does not regenerate or
+relabel those assets. Source-qualified evidence for the 1.10.0 work is kept in
+[SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md), not inferred from
+the guide version or screenshots.
 
 ## Regenerate and check
 

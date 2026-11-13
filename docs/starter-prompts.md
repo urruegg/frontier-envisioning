@@ -2,12 +2,16 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
-| Date | 2026-11-12 |
+| Version | 0.2 |
+| Date | 2026-11-13 |
 | Author | Copilot; AI-assisted adaptation of a user-supplied prompt |
 | Status | Maintained internal examples; outputs require human review |
-| Scope | Scoped workshop preparation with the standard Blueprint; document revision, not product version |
-| References | [Documentation](README.md), [Getting started](getting-started.md), [Caldova gallery](demo/README.md), [Plugin guide](../plugin/README.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31) |
+| Scope | Core workshop preparation and separate optional baseline follow-up for the 1.10.0 internal candidate; document revision, not product version |
+| References | [Documentation](README.md), [Getting started](getting-started.md), [Caldova gallery](demo/README.md), [Plugin guide](../plugin/README.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Guidance #39](https://github.com/urruegg/frontier-envisioning/issues/39) |
+
+These prompts target **1.10.0 UNRELEASED INTERNAL CANDIDATE**: eight skills,
+seven non-FinOps GA wrappers and optional Preview FinOps. Begin with core
+preparation; neither ordinary value nor identity requires FinOps.
 
 Replace the bracketed inputs before use. Start with one bounded Sales/Services
 question, not an unrestricted search or a complete engagement. Leave
@@ -44,7 +48,9 @@ questions. Do not fabricate ROI, cost savings or operational metrics.
 
 Then prepare an agenda, workshop questions and a synthetic demonstration in
 one offline Blueprint HTML, with an agent identity proposal, clearly labelled
-illustrative and not deployed. Include optional ontology only when requested.
+illustrative and not deployed. Identity branding is not Entra provisioning.
+Include optional ontology only when requested; retain Fabric Preview and
+unverified-mapping caveats.
 List next actions, evidence gaps and decisions needing accountable people.
 Produce PRD/design documents only after MVP scope validation, or label them
 clearly as drafts; do not finish the whole engagement before evidence exists.
@@ -56,11 +62,14 @@ it is not external/IP clearance.
 FinOps stays off. A separate cost request requires the full FinOps Preview
 notice and actual current-scenario acknowledgement before any cost operation
 or figure. Installation, JSON and prior runs are not consent. On decline,
-continue core with honest budget gaps, never zero costs, validated ROI or a
-readiness waiver.
+continue draft workshops/core with named financial gaps, never zero costs,
+validated cost-derived ROI or financial/build-handover readiness. Do not start
+cost work automatically to close a handover gap. Independent ordinary value
+does not become Preview because an unconsumed new baseline is present;
+legacy-derived Preview value must not be reused as clean ordinary value.
 ```
 
-The [FinOps procedure](../plugin/README.md#optional-finops-preview--awareness-first)
+The [FinOps procedure](../plugin/skills/frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure)
 contains the full notice, renewal rules, technical CLI gate, legacy/cache
 handling and independent browser gate. The short prompt does not replace it.
 
@@ -92,3 +101,77 @@ tenant. The example is a workshop aid, not proof of deployment or output quality
 for an unevidenced engagement. The gallery shows the broader bundled core
 sample; a scoped Sales/Services preparation is not expected to reproduce every
 journey or the exact screenshot layout.
+
+## Optional follow-up: versioned agent baseline
+
+Use this separate prompt only when cost work is explicitly requested. Replace
+the inputs; none supplies consent, price verification or owner approval.
+It starts with an awareness question, **not** pre-acknowledged execution or a
+batch of lifecycle actions. See the [versioned procedure](../plugin/skills/frontier-finops/SKILL.md#quick-start--requested-versioned-baseline)
+and [complete contract](../plugin/skills/frontier-finops/references/agent-finops-baseline.md)
+for exact operations, review fields and projected JSON/Markdown.
+
+```text
+First display this notice in full:
+
+Frontier FinOps is Preview. Its grounding and cost model are not GA and need refinement. Results are provisional planning estimates, not validated pricing, budget approval or purchase/commitment advice. Verify rates and assumptions independently before decisions.
+
+Then ask whether I understand these limits and wish to proceed for this
+current scenario: [ORGANISATION], existing [AGENT_IDS], [BUSINESS_OUTCOME],
+twelve months starting [START_MONTH], reporting currency [CHF_EUR_OR_USD],
+evaluation date [AS_OF_DATE], [CUSTOMER_SCOPE] and [SHARING_RESTRICTIONS].
+Stop and wait for my actual response. Do not perform a cost operation or show
+figures merely because this prompt, installation, old JSON/approval or a past
+acknowledgement exists. This prompt contains no financial consent.
+
+Only after actual confirmation, follow frontier-finops' versioned baseline
+procedure one requested action at a time, renewing awareness for each new
+top-level invocation or changed scope/model/rates/grounding. Technical CLI
+acknowledgement covers one action chain only, not finance approval. A viewer
+needs separate transient acknowledgement for its document; reload resets it,
+with no localStorage consent.
+
+Use only [APPROVED_SOURCE_LINKS_OR_ATTACHMENTS] and
+[APPROVED_RATE_AND_FX_EVIDENCE]. Keep originals read-only and outputs separate
+at [OUTPUT_LOCATION]. Ask for missing profile, owners, scope, outcome,
+measurement, assumptions, exclusions, risks, guardrails and sharing evidence;
+record gaps with actual owners rather than inventing inputs.
+
+For each agent, draft meaningful low/expected/high scenarios with twelve
+monthly demand values and another sourced cost/outcome driver. Use typed
+decimal-string quantities/rates and explicit unit denominators. CHF, EUR and
+USD are the initial currencies; require evidenced FX for any conversion.
+Known usable supplied stale/unverified prices may support PROVISIONAL drafts
+only, with source/date gaps and separate verified/provisional contributions.
+Unknown quantity, rate or necessary FX stays unavailable, never zero.
+
+Do not freeze, record a review, apply or export automatically as a batch.
+When separately requested, freeze the exact baseline ID/version/material hash.
+Obtain actual external finance-owner or evidenced-delegation review of that
+target; never fabricate the decision, actor or evidence. Workshop notes and
+raw approved status are not that review. Changed material needs a new version
+and review. Migration, if explicitly chosen, preserves legacy originals and
+provenance as a new draft without inherited approval, acknowledgement or FX.
+
+At BUILD HANDOVER ONLY, every agent in scope needs a complete validated
+profile/scenarios/denominators, all in-scope drivers priced with current
+applicable evidenced rates/FX, the frozen exact target and matching external
+review, with current lineage/audience/customer-scope validation. Unpriced has
+no conditional exception. Provisional or synthetic evidence cannot pass.
+Offline records are externally asserted, not authenticated financial authority;
+planning-ready is not budget, purchase, build or deployment permission.
+
+Use audience-projected JSON/Markdown and Blueprint reports; do not reconstruct
+raw private sources or treat withheld amounts as zero or a complete public
+total. Review customer outputs and sharing permission separately.
+On decline, continue clean draft/core/value/identity work with named financial
+gaps, without claiming financial/build readiness.
+```
+
+For an invented exercise, select the separate
+[Caldova D3-A05 baseline](../plugin/skills/frontier-finops/examples/caldova-agent-baseline.json).
+It is not current pricing, actual commercial verification or real finance
+approval; do not change synthetic statuses to imply real readiness. It is not
+cost data hidden in the core gallery. The offline baseline path adds no live
+billing/provider imports, dedicated FinOps Agent factory, operating loop or
+cloud deployment.

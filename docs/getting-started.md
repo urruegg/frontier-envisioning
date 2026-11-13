@@ -2,15 +2,18 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
-| Date | 2026-11-12 |
+| Version | 0.3 |
+| Date | 2026-11-13 |
 | Author | Copilot; AI-assisted documentation |
 | Status | Maintained internal guide; not release or sharing approval |
-| Scope | First use of the 1.9.2 internal candidate; document revision, not product version |
-| References | [Documentation](README.md), [Plugin guide](../plugin/README.md), [Gallery](demo/README.md), [Starter prompts](starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33) |
+| Scope | Core-first use of the 1.10.0 internal candidate and optional baseline follow-up; document revision, not product version |
+| References | [Documentation](README.md), [Plugin guide](../plugin/README.md), [Gallery](demo/README.md), [Starter prompts](starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Guidance #39](https://github.com/urruegg/frontier-envisioning/issues/39) |
 
 Start with the fictitious example, then prepare a small, evidence-led workshop.
-The plugin is **1.9.2 UNRELEASED**, an internal candidate in a private repository.
+The plugin is **1.10.0 UNRELEASED INTERNAL CANDIDATE**, in the private
+[urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning)
+repository. It bundles eight skills: seven non-FinOps GA wrappers and optional
+Preview FinOps.
 You do not need to install it or deploy anything to inspect the example.
 
 ## Try the example without installing
@@ -29,9 +32,11 @@ Caldova Industrial AG, its people, evidence and results are synthetic and
 illustrative; no real customer, deployment or operational outcome is represented.
 
 The sample includes identity, ordinary non-FinOps value and explicitly requested
-ontology, with **17 route identities and no FinOps**. Only an explicit Preview
-profile adds the eighteenth route. Optional views depend on requested inputs;
+ontology, with **17 route identities and no FinOps**. Separate FinOps Preview
+profiles are not part of this download. Optional views depend on requested inputs;
 the sample's Ontology is not a request to add it to every engagement.
+Use the gallery's [manifest](demo/manifest.json) for the actual captured version
+and provenance; this guide's candidate version is not a new capture receipt.
 
 Notes and verdicts are local browser working state until exported. Use the
 Discovery feedback export and give that file back to Cowork to merge and rebuild;
@@ -40,7 +45,8 @@ do not assume edits update the original source or a shared tenant service.
 ## Install in Copilot Cowork
 
 1. Ask [@urruegg](https://github.com/urruegg), the maintainer, for the approved
-   internal `frontier-envisioning-plugin-1.9.2.zip`. Keep it zipped.
+   internal candidate `frontier-envisioning-plugin-1.10.0.zip`. Keep it zipped;
+   this is not a published release.
 2. Start a new Copilot Cowork chat, attach the ZIP and type
    **Install the Frontier PlugIn**.
 3. Review each approval prompt. The installer checks the package inventory;
@@ -109,15 +115,62 @@ Fabric ontology, data-agent and operations capabilities remain Preview;
 unchecked mappings need verification. Identity names, colours and icons are
 branding proposals, not Entra identity provisioning.
 
-**FinOps:** off by default. A separate cost request must first show the
-[full Preview notice](../plugin/README.md#optional-finops-preview--awareness-first)
-and obtain actual current-scenario acknowledgement before any cost operation
-or figure. Installation, old JSON and previous runs are not consent. Technical
-CLI acknowledgement and fresh document-local browser acknowledgement are
-separate; changed invocations or scenarios require renewed acknowledgement.
-Decline and continue core with honest budget gaps using clean ordinary inputs,
-not cached Preview value. Missing costs are not zero, validated ROI or a
-readiness waiver. Requested-but-missing FinOps is an explicit error.
+### Optional versioned FinOps baseline
+
+FinOps stays **off by default**. For a separate cost request, first show the
+[full unchanged Preview notice](../plugin/skills/frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure)
+and ask for actual current-scenario awareness. Wait for the response before any
+cost operation or figure. Installation, a prompt, saved JSON/approval and past
+acknowledgements are not consent. Renew for each top-level invocation or changed
+scope/model/rates/grounding. The technical CLI flag covers one action chain
+only; browser acknowledgement is independent, transient per document and reset
+on reload, not stored in localStorage.
+
+On decline, continue draft workshops/core with named financial gaps and clean
+ordinary inputs, not cached Preview value. Missing costs are not zero,
+validated ROI or financial/build-handover readiness. Requested-but-missing
+FinOps is an explicit error. Ordinary own value and identity remain independent;
+an unconsumed new baseline does not make ordinary value Preview, while
+legacy-derived value retains its Preview provenance.
+
+For explicitly requested new work, use the
+[versioned baseline procedure](../plugin/skills/frontier-finops/SKILL.md#quick-start--requested-versioned-baseline)
+and [complete offline contract](../plugin/skills/frontier-finops/references/agent-finops-baseline.md),
+not automatic legacy conversion:
+
+1. Agree the existing agent IDs, business outcome, business/technical/finance
+   owners, scope, measurement, assumptions, exclusions, risks and guardrails.
+   Ask for missing evidence rather than inventing it.
+2. Author twelve monthly demand values for each low/expected/high scenario,
+   with another meaningful cost/outcome driver, typed decimal-string quantities
+   and rates, units and explicit denominators. Initial currencies are CHF, EUR
+   and USD; cross-currency amounts need evidenced FX, never automatic conversion.
+3. Follow the linked calculation, freeze and external-review steps one requested
+   action at a time. Review must name the frozen exact baseline ID, version and
+   material hash. Export JSON and Markdown for the intended audience; sharing
+   classifications and matching customer scope are not clearance or access control.
+
+Known usable supplied stale/unverified prices or explicit FX may support
+**PROVISIONAL — pricing evidence incomplete** drafts, with sources, dates,
+gaps and separate verified/provisional contributions. Unknown quantities,
+rates or necessary FX leave full totals and dependent metrics unavailable,
+not zero. Provisional is not verified pricing or financial readiness.
+
+At **build handover**, every agent actually in scope needs a complete validated
+profile/scenarios/denominators, every in-scope cost driver priced with current
+applicable evidenced rates/FX, the frozen exact target, externally evidenced
+finance-owner or delegated review and current lineage/audience/scope validation.
+There is **no conditional unpriced exception**. Workshop notes, raw approved
+status and legacy F1/F2 cannot supply that review. Local snapshots and review
+records are not authenticated financial permission or tamper-proof archives;
+planning-ready evidence grants no budget, purchase, build or deployment authority.
+Do not start cost work automatically merely because handover evidence is missing.
+
+The separate [Caldova D3-A05 baseline](../plugin/skills/frontier-finops/examples/caldova-agent-baseline.json)
+is invented, not current pricing, a complete real deployment cost model or real
+finance-owner approval. Synthetic evidence cannot establish real financial readiness.
+The baseline slice is offline, without live billing/provider imports, a dedicated
+FinOps Agent factory, operating loop or cloud deployment.
 
 GA labels describe seven product wrappers, not provider maturity, confidence,
 deployment, release or external clearance; MOS3 packaging remains `devPreview`.
