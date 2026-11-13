@@ -18,7 +18,7 @@ from baseline_calc import calculate, validate_receipt
 from baseline_model import _mapping, validate_model
 from baseline_projection import VIEW_SCHEMA, _Projection, _withheld_report, project, render_markdown
 from baseline_records import (
-    BOUNDARY, SNAPSHOT_SCHEMA, _agent, _blueprint_ancestry, _day, _json_text, _merged_ancestry, _snapshot, _write_exclusive,
+    BOUNDARY, SNAPSHOT_SCHEMA, _agent, _blueprint_ancestry, _day, _json_text, _merged_ancestry, _refs, _snapshot, _write_exclusive,
     freeze, migrate, record_review, seed,
 )
 from finops_preview import NOTICE, require_preview_ack
@@ -54,8 +54,92 @@ def _authored(document, as_of):
     return document
 
 
+def resolve_blueprint_sources(blueprint, agent_id):
+    """D35-11: one detached financial resolver view, never exported as Blueprint.
+
+    Explicit registries are Blueprint evidence/sources, ontology sources_doc
+    (citations) and ontology sources (OneLake bindings). All identities must be
+    globally distinct: a local ID never shadows a root ID, even if its payload
+    appears equal. Citations retain their IDs; typed ontology binding pointers
+    additionally become provenance edges ONLY in this private resolver copy.
+    Definitions are not consumers. Unrelated ontology agents and unused source
+    definitions therefore cannot taint an independent financial target.
+
+    The existing ancestry walker/merger still owns transitive references,
+    cycles, sharing dominance and customer scopes. No approval rules change.
+    """
+    _agent(blueprint, agent_id)
+    resolved = copy.deepcopy(blueprint)
+    onto = resolved.get("ontology")
+    if onto is not None and (not isinstance(onto, dict) or onto.get("schema") != "frontier-ontology/1.0"):
+        raise ValueError("unsupported ontology source namespace")
+    registered, physical = {}, set()
+
+    def register(owner, field, namespace):
+        rows = owner.get(field, [])
+        if not isinstance(rows, list):
+            raise ValueError("source registry must be an explicit list")
+        for row in rows:
+            if not isinstance(row, dict):
+                raise ValueError("source registry entries must be objects")
+            identity = row.get("id")
+            if not isinstance(identity, str) or not identity.strip() or identity != identity.strip():
+                raise ValueError("source registry requires explicit nonblank identities")
+            if identity in registered:
+                raise ValueError("ambiguous colliding source registry identities")
+            if namespace == "ontology-binding" and identity == "ontology":
+                raise ValueError("source identity collides with the reserved ontology-model sentinel")
+            registered[identity] = copy.deepcopy(row)
+            if namespace == "ontology-binding":
+                physical.add(identity)
+
+    # These are named, typed registries, not a search for arbitrary `sources`
+    # keys. Validate all identities before resolving any reference.
+    for field in ("evidence", "sources"):
+        register(resolved, field, "blueprint")
+    if onto is not None:
+        register(onto, "sources_doc", "ontology-citation")
+        register(onto, "sources", "ontology-binding")
+        onto.pop("sources_doc", None)
+        onto.pop("sources", None)
+        for collection in ("data_agents", "operations_agents"):
+            rows = onto.get(collection, [])
+            if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
+                raise ValueError("ontology agent collection must be an explicit object list")
+            onto[collection] = [row for row in rows if row.get("id") == agent_id or row.get("agent_id") == agent_id]
+
+        # A `source` elsewhere may be prose, not a OneLake relationship.
+        # Only the existing typed entity/data-agent schema positions add edges.
+        for collection, fields in (("entity_types", ("source", "secondary")), ("data_agents", ("sources",))):
+            rows = onto.get(collection, [])
+            if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
+                raise ValueError("ontology collection must be an explicit object list")
+            for row in rows:
+                bindings = []
+                for field in fields:
+                    value = row.get(field)
+                    if value is None:
+                        continue
+                    values = value if isinstance(value, list) else [value]
+                    for identity in values:
+                        if collection == "data_agents" and identity == "ontology":
+                            continue  # explicit ontology-model sentinel, not a source fallback
+                        if not isinstance(identity, str) or identity not in physical:
+                            raise ValueError("unknown ontology binding source")
+                        bindings.append(identity)
+                if bindings:
+                    row["src"] = list(dict.fromkeys([*_refs({"src": row.get("src")}), *bindings]))
+
+    # Source records stay out of consumed root/ontology context. The existing
+    # walker validates their complete reference graph, but only reached records
+    # contribute privacy restrictions to the selected target.
+    resolved.pop("evidence", None)
+    resolved["sources"] = list(registered.values())
+    return resolved
+
+
 def _link_private(blueprint, agent_id, audience, customer_scope):
-    contexts, source_index = _blueprint_ancestry(blueprint, agent_id)
+    contexts, source_index = _blueprint_ancestry(resolve_blueprint_sources(blueprint, agent_id), agent_id)
     flags = _merged_ancestry(contexts, blueprint.get("customer_scope"), source_index)
     scopes = flags.get("customer_scopes", [])
     flags["customer_scope"] = scopes[0] if len(scopes) == 1 else None

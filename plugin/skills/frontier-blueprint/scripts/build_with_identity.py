@@ -27,6 +27,7 @@ summary says why.
 from __future__ import annotations
 
 import argparse
+import copy
 import importlib.util
 import json
 import os
@@ -71,6 +72,100 @@ def slugify(s: str) -> str:
     s = s.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("Ä", "Ae").replace("Ö", "Oe").replace("Ü", "Ue").replace("ß", "ss")
     s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-") or "customer"
+
+
+def blueprint_library():
+    spec = importlib.util.spec_from_file_location("wrapper_blueprint", HERE / "build_blueprint.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def agent_finops_flags(a):
+    """Forward only explicit current-invocation source/date/scope arguments."""
+    if not (getattr(a, "agent_finops", None) or getattr(a, "agent_finops_review", None)):
+        return []
+    flags = []
+    for path in getattr(a, "agent_finops", ()) or ():
+        flags += ["--agent-finops", path]
+    for path in getattr(a, "agent_finops_review", ()) or ():
+        flags += ["--agent-finops-review", path]
+    for flag, value in (("--as-of", getattr(a, "as_of", None)),
+                        ("--customer-scope", getattr(a, "customer_scope", None))):
+        if value is not None:
+            flags += [flag, value]
+    if getattr(a, "acknowledge_finops_preview", False) is True:
+        flags.append("--acknowledge-finops-preview")
+    return flags
+
+
+def agent_finops_preflight(a, data, *, acknowledge_finops_preview=False):
+    lib = blueprint_library()
+    bp = lib.read_document(data)
+    baselines = getattr(a, "agent_finops", ()) or ()
+    if getattr(a, "finops", None) and (baselines or "agent_finops" in bp):
+        raise ValueError("ambiguous legacy/new financial sources: --finops and --agent-finops are mutually exclusive")
+    if baselines and getattr(a, "ontology", None) and acknowledge_finops_preview is True:
+        # Use the real process applier on a detached copy BEFORE any identity,
+        # output directories or input copies. Do not invent a second registry
+        # resolver here: apply_models owns D35-11 for every entrypoint.
+        bp = prepare_agent_ontology(bp, lib.read_document(a.ontology))
+    audience = getattr(a, "audience", None) or str((bp.get("meta") or {}).get("audience", "internal")).lower()
+    prepared = lib.agent_finops_preflight(
+        bp, baselines=baselines, reviews=getattr(a, "agent_finops_review", ()) or (),
+        as_of=getattr(a, "as_of", None), audience=audience,
+        customer_scope=getattr(a, "customer_scope", None),
+        acknowledge_finops_preview=acknowledge_finops_preview)
+    return lib, bp, prepared
+
+
+def prepare_agent_ontology(bp, ontology):
+    if ontology.get("schema") != "frontier-ontology/1.0":
+        raise ValueError("unsupported ontology source namespace")
+    if not (ONT_SCRIPTS / "apply_ontology.py").is_file():
+        raise ValueError("Requested ontology requires frontier-process; install it next to frontier-blueprint")
+    previous = sys.path[:]
+    try:
+        sys.path.insert(0, str(ONT_SCRIPTS))
+        spec = importlib.util.spec_from_file_location("finops_process_apply", ONT_SCRIPTS / "apply_ontology.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        rep = module.Rep()
+        result = module.apply(copy.deepcopy(bp), copy.deepcopy(ontology), rep)
+        if rep.errors:
+            raise ValueError("Agent FinOps ontology source preflight refused: invalid process model")
+        return result
+    finally:
+        sys.path[:] = previous
+
+
+def agent_finops_destinations(out, prepared, audience):
+    work = out / "agent-finops"
+    names = []
+    if audience != "customer":
+        names += [f"source-{i:03}.json" for i in range(1, len(prepared["sources"]) + 1)]
+        names += [f"review-{i:03}.json" for i in range(1, len(prepared["reviews"]) + 1)]
+    for i in range(1, len(prepared["sources"]) + 1):
+        names += [f"report-{i:03}.json", f"report-{i:03}.md"]
+    return [work / name for name in names]
+
+
+def write_agent_finops(out, prepared, view, audience):
+    """Customer folders contain ONLY projected DTOs, never raw working sources."""
+    lib = prepared["library"]
+    documents = {}
+    if audience != "customer":
+        for kind, values in (("source", prepared["sources"]), ("review", prepared["reviews"])):
+            for i, value in enumerate(values, 1):
+                documents[f"{kind}-{i:03}.json"] = lib._json_text(value)
+    for i, report in enumerate(view["records"], 1):
+        documents[f"report-{i:03}.json"] = lib._json_text(report)
+        documents[f"report-{i:03}.md"] = lib.render_markdown(report)
+    work = out / "agent-finops"
+    work.mkdir(parents=True, exist_ok=True)
+    for name, text in documents.items():
+        with (work / name).open("x", encoding="utf-8", newline="\n") as stream:
+            stream.write(text)
 
 
 def build_identity(a, out: Path, short: str, slug: str, summary: dict) -> Path:
@@ -174,6 +269,7 @@ def build_value_finops(a, data: Path, out: Path, summary: dict,
                        *, acknowledge_finops_preview: bool = False) -> Path:
     """Calculates the FinOps model and the value case on copies and writes both into the blueprint data."""
     import shutil
+    agent_finops_preflight(a, data, acknowledge_finops_preview=acknowledge_finops_preview)
     preview = preview_preflight(a, data, acknowledge_finops_preview=acknowledge_finops_preview)
     flags = ["--acknowledge-finops-preview"] if preview else []
     work = out / "value-finops"
@@ -222,7 +318,7 @@ def build_value_finops(a, data: Path, out: Path, summary: dict,
     return current
 
 
-def build_ontology(a, data: Path, out: Path, summary: dict) -> Path:
+def build_ontology(a, data: Path, out: Path, summary: dict, *, preapplied: bool = False) -> Path:
     """Build requested process artifacts without invoking value or FinOps."""
     if not (ONT_SCRIPTS / "apply_ontology.py").is_file():
         summary["notes"].append("Ontology left out: frontier-process is not installed next to frontier-blueprint")
@@ -238,6 +334,12 @@ def build_ontology(a, data: Path, out: Path, summary: dict) -> Path:
     if code:
         summary["notes"].append("Ontology not built: see ontology.errors and warnings")
         return data
+    if preapplied:
+        # The detached raw ontology was already applied and source-validated in
+        # preflight. Keep that ancestry for final financial projection; replacing
+        # it with customer-scrubbed ontology here would launder private citations.
+        # The standalone process artifacts above still use the requested audience.
+        return data
     target = work / "blueprint-ontology.json"
     with tempfile.TemporaryDirectory() as directory:
         if audience == "customer":
@@ -245,7 +347,7 @@ def build_ontology(a, data: Path, out: Path, summary: dict) -> Path:
             # blueprint source now, not only when the final HTML is rendered.
             projected = Path(directory) / "customer-blueprint.json"
             code, _, err = run(HERE / "build_blueprint.py", "--data", data, "--audience", "customer",
-                                "--save-normalized", projected, "--no-product-icons")
+                                "--save-normalized", projected, "--no-product-icons", *agent_finops_flags(a))
             if code:
                 summary["ontology"]["status"] = "failed"
                 summary["notes"].append("Customer blueprint projection failed: " + err.strip()[-300:])
@@ -281,21 +383,64 @@ def main(argv=None) -> int:
     ap.add_argument("--finops", help="FinOps model (frontier-finops/1.0): the FinOps page")
     ap.add_argument("--acknowledge-finops-preview", action="store_true", help="explicit caller assertion for this one action chain, not approval")
     ap.add_argument("--ontology", help="process ontology (frontier-ontology/1.0): local model, Turtle and design artifacts")
+    blueprint_library().agent_finops_arguments(ap)
     a = ap.parse_args(argv)
     try:
+        lib, bp, successor = agent_finops_preflight(
+            a, Path(a.data), acknowledge_finops_preview=a.acknowledge_finops_preview)
         if a.value or a.finops:
             preview_preflight(a, Path(a.data), acknowledge_finops_preview=a.acknowledge_finops_preview)
-    except (OSError, ValueError, KeyError, TypeError) as exc:
+        if successor:
+            meta = bp.get("meta") or {}
+            short = str(meta.get("short") or str(meta.get("customer") or "Customer").split(" ")[0])
+            html = Path(a.out_dir) / (a.html or f"{short} - Frontier Company Blueprint.html")
+            audience = a.audience or str(meta.get("audience", "internal")).lower()
+            destinations = agent_finops_destinations(Path(a.out_dir), successor, audience)
+            lib.agent_finops_output_paths([a.data, a.value, a.ontology, *a.agent_finops, *a.agent_finops_review],
+                                         [html, a.save_normalized, a.report, *destinations])
+            if any(path.exists() for path in destinations):
+                raise ValueError("Agent FinOps output exists; select a new output directory")
+    except (OSError, ValueError, KeyError, TypeError, UnicodeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
+    try:
+        with tempfile.TemporaryDirectory() as directory:
+            return build(a, bp, successor, lib, Path(directory))
+    except (OSError, ValueError, KeyError, TypeError, UnicodeError):
+        if not successor:
+            raise
+        print("ERROR: Agent FinOps output operation refused; no financial permission", file=sys.stderr)
+        return 2
+
+
+def build(a, bp, successor, lib, private_work):
     out = Path(a.out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    bp = json.loads(Path(a.data).read_text(encoding="utf-8"))
     meta = bp.get("meta") or {}
     short = str(meta.get("short") or str(meta.get("customer") or "Customer").split(" ")[0])
     html = out / (a.html or f"{short} - Frontier Company Blueprint.html")
     summary = {"html": str(html), "identity": None, "notes": []}
     data = Path(a.data)
+    if successor:
+        data = private_work / "blueprint-source.json"
+        data.write_text(json.dumps(successor["blueprint"], ensure_ascii=False), encoding="utf-8", newline="\n")
+        # Identity seeding/apply also uses the detached, cache-free source.
+        a.data = str(data)
+        # Pin this invocation to the inputs that passed preflight. Original
+        # paths are not read again after side effects begin. Raw customer
+        # working sources exist only in the private temporary directory.
+        for attribute, kind, documents in (("agent_finops", "source", successor["sources"]),
+                                           ("agent_finops_review", "review", successor["reviews"])):
+            paths = []
+            for i, document in enumerate(documents, 1):
+                path = private_work / f"{kind}-{i:03}.json"
+                successor["library"]._write_exclusive(path, document)
+                paths.append(str(path))
+            setattr(a, attribute, paths)
+        if a.ontology:
+            path = private_work / "ontology-source.json"
+            successor["library"]._write_exclusive(path, successor["blueprint"]["ontology"])
+            a.ontology = str(path)
     if not a.no_identity:
         try:
             data = build_identity(a, out, short, slugify(short), summary)
@@ -309,7 +454,7 @@ def main(argv=None) -> int:
             print(f"ERROR: {exc}", file=sys.stderr)
             return 2
     if a.ontology:
-        data = build_ontology(a, Path(data), out, summary)
+        data = build_ontology(a, Path(data), out, summary, preapplied=bool(successor))
         if summary["ontology"]["status"] == "failed":
             print(json.dumps(summary, indent=1, ensure_ascii=False))
             return 1
@@ -317,7 +462,24 @@ def main(argv=None) -> int:
     for flag, value in (("--save-normalized", a.save_normalized), ("--report", a.report)):
         if value:
             args += [flag, value]
+    args += agent_finops_flags(a)
+    normalized = Path(a.save_normalized) if a.save_normalized else private_work / "blueprint-final.json"
+    if successor and not a.save_normalized:
+        args += ["--save-normalized", normalized]
     code, so, err = run(HERE / "build_blueprint.py", *args)
+    if successor and code:
+        print("ERROR: Agent FinOps final Blueprint source validation/build refused; no financial permission",
+              file=sys.stderr)
+        return 2
+    if successor:
+        try:
+            final = lib.read_document(normalized)
+            write_agent_finops(out, successor, final["agent_finops"], final["agent_finops"]["audience"])
+        except (OSError, ValueError, KeyError, TypeError, UnicodeError):
+            print("ERROR: Agent FinOps projected reports not written; no financial permission", file=sys.stderr)
+            return 2
+        summary["agent_finops"] = {"status": "partial", "maturity": "Preview",
+                                  "records": len(final["agent_finops"]["records"]), "financial_permission": False}
     summary["blueprint"] = summary_json(so) or {"status": "failed", "detail": err.strip()[-600:]}
     print(json.dumps(summary, indent=1, ensure_ascii=False))
     return 0 if code == 0 else 1

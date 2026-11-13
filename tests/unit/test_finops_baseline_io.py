@@ -8,6 +8,7 @@ from __future__ import annotations
 import copy
 import io
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -18,6 +19,7 @@ from pathlib import Path
 from unittest import mock
 
 from tests.unit.test_finops_baseline import DAY, FIN, baseline_module, example
+from tests.unit._util import load
 
 ACK = {"as_of": DAY, "acknowledge_finops_preview": True}
 ROOT = FIN.parents[2]
@@ -134,6 +136,510 @@ class IOCase(unittest.TestCase):
     def run_cli(self, *args):
         return subprocess.run([sys.executable, str(CLI), *map(str, args)], cwd=ROOT,
                               capture_output=True, text=True, encoding="utf-8", check=False)
+
+
+class BlueprintBaselineTests(IOCase):
+    """Task4 real builder boundaries; all amounts are synthetic Caldova data."""
+
+    def setUp(self):
+        super().setUp()
+        self.blue = ROOT / "plugin/skills/frontier-blueprint"
+        self.builder = load("plugin/skills/frontier-blueprint/scripts/build_blueprint.py", "task4_builder")
+        self.wrapper = load("plugin/skills/frontier-blueprint/scripts/build_with_identity.py", "task4_wrapper")
+        self.bp = self.write("blueprint.json", seed_blueprint())
+        self.source = self.write("baseline.json", example())
+
+    def call(self, module, args):
+        out, err = io.StringIO(), io.StringIO()
+        with redirect_stdout(out), redirect_stderr(err):
+            try:
+                code = module.main(list(map(str, args)))
+            except SystemExit as error:
+                code = error.code
+        return code, out.getvalue(), err.getvalue()
+
+    def args(self, *, wrapper=False, ack=True, audience="internal"):
+        args = ["--data", self.bp, "--agent-finops", self.source, "--as-of", DAY.isoformat(),
+                "--audience", audience, "--customer-scope", "caldova-scope"]
+        if wrapper:
+            args += ["--out-dir", self.dir / "output", "--no-identity"]
+        else:
+            args += ["--out", self.dir / "output.html", "--no-product-icons"]
+        args += ["--save-normalized", self.dir / "normalized.json", "--report", self.dir / "report.json"]
+        return args + (["--acknowledge-finops-preview"] if ack else [])
+
+    def assert_no_output(self):
+        for name in ("output", "output.html", "normalized.json", "report.json"):
+            self.assertFalse((self.dir / name).exists(), name)
+
+    def test_wrapper_and_standalone_require_fresh_ack_before_any_output(self):
+        for wrapper in (False, True):
+            with self.subTest(wrapper=wrapper):
+                code, out, err = self.call(self.wrapper if wrapper else self.builder,
+                                           self.args(wrapper=wrapper, ack=False))
+                self.assertEqual(code, 2, (out, err))
+                self.assertIn("acknowledge-finops-preview", err)
+                self.assertNotIn("unrecognized arguments", err)
+                self.assert_no_output()
+
+    def test_embedded_view_never_becomes_authoritative_even_with_saved_ack(self):
+        for block in (None, {}, {"schema": "unknown"}, {
+                "schema": "frontier-agent-finops-view/1.0", "financial_permission": False,
+                "records": [], "acknowledged": True, "ready": True}):
+            self.write("blueprint.json", {**seed_blueprint(), "agent_finops": block})
+            for module, target in ((self.builder, ["--out", self.dir / "output.html"]),
+                                   (self.wrapper, ["--out-dir", self.dir / "output"])):
+                with self.subTest(block=block, module=module.__name__):
+                    code, out, err = self.call(module, ["--data", self.bp, *target,
+                                                       "--acknowledge-finops-preview"])
+                    self.assertEqual(code, 2, (out, err))
+                    self.assertIn("source", err.lower())
+                    self.assert_no_output()
+
+    def test_new_preflight_requires_actual_boolean_and_does_not_mutate(self):
+        bp = seed_blueprint()
+        before = copy.deepcopy(bp)
+        operation = getattr(self.builder, "agent_finops_preflight", None)
+        self.assertTrue(callable(operation), "standalone source preflight is missing")
+        for ack in (False, None, 1, "true", {"acknowledged": True}):
+            with self.subTest(ack=ack), self.assertRaises(ValueError):
+                operation(bp, baselines=[self.source], as_of=DAY.isoformat(), audience="internal",
+                          acknowledge_finops_preview=ack)
+        self.assertEqual(bp, before)
+        self.assert_no_output()
+
+    def test_every_invalid_source_refuses_before_identity_or_copies(self):
+        mutations = (
+            lambda m: m.update(schema="unknown"),
+            lambda m: m["profile"].update(agent_id="NO-AGENT"),
+            lambda m: m["rates"][0].update(source_id="NO-SOURCE"),
+            lambda m: m["baseline"].update(version=True),
+        )
+        for mutate in mutations:
+            model = example()
+            mutate(model)
+            self.write("baseline.json", model)
+            with mock.patch.object(self.wrapper, "build_identity") as identity:
+                args = [x for x in self.args(wrapper=True) if x != "--no-identity"]
+                code, out, err = self.call(self.wrapper, args)
+            self.assertEqual(code, 2, (out, err))
+            self.assertNotIn("unrecognized arguments", err)
+            identity.assert_not_called()
+            self.assert_no_output()
+
+    def test_dates_reviews_duplicate_agents_and_legacy_conflicts_refuse(self):
+        cases = [
+            ["--as-of", "not-a-date"], ["--as-of", "2026-02-30"],
+            ["--agent-finops-review", self.write("review.json", {"schema": "unknown"})],
+            ["--agent-finops", self.source],
+            ["--finops", FIN / "examples/caldova-finops.json"],
+        ]
+        for extra in cases:
+            with self.subTest(extra=extra):
+                code, out, err = self.call(self.wrapper, self.args(wrapper=True) + extra)
+                self.assertEqual(code, 2, (out, err))
+                self.assertNotIn("unrecognized arguments", err)
+                self.assert_no_output()
+        args = self.args(wrapper=True)
+        at = args.index("--as-of")
+        del args[at:at + 2]
+        code, out, err = self.call(self.wrapper, args)
+        self.assertEqual(code, 2, (out, err))
+        self.assertIn("as-of", err)
+        self.assert_no_output()
+
+    def test_raw_wrapper_build_preserves_input_and_ordinary_value(self):
+        bp = seed_blueprint()
+        bp["value_case"] = {"summary": "Ordinary value remains independent", "npv": 123.45}
+        self.write("blueprint.json", bp)
+        before = {p: p.read_bytes() for p in (self.bp, self.source)}
+        code, out, err = self.call(self.wrapper, self.args(wrapper=True))
+        self.assertEqual(code, 0, (out, err))
+        normalized = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))
+        self.assertEqual(normalized["value_case"], bp["value_case"])
+        view = normalized["agent_finops"]
+        self.assertEqual(view["schema"], "frontier-agent-finops-view/1.0")
+        self.assertFalse(view["financial_permission"])
+        self.assertEqual(view["records"][0]["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+        self.assertNotIn("finops", normalized)
+        self.assertTrue((self.dir / "report.json").is_file())
+        self.assertTrue(list((self.dir / "output/agent-finops").glob("*.json")))
+        for path, content in before.items():
+            self.assertEqual(path.read_bytes(), content)
+
+    def test_standalone_replaces_only_generated_cache_and_rejects_bad_receipt(self):
+        bp = seed_blueprint()
+        bp["agent_finops"] = {"schema": "frontier-agent-finops-view/1.0", "records": [],
+                             "financial_permission": False, "old_private_cache": "DO-NOT-COPY-CACHE"}
+        self.write("blueprint.json", bp)
+        code, out, err = self.call(self.builder, self.args())
+        self.assertEqual(code, 0, (out, err))
+        self.assertNotIn("DO-NOT-COPY-CACHE", (self.dir / "normalized.json").read_text(encoding="utf-8"))
+        model = self.calculated()
+        model["results"]["scenarios"]["expected"]["annual_recurring"]["amount"] = "999999"
+        self.write("baseline.json", model)
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "must-not-exist.html"
+            args = ["--data", self.bp, "--agent-finops", self.source, "--as-of", DAY.isoformat(),
+                    "--acknowledge-finops-preview", "--out", target]
+            code, out, err = self.call(self.builder, args)
+            self.assertEqual(code, 2, (out, err))
+            self.assertFalse(target.exists())
+
+    def test_customer_all_serializations_use_dependency_projection(self):
+        model = example()
+        model["rates"][0].update(amount="9876.54321", sharingClassification="internal-only",
+                                internal_notes="PRIVATE-RATE-SENTINEL")
+        self.write("baseline.json", model)
+        code, out, err = self.call(self.wrapper, self.args(wrapper=True, audience="customer"))
+        self.assertEqual(code, 0, (out, err))
+        for path in [self.dir / "normalized.json", self.dir / "report.json",
+                     *(self.dir / "output").rglob("*")]:
+            if path.is_file():
+                text = path.read_text(encoding="utf-8")
+                for token in ("PRIVATE-RATE-SENTINEL", "9876.54321", "RATE-TOKENS"):
+                    self.assertNotIn(token, text, str(path))
+        report = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))["agent_finops"]["records"][0]
+        self.assertIsNone(report["scenarios"]["expected"]["annual_recurring"]["amount"])
+        self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["status"], "withheld")
+
+    def test_customer_blueprint_transitive_sources_and_unrelated_private_controls(self):
+        for private in ("root", "nested", "E04", "unrelated"):
+            with self.subTest(private=private):
+                bp = seed_blueprint()
+                domain = next(d for d in bp["domains"] if any(a["id"] == "D3-A05" for a in d["agents"]))
+                agent = next(a for a in domain["agents"] if a["id"] == "D3-A05")
+                if private == "root":
+                    bp["sharingClassification"] = "internal-only"
+                elif private == "nested":
+                    agent["context"] = {"provenance": {"source_id": "PARENT"}}
+                    bp["evidence"] += [
+                        {"id": "PARENT", "title": "Public child", "source_id": "PRIVATE",
+                         "sharingClassification": "customer-shareable", "visibility": "customer"},
+                        {"id": "PRIVATE", "title": "Private ancestor", "sharingClassification": "internal-only",
+                         "visibility": "internal"}]
+                elif private == "E04":
+                    agent["content_src"] = ["E04"]
+                    next(e for e in bp["evidence"] if e["id"] == "E04").update(
+                        sharingClassification="internal-only", visibility="internal")
+                else:
+                    domain["agents"].append({"id": "UNRELATED", "name": "Private other agent",
+                                             "internal": True, "source_id": "UNUSED"})
+                    bp["evidence"].append({"id": "UNUSED", "title": "Unused", "internal": True,
+                                           "visibility": "internal", "sharingClassification": "internal-only"})
+                self.write("blueprint.json", bp)
+                code, out, err = self.call(self.builder, self.args(audience="customer"))
+                self.assertEqual(code, 0, (out, err))
+                report = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))[
+                    "agent_finops"]["records"][0]
+                if private == "unrelated":
+                    self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+                else:
+                    self.assertEqual(report["status"], "withheld")
+                    self.assertEqual(report["scenarios"], {})
+                    self.assertFalse(report["handover"]["ready"])
+
+    def test_multiple_same_basenames_are_preserved_without_collision(self):
+        other = example()
+        other["profile"]["agent_id"] = other["baseline"]["agent_id"] = "D3-A06"
+        other["baseline"]["id"] = "CALDOVA-OTHER"
+        bp = seed_blueprint()
+        domain = next(d for d in bp["domains"] if any(a["id"] == "D3-A05" for a in d["agents"]))
+        domain["agents"].append({"id": "D3-A06", "name": "Other synthetic agent"})
+        self.write("blueprint.json", bp)
+        folder = self.dir / "other"
+        folder.mkdir()
+        second = self.write("other/baseline.json", other)
+        code, out, err = self.call(self.wrapper, self.args(wrapper=True) + ["--agent-finops", second])
+        self.assertEqual(code, 0, (out, err))
+        normalized = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(normalized["agent_finops"]["records"]), 2)
+        copies = list((self.dir / "output/agent-finops").glob("source-*.json"))
+        self.assertEqual(len(copies), 2)
+        self.assertEqual({json.loads(p.read_text(encoding="utf-8"))["baseline"]["id"] for p in copies},
+                         {"CALDOVA-D3-A05-BASELINE", "CALDOVA-OTHER"})
+
+    def test_optional_helpers_missing_is_explicit_but_core_still_builds(self):
+        with mock.patch.object(self.builder, "FIN_SCRIPTS", self.dir / "not-installed", create=True):
+            code, out, err = self.call(self.builder, self.args())
+            self.assertEqual(code, 2, (out, err))
+            self.assertIn("install", err)
+            self.assertNotIn("unrecognized arguments", err)
+            self.assert_no_output()
+            code, out, err = self.call(self.builder, ["--data", self.bp, "--no-product-icons"])
+            self.assertEqual(code, 0, (out, err))
+
+    def test_removed_skill_wrapper_and_standalone_core_and_value_still_work(self):
+        installed = self.dir / "installed"
+        shutil.copytree(self.blue, installed / self.blue.name)
+        shutil.copytree(ROOT / "plugin/skills/frontier-value-case", installed / "frontier-value-case")
+        value = self.write("ordinary-value.json", {"schema": "frontier-value/1.0", "currency": "CHF",
+                                                  "use_cases": [], "assumptions": []})
+        for script, target in (("build_blueprint", ["--out", self.dir / "core.html"]),
+                               ("build_with_identity", ["--out-dir", self.dir / "core", "--no-identity",
+                                                        "--value", value])):
+            path = installed / self.blue.name / "scripts" / f"{script}.py"
+            command = [sys.executable, str(path), "--data", str(self.bp), *map(str, target)]
+            core = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
+            self.assertEqual(core.returncode, 0, core.stderr)
+            requested_target = self.dir / f"refused-{script}"
+            args = ["--out", requested_target] if script == "build_blueprint" else [
+                "--out-dir", requested_target]
+            refused = subprocess.run(
+                [sys.executable, str(path), "--data", str(self.bp), *map(str, args),
+                 "--agent-finops", str(self.source), "--as-of", DAY.isoformat(), "--acknowledge-finops-preview"],
+                cwd=ROOT, capture_output=True, text=True, check=False)
+            self.assertEqual(refused.returncode, 2, refused.stderr)
+            self.assertIn("install", refused.stderr)
+            self.assertFalse(requested_target.exists())
+
+    def test_frozen_review_dated_revalidation_preserves_sources_and_diagnostics(self):
+        snapshot_path, snapshot = self.snapshot()
+        review = self.review(snapshot)
+        review_path = self.write("recorded-review.json", review)
+        before = {p: p.read_bytes() for p in (snapshot_path, review_path)}
+        args = self.args()
+        args[args.index(self.source)] = snapshot_path
+        args[args.index(DAY.isoformat())] = "2026-11-13"
+        code, out, err = self.call(self.builder, args + ["--agent-finops-review", review_path])
+        self.assertEqual(code, 0, (out, err))
+        report = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))[
+            "agent_finops"]["records"][0]
+        self.assertEqual(report["as_of"], "2026-11-13")
+        self.assertFalse(report["handover"]["ready"])
+        self.assertTrue(report["gaps"])
+        for path, content in before.items():
+            self.assertEqual(path.read_bytes(), content)
+
+    def test_derived_legacy_value_still_needs_its_own_cost_source(self):
+        value = self.write("legacy-derived.json", {
+            "schema": "frontier-value/1.0", "results": {"agents_costed": ["D3-A05"]}})
+        code, out, err = self.call(self.wrapper, self.args(wrapper=True) + ["--value", value])
+        self.assertEqual(code, 2, (out, err))
+        self.assertIn("--finops", err)
+        self.assert_no_output()
+
+    def test_successor_output_alias_and_malformed_json_refuse_without_overwrite(self):
+        before = self.source.read_bytes()
+        for module, wrapper in ((self.builder, False), (self.wrapper, True)):
+            args = self.args(wrapper=wrapper)
+            args[args.index(self.dir / "normalized.json")] = self.source
+            code, out, err = self.call(module, args)
+            self.assertEqual(code, 2, (out, err))
+            self.assertEqual(self.source.read_bytes(), before)
+            self.assert_no_output()
+        for text in ('{"schema": "one", "schema": "two"}', '{"schema": NaN}', '["not-an-object"]'):
+            self.source.write_text(text, encoding="utf-8")
+            code, out, err = self.call(self.wrapper, self.args(wrapper=True))
+            self.assertEqual(code, 2, (out, err))
+            self.assert_no_output()
+
+    def test_direct_normalization_and_customer_helpers_refuse_unvalidated_view(self):
+        bp = {**seed_blueprint(), "agent_finops": {"schema": "frontier-agent-finops-view/1.0", "ready": True}}
+        for operation in (self.builder.normalise, self.builder.customer_version):
+            with self.subTest(operation=operation.__name__), self.assertRaisesRegex(ValueError, "source"):
+                operation(copy.deepcopy(bp), self.builder.Report())
+
+    def test_ontology_customer_intermediate_preserves_private_original_ancestry(self):
+        bp = seed_blueprint()
+        domain = next(d for d in bp["domains"] if any(a["id"] == "D3-A05" for a in d["agents"]))
+        agent = next(a for a in domain["agents"] if a["id"] == "D3-A05")
+        agent["content_src"] = ["E04"]
+        next(e for e in bp["evidence"] if e["id"] == "E04").update(
+            sharingClassification="internal-only", visibility="internal")
+        self.write("blueprint.json", bp)
+        ontology = ROOT / "plugin/skills/frontier-process/examples/caldova-ontology.json"
+        code, out, err = self.call(self.wrapper, self.args(wrapper=True, audience="customer") + [
+            "--ontology", ontology])
+        self.assertEqual(code, 0, (out, err))
+        normalized = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))
+        self.assertEqual(normalized["agent_finops"]["records"][0]["status"], "withheld")
+        self.assertTrue(normalized["ontology"])
+        self.assertFalse((self.dir / "output/ontology/blueprint-ontology.json").exists())
+
+    def ontology(self):
+        return {
+            "schema": "frontier-ontology/1.0", "sharingClassification": "customer-shareable",
+            "customer_scope": "caldova-scope",
+            "sources_doc": [
+                {"id": "LOCAL-DOC", "title": "Synthetic local documentation", "source_id": "LOCAL-PARENT",
+                 "sharingClassification": "customer-shareable"},
+                {"id": "LOCAL-PARENT", "title": "Synthetic transitive source", "source_id": "E04",
+                 "sharingClassification": "customer-shareable"},
+                {"id": "UNUSED-LOCAL", "title": "Unused private definition", "internal": True,
+                 "sharingClassification": "internal-only"},
+            ],
+            "sources": [{"id": "local-onelake", "name": "Synthetic OneLake source", "src": ["LOCAL-DOC"],
+                         "sharingClassification": "customer-shareable"}],
+            "entity_types": [{"id": "SyntheticRecord", "name": "Synthetic record", "key": ["recordId"],
+                              "properties": [{"name": "recordId", "type": "string"}],
+                              "source": "local-onelake"}],
+            "data_agents": [{"id": "OTHER-AGENT", "name": "Unconsumed private agent", "internal": True,
+                             "sources": ["ontology"], "src": ["UNUSED-LOCAL"]}],
+        }
+
+    def test_d11_direct_apply_resolves_only_consumed_local_source_closure(self):
+        for restriction in ("public", "private-doc", "private-parent", "private-physical", "scope",
+                            "unknown-sharing", "cycle", "selected-agent"):
+            with self.subTest(restriction=restriction):
+                bp = seed_blueprint()
+                onto = self.ontology()
+                bp["ontology"] = onto
+                if restriction in {"private-doc", "private-parent"}:
+                    onto["sources_doc"][restriction == "private-parent"]["sharingClassification"] = "internal-only"
+                elif restriction == "private-physical":
+                    onto["sources"][0]["visibility"] = "internal"
+                elif restriction == "scope":
+                    onto["sources_doc"][1].update(sharingClassification="customer-specific",
+                                                  customer_scope="another-synthetic-scope")
+                elif restriction == "unknown-sharing":
+                    onto["sources_doc"][0]["sharingClassification"] = "unknown"
+                elif restriction == "cycle":
+                    onto["sources_doc"][1]["source_id"] = "LOCAL-DOC"
+                elif restriction == "selected-agent":
+                    onto["data_agents"][0]["id"] = "D3-A05"
+                before = copy.deepcopy(bp)
+                try:
+                    result = self.cli.apply_models(bp, [self.calculated()], **ACK, audience="customer",
+                                                   customer_scope="caldova-scope")
+                except ValueError as error:
+                    self.fail(f"D35-11 separately registered local source should resolve: {error}")
+                self.assertEqual(bp, before)
+                self.assertEqual(result["ontology"], onto)
+                report = result["agent_finops"]["records"][0]
+                if restriction == "public":
+                    self.assertEqual(report["scenarios"]["expected"]["annual_recurring"]["amount"], "1320.00")
+                else:
+                    self.assertEqual(report["status"], "withheld")
+                    self.assertFalse(report["handover"]["ready"])
+
+    def test_d11_collision_or_unknown_source_refuses_all_entrypoints_without_artifacts(self):
+        for invalid in ("collision", "duplicate-local", "unknown-local", "unknown-physical", "missing-register",
+                        "reserved-binding"):
+            with self.subTest(invalid=invalid):
+                onto = self.ontology()
+                if invalid == "collision":
+                    onto["sources_doc"].append({"id": "E04", "title": "Ambiguous private identity", "internal": True})
+                elif invalid == "duplicate-local":
+                    onto["sources_doc"].append(copy.deepcopy(onto["sources_doc"][0]))
+                elif invalid == "unknown-local":
+                    onto["sources_doc"][0]["source_id"] = "NO-SOURCE"
+                elif invalid == "unknown-physical":
+                    onto["entity_types"][0]["source"] = "NO-PHYSICAL-SOURCE"
+                elif invalid == "missing-register":
+                    del onto["sources_doc"]
+                else:
+                    onto["sources"][0]["id"] = "ontology"
+                    onto["entity_types"][0]["source"] = "ontology"
+                bp = {**seed_blueprint(), "ontology": onto}
+                original = copy.deepcopy(bp)
+                with self.assertRaises(ValueError):
+                    self.cli.apply_models(bp, [self.calculated()], **ACK, audience="internal")
+                self.assertEqual(bp, original)
+                ontology = self.write("ontology.json", onto)
+                self.write("blueprint.json", seed_blueprint())
+                with mock.patch.object(self.wrapper, "build_identity") as identity:
+                    args = [x for x in self.args(wrapper=True) if x != "--no-identity"]
+                    code, out, err = self.call(self.wrapper, args + ["--ontology", ontology])
+                self.assertEqual(code, 2, (out, err))
+                identity.assert_not_called()
+                self.assert_no_output()
+                self.write("blueprint.json", bp)
+                code, out, err = self.call(self.builder, self.args())
+                self.assertEqual(code, 2, (out, err))
+                self.assert_no_output()
+
+    def test_d11_combined_ordinary_value_ontology_baseline_happy_and_input_bytes_unchanged(self):
+        bp = seed_blueprint()
+        bp["value_case"] = {"summary": "Unchanged ordinary value", "npv": 123.45}
+        self.write("blueprint.json", bp)
+        ontology = ROOT / "plugin/skills/frontier-process/examples/caldova-ontology.json"
+        value = self.write("ordinary.json", {"schema": "frontier-value/1.0", "currency": "CHF",
+                                            "use_cases": [], "assumptions": []})
+        before = {p: p.read_bytes() for p in (ontology, value, self.bp, self.source)}
+        code, out, err = self.call(self.wrapper, self.args(wrapper=True, audience="internal") + [
+            "--ontology", ontology, "--value", value])
+        self.assertEqual(code, 0, (out, err))
+        normalized = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))
+        self.assertEqual(normalized["agent_finops"]["records"][0]["scenarios"]["expected"][
+            "annual_recurring"]["amount"], "1320.00")
+        self.assertNotIn("finops", normalized)
+        self.assertTrue(normalized["ontology"]["sources_doc"])
+        self.assertTrue(normalized["value_case"])
+        for path, content in before.items():
+            self.assertEqual(path.read_bytes(), content)
+
+    def test_d11_standalone_preserves_actual_ontology_ids_and_direct_cli_uses_same_policy(self):
+        bp = {**seed_blueprint(), "ontology": self.ontology()}
+        self.write("blueprint.json", bp)
+        calculated = self.write("calculated.json", self.calculated())
+        before = {p: p.read_bytes() for p in (calculated, self.bp)}
+        code, out, err = self.call(self.builder, self.args(audience="customer"))
+        self.assertEqual(code, 0, (out, err))
+        normalized = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))
+        self.assertEqual(normalized["ontology"]["entity_types"][0]["source"], "local-onelake")
+        self.assertEqual(normalized["ontology"]["sources"][0]["src"], ["LOCAL-DOC"])
+        applied = self.dir / "direct.json"
+        result = self.run_cli("apply", "--blueprint", self.bp, "--baseline", calculated, "--out", applied,
+                              "--audience", "customer", "--customer-scope", "caldova-scope",
+                              "--as-of", DAY.isoformat(), "--acknowledge-finops-preview")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        direct = json.loads(applied.read_text(encoding="utf-8"))
+        self.assertEqual(direct["agent_finops"], normalized["agent_finops"])
+        self.assertEqual(direct["ontology"], bp["ontology"])
+        for path, content in before.items():
+            self.assertEqual(path.read_bytes(), content)
+
+    def test_preflight_validated_sources_are_used_on_copies_for_the_entire_chain(self):
+        # Simulate another writer changing an input AFTER preflight. The current
+        # operation must consume its validated detached source, not re-read it.
+        original = self.wrapper.run
+        seen = []
+
+        def intervene(script, *args):
+            if script.name == "build_blueprint.py":
+                model = example()
+                model["rates"][0]["amount"] = "999"
+                self.write("baseline.json", model)
+                seen.extend(Path(args[i + 1]) for i, flag in enumerate(args) if flag == "--agent-finops")
+            return original(script, *args)
+
+        with mock.patch.object(self.wrapper, "run", side_effect=intervene):
+            code, out, err = self.call(self.wrapper, self.args(wrapper=True))
+        self.assertEqual(code, 0, (out, err))
+        self.assertTrue(seen)
+        self.assertTrue(all(path != self.source for path in seen))
+        result = json.loads((self.dir / "normalized.json").read_text(encoding="utf-8"))
+        self.assertEqual(result["agent_finops"]["records"][0]["scenarios"]["expected"][
+            "annual_recurring"]["amount"], "1320.00")
+
+    def test_embedded_cache_malformed_records_are_not_treated_as_owned_generated_reports(self):
+        for records in ([None], [{"schema": "unknown", "financial_permission": False}],
+                        [{"schema": "frontier-agent-finops-report/1.0", "financial_permission": True}]):
+            bp = {**seed_blueprint(), "agent_finops": {
+                "schema": "frontier-agent-finops-view/1.0", "records": records, "financial_permission": False}}
+            self.write("blueprint.json", bp)
+            for module, wrapper in ((self.builder, False), (self.wrapper, True)):
+                with self.subTest(records=records, wrapper=wrapper):
+                    code, out, err = self.call(module, self.args(wrapper=wrapper))
+                    self.assertEqual(code, 2, (out, err))
+                    self.assert_no_output()
+
+    def test_new_chain_output_io_error_is_bounded_and_preserves_existing_file(self):
+        target = self.dir / "output"
+        target.write_text("existing output must not be overwritten", encoding="utf-8")
+        for module, wrapper in ((self.wrapper, True), (self.builder, False)):
+            args = self.args(wrapper=wrapper)
+            if not wrapper:
+                args[args.index(self.dir / "normalized.json")] = target / "normalized.json"
+            try:
+                code, out, err = self.call(module, args)
+            except OSError as error:
+                self.fail(f"new financial chain must return a bounded I/O refusal, not raise {type(error).__name__}")
+            self.assertEqual(code, 2, (out, err))
+            self.assertIn("ERROR:", err)
+            self.assertNotIn("1320", out + err)
+            self.assertEqual(target.read_text(encoding="utf-8"), "existing output must not be overwritten")
 
 
 class LifecycleTests(IOCase):
