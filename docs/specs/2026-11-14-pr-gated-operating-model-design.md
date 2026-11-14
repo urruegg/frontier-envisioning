@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted design |
-| Status | Proposed written specification; concept selected, written approval pending |
+| Status | Written specification approved at 8de16ca for planning; implementation/adoption pending |
 | Scope | Private GitHub Pro engineering/release automation with genuine human PR approval |
-| References | [Catalogue](README.md), [Decision #48](https://github.com/urruegg/frontier-envisioning/issues/48), [Idea](../ideas/2026-11-14-pr-gated-operating-model.md), [ADR-0030](../adr/0030-pr-gated-engineering-automation.md), [Draft sprint row](../sprints/README.md), [Working agreement](../../AGENTS.md), [Policy catalogue](../../.github/agent-policy/README.md) |
+| References | [Catalogue](README.md), [Decision #48](https://github.com/urruegg/frontier-envisioning/issues/48), [Idea](../ideas/2026-11-14-pr-gated-operating-model.md), [Plan](../plans/2026-11-14-pr-gated-operating-model-plan.md), [ADR-0030](../adr/0030-pr-gated-engineering-automation.md), [SPRINT-010](../sprints/SPRINT-010-pr-gated-operating-model.md), [Working agreement](../../AGENTS.md), [Policy catalogue](../../.github/agent-policy/README.md) |
 
 ## Outcome and authority
 
@@ -23,8 +23,11 @@ Private `urruegg/frontier-envisioning` remains the source, issue and PR host.
 The maintainer confirmed current GitHub Pro, selected
 `formal-review-machine-author`, selected `engineering-and-releases`, then
 `approve-pr-gated-engineering-concept` after the complete proposed flow.
-The actual choices are recorded on #48. This written specification, its
-Proposed ADR and any later plan still need their required reviews.
+The actual choices are recorded on #48. The separate
+`approve-written-pr-gated-spec` response approved this written proposal at
+`8de16ca089ba0e2a1787496a4c65ecf17b7b6b4e` for planning. The linked later
+plan/readiness remains pending, and ADR-0030 still awaits its normal human
+PR acceptance. No implementation or current-policy activation is inferred.
 
 This document does not activate the new model or override current human-only
 rules. Approval of the concept is not permission to change current protected

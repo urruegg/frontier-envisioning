@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted design |
-| Status | Proposed; concept selected, written/PR acceptance pending |
+| Status | Proposed; written specification approved at 8de16ca for planning, PR acceptance pending |
 | Scope | Engineering/release authority boundary, not production deployment or agent identity branding |
 | References | [Catalogue](README.md), [Decision #48](https://github.com/urruegg/frontier-envisioning/issues/48), [Idea](../ideas/2026-11-14-pr-gated-operating-model.md), [Specification](../specs/2026-11-14-pr-gated-operating-model-design.md), [ADR-0018](0018-quality-gates-and-release-reproduction.md), [ADR-0019](0019-versioning-and-releases.md), [ADR-0022](0022-deterministic-guardrails.md), [Earlier ADR-0029 proposal](https://github.com/urruegg/frontier-envisioning/blob/4450e46b2e5930ec41dee0f5218751b28d090dba/docs/adr/0029-free-private-release-preparation.md) |
 
@@ -84,7 +84,9 @@ manual acceptance evidence cannot be manufactured by an approval.
 
 The maintainer selected the formal machine-author model and engineering/release
 scope, then approved writing this concept's specification/ADR on #48.
-This ADR remains Proposed; written-spec, plan and real adoption are separate.
+The separate `approve-written-pr-gated-spec` response approved the written
+proposal at `8de16ca` for planning. This ADR remains Proposed; plan/readiness,
+its required human PR acceptance and real adoption remain separate.
 
 If accepted and implemented, it replaces the relevant routine manual-execution
 aspects of the earlier engineering/release proposals. Preserve their source
