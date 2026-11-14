@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
-| Date | 2026-11-12 |
+| Version | 0.5 |
+| Date | 2026-11-14 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained catalogue; decision approval not inferred |
 | Scope | Architecture decision routing; document revision, not product version |
@@ -25,5 +25,11 @@ Product and plugin decisions ADR-0001 to ADR-0016 are recorded in the [solution 
 | [0026](0026-process-ontology-fabric-iq.md) | Optional process ontology wrapper and local OWL/Turtle handover (1.9.1 development intake) | Proposed |
 | [0027](0027-cdm-grounding-and-data-products.md) | Proposed CDM mappings, medallion semantic layer and governed data products; not FinOps | Proposed |
 | [0028](0028-versioned-agent-finops-baselines.md) | Offline versioned FinOps baselines, explicit legacy compatibility and strict financial build-handover evidence | Proposed; architecture choice recorded on #35/#36, written/PR acceptance separate |
+| [0030](0030-pr-gated-engineering-automation.md) | Human native PR approval with isolated App authorship, trusted execution and engineering/release automation | Proposed; concept selected on #48, written/PR acceptance pending |
 
 Template: Context, Decision, Consequences, Alternatives considered, Status.
+
+ADR-0029 is already allocated to the
+[unmerged #46/#47 manual-publication proposal](https://github.com/urruegg/frontier-envisioning/blob/4450e46b2e5930ec41dee0f5218751b28d090dba/docs/adr/0029-free-private-release-preparation.md).
+Preserve that number and its commit-qualified evidence; it is not a missing
+current file or an accepted main-branch decision.

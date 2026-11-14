@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.2 |
-| Date | 2026-11-13 |
+| Version | 1.3 |
+| Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Ideas for Frontier Envisioning work packages in the canonical plural folder |
@@ -11,6 +11,7 @@
 
 | Idea | State | Governing work |
 |---|---|---|
+| [PR-gated operating model](2026-11-14-pr-gated-operating-model.md) | Pro/formal-machine-author/engineering-release concept selected; written review pending | [#48](https://github.com/urruegg/frontier-envisioning/issues/48), [specification](../specs/2026-11-14-pr-gated-operating-model-design.md), [ADR-0030](../adr/0030-pr-gated-engineering-automation.md); adoption not performed |
 | [Caldova gallery extension](2026-11-13-caldova-gallery-extension.md) | Written spec approved at `4ef63d1`; inline plan/readiness at `8be6aa8`; ten captures and full local gate verified | [#41](https://github.com/urruegg/frontier-envisioning/issues/41), [design](../specs/2026-11-13-caldova-gallery-extension-design.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md); PR/CI separate |
 | [Agent FinOps baseline](2026-11-12-agent-finops-baseline.md) | Spec approved at `2e3c0e7`; subagent-driven plan/readiness approval at `efb3468`; implementation in progress | [#35](https://github.com/urruegg/frontier-envisioning/issues/35), [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md) |
 | [Version 1.9.2](2026-11-12-version-1.9.2.md) | Locally built and verified; PR/CI and human release decisions separate | [#33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](../sprints/SPRINT-006-version-1.9.2.md) |
