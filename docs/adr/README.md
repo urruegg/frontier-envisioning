@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
-| Date | 2026-11-12 |
+| Version | 0.5 |
+| Date | 2026-11-14 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained catalogue; decision approval not inferred |
 | Scope | Architecture decision routing; document revision, not product version |
@@ -25,5 +25,6 @@ Product and plugin decisions ADR-0001 to ADR-0016 are recorded in the [solution 
 | [0026](0026-process-ontology-fabric-iq.md) | Optional process ontology wrapper and local OWL/Turtle handover (1.9.1 development intake) | Proposed |
 | [0027](0027-cdm-grounding-and-data-products.md) | Proposed CDM mappings, medallion semantic layer and governed data products; not FinOps | Proposed |
 | [0028](0028-versioned-agent-finops-baselines.md) | Offline versioned FinOps baselines, explicit legacy compatibility and strict financial build-handover evidence | Proposed; architecture choice recorded on #35/#36, written/PR acceptance separate |
+| [0029](0029-free-private-release-preparation.md) | Read-only exact-tag release preparation on private GitHub Free, independent reproduction and human publication without cryptographic attestation | Proposed; concept selected on #46, written/PR acceptance pending |
 
 Template: Context, Decision, Consequences, Alternatives considered, Status.
