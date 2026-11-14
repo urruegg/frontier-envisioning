@@ -43,7 +43,9 @@ SOURCES = (
         "frontier-dev-loop", "frontier-intake", "frontier-release",
         "frontier-renderer-change", "frontier-skill-authoring",
     )),
+    ".github/copilot-instructions.md",
     ".github/instructions/python-tools.instructions.md",
+    ".github/instructions/workflows.instructions.md",
 )
 LEGACY_ROUTING = "write the spec and plan to docs/plans/"
 SUMMARY = "## Summary (written by a person, in your own words)"
@@ -131,6 +133,95 @@ REPORTER_EXAMPLE = """# Proposed TRUSTED metadata-only reporter step, not a comp
     permission-contents: read
     permission-pull-requests: read
 """
+# Exact current source segments, not suffix notes that leave conflicting steps operative.
+# Drift/duplicates are input failures; these replacements exist only in the inert patch.
+AMENDMENTS = {
+    ".github/skills/frontier-release/SKILL.md": ((
+        "## Publish (people only; hooks block agents)\n\n"
+        "1. Merge the release pull request.\n"
+        "2. `git tag vX.Y.Z <merge commit>` and `git push origin vX.Y.Z`.\n"
+        "3. A maintainer verifies `release-approval` and its version-tag/reviewer policy before setting `RELEASE_ENABLED=true`. "
+        "The workflow runs strict L1 and L2 on the tag, builds the bundle, pinned SBOM and provenance attestation, "
+        "and waits for `release-approval` before drafting the release. "
+        "Missing baseline evidence or private-repository approval controls blocks publication.\n"
+        "4. Review and publish the draft. Then add `releases/X.Y.Z/manifest.json` from the release asset `release-manifest.json` "
+        "in a follow-up pull request, so later builds of X.Y.Z can be verified.\n"
+        "5. Distribute: the plugin package goes to Cowork users (chat install or the organisation catalogue, decision D-02).\n",
+        "## Publish (people only; hooks block agents)\n\n"
+        "The legacy activation sequence is retired in this proposed private-Pro engineering profile. "
+        "This is review data, not current activation or permission; active protected sources/history stay unchanged.\n\n"
+        "1. Keep SHOWCASE_ENABLED and legacy RELEASE_ENABLED unset/false; do not enable or rerun legacy release.yml.\n"
+        "2. GitHub Pro private environment reviewers (`release-approval`) and native artifact attestations are unsupported. "
+        "Publication is BLOCKED rather than falling back to that legacy path or promising crypto/SLSA evidence.\n"
+        "3. STOP for @urruegg: actual App/store/key/provider/native protection setup, eligible current-head human review, "
+        "accepted control/adoption revision and supported capability proof are person-only prerequisites. Missing proof blocks activation.\n"
+        "4. A future separately implemented/adopted isolated trusted publisher may process a declared release intent only after "
+        "actual human approval and verified accepted controls. Only four native Releases assets: frontier-envisioning-plugin-VERSION.zip, "
+        "release-manifest.json, sbom-spdx.zip, SHA256SUMS.txt; no registry wrapper. Workers receive no publishing credentials.\n"
+        "5. Only after separately authorised publication, hand the immutable release-manifest record to the person for a follow-up PR "
+        "and distribute the plugin to Cowork users (decision D-02). Preserve #47/manual history; no retag, old publisher rerun or relabelling.\n",
+    ),),
+    ".github/agents/frontier-release-manager.agent.md": ((
+        "5. Hand over to the release manager with the exact next steps: verify baseline evidence and the `release-approval` reviewer/tag policy, "
+        "enable `RELEASE_ENABLED`, merge, tag the approved commit, push the tag, approve `release-approval`, publish the draft, "
+        "then record the release manifest in a follow-up pull request. Never enable, merge, tag, publish or deploy yourself.\n",
+        "5. Hand over a BLOCKED release-intent review package to @urruegg. Keep SHOWCASE_ENABLED and RELEASE_ENABLED unset/false; "
+        "do not enable or rerun legacy release.yml. GitHub Pro private environment reviewers/native artifact attestations are unsupported. "
+        "Actual App/store/key/provider/native protection and accepted control/adoption proof are person-only prerequisites; "
+        "missing capability stops activation, with no owner-scoped authentication fallback. Only a future separately implemented/adopted "
+        "isolated trusted publisher may process a declared release intent after actual human approval. "
+        "Never enable, merge, tag, publish, dispatch or deploy yourself.\n",
+    ),),
+    ".github/instructions/python-tools.instructions.md": ((
+        "- The hook scripts in `.github/hooks/scripts/` are human-maintained guardrails; "
+        "propose changes in the pull request description instead of editing them.\n",
+        "- The hook scripts in `.github/hooks/scripts/` are human-maintained guardrails (people only); "
+        "propose changes in the pull request description instead of editing them.\n"
+        "- The offline bootstrap generator produces only source-qualified inert review proposals under ignored "
+        "`build/governance-bootstrap/`, through the tool rather than manual output edits. "
+        "Missing/drifted/duplicate source anchors fail clearly before output; no credential access, no candidate execution, "
+        "no GitHub/Azure calls or apply mode. Generated output is not adoption or permission; current protected bytes/denials stay unchanged.\n",
+    ),),
+    ".github/instructions/workflows.instructions.md": ((
+        "- Top-level `permissions` with the least privilege; widen per job only where needed "
+        "(`id-token: write` for OpenID Connect, `contents: write` only for publishing a release).\n",
+        "- Top-level `permissions` stay least-privilege/read-only. Current write/manual actions and protected changes remain human-only; "
+        "SHOWCASE_ENABLED and RELEASE_ENABLED stay unset/false. This proposal neither enables a workflow nor grants current agents permission.\n"
+        "- A future accepted trusted proposal coordinator may have `contents: write` for dedicated feature-branch writes only, "
+        "with explicit per-repository/per-job permissions in urruegg/frontier-envisioning. "
+        "Accepted control and actual native protections must enforce protected main/current source/base/control, eligible human review "
+        "and no routine bypass; no proposal worker receives base contents/review/publishing writes or owner keys. "
+        "Do not execute a candidate or trust edited candidate policy in a privileged job.\n"
+        "- Candidate validator: no secrets/write/OIDC. The trusted metadata-only reporter binds actual source/control/run/check origins; "
+        "never print/return an installation token to a worker or pass it as a cross-job output. "
+        "A future isolated publisher is separate from validation/coordination and requires actual human approval of a declared release intent.\n"
+        "- These future roles require implemented trusted enforcement and real person-only App/store/key/provider/native/adoption proof. "
+        "If capability/isolation is missing, activation remains BLOCKED; no owner-scoped agent authentication fallback. "
+        "GitHub Pro private environment reviewers/native artifact attestations are unsupported, not an alternate release gate.\n"
+        "- `id-token: write` is only for separately approved Azure OpenID Connect workflows, not this engineering validator/profile. "
+        "No Azure/admin/destructive/visibility/secret-rotation authority is added.\n",
+    ),),
+    ".github/copilot-instructions.md": (
+        (
+            "8. **Human-only:** merging, approvals, releases and tags, deployments, repository settings, "
+            "the `status:ready` and `approved:*` labels, and `.github/hooks/`. Hooks enforce this.\n",
+            "8. **Current human-only:** merging, approvals, releases and tags, deployments, repository settings, "
+            "the `status:ready` and `approved:*` labels, and `.github/hooks/`. Keep active hooks/denials unchanged. "
+            "Possible future accepted trusted roles are not permission for current agents or this shared owner-authenticated environment. "
+            "Only separately implemented/adopted accepted control, real native human review and person-verified capability proof can govern "
+            "a restricted proposal coordinator or isolated publisher; no tools/models or guard-opening path is added here. "
+            "Never expose candidate execution to write/publishing credentials or pass owner keys to a worker; "
+            "the validator has no secrets/write/OIDC and missing isolation blocks activation.\n",
+        ),
+        (
+            "- Protected session-start routing still names legacy paths; a human must update it under #8. "
+            "Report that limitation, do not edit or hide it.\n",
+            "- Protected session-start routing remains legacy until a person completes #8. "
+            "The inert source-qualified migration contains the actual route repair, not adoption evidence or authority to edit active hooks. "
+            "Report the current limitation; do not hide it or infer activation from a file/status.\n",
+        ),
+    ),
+}
 CHECKLIST = """# #50 operator checklist — review output only
 
 STOP: @urruegg alone performs App/private-store creation, key storage, provider
@@ -282,6 +373,11 @@ def _migration(sources: dict[str, str]) -> str:
             proposed[relative] = sources[relative] + ALIGNMENT
         elif relative.startswith(".github/workflows/"):
             proposed[relative] = WORKFLOW_NOTE + sources[relative]
+    for relative, replacements in AMENDMENTS.items():
+        revised = proposed.get(relative, sources[relative])
+        for old, new in replacements:
+            revised = _replace_once(revised, old, new, relative)
+        proposed[relative] = revised
     return "".join(
         "".join(difflib.unified_diff(
             sources[relative].splitlines(keepends=True), proposed[relative].splitlines(keepends=True),

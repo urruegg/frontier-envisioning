@@ -36,12 +36,22 @@ SOURCE_PATHS = (
         "frontier-dev-loop", "frontier-intake", "frontier-release",
         "frontier-renderer-change", "frontier-skill-authoring",
     )),
+    ".github/copilot-instructions.md",
     ".github/instructions/python-tools.instructions.md",
+    ".github/instructions/workflows.instructions.md",
 )
 OUTPUT_NAMES = {
     "migration-proposal.patch", "settings-proposal.json", "app-descriptor.json",
     "validation-report.json", "operator-checklist.md",
 }
+AMENDMENT_ANCHORS = (
+    (".github/skills/frontier-release/SKILL.md", "## Publish (people only; hooks block agents)"),
+    (".github/agents/frontier-release-manager.agent.md", "5. Hand over to the release manager"),
+    (".github/instructions/python-tools.instructions.md", "- The hook scripts in"),
+    (".github/instructions/workflows.instructions.md", "- Top-level `permissions`"),
+    (".github/copilot-instructions.md", "8. **Human-only:**"),
+    (".github/copilot-instructions.md", "- Protected session-start routing"),
+)
 
 
 def seed(root: Path) -> None:
@@ -97,6 +107,13 @@ def apply_review_patch(original: str, patch_text: str, relative: str) -> str:
             raise AssertionError("Unexpected diff line")
     result.extend(source[cursor:])
     return "".join(result)
+
+
+def current_anchor(source: str, prefix: str) -> str:
+    """Select actual source text independently of the generator's replacements."""
+    if prefix.startswith("## Publish"):
+        return source[source.index(prefix):]
+    return next(line for line in source.splitlines(keepends=True) if line.startswith(prefix))
 
 
 class BootstrapGenerationTests(unittest.TestCase):
@@ -186,6 +203,146 @@ class BootstrapContractTests(unittest.TestCase):
         self.assertEqual(expected, revised)
         self.assertIn("Behavioural prompts of PRD B.9", revised)
         self.assertIn("Install from the built package tested in a Cowork chat", revised)
+
+    def test_reconstructed_release_skill_retires_legacy_activation(self):
+        relative = ".github/skills/frontier-release/SKILL.md"
+        source = (self.root / relative).read_text(encoding="utf-8")
+        revised = apply_review_patch(source, self.outputs()["migration-proposal.patch"], relative)
+        # Inspect operative source BEFORE the generic alignment appendix.
+        operative = revised.split("\n\n## #50 bootstrap proposal", 1)[0]
+        self.assertNotIn("before setting `RELEASE_ENABLED=true`", operative)
+        self.assertNotIn("waits for `release-approval`", operative)
+        self.assertNotIn("builds the bundle, pinned SBOM and provenance attestation", operative)
+        self.assertNotIn("1. Merge the release pull request.", operative)
+        self.assertNotIn("2. `git tag vX.Y.Z <merge commit>`", operative)
+        self.assertIn("retired", operative.lower())
+        self.assertIn("RELEASE_ENABLED", operative)
+        self.assertIn("SHOWCASE_ENABLED", operative)
+        self.assertIn("unset/false", operative)
+        self.assertIn("GitHub Pro", operative)
+        self.assertIn("unsupported", operative)
+        self.assertIn("BLOCKED", operative)
+        self.assertIn("future", operative.lower())
+        self.assertIn("isolated trusted publisher", operative)
+        self.assertIn("actual human approval", operative)
+        self.assertEqual(source.split("## Publish", 1)[0], revised.split("## Publish", 1)[0])
+        self.assertIn("Keep released records immutable.", revised)
+
+    def test_reconstructed_release_manager_no_longer_prescribes_legacy_sequence(self):
+        relative = ".github/agents/frontier-release-manager.agent.md"
+        source = (self.root / relative).read_text(encoding="utf-8")
+        revised = apply_review_patch(source, self.outputs()["migration-proposal.patch"], relative)
+        operative = revised.split("\n\n## #50 bootstrap proposal", 1)[0]
+        handoff = next(line for line in operative.splitlines() if line.startswith("5. "))
+        self.assertNotIn("enable `RELEASE_ENABLED`", handoff)
+        self.assertNotIn("approve `release-approval`", handoff)
+        self.assertNotIn("push the tag", handoff)
+        for requirement in (
+            "BLOCKED", "@urruegg", "SHOWCASE_ENABLED", "RELEASE_ENABLED", "unset/false",
+            "GitHub Pro", "unsupported", "person-only", "future", "isolated trusted publisher",
+            "actual human approval", "Never enable, merge, tag, publish",
+        ):
+            self.assertIn(requirement, handoff)
+        prefix = "5. Hand over to the release manager"
+        self.assertTrue(revised.startswith(source[:source.index(prefix)]))
+        old_handoff = current_anchor(source, prefix)
+        self.assertIn(source.split(old_handoff, 1)[1], revised)
+        self.assertEqual(source.split("---", 2)[:2], revised.split("---", 2)[:2])
+
+    def test_reconstructed_instruction_proposals_align_current_and_future_roles(self):
+        outputs = self.outputs()
+        proposal = outputs["migration-proposal.patch"]
+        revised = {}
+        for relative in (
+            ".github/copilot-instructions.md",
+            ".github/instructions/python-tools.instructions.md",
+            ".github/instructions/workflows.instructions.md",
+        ):
+            self.assertTrue(
+                "--- a/" + relative + "\n" in proposal,
+                "Missing applicable instruction amendment: " + relative,
+            )
+            source = (self.root / relative).read_text(encoding="utf-8")
+            revised[relative] = apply_review_patch(source, proposal, relative)
+            self.assertIn(relative, json.loads(outputs["validation-report.json"])["source_sha256"])
+            self.assertNotRegex(revised[relative], r"(?m)^(?:tools|model|permissionDecision|uses|run):")
+        workflows = revised[".github/instructions/workflows.instructions.md"]
+        self.assertNotIn("`contents: write` only for publishing a release", workflows)
+        for requirement in (
+            "Current", "human-only", "future", "accepted trusted proposal coordinator",
+            "dedicated feature-branch", "per-repository/per-job", "protected main", "no routine bypass",
+            "candidate", "no secrets/write/OIDC", "metadata-only reporter", "cross-job",
+            "owner-scoped", "missing", "BLOCKED",
+        ):
+            self.assertIn(requirement, workflows)
+        self.assertIn("never use `pull_request_target` with a checkout of the pull request", workflows)
+        self.assertIn("`release.yml` and `azure-dev.yml` are human-maintained", workflows)
+        copilot = revised[".github/copilot-instructions.md"]
+        for requirement in (
+            "**Current human-only:**", "future", "accepted trusted roles", "not permission",
+            "no tools/models", "candidate", "owner keys", "person completes #8", "legacy",
+        ):
+            self.assertIn(requirement, copilot)
+        source = (self.root / ".github/copilot-instructions.md").read_text(encoding="utf-8")
+        route = next(line for line in source.splitlines() if line.startswith("- Route eligible prose"))
+        self.assertIn(route, copilot)
+        python = revised[".github/instructions/python-tools.instructions.md"]
+        for requirement in (
+            "standard library only", "UTF-8", "temporary folders", "people only",
+            "source-qualified", "build/governance-bootstrap/", "no credential",
+            "no candidate execution", "not adoption",
+        ):
+            self.assertIn(requirement, python)
+        self.assertFalse(json.loads(outputs["validation-report.json"])["adoption_ready"])
+
+    def test_amendment_anchor_drift_fails_before_generating_any_output(self):
+        for relative, prefix in AMENDMENT_ANCHORS:
+            with self.subTest(relative=relative, prefix=prefix), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                seed(root)
+                path = root / relative
+                source = path.read_text(encoding="utf-8")
+                anchor = current_anchor(source, prefix)
+                drifted = anchor.replace("\n", " drifted\n", 1)
+                path.write_text(source.replace(anchor, drifted, 1), encoding="utf-8", newline="\n")
+                with patch.object(self.module, "ROOT", root):
+                    code, stdout, stderr = self.call()
+                self.assertEqual(1, code)
+                self.assertEqual("", stdout)
+                self.assertIn(relative, stderr)
+                self.assertIn("source", stderr)
+                self.assertFalse((root / "build").exists())
+
+    def test_duplicate_amendment_anchors_fail_before_generating_any_output(self):
+        for relative, prefix in AMENDMENT_ANCHORS:
+            with self.subTest(relative=relative, prefix=prefix), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                seed(root)
+                path = root / relative
+                source = path.read_text(encoding="utf-8")
+                path.write_text(source + current_anchor(source, prefix), encoding="utf-8", newline="\n")
+                with patch.object(self.module, "ROOT", root):
+                    code, stdout, stderr = self.call()
+                self.assertEqual(1, code)
+                self.assertEqual("", stdout)
+                self.assertIn(relative, stderr)
+                self.assertFalse((root / "build").exists())
+
+    def test_missing_affected_instruction_sources_fail_before_any_output(self):
+        for relative in (
+            ".github/copilot-instructions.md", ".github/instructions/workflows.instructions.md",
+            ".github/instructions/python-tools.instructions.md",
+        ):
+            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                seed(root)
+                (root / relative).unlink()
+                with patch.object(self.module, "ROOT", root):
+                    code, stdout, stderr = self.call()
+                self.assertEqual(1, code)
+                self.assertEqual("", stdout)
+                self.assertIn(Path(relative).name, stderr)
+                self.assertFalse((root / "build").exists())
 
     def test_migration_is_grounded_in_actual_hook_and_preserves_denials(self):
         hook = self.root / ".github/hooks/scripts/session_start.py"
