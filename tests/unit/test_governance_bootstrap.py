@@ -20,7 +20,7 @@ from unittest.mock import patch
 from tests.unit._util import ROOT, load
 
 SOURCE_PATHS = (
-    "AGENTS.md", ".gitignore", ".github/pull_request_template.md",
+    "AGENTS.md", ".gitignore", ".github/PULL_REQUEST_TEMPLATE.md",
     ".github/CODEOWNERS", ".github/hooks/guardrails.json",
     ".github/hooks/scripts/guard.py", ".github/hooks/scripts/session_start.py",
     ".github/workflows/ci.yml", ".github/workflows/release.yml",
@@ -117,6 +117,57 @@ def current_anchor(source: str, prefix: str) -> str:
 
 
 class BootstrapGenerationTests(unittest.TestCase):
+    def test_generation_inventory_and_reconstructed_patch_use_case_exact_git_paths(self):
+        # Git supplies case-sensitive truth even on Windows. The narrow read
+        # probe refuses aliases instead of changing filesystem/OS settings.
+        tracked = set(subprocess.check_output(
+            ["git", "ls-tree", "-r", "-z", "--name-only", "HEAD"], cwd=ROOT,
+        ).decode("utf-8").split("\0"))
+        module = load("tools/governance_bootstrap.py")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            seed(root)
+            reads = []
+            original = Path.read_bytes
+
+            def case_exact_read(path):
+                relative = path.relative_to(root)
+                parent = root
+                for part in relative.parts:
+                    if part not in {entry.name for entry in parent.iterdir()}:
+                        raise FileNotFoundError(f"case-sensitive source lookup refused: {relative.as_posix()}")
+                    parent /= part
+                reads.append(relative.as_posix())
+                return original(path)
+
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with (
+                patch.object(module, "ROOT", root),
+                patch.object(Path, "read_bytes", case_exact_read),
+                contextlib.redirect_stdout(stdout),
+                contextlib.redirect_stderr(stderr),
+            ):
+                code = module.main([])
+            self.assertEqual(0, code, stderr.getvalue())
+            self.assertEqual("", stderr.getvalue())
+            self.assertEqual(SOURCE_PATHS, module.SOURCES)
+            self.assertTrue(set(module.SOURCES) <= tracked, "Source inventory is not case-exact Git paths")
+            self.assertEqual(list(module.SOURCES), reads)
+            output = root / "build/governance-bootstrap"
+            self.assertEqual(OUTPUT_NAMES, {path.name for path in output.iterdir()})
+            proposal = (output / "migration-proposal.patch").read_text(encoding="utf-8")
+            headers = set(re.findall(r"(?m)^(?:--- a/|\+\+\+ b/)(.+)$", proposal))
+            self.assertTrue(headers <= tracked, "Reconstructed proposal targets are not case-exact Git paths")
+            template = ".github/PULL_REQUEST_TEMPLATE.md"
+            self.assertIn(template, headers)
+            source = (root / template).read_text(encoding="utf-8")
+            reconstructed = apply_review_patch(source, proposal, template)
+            self.assertEqual("## Summary", reconstructed.splitlines()[0])
+            self.assertIn("Human verification required:", reconstructed)
+            report = json.loads((output / "validation-report.json").read_text(encoding="utf-8"))
+            self.assertEqual(set(module.SOURCES), set(report["source_sha256"]))
+            self.assertFalse(report["adoption_ready"])
+
     def test_generation_only_creates_review_output_and_preserves_active_bytes_offline(self):
         self.assertTrue(
             (ROOT / "tools/governance_bootstrap.py").is_file(),
@@ -188,9 +239,9 @@ class BootstrapContractTests(unittest.TestCase):
         self.assertNotIn(str(self.root), "".join(first.values()))
 
     def test_template_amendment_preserves_every_other_byte_and_release_field(self):
-        original = (self.root / ".github/pull_request_template.md").read_text(encoding="utf-8")
+        original = (self.root / ".github/PULL_REQUEST_TEMPLATE.md").read_text(encoding="utf-8")
         proposal = self.outputs()["migration-proposal.patch"]
-        revised = apply_review_patch(original, proposal, ".github/pull_request_template.md")
+        revised = apply_review_patch(original, proposal, ".github/PULL_REQUEST_TEMPLATE.md")
         expected = original.replace(
             "## Summary (written by a person, in your own words)",
             "## Summary", 1,
@@ -639,7 +690,7 @@ class BootstrapContractTests(unittest.TestCase):
 
     def test_unrecognised_template_or_routing_never_gets_a_fabricated_migration(self):
         for relative, old in (
-            (".github/pull_request_template.md", "## Summary (written by a person, in your own words)"),
+            (".github/PULL_REQUEST_TEMPLATE.md", "## Summary (written by a person, in your own words)"),
             (".github/hooks/scripts/session_start.py", "write the spec and plan to docs/plans/"),
         ):
             with self.subTest(relative=relative), tempfile.TemporaryDirectory() as temporary:
@@ -775,7 +826,7 @@ class BootstrapContractTests(unittest.TestCase):
         self.assertEqual(before, snapshot(self.root / ".github"))
 
     def test_source_symlink_is_rejected_before_reading_its_target(self):
-        source = self.root / ".github/pull_request_template.md"
+        source = self.root / ".github/PULL_REQUEST_TEMPLATE.md"
         source.unlink()
         credential = self.root / "not-an-input.key"
         credential.write_bytes(b"DO-NOT-READ")

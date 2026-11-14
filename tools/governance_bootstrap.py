@@ -27,7 +27,7 @@ from pathlib import Path
 from fe_lib import ROOT, sha256_bytes
 
 SOURCES = (
-    "AGENTS.md", ".gitignore", ".github/pull_request_template.md",
+    "AGENTS.md", ".gitignore", ".github/PULL_REQUEST_TEMPLATE.md",
     ".github/CODEOWNERS", ".github/hooks/guardrails.json",
     ".github/hooks/scripts/guard.py", ".github/hooks/scripts/session_start.py",
     ".github/workflows/ci.yml", ".github/workflows/release.yml",
@@ -350,7 +350,7 @@ def _replace_once(source: str, old: str, new: str, relative: str) -> str:
 
 def _migration(sources: dict[str, str]) -> str:
     proposed = {}
-    template = ".github/pull_request_template.md"
+    template = ".github/PULL_REQUEST_TEMPLATE.md"
     if not sources[template].startswith(SUMMARY + "\n"):
         raise BootstrapError(f"unsupported source heading: {template}")
     proposed[template] = _replace_once(sources[template], SUMMARY, "## Summary", template)
