@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.3 |
+| Version | 1.4 |
 | Date | 2026-11-14 |
 | Author | Original catalogue author not recorded; Copilot SDK in VS Code, AI-assisted consolidation |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
@@ -11,7 +11,7 @@
 
 | Plan | Owner during execution | Tracking and delivery evidence |
 |---|---|---|
-| [PR-gated operating model](2026-11-14-pr-gated-operating-model-plan.md) | `@urruegg` accountable; written-spec approval at `8de16ca`, this plan/readiness pending | [#48](https://github.com/urruegg/frontier-envisioning/issues/48), [SPRINT-010](../sprints/SPRINT-010-pr-gated-operating-model.md); staged contracts/bootstrap/intake/eligibility/release; no adoption/implementation claim |
+| [PR-gated operating model](2026-11-14-pr-gated-operating-model-plan.md) | `@urruegg` accountable; spec `8de16ca`, subagent plan/readiness `e8ea6bd` | [#48](https://github.com/urruegg/frontier-envisioning/issues/48), [SPRINT-010](../sprints/SPRINT-010-pr-gated-operating-model.md); #49 contracts/full local gate verified; bootstrap/intake/eligibility/release adoption pending |
 | [Caldova gallery extension](2026-11-13-caldova-gallery-extension-plan.md) | `@urruegg` accountable; inline plan/readiness approval at `8be6aa8` after written spec `4ef63d1` | [#41](https://github.com/urruegg/frontier-envisioning/issues/41), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md); ten real captures and full local gate verified; PR/CI separate |
 | [Agent FinOps baseline](2026-11-12-agent-finops-baseline-plan.md) | `@urruegg` accountable; actual subagent-driven plan/readiness approval at `efb3468` | [#35](https://github.com/urruegg/frontier-envisioning/issues/35), [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), D1 #38 / D2 #37 / D3 #39 and [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md); implementation in progress, delivery not yet verified |
 | [Version 1.9.2](2026-11-12-version-1.9.2-plan.md) | `@urruegg` accountable; mechanical preparation | [#33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](../sprints/SPRINT-006-version-1.9.2.md); local gates/rebuild proof pass, live PR/CI separate |

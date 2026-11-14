@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted intake |
-| Status | Written specification approved at 8de16ca; plan/readiness and adoption pending |
+| Status | Spec at 8de16ca and subagent plan/readiness at e8ea6bd approved; contracts verified, adoption pending |
 | Scope | Private GitHub Pro engineering and release automation, not deployment or administration |
 | References | [Catalogue](README.md), [Decision #48](https://github.com/urruegg/frontier-envisioning/issues/48), [Specification](../specs/2026-11-14-pr-gated-operating-model-design.md), [Plan](../plans/2026-11-14-pr-gated-operating-model-plan.md), [ADR-0030](../adr/0030-pr-gated-engineering-automation.md), [SPRINT-010](../sprints/SPRINT-010-pr-gated-operating-model.md), [Preserved work #47](https://github.com/urruegg/frontier-envisioning/issues/47) |
 
@@ -29,7 +29,10 @@ These actual conversation decisions are recorded on #48. They do not activate
 permissions, install an App, approve the written plan or change current rules.
 The separate `approve-written-pr-gated-spec` response then approved the written
 proposal at `8de16ca` for planning. The linked plan/sprint were written after
-that answer; their approval/readiness remains pending.
+that answer. The later explicit plan/readiness approval at `e8ea6bd`
+requested subagent implementation and evidence-based end-to-end tests.
+The native Release ZIP choice was reconfirmed; no registry wrapper is needed.
+Contracts are locally verified; actual adoption/publishing remains pending.
 
 ## Reference and problem
 

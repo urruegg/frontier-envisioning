@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Written specification approved at 8de16ca; this plan/readiness approval pending |
+| Status | Plan/readiness and subagent execution approved at e8ea6bd; Slice A contracts verified, adoption pending |
 | Scope | Staged proposal isolation, native human review, engineering/release automation and maintainer adoption |
 | References | [Catalogue](README.md), [Decision #48](https://github.com/urruegg/frontier-envisioning/issues/48), [Idea](../ideas/2026-11-14-pr-gated-operating-model.md), [Approved specification](../specs/2026-11-14-pr-gated-operating-model-design.md), [SPRINT-010](../sprints/SPRINT-010-pr-gated-operating-model.md), [Proposed ADR-0030](../adr/0030-pr-gated-engineering-automation.md) |
 
@@ -26,8 +26,11 @@ plugin dependency, npm release stack or Azure-hosted approval service.
 ## Approval and execution boundary
 
 The maintainer selected `approve-written-pr-gated-spec` for specification
-`8de16ca089ba0e2a1787496a4c65ecf17b7b6b4e`. This later plan is not yet
-approved. Owner: `@urruegg`; protected labels/assignments are not inferred.
+`8de16ca089ba0e2a1787496a4c65ecf17b7b6b4e`. The later actual plan/readiness
+approval at `e8ea6bd87c4a83c5b496f9c49b64e745b9a0dd49` selected
+subagent-driven implementation and evidence-based verification.
+Native ZIP distribution through Releases was separately confirmed.
+Owner: `@urruegg`; protected labels/assignments are not inferred.
 
 Use the separate `docs/48-pr-gated-operating-model` workspace for planning.
 After actual plan/readiness approval, create one scoped implementation branch
@@ -384,7 +387,8 @@ human-adopted `.github/workflows/release.yml`.
   not a chat approval or an Accepted status. If a stage cannot demonstrate
   its boundary, stop there and report the limitation.
 
-This plan has executed no future stage. Plan/readiness approval and actual
-maintainer adoption remain pending. Normal human participation is PR review;
+Actual completed checkpoints are recorded in SPRINT-010. Plan/readiness
+approval is recorded; actual maintainer adoption remains pending.
+Normal human participation is PR review;
 initial administration/consent and exceptional credential recovery remain
 explicit non-routine owner responsibilities.
