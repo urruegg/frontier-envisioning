@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted intake |
-| Status | Concept selected; written design and implementation approval pending |
+| Status | Written design approved at 65f06ff; plan/readiness approval pending |
 | Scope | Release preparation and human publication; no plugin change |
-| References | [Catalogue](README.md), [Decision #46](https://github.com/urruegg/frontier-envisioning/issues/46), [Publication #43](https://github.com/urruegg/frontier-envisioning/issues/43), [Design](../specs/2026-11-14-free-private-releases-design.md), [ADR-0029](../adr/0029-free-private-release-preparation.md), [Draft sprint catalogue row](../sprints/README.md) |
+| References | [Catalogue](README.md), [Decision #46](https://github.com/urruegg/frontier-envisioning/issues/46), [Implementation #47](https://github.com/urruegg/frontier-envisioning/issues/47), [Design](../specs/2026-11-14-free-private-releases-design.md), [Plan](../plans/2026-11-14-free-private-releases-plan.md), [ADR-0029](../adr/0029-free-private-release-preparation.md), [SPRINT-009](../sprints/SPRINT-009-free-private-releases.md) |
 
 ## Outcome and evidence
 
@@ -19,7 +19,9 @@ On 14 November the maintainer confirmed GitHub Free, selected
 concept with **`ci-evidence-and-reproduction`**. The chosen assurance is a
 traceable CI run, independent package reproduction and human sign-off, without
 a cryptographic attestation. These actual conversation choices are recorded
-on #46; they do not approve the written specification or an implementation plan.
+on #46. The separate `approve-written-free-private-design` response then
+approved the written specification at
+`65f06ffa60e5a8d1b70d46993636105768a50452` for planning, not implementation.
 
 The current workflow requires private environment reviewers and native GitHub
 artifact attestations. GitHub documents both as unavailable on Free/Pro/Team
@@ -45,11 +47,10 @@ selected; neither checksums nor a human sign-off become a signed attestation.
 ## Readiness boundary
 
 Keep the current policy and legacy release activation unchanged while the
-written design is reviewed. No source, workflow, runtime, package version,
+implementation plan is reviewed. No source, workflow, runtime, package version,
 permissions, settings, tag or release change is authorised by this record.
 The accountable owner is `@urruegg`; protected actions remain human-only.
 
-The sprint catalogue has an early draft row. A real implementation plan and
-fully linked sprint record follow written-spec approval, not a placeholder
-plan written to satisfy traceability checks. No ready/approval labels or
-milestone/assignment fields are inferred.
+The real implementation plan and fully linked SPRINT-009 were written after
+written-spec approval. Their approval/readiness remains pending. No
+ready/approval labels or milestone/assignment fields are inferred.

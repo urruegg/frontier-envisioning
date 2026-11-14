@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted design |
-| Status | Proposed written specification; conversation concept selected, written approval pending |
+| Status | Written specification approved at 65f06ff for planning; implementation/policy activation pending |
 | Scope | Read-only release preparation, reproducibility evidence and human publication |
-| References | [Catalogue](README.md), [Decision #46](https://github.com/urruegg/frontier-envisioning/issues/46), [Publication #43](https://github.com/urruegg/frontier-envisioning/issues/43), [Idea](../ideas/2026-11-14-free-private-releases.md), [ADR-0029](../adr/0029-free-private-release-preparation.md), [Draft sprint catalogue row](../sprints/README.md), [Working agreement](../../AGENTS.md) |
+| References | [Catalogue](README.md), [Decision #46](https://github.com/urruegg/frontier-envisioning/issues/46), [Implementation #47](https://github.com/urruegg/frontier-envisioning/issues/47), [Idea](../ideas/2026-11-14-free-private-releases.md), [Plan](../plans/2026-11-14-free-private-releases-plan.md), [ADR-0029](../adr/0029-free-private-release-preparation.md), [SPRINT-009](../sprints/SPRINT-009-free-private-releases.md), [Working agreement](../../AGENTS.md) |
 
 ## Outcome, evidence and authority
 
@@ -21,9 +21,12 @@ were presented. This approves the concept: CI evidence, independent package
 reproduction and explicit human sign-off, with no cryptographic attestation.
 The alternative publisher signing key was not selected.
 
-This specification and ADR-0029 remain Proposed until reviewed as written.
-They do not yet replace the active release policy, approve implementation or
-grant an exception to human-only work. No implementation plan exists yet.
+The maintainer then selected `approve-written-free-private-design` for this
+written specification at `65f06ffa60e5a8d1b70d46993636105768a50452`.
+The linked implementation plan was written afterwards and is not yet
+approved. ADR-0029 still awaits its normal human PR acceptance. These records
+do not yet replace the active release policy, approve implementation or
+grant an exception to human-only work.
 
 Official sources checked on 14 November 2026:
 

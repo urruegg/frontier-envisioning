@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted design |
-| Status | Proposed; conversation concept selected, written/PR acceptance pending |
+| Status | Proposed; written design approved at 65f06ff for planning, PR acceptance pending |
 | Scope | Release-control and provenance model, not plugin runtime or permissions |
 | References | [Catalogue](README.md), [Decision #46](https://github.com/urruegg/frontier-envisioning/issues/46), [Idea](../ideas/2026-11-14-free-private-releases.md), [Design](../specs/2026-11-14-free-private-releases-design.md), [Publication #43](https://github.com/urruegg/frontier-envisioning/issues/43), [ADR-0018](0018-quality-gates-and-release-reproduction.md), [ADR-0019](0019-versioning-and-releases.md) |
 
@@ -77,7 +77,9 @@ silently rewritten or relaxed by this Proposed ADR.
 
 On 14 November the maintainer selected `design-free-private`, then
 `ci-evidence-and-reproduction` after the concept and limitations were
-presented. The assistant recorded those actual choices on #46. Written-spec,
-plan/readiness, implementation, protected labels and publication approval
-are separate. Existing controls remain binding until the replacement is
+presented. The separate `approve-written-free-private-design` response then
+approved the written specification at `65f06ff` for planning. The assistant
+recorded these actual choices on #46. Plan/readiness, implementation, this
+ADR's human PR acceptance, protected labels and publication remain separate.
+Existing controls remain binding until the replacement is
 explicitly accepted and implemented through the normal human-owned process.

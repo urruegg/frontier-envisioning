@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.3 |
+| Version | 1.4 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
@@ -11,7 +11,7 @@
 
 | Spec | Design state | Execution state |
 |---|---|---|
-| [Private GitHub Free releases](2026-11-14-free-private-releases-design.md) | Conversation concept selected on [#46](https://github.com/urruegg/frontier-envisioning/issues/46); written approval pending | [ADR-0029](../adr/0029-free-private-release-preparation.md), [draft sprint row](../sprints/README.md); no implementation plan or policy activation |
+| [Private GitHub Free releases](2026-11-14-free-private-releases-design.md) | Written spec approved at `65f06ff` on [#46](https://github.com/urruegg/frontier-envisioning/issues/46) | [Implementation #47](https://github.com/urruegg/frontier-envisioning/issues/47), [plan](../plans/2026-11-14-free-private-releases-plan.md), [SPRINT-009](../sprints/SPRINT-009-free-private-releases.md); plan/readiness and policy activation pending |
 | [Caldova gallery extension](2026-11-13-caldova-gallery-extension-design.md) | Written spec approved at `4ef63d1` on [#41](https://github.com/urruegg/frontier-envisioning/issues/41) | [Plan](../plans/2026-11-13-caldova-gallery-extension-plan.md) and [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md); inline plan/readiness at `8be6aa8`, local capture/full-gate proof verified; PR/CI separate |
 | [Agent FinOps baseline](2026-11-12-agent-finops-baseline-design.md) | Written spec explicitly approved at `2e3c0e7` on [#35](https://github.com/urruegg/frontier-envisioning/issues/35); [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36) | [Plan](../plans/2026-11-12-agent-finops-baseline-plan.md) and [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md); subagent-driven plan/readiness approved at `efb3468`, implementation in progress |
 | [Version 1.9.2](2026-11-12-version-1.9.2-design.md) | Direct version-only request; no release approval | [#33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](../sprints/SPRINT-006-version-1.9.2.md) |
