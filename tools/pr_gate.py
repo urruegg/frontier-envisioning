@@ -27,6 +27,7 @@ Normalised v1 contracts (see the synthetic unittest fixtures for complete shapes
   candidate policy. Scope entries are exact paths or directory prefixes ending /.
   Allowed scope matches Git paths case-sensitively. Duplicates and protected paths
   remain case-alias-aware; workflow-directory aliases are rejected before parsing.
+  Protected directory scopes cover both their root path and descendants.
 * frontier-proposal/1.0: repository, source_sha, base_sha, paths, workflow_effects.
   Workflow paths require frontier-workflow-facts/1.0 records: path,
   parser_control_sha, execution=data-only, permissions (read/none), secrets=[],
@@ -262,8 +263,14 @@ def _proposal(proposal, p: dict) -> bool:
         _equal(data[field], p[field], f"proposal.{field}")
     paths = _paths(data["paths"], "proposal.paths")
     protected_paths = [scope.casefold() for scope in p["protected_paths"]]
+    protected_roots = {scope[:-1] for scope in protected_paths if scope.endswith("/")}
     for path in paths:
-        if not _within(path, p["allowed_paths"]) or _within(path.casefold(), protected_paths):
+        folded = path.casefold()
+        if (
+            not _within(path, p["allowed_paths"])
+            or folded in protected_roots
+            or _within(folded, protected_paths)
+        ):
             raise GateError("proposal.paths: path outside scope or protected active policy")
     workflow_paths = {path for path in paths if _workflow(path)}
     effects = _list(data["workflow_effects"], "proposal.workflow_effects")

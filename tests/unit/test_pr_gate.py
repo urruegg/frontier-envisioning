@@ -208,6 +208,22 @@ class ProposalTests(GateTests):
                 with self.assertRaisesRegex(self.gate.GateError, "protected active policy"):
                     self.gate.validate_proposal(change(proposal(), "paths", [path]), scoped)
 
+    def test_protected_directory_roots_and_aliases_rejected(self):
+        for path in (
+            ".github/hooks", ".github/HOOKS",
+            ".github/agent-policy", ".github/AGENT-POLICY",
+        ):
+            with self.subTest(protected_root=path):
+                self.rejected(
+                    "validate_proposal", change(proposal(), "paths", [path]), "protected active policy",
+                )
+        for path in (
+            "drafts/.github/hooks", "drafts/.github/agent-policy",
+            ".github/hooks-extra", ".github/agent-policy-notes.md",
+        ):
+            with self.subTest(allowed_control=path):
+                self.assertTrue(self.gate.validate_proposal(change(proposal(), "paths", [path]), policy()))
+
     def test_workflow_directory_case_aliases_rejected(self):
         for path in (
             ".GITHUB/workflows/new-validation.yml",
@@ -371,6 +387,18 @@ class CandidateTests(GateTests):
 class ActionTests(GateTests):
     def test_current_owner_review_allows_declared_engineering_merge(self):
         self.assertTrue(self.gate.authorize_action(reviewed(), action_intent(), policy()))
+
+    def test_merge_rejects_protected_directory_roots_and_aliases(self):
+        self.assertTrue(self.gate.authorize_action(reviewed(), action_intent(), policy()))
+        for path in (
+            ".github/hooks", ".github/HOOKS",
+            ".github/agent-policy", ".github/AGENT-POLICY",
+        ):
+            with self.subTest(protected_root=path):
+                self.rejected(
+                    "authorize_action", change(reviewed(), "proposal.paths", [path]),
+                    "protected active policy", action_intent(),
+                )
 
     def test_effective_review_regressions_rejected(self):
         for field, value in (
