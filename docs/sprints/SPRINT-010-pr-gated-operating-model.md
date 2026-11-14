@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
 | Status | Subagent plan/readiness approved at e8ea6bd; #49 contracts/full local gate verified, adoption pending |
@@ -13,6 +13,7 @@
 |---|---|---|---|---|---|---|---|
 | [#48](https://github.com/urruegg/frontier-envisioning/issues/48) | [Outcome](../ideas/2026-11-14-pr-gated-operating-model.md) | [G48-01 to G48-09](../specs/2026-11-14-pr-gated-operating-model-design.md#acceptance-and-verification) | [Slices A-D, Tasks 0-5](../plans/2026-11-14-pr-gated-operating-model-plan.md) | `@urruegg` accountable | Supported restricted identity; actual maintainer adoption/pilots | Slice A contracts verified; bootstrap/coordination/release not active | Spec `8de16ca`, plan/readiness `e8ea6bd`; no native-review/pilot/publication result |
 | [#49](https://github.com/urruegg/frontier-envisioning/issues/49) | [Proposal boundary](../ideas/2026-11-14-pr-gated-operating-model.md) | [G48-03/G48-04/G48-07](../specs/2026-11-14-pr-gated-operating-model-design.md#acceptance-and-verification) | [Task 1](../plans/2026-11-14-pr-gated-operating-model-plan.md#task-1-test-the-authority-contract-before-implementing-it) | `@urruegg` accountable | Actual future trusted collector/adoption for operational use | Pure contracts locally implemented and reviewed | `b274e817`: 50 focused tests, both advisory stages passed, full strict local gate passed |
+| [#50](https://github.com/urruegg/frontier-envisioning/issues/50) | [Bootstrap boundary](../ideas/2026-11-14-pr-gated-operating-model.md) | [G48-04/G48-06/G48-09](../specs/2026-11-14-pr-gated-operating-model-design.md#acceptance-and-verification) | [Task 2](../plans/2026-11-14-pr-gated-operating-model-plan.md#task-2-generate-and-review-the-maintainer-bootstrap-package) | `@urruegg` accountable | Verified #49 contracts; actual person adoption remains a later stop | Bounded generation issue created; implementation pending | Real #50; approved spec `8de16ca`, plan/readiness `e8ea6bd`; no ready label, assignment or live adoption inferred |
 
 ## Actual decisions
 
@@ -95,8 +96,16 @@ The final stable `python tools/dev.py check --strict` at `b274e817` ended
   No plugin bytes/version or protected workflow changed.
 
 Full log: `build/evidence/approval49-check-b274e817.log`.
-Six inherited ESLint warnings remained; zero errors. No local L2/browser
-pilot, real machine-authored PR, native approval or publication is claimed.
+Six inherited ESLint warnings remained; zero errors.
+
+The later stable `python tools/dev.py site e2e --strict` at documentation
+checkpoint `b706c5f13ceb51591bfa76d1c90df891dadfd42c` passed **75 Chromium
+browser tests** and ended **ALL GATES PASSED**. The source was committed
+before the run; no code or fixture edits overlapped it. Local testing used
+`SITE_AUTH_MODE=none`, not a deployment/authentication change.
+Full log: `build/evidence/approval49-l2-b706c5f.log`.
+This verifies local product/showcase behaviour, not a real machine-authored
+PR, native approval, credential boundary or publication pilot.
 
 Read-only live inventory showed no repository variables/secrets or native
 main protections. The planned App client/key and actual adoption were not
