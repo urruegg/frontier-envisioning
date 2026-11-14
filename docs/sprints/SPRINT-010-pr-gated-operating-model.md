@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
+| Version | 0.5 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
 | Status | Subagent plan/readiness approved at e8ea6bd; #49 contracts and #50 bootstrap/full local gates verified, adoption pending |
@@ -12,8 +12,8 @@
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
 | [#48](https://github.com/urruegg/frontier-envisioning/issues/48) | [Outcome](../ideas/2026-11-14-pr-gated-operating-model.md) | [G48-01 to G48-09](../specs/2026-11-14-pr-gated-operating-model-design.md#acceptance-and-verification) | [Slices A-D, Tasks 0-5](../plans/2026-11-14-pr-gated-operating-model-plan.md) | `@urruegg` accountable | Supported restricted identity; actual maintainer adoption/pilots | Slice A contracts verified; bootstrap/coordination/release not active | Spec `8de16ca`, plan/readiness `e8ea6bd`; no native-review/pilot/publication result |
-| [#49](https://github.com/urruegg/frontier-envisioning/issues/49) | [Proposal boundary](../ideas/2026-11-14-pr-gated-operating-model.md) | [G48-03/G48-04/G48-07](../specs/2026-11-14-pr-gated-operating-model-design.md#acceptance-and-verification) | [Task 1](../plans/2026-11-14-pr-gated-operating-model-plan.md#task-1-test-the-authority-contract-before-implementing-it) | `@urruegg` accountable | Actual future trusted collector/adoption for operational use | Pure contracts locally implemented and reviewed | `b274e817`: 50 focused tests, both advisory stages passed, full strict local gate passed |
-| [#50](https://github.com/urruegg/frontier-envisioning/issues/50) | [Bootstrap boundary](../ideas/2026-11-14-pr-gated-operating-model.md) | [G48-04/G48-06/G48-09](../specs/2026-11-14-pr-gated-operating-model-design.md#acceptance-and-verification) | [Task 2](../plans/2026-11-14-pr-gated-operating-model-plan.md#task-2-generate-and-review-the-maintainer-bootstrap-package) | `@urruegg` accountable | Verified #49 contracts; actual person adoption remains a later stop | Generator implemented, reviewed and locally verified; live adoption blocked | `5a61b400`: 41 focused tests, both advisory stages passed, actual five-file output, full strict local gate passed |
+| [#49](https://github.com/urruegg/frontier-envisioning/issues/49) | [Proposal boundary](../ideas/2026-11-14-pr-gated-operating-model.md) | [G48-03/G48-04/G48-07](../specs/2026-11-14-pr-gated-operating-model-design.md#acceptance-and-verification) | [Task 1](../plans/2026-11-14-pr-gated-operating-model-plan.md#task-1-test-the-authority-contract-before-implementing-it) | `@urruegg` accountable | Actual future trusted collector/adoption for operational use | Pure contracts implemented/reviewed; portability correction verified | [Draft #51](https://github.com/urruegg/frontier-envisioning/pull/51), `bfe8307`: 52 focused tests, full local gate and PR L1/L2/IaC passed; maintainer sign-off pending |
+| [#50](https://github.com/urruegg/frontier-envisioning/issues/50) | [Bootstrap boundary](../ideas/2026-11-14-pr-gated-operating-model.md) | [G48-04/G48-06/G48-09](../specs/2026-11-14-pr-gated-operating-model-design.md#acceptance-and-verification) | [Task 2](../plans/2026-11-14-pr-gated-operating-model-plan.md#task-2-generate-and-review-the-maintainer-bootstrap-package) | `@urruegg` accountable | Verified #49 contracts; actual person adoption remains a later stop | Generator implemented/reviewed; canonical paths verified; live adoption blocked | [Draft #51](https://github.com/urruegg/frontier-envisioning/pull/51), `0c89ea7` case fix / `bfe8307` integration: 42 focused tests, actual five-file output, full local gate and PR L1/L2/IaC passed |
 
 ## Actual decisions
 
@@ -169,3 +169,53 @@ identity/adoption proof or stages B-D. Trusted collectors/parser/coordinator,
 provider credential separation, native protections, real App-authored review
 and publisher/download evidence remain absent or unverified. Current
 person-only controls and the human #8 routing dependency still apply.
+
+## Real CI portability correction and final checkpoint
+
+The first [PR #51 run](https://github.com/urruegg/frontier-envisioning/actions/runs/43619567666)
+failed on Linux: 40 bootstrap fixture cases used the wrong-case template
+path, and one CLI subtest assumed a Python-specific decoder diagnostic.
+The earlier Windows pass was not substituted for this failure.
+
+At `0c89ea726a6cc0c2fd5b245e4b6db89996783c8a`, the same #50 builder corrected
+source/fixtures/proposed patch to the actual canonical
+`.github/PULL_REQUEST_TEMPLATE.md`, without editing or renaming that file.
+Its strict-case regression failed on Windows before the fix.
+The reviewer confirmed both ordered stages: all 29 inputs and 26 patch
+targets match Git-tree/directory case; 42 focused tests, 38 passed and four
+Windows symlink-privilege skips. No case-fold fallback was introduced.
+
+The original #49 builder then made a separate test-only correction at
+`bfe830758958afe697cb55aa3a36dcf2dcd10a74`. Available Python 3.14 reproduced
+the original assertion failure: parsing succeeded, then the CLI correctly
+rejected a non-object state rather than hitting the decoder's recursion limit.
+The portable test preserves explicit `INVALID`, exit 1, empty stdout and
+no traceback; deterministic probes retain decoder-error and unexpected-error
+coverage. Production validation did not change. The small test-only diff
+was reviewed directly. No new runtime was installed or newly certified.
+
+The parent ran the combined 94-test contract/bootstrap suite on available
+Python 3.11 and 3.14: both passed, with four Windows privilege skips.
+Scoped Ruff and whitespace passed. Actual five-file inert output was
+regenerated with canonical paths; old output was preserved in ignored
+evidence. No active protected source changed.
+
+At clean committed `bfe8307`, the stable `python tools/dev.py check --strict`
+ended **ALL GATES PASSED**: **802 tests passed**, five disclosed skips,
+**2,595 subtests**, **68 self-tests** and **183 DOM tests**.
+Package SHA-256 remains `9e7985731040ee05d83c8dbcee92ad20bc09c584b70b4e994f7fde71dfaf4b89`.
+Full log: `build/evidence/approval51-check-bfe8307.log`.
+
+The subsequent [CI run 43621559543](https://github.com/urruegg/frontier-envisioning/actions/runs/43621559543)
+reported **L1 quality gate, L2 browser tests and IaC validation success**;
+CodeQL was neutral. Git transport independently matched the current PR
+head/ref to `bfe8307`. These are existing CI results associated with that PR
+head, not proof of the future trusted source/control collector.
+
+PR #51 remains a draft authored by `urruegg`, with the current template's
+human-written summary/sign-off pending. Server metadata reported zero required
+or current approvals; the new native protection model is not active.
+This is not an eligible owner self-approval or a real App-authored pilot.
+The immutable 1.10.0 tag object/source were reverified unchanged.
+Actual identity/provider setup, trusted coordination/native adoption and
+release publication/download remain outstanding.
