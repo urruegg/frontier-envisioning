@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Written specification approved at 65f06ff; this plan/readiness not yet approved |
+| Status | Inline plan/readiness approved at 4450e46; tooling verified, human workflow edit pending |
 | Scope | Exact-tag read-only preparation, verification and human publication |
 | References | [Catalogue](README.md), [Implementation #47](https://github.com/urruegg/frontier-envisioning/issues/47), [Decision #46](https://github.com/urruegg/frontier-envisioning/issues/46), [Idea](../ideas/2026-11-14-free-private-releases.md), [Approved design](../specs/2026-11-14-free-private-releases-design.md), [SPRINT-009](../sprints/SPRINT-009-free-private-releases.md), [Proposed ADR-0029](../adr/0029-free-private-release-preparation.md) |
 
@@ -27,11 +27,13 @@ Playwright. No plugin dependency or version change.
 ## Authority, prerequisites and isolation
 
 The maintainer selected `approve-written-free-private-design` for the written
-specification at `65f06ffa60e5a8d1b70d46993636105768a50452`. This plan follows
-that decision; it is not its own approval. Owner: `@urruegg`.
+specification at `65f06ffa60e5a8d1b70d46993636105768a50452`. The separate
+`approve-plan-inline` response then approved this plan/readiness at
+`4450e46b2e5930ec41dee0f5218751b28d090dba` and selected inline execution.
+Owner: `@urruegg`. No protected label-field change is inferred.
 
-Before implementation, obtain explicit approval of this written plan and
-readiness. Do not infer protected labels, assignment or milestone fields.
+The recorded plan/readiness approval covers agent-editable implementation
+only. Do not infer protected labels, assignment or milestone fields.
 Use the existing clean isolated worktree; create
 `chore/47-free-release-preparation` from the reviewed planning head.
 Do not modify the primary checkout, move the existing tag or activate
@@ -176,8 +178,9 @@ the protected edit. No hooks, licences, CODEOWNERS, Azure or plugin edits.
   | `finalize_candidate()` | Require exactly plugin/manifest/SBOM, generate canonical checksums and the internal receipt, then validate the completed handover |
   | `verify_candidate(candidate, source, tag, expected, workflow)` | Read-only verification against the independent source package and expected reviewed workflow SHA; never requires synthetic CI variables locally |
 
-  Extend `write_manifest` compatibly, with
-  `base: Path = ROOT` and `evidence: dict | None = None`; change its artefact
+  Extend `write_manifest` compatibly, with an optional `base` whose effective
+  default remains the current `ROOT`, and `evidence: dict | None = None`;
+  change its artefact
   reads from `ROOT / build_path` to `base / build_path`. Preserve the existing
   default output and normalization behaviour. In preparation mode add
   `build_evidence` and truthful preparation provenance; do not change the
@@ -521,4 +524,5 @@ Before claiming implementation complete: actual focused RED/GREEN,
 source-qualified full gate, real protected-file authorship and PR checks.
 Before claiming publication complete: actual new preparation run, independent
 package identity, human sign-off, published release/download and retained
-manifest. This plan has executed none of those future steps.
+manifest. Actual checkpoint evidence belongs in SPRINT-009; unchecked task
+instructions are not a claim that those future outcomes occurred.

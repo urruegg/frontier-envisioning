@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted intake |
-| Status | Written design approved at 65f06ff; plan/readiness approval pending |
+| Status | Written design at 65f06ff and inline plan/readiness at 4450e46 approved; human workflow edit pending |
 | Scope | Release preparation and human publication; no plugin change |
 | References | [Catalogue](README.md), [Decision #46](https://github.com/urruegg/frontier-envisioning/issues/46), [Implementation #47](https://github.com/urruegg/frontier-envisioning/issues/47), [Design](../specs/2026-11-14-free-private-releases-design.md), [Plan](../plans/2026-11-14-free-private-releases-plan.md), [ADR-0029](../adr/0029-free-private-release-preparation.md), [SPRINT-009](../sprints/SPRINT-009-free-private-releases.md) |
 
@@ -46,11 +46,13 @@ selected; neither checksums nor a human sign-off become a signed attestation.
 
 ## Readiness boundary
 
-Keep the current policy and legacy release activation unchanged while the
-implementation plan is reviewed. No source, workflow, runtime, package version,
-permissions, settings, tag or release change is authorised by this record.
+Keep the current policy and legacy release activation unchanged until the
+human implementation review/merge. This record does not authorise protected
+workflow, runtime, package-version, permission, setting, tag or release changes.
 The accountable owner is `@urruegg`; protected actions remain human-only.
 
 The real implementation plan and fully linked SPRINT-009 were written after
-written-spec approval. Their approval/readiness remains pending. No
-ready/approval labels or milestone/assignment fields are inferred.
+written-spec approval. The subsequent `approve-plan-inline` response approved
+plan/readiness at `4450e46` and selected inline implementation. Tooling is
+locally verified; the planned protected workflow edit is now the human stop.
+No ready/approval labels or milestone/assignment fields are inferred.

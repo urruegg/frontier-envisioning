@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted design |
-| Status | Written specification approved at 65f06ff for planning; implementation/policy activation pending |
+| Status | Written specification approved at 65f06ff; inline plan/readiness at 4450e46, policy activation pending |
 | Scope | Read-only release preparation, reproducibility evidence and human publication |
 | References | [Catalogue](README.md), [Decision #46](https://github.com/urruegg/frontier-envisioning/issues/46), [Implementation #47](https://github.com/urruegg/frontier-envisioning/issues/47), [Idea](../ideas/2026-11-14-free-private-releases.md), [Plan](../plans/2026-11-14-free-private-releases-plan.md), [ADR-0029](../adr/0029-free-private-release-preparation.md), [SPRINT-009](../sprints/SPRINT-009-free-private-releases.md), [Working agreement](../../AGENTS.md) |
 
@@ -23,9 +23,10 @@ The alternative publisher signing key was not selected.
 
 The maintainer then selected `approve-written-free-private-design` for this
 written specification at `65f06ffa60e5a8d1b70d46993636105768a50452`.
-The linked implementation plan was written afterwards and is not yet
-approved. ADR-0029 still awaits its normal human PR acceptance. These records
-do not yet replace the active release policy, approve implementation or
+The linked implementation plan was written afterwards; the separate
+`approve-plan-inline` response approved it/readiness at `4450e46` and selected
+inline agent-editable implementation. ADR-0029 still awaits its normal human
+PR acceptance. These records do not yet replace the active release policy or
 grant an exception to human-only work.
 
 Official sources checked on 14 November 2026:

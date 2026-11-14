@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.4 |
+| Version | 1.5 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
@@ -11,7 +11,7 @@
 
 | Idea | State | Governing work |
 |---|---|---|
-| [Private GitHub Free releases](2026-11-14-free-private-releases.md) | Written spec approved at `65f06ff`; plan/readiness pending | [Decision #46](https://github.com/urruegg/frontier-envisioning/issues/46), [implementation #47](https://github.com/urruegg/frontier-envisioning/issues/47), [design](../specs/2026-11-14-free-private-releases-design.md), [plan](../plans/2026-11-14-free-private-releases-plan.md), [SPRINT-009](../sprints/SPRINT-009-free-private-releases.md) |
+| [Private GitHub Free releases](2026-11-14-free-private-releases.md) | Written spec at `65f06ff` and inline plan/readiness at `4450e46` approved; tooling verified, human workflow edit pending | [Decision #46](https://github.com/urruegg/frontier-envisioning/issues/46), [implementation #47](https://github.com/urruegg/frontier-envisioning/issues/47), [design](../specs/2026-11-14-free-private-releases-design.md), [plan](../plans/2026-11-14-free-private-releases-plan.md), [SPRINT-009](../sprints/SPRINT-009-free-private-releases.md) |
 | [Caldova gallery extension](2026-11-13-caldova-gallery-extension.md) | Written spec approved at `4ef63d1`; inline plan/readiness at `8be6aa8`; ten captures and full local gate verified | [#41](https://github.com/urruegg/frontier-envisioning/issues/41), [design](../specs/2026-11-13-caldova-gallery-extension-design.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md); PR/CI separate |
 | [Agent FinOps baseline](2026-11-12-agent-finops-baseline.md) | Spec approved at `2e3c0e7`; subagent-driven plan/readiness approval at `efb3468`; implementation in progress | [#35](https://github.com/urruegg/frontier-envisioning/issues/35), [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36), [SPRINT-007](../sprints/SPRINT-007-agent-finops-baseline.md) |
 | [Version 1.9.2](2026-11-12-version-1.9.2.md) | Locally built and verified; PR/CI and human release decisions separate | [#33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](../sprints/SPRINT-006-version-1.9.2.md) |

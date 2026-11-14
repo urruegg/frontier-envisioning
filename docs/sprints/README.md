@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.8 |
+| Version | 1.9 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
@@ -11,7 +11,7 @@
 
 | Sprint | Goal | State |
 |---|---|---|
-| [SPRINT-009](SPRINT-009-free-private-releases.md) | Prepare private GitHub Free releases with traceable evidence and human publication | [#47](https://github.com/urruegg/frontier-envisioning/issues/47), [decision #46](https://github.com/urruegg/frontier-envisioning/issues/46), [idea](../ideas/2026-11-14-free-private-releases.md), [design](../specs/2026-11-14-free-private-releases-design.md), [plan](../plans/2026-11-14-free-private-releases-plan.md); owner `@urruegg`; written spec approved at `65f06ff`, plan/readiness pending |
+| [SPRINT-009](SPRINT-009-free-private-releases.md) | Prepare private GitHub Free releases with traceable evidence and human publication | [#47](https://github.com/urruegg/frontier-envisioning/issues/47), [decision #46](https://github.com/urruegg/frontier-envisioning/issues/46), [idea](../ideas/2026-11-14-free-private-releases.md), [design](../specs/2026-11-14-free-private-releases-design.md), [plan](../plans/2026-11-14-free-private-releases-plan.md); owner `@urruegg`; written spec at `65f06ff`, inline plan/readiness at `4450e46`, tooling verified; paused for human workflow edit |
 | [SPRINT-008](SPRINT-008-caldova-gallery-extension.md) | Extend the Caldova gallery with architecture and workshop captures | [#41](https://github.com/urruegg/frontier-envisioning/issues/41), [idea](../ideas/2026-11-13-caldova-gallery-extension.md), [design](../specs/2026-11-13-caldova-gallery-extension-design.md), [plan](../plans/2026-11-13-caldova-gallery-extension-plan.md); owner `@urruegg`; inline plan/readiness at `8be6aa8`; ten captures and full local gate verified; PR/CI and human sign-off separate |
 | [SPRINT-007](SPRINT-007-agent-finops-baseline.md) | Versioned offline Agent FinOps baseline before build handover | [#35](https://github.com/urruegg/frontier-envisioning/issues/35), [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36); spec approved at `2e3c0e7`, plan/readiness at `efb3468`; owner `@urruegg`; local strict L1/L2, exact-ZIP execution and independent two-build identity verified; PR/CI, human sign-off and publication remain separate |
 | [SPRINT-006](SPRINT-006-version-1.9.2.md) | Verified 1.9.2 build from the current merged product | [#33](https://github.com/urruegg/frontier-envisioning/issues/33); local verification complete, PR/CI and publication separate |
