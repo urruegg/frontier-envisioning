@@ -12,6 +12,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from tests.unit._util import ROOT, load
 
@@ -693,8 +694,21 @@ class CliTests(GateTests):
                 code, output, error = self.invoke("candidate", None, raw=raw)
                 self.assertEqual(code, 1)
                 self.assertEqual(output, "")
-                self.assertIn(message, error)
+                self.assertTrue(error.startswith("INVALID: "), error)
+                # Deep arrays may decode then fail the state schema; decoder limits vary.
+                if message == "JSON integer":
+                    self.assertIn(message, error)
                 self.assertNotIn("Traceback", error)
+
+    def test_decoder_recursion_error_has_explicit_invalid_diagnostic(self):
+        with mock.patch.object(self.gate.json, "loads", side_effect=RecursionError("decoder probe")):
+            result = self.invoke("candidate", None, raw="[]")
+        self.assertEqual(result, (1, "", "INVALID: input: JSON nesting exceeds decoder limit\n"))
+
+    def test_decoder_programming_error_is_not_hidden(self):
+        with mock.patch.object(self.gate.json, "loads", side_effect=RuntimeError("decoder programming error")):
+            with self.assertRaisesRegex(RuntimeError, "decoder programming error"):
+                self.invoke("candidate", None, raw="[]")
 
     def test_actual_checking_cli_has_deterministic_utf8_lf_and_no_write_mode(self):
         with tempfile.TemporaryDirectory() as tmp:
