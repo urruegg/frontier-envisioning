@@ -185,6 +185,41 @@ class ProposalTests(GateTests):
             with self.subTest(paths=paths):
                 self.rejected("validate_proposal", change(proposal(), "paths", paths), "paths")
 
+    def test_scope_requires_exact_git_path_case(self):
+        for scope, canonical, aliases in (
+            ("tools/safe.py", "tools/safe.py", ("TOOLS/SAFE.py", "tools/SAFE.py")),
+            ("tools/safe/", "tools/safe/x.py", ("TOOLS/safe/x.py", "tools/SAFE/x.py")),
+        ):
+            scoped = change(policy(), "allowed_paths", [scope])
+            self.assertTrue(self.gate.validate_proposal(change(proposal(), "paths", [canonical]), scoped))
+            for alias in aliases:
+                with self.subTest(scope=scope, alias=alias):
+                    with self.assertRaisesRegex(self.gate.GateError, "proposal.paths"):
+                        self.gate.validate_proposal(change(proposal(), "paths", [alias]), scoped)
+
+    def test_protected_paths_still_reject_case_aliases(self):
+        for scope, path in (
+            (".github/", ".github/codeowners"),
+            (".github/", ".github/HOOKS/scripts/guard.py"),
+            (".GITHUB/", ".GITHUB/hooks/scripts/guard.py"),
+        ):
+            with self.subTest(path=path):
+                scoped = change(policy(), "allowed_paths", [scope])
+                with self.assertRaisesRegex(self.gate.GateError, "protected active policy"):
+                    self.gate.validate_proposal(change(proposal(), "paths", [path]), scoped)
+
+    def test_workflow_directory_case_aliases_rejected(self):
+        for path in (
+            ".GITHUB/workflows/new-validation.yml",
+            ".github/Workflows/new-validation.yml",
+            ".GiThUb/WoRkFlOwS/new-validation.yaml",
+            "drafts/.GITHUB/workflows/new-validation.yml",
+        ):
+            with self.subTest(path=path):
+                scoped = change(policy(), "allowed_paths", [path.split("/")[0] + "/"])
+                with self.assertRaisesRegex(self.gate.GateError, "workflow-directory alias"):
+                    self.gate.validate_proposal(change(proposal(), "paths", [path]), scoped)
+
     def test_rejects_active_policy_and_credentials(self):
         for path in (
             ".github/hooks/scripts/guard.py", ".github/agent-policy/authority.json",
@@ -414,7 +449,10 @@ class ActionTests(GateTests):
         state = reviewed()
         state.update(
             pr_state="MERGED", merge_commit_sha=MERGE, current_base_sha=MERGE,
-            tag={"name": "v1.10.0", "commit_sha": RELEASE_SOURCE, "object_sha": TAG_OBJECT},
+            tag={
+                "name": "v1.10.0", "commit_sha": RELEASE_SOURCE,
+                "object_sha": TAG_OBJECT, "object_type": "tag",
+            },
         )
         intent = action_intent("publish", release_intent("existing-tag"))
         self.assertTrue(self.gate.authorize_action(state, intent, policy()))
@@ -423,6 +461,48 @@ class ActionTests(GateTests):
         del state["tag"]
         self.rejected("authorize_action", state, "tag", intent)
         self.rejected("authorize_action", reviewed(), "pr_state", intent)
+
+    def test_existing_tag_cannot_use_commit_sha_as_tag_object(self):
+        state = reviewed()
+        state.update(
+            pr_state="MERGED", merge_commit_sha=MERGE, current_base_sha=MERGE,
+            tag={"name": "v1.10.0", "commit_sha": RELEASE_SOURCE, "object_sha": RELEASE_SOURCE},
+        )
+        release = change(release_intent("existing-tag"), "source.tag_object_sha", RELEASE_SOURCE)
+        self.rejected("authorize_action", state, "source.tag_object_sha", action_intent("publish", release))
+
+    def test_existing_tag_requires_annotated_ref_object_type(self):
+        state = reviewed()
+        state.update(
+            pr_state="MERGED", merge_commit_sha=MERGE, current_base_sha=MERGE,
+            tag={
+                "name": "v1.10.0", "commit_sha": RELEASE_SOURCE,
+                "object_sha": TAG_OBJECT, "object_type": "tag",
+            },
+        )
+        intent = action_intent("publish", release_intent("existing-tag"))
+        for object_type in (None, "commit", "tree", True):
+            invalid = copy.deepcopy(state)
+            if object_type is None:
+                del invalid["tag"]["object_type"]
+                message = r"state\.tag: missing fields: object_type"
+            else:
+                invalid["tag"]["object_type"] = object_type
+                message = r"state\.tag\.object_type: does not match required value"
+            with self.subTest(object_type=object_type):
+                self.rejected("authorize_action", invalid, message, intent)
+
+    def test_annotated_ref_cannot_claim_commit_object_sha(self):
+        state = reviewed()
+        state.update(
+            pr_state="MERGED", merge_commit_sha=MERGE, current_base_sha=MERGE,
+            tag={
+                "name": "v1.10.0", "commit_sha": RELEASE_SOURCE,
+                "object_sha": RELEASE_SOURCE, "object_type": "tag",
+            },
+        )
+        intent = action_intent("publish", release_intent("existing-tag"))
+        self.rejected("authorize_action", state, r"state\.tag\.object_sha", intent)
 
     def test_publication_binds_actual_main_merge_without_changing_tested_base(self):
         state = reviewed()
@@ -435,7 +515,10 @@ class ActionTests(GateTests):
         ):
             self.rejected("authorize_action", change(state, field, value), "base_sha", intent)
         existing = action_intent("publish", release_intent("existing-tag"))
-        state["tag"] = {"name": "v1.10.0", "commit_sha": RELEASE_SOURCE, "object_sha": TAG_OBJECT}
+        state["tag"] = {
+            "name": "v1.10.0", "commit_sha": RELEASE_SOURCE,
+            "object_sha": TAG_OBJECT, "object_type": "tag",
+        }
         del state["merge_commit_sha"]
         self.rejected("authorize_action", state, "merge_commit_sha", existing)
 
@@ -453,6 +536,13 @@ class ReleaseIntentTests(GateTests):
         for mode in ("merged-pr", "existing-tag"):
             for publish in (False, True):
                 self.assertTrue(self.gate.validate_release_intent(release_intent(mode, publish), policy()))
+
+    def test_existing_tag_source_requires_distinct_tag_object_sha(self):
+        for publish in (False, True):
+            with self.subTest(publish=publish):
+                intent = release_intent("existing-tag", publish)
+                intent["source"]["tag_object_sha"] = RELEASE_SOURCE
+                self.rejected("validate_release_intent", intent, "source.tag_object_sha")
 
     def test_strict_publish_schema_identity_version_and_assets(self):
         for field, value in (
@@ -597,6 +687,29 @@ class CliTests(GateTests):
             help_result = subprocess.run(args[:2] + ["--help"], capture_output=True, check=False)
             self.assertEqual(help_result.returncode, 0)
             self.assertIn(b"does not authenticate", help_result.stdout)
+
+    def test_actual_cli_escapes_lone_surrogate_unknown_keys(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            input_path, policy_path = root / "input.json", root / "policy.json"
+            policy_path.write_text(json.dumps(policy()), encoding="utf-8", newline="\n")
+            args = [
+                sys.executable, str(ROOT / "tools/pr_gate.py"), "candidate",
+                "--input", str(input_path), "--policy", str(policy_path),
+            ]
+            for key in ("\ud800", "\udfff"):
+                with self.subTest(key=ascii(key)):
+                    data = candidate()
+                    data[key] = True
+                    input_path.write_text(json.dumps(data), encoding="utf-8", newline="\n")
+                    result = subprocess.run(args, capture_output=True, check=False)
+                    self.assertEqual(result.returncode, 1)
+                    self.assertEqual(result.stdout, b"")
+                    self.assertTrue(result.stderr.startswith(b"INVALID: "), result.stderr)
+                    self.assertIn(key.encode("ascii", errors="backslashreplace"), result.stderr)
+                    self.assertNotIn(b"Traceback", result.stderr)
+                    self.assertNotIn(b"UnicodeEncodeError", result.stderr)
+                    result.stderr.decode("utf-8", errors="strict")
 
 
 if __name__ == "__main__":

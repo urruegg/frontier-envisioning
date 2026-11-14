@@ -16,6 +16,8 @@ mutated. CLI: MODE --input snapshot.json --policy policy.json; action also needs
 --intent action.json. Expected invalid input returns 1; usage errors return 2.
 The JSON reader rejects duplicate fields, non-finite constants, integer literals
 over 100 digits and nesting beyond the standard decoder's recursion limit.
+Unknown field names are JSON-escaped in diagnostics, including lone surrogates,
+so invalid input remains reportable on strict UTF-8 stderr.
 
 Normalised v1 contracts (see the synthetic unittest fixtures for complete shapes):
 * frontier-pr-policy/1.0: repository, maintainer {login,type,id}, machine_author
@@ -23,6 +25,8 @@ Normalised v1 contracts (see the synthetic unittest fixtures for complete shapes
   protected_paths, actions, checks [{name,workflow_path,app_id}], eligibility
   {name,workflow_path,app_id}. This is ACCEPTED TRUSTED CONTROLLER policy, never
   candidate policy. Scope entries are exact paths or directory prefixes ending /.
+  Allowed scope matches Git paths case-sensitively. Duplicates and protected paths
+  remain case-alias-aware; workflow-directory aliases are rejected before parsing.
 * frontier-proposal/1.0: repository, source_sha, base_sha, paths, workflow_effects.
   Workflow paths require frontier-workflow-facts/1.0 records: path,
   parser_control_sha, execution=data-only, permissions (read/none), secrets=[],
@@ -57,8 +61,12 @@ Normalised v1 contracts (see the synthetic unittest fixtures for complete shapes
   source_mode,source,assets. merged-pr source={pr_number}, resolved to actual
   state merge_commit_sha only after protected merge, never a future SHA.
   existing-tag source={commit_sha,tag_object_sha}, compared to actual state
-  tag={name,commit_sha,object_sha}; an approved machine-authored intent PR must
-  already be merged. Only GitHub Releases in urruegg/frontier-envisioning and
+  tag={name,commit_sha,object_sha,object_type}. Every supplied tag record requires
+  object_type="tag" (the trusted collector's normalised ref object type) and
+  distinct commit/object SHAs; intent commit_sha/tag_object_sha must also differ.
+  Missing/lightweight ("commit") ref types fail. This is data consistency, not
+  live authentication or cryptographic proof. An approved machine-authored intent
+  PR must already be merged. Only GitHub Releases in urruegg/frontier-envisioning and
   frontier-envisioning-plugin-VERSION.zip, release-manifest.json, sbom-spdx.zip,
   SHA256SUMS.txt are in scope. publish=false is valid data but never publication.
 """
@@ -97,7 +105,8 @@ def _object(value, required: set[str], optional: set[str], label: str) -> dict:
         raise GateError(f"{label}: missing fields: {', '.join(sorted(missing))}")
     unknown = value.keys() - required - optional
     if unknown:
-        raise GateError(f"{label}: unknown fields: {', '.join(sorted(unknown))}")
+        names = ", ".join(json.dumps(key, ensure_ascii=True) for key in sorted(unknown))
+        raise GateError(f"{label}: unknown fields: {names}")
     return value
 
 
@@ -154,7 +163,13 @@ def _path(value, label: str, *, scope: bool = False, sensitive: bool = True) -> 
     reserved = {"con", "prn", "aux", "nul"} | {
         f"{prefix}{number}" for prefix in ("com", "lpt") for number in range(1, 10)
     }
-    for part in path.split("/"):
+    parts = path.split("/")
+    for folder, child in zip(parts, parts[1:]):
+        if folder.casefold() == ".github" and child.casefold() == "workflows" and (
+            folder != ".github" or child != "workflows"
+        ):
+            raise GateError(f"{label}: noncanonical workflow-directory alias")
+    for part in parts:
         folded = part.casefold()
         if part in {".", ".."} or part.endswith(".") or folded.split(".")[0] in reserved:
             raise GateError(f"{label}: noncanonical repository path")
@@ -179,10 +194,8 @@ def _paths(value, label: str, *, scope: bool = False, sensitive: bool = True) ->
 
 
 def _within(path: str, scopes: list) -> bool:
-    folded = path.casefold()
     return any(
-        folded.startswith(scope.casefold()) if scope.endswith("/")
-        else folded == scope.casefold()
+        path.startswith(scope) if scope.endswith("/") else path == scope
         for scope in scopes
     )
 
@@ -248,8 +261,9 @@ def _proposal(proposal, p: dict) -> bool:
         _sha(data[field], f"proposal.{field}")
         _equal(data[field], p[field], f"proposal.{field}")
     paths = _paths(data["paths"], "proposal.paths")
+    protected_paths = [scope.casefold() for scope in p["protected_paths"]]
     for path in paths:
-        if not _within(path, p["allowed_paths"]) or _within(path, p["protected_paths"]):
+        if not _within(path, p["allowed_paths"]) or _within(path.casefold(), protected_paths):
             raise GateError("proposal.paths: path outside scope or protected active policy")
     workflow_paths = {path for path in paths if _workflow(path)}
     effects = _list(data["workflow_effects"], "proposal.workflow_effects")
@@ -350,10 +364,13 @@ def _review(value) -> dict:
 
 
 def _tag_record(value) -> dict:
-    tag = _object(value, {"name", "commit_sha", "object_sha"}, set(), "state.tag")
+    tag = _object(value, {"name", "commit_sha", "object_sha", "object_type"}, set(), "state.tag")
     _text(tag["name"], "state.tag.name")
+    _equal(tag["object_type"], "tag", "state.tag.object_type")
     for field in ("commit_sha", "object_sha"):
         _sha(tag[field], f"state.tag.{field}")
+    if tag["object_sha"] == tag["commit_sha"]:
+        raise GateError("state.tag.object_sha: tag object must differ from source commit")
     return tag
 
 
@@ -450,6 +467,8 @@ def _release_intent(intent, p: dict) -> bool:
         source = _object(data["source"], {"commit_sha", "tag_object_sha"}, set(), "release intent.source")
         for field in ("commit_sha", "tag_object_sha"):
             _sha(source[field], f"release intent.source.{field}")
+        if source["tag_object_sha"] == source["commit_sha"]:
+            raise GateError("release intent.source.tag_object_sha: tag object must differ from source commit")
     else:
         raise GateError("release intent.source_mode: expected merged-pr or existing-tag")
     assets = _list(data["assets"], "release intent.assets", nonempty=True)
