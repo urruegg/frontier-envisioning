@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
+| Version | 0.4 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Subagent plan/readiness approved at e8ea6bd; #49 contracts/full local gate verified, adoption pending |
+| Status | Subagent plan/readiness approved at e8ea6bd; #49 contracts and #50 bootstrap/full local gates verified, adoption pending |
 | Scope | Staged private Pro machine-authored PRs, actual human review and trusted engineering/release execution |
 | References | [Catalogue](README.md), [Decision #48](https://github.com/urruegg/frontier-envisioning/issues/48), [Idea](../ideas/2026-11-14-pr-gated-operating-model.md), [Specification](../specs/2026-11-14-pr-gated-operating-model-design.md), [Plan](../plans/2026-11-14-pr-gated-operating-model-plan.md), [ADR-0030](../adr/0030-pr-gated-engineering-automation.md) |
 
@@ -13,7 +13,7 @@
 |---|---|---|---|---|---|---|---|
 | [#48](https://github.com/urruegg/frontier-envisioning/issues/48) | [Outcome](../ideas/2026-11-14-pr-gated-operating-model.md) | [G48-01 to G48-09](../specs/2026-11-14-pr-gated-operating-model-design.md#acceptance-and-verification) | [Slices A-D, Tasks 0-5](../plans/2026-11-14-pr-gated-operating-model-plan.md) | `@urruegg` accountable | Supported restricted identity; actual maintainer adoption/pilots | Slice A contracts verified; bootstrap/coordination/release not active | Spec `8de16ca`, plan/readiness `e8ea6bd`; no native-review/pilot/publication result |
 | [#49](https://github.com/urruegg/frontier-envisioning/issues/49) | [Proposal boundary](../ideas/2026-11-14-pr-gated-operating-model.md) | [G48-03/G48-04/G48-07](../specs/2026-11-14-pr-gated-operating-model-design.md#acceptance-and-verification) | [Task 1](../plans/2026-11-14-pr-gated-operating-model-plan.md#task-1-test-the-authority-contract-before-implementing-it) | `@urruegg` accountable | Actual future trusted collector/adoption for operational use | Pure contracts locally implemented and reviewed | `b274e817`: 50 focused tests, both advisory stages passed, full strict local gate passed |
-| [#50](https://github.com/urruegg/frontier-envisioning/issues/50) | [Bootstrap boundary](../ideas/2026-11-14-pr-gated-operating-model.md) | [G48-04/G48-06/G48-09](../specs/2026-11-14-pr-gated-operating-model-design.md#acceptance-and-verification) | [Task 2](../plans/2026-11-14-pr-gated-operating-model-plan.md#task-2-generate-and-review-the-maintainer-bootstrap-package) | `@urruegg` accountable | Verified #49 contracts; actual person adoption remains a later stop | Bounded generation issue created; implementation pending | Real #50; approved spec `8de16ca`, plan/readiness `e8ea6bd`; no ready label, assignment or live adoption inferred |
+| [#50](https://github.com/urruegg/frontier-envisioning/issues/50) | [Bootstrap boundary](../ideas/2026-11-14-pr-gated-operating-model.md) | [G48-04/G48-06/G48-09](../specs/2026-11-14-pr-gated-operating-model-design.md#acceptance-and-verification) | [Task 2](../plans/2026-11-14-pr-gated-operating-model-plan.md#task-2-generate-and-review-the-maintainer-bootstrap-package) | `@urruegg` accountable | Verified #49 contracts; actual person adoption remains a later stop | Generator implemented, reviewed and locally verified; live adoption blocked | `5a61b400`: 41 focused tests, both advisory stages passed, actual five-file output, full strict local gate passed |
 
 ## Actual decisions
 
@@ -112,3 +112,60 @@ main protections. The planned App client/key and actual adoption were not
 configured. The README already links to Releases, whose page still listed
 none. Bootstrap preparation and actual identity/native-gate/publishing/
 download evidence remain the next stages.
+
+## #50 reviewable bootstrap package
+
+The fresh bounded builder changed only
+[the generator](../../tools/governance_bootstrap.py) and
+[its tests](../../tests/unit/test_governance_bootstrap.py).
+Ordered advisory review identified two specification gaps: operative legacy
+release instructions survived contrary appended notes, and applicable
+instruction-file amendments were missing. Semantic RED/GREEN reconstruction
+tests verified their fixes at `4a77d895`.
+
+The deferred quality stage then reproduced source-hardlink confinement and
+JSON decoder/non-finite input bugs. These were fixed separately, test-first,
+at `5a61b400470cdf19a259abde017d65841e20161e`.
+The reviewer confirmed specification **PASS**, then quality **PASS**:
+
+- **41 focused tests:** 37 passed, four Windows symlink-privilege skips.
+  All four actual Windows junction cases passed.
+- Three actual source-hardlink cases failed before any source-content read
+  or output; immediate rechecks also blocked links introduced after preflight.
+- Eleven JSON input cases failed explicitly without output, while unrelated
+  programming errors propagated. The CLI's catch was not broadened.
+- All 33 missing/drifted/duplicate-anchor or missing-instruction cases failed
+  before output. Determinism, overwrite/path refusal, scoped Ruff and
+  neutrality checks passed. The previous production had seven failing
+  quality-regression cases when loaded in memory.
+
+The parent verified clean committed source and ran
+`python tools/governance_bootstrap.py`: **exit 0**, exactly five inert files
+under `build/governance-bootstrap/`. Existing initial output was preserved
+under ignored evidence; tracked source remained unchanged. Output comprises
+the proposed migration patch, settings/App descriptors, validation report and
+one operator checklist. Generation explicitly says **adoption BLOCKED;
+publication not authorised**. No active template, guard, routing, workflow,
+credential or setting was changed.
+
+The stable `python tools/dev.py check --strict` at `5a61b400`, after both
+review stages with no overlapping edits, ended **ALL GATES PASSED**:
+
+- **799 unit/pipeline tests passed**, **five skips**: four Windows
+  symlink-privilege cases and the expected current-unreleased-version case.
+  **2,595 subtests passed**.
+- **68 plugin self-tests** and **183 DOM tests** passed; zero DOM failures/skips.
+- Lint/docs/neutrality/template, package/demo/gallery drift and the existing
+  reproduction step passed. Six inherited ESLint warnings; zero errors.
+- Plugin SHA-256 remains
+  `9e7985731040ee05d83c8dbcee92ad20bc09c584b70b4e994f7fde71dfaf4b89`.
+
+Full log: `build/evidence/approval50-check-5a61b400.log`.
+The earlier 75-test local L2 product-preservation result remains separately
+qualified to `b706c5f`; no new live governance/browser pilot is claimed.
+
+This completes the bounded local generator preparation, not Slice A's actual
+identity/adoption proof or stages B-D. Trusted collectors/parser/coordinator,
+provider credential separation, native protections, real App-authored review
+and publisher/download evidence remain absent or unverified. Current
+person-only controls and the human #8 routing dependency still apply.

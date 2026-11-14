@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-14 |
 | Author | Copilot SDK in VS Code; AI-assisted planning |
-| Status | Plan/readiness and subagent execution approved at e8ea6bd; Slice A contracts verified, adoption pending |
+| Status | Plan/readiness and subagent execution approved at e8ea6bd; Slice A contracts/bootstrap verified, identity/adoption pending |
 | Scope | Staged proposal isolation, native human review, engineering/release automation and maintainer adoption |
 | References | [Catalogue](README.md), [Decision #48](https://github.com/urruegg/frontier-envisioning/issues/48), [Idea](../ideas/2026-11-14-pr-gated-operating-model.md), [Approved specification](../specs/2026-11-14-pr-gated-operating-model-design.md), [SPRINT-010](../sprints/SPRINT-010-pr-gated-operating-model.md), [Proposed ADR-0030](../adr/0030-pr-gated-engineering-automation.md) |
 
