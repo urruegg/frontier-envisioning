@@ -304,6 +304,8 @@ def _safe(path: Path, *, directory: bool) -> tuple[int, int]:
             raise BootstrapError(f"source/output directory required: {component.name}")
         if not expected_directory and not stat.S_ISREG(info.st_mode):
             raise BootstrapError(f"source/output regular file required: {component.name}")
+        if not expected_directory and info.st_nlink != 1:
+            raise BootstrapError(f"multiply-linked source file refused: {component.name}")
     return info.st_dev, info.st_ino
 
 
@@ -401,9 +403,14 @@ def _hook_observations(source: str) -> dict:
             result[key] = value
         return result
 
+    def nonfinite(_value):
+        raise BootstrapError("non-finite source JSON constant in guardrails.json")
+
     try:
-        value = json.loads(source, object_pairs_hook=unique)
-    except (json.JSONDecodeError, RecursionError) as error:
+        value = json.loads(source, object_pairs_hook=unique, parse_constant=nonfinite)
+    except BootstrapError:
+        raise
+    except (ValueError, RecursionError) as error:
         raise BootstrapError("invalid source JSON in guardrails.json") from error
     if not isinstance(value, dict) or not isinstance(value.get("hooks"), dict):
         raise BootstrapError("unsupported source hooks shape in guardrails.json")

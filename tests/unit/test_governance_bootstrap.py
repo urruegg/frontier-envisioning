@@ -518,6 +518,42 @@ class BootstrapContractTests(unittest.TestCase):
                 self.assertIn("source", stderr)
                 self.assertFalse((self.root / "build").exists())
 
+    def test_large_json_integer_decoder_failure_is_nonzero_without_output(self):
+        path = self.root / ".github/hooks/guardrails.json"
+        path.write_text('{"hooks":{},"extra":' + "9" * 5000 + "}\n", encoding="utf-8", newline="\n")
+        try:
+            code, stdout, stderr = self.call()
+        except ValueError:
+            self.fail("Decoder-origin ValueError escaped main instead of an input diagnostic")
+        self.assertEqual(1, code)
+        self.assertEqual("", stdout)
+        self.assertIn("source JSON", stderr)
+        self.assertIn("guardrails.json", stderr)
+        self.assertFalse((self.root / "build").exists())
+
+    def test_nonfinite_json_constants_are_nonzero_without_output(self):
+        for constant in ("NaN", "Infinity", "-Infinity"):
+            with self.subTest(constant=constant), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                seed(root)
+                path = root / ".github/hooks/guardrails.json"
+                path.write_text('{"hooks":{},"extra":' + constant + "}\n", encoding="utf-8", newline="\n")
+                with patch.object(self.module, "ROOT", root):
+                    code, stdout, stderr = self.call()
+                self.assertEqual(1, code)
+                self.assertEqual("", stdout)
+                self.assertIn("non-finite", stderr)
+                self.assertIn("source JSON", stderr)
+                self.assertFalse((root / "build").exists())
+
+    def test_unexpected_value_errors_outside_json_decoder_are_not_swallowed(self):
+        for helper in ("sha256_bytes", "_migration"):
+            with self.subTest(helper=helper):
+                with patch.object(self.module, helper, side_effect=ValueError("Unexpected internal failure")):
+                    with self.assertRaisesRegex(ValueError, "Unexpected internal failure"):
+                        self.call()
+                self.assertFalse((self.root / "build").exists())
+
     def test_no_credential_environment_or_file_reads_and_no_source_execution(self):
         original = Path.read_bytes
         reads = []
@@ -637,6 +673,73 @@ class BootstrapContractTests(unittest.TestCase):
         before = (self.root / "AGENTS.md").read_bytes()
         self.assertEqual(1, self.call()[0])
         self.assertEqual(before, (self.root / "AGENTS.md").read_bytes())
+
+    def test_real_hardlinked_sources_fail_complete_preflight_without_any_content_read(self):
+        # Test both the first source and a late source: complete preflight must
+        # reject either before reading ANY allowed file, not after copying data.
+        for relative in ("AGENTS.md", SOURCE_PATHS[-1]):
+            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as temporary:
+                outer = Path(temporary)
+                root = outer / "repository"
+                root.mkdir()
+                seed(root)
+                sentinel = outer / "dummy-outside-allowlist.txt"
+                dummy = b"DUMMY FIXTURE ONLY: outside the source allowlist, not a credential.\n"
+                sentinel.write_bytes(dummy)
+                source = root / relative
+                source.unlink()
+                os.link(sentinel, source)
+                self.assertEqual(2, source.lstat().st_nlink)
+                self.assertEqual(2, sentinel.lstat().st_nlink)
+                reads = []
+                original = Path.read_bytes
+
+                def recorded(path):
+                    reads.append(path)
+                    return original(path)
+
+                with patch.object(self.module, "ROOT", root), patch.object(Path, "read_bytes", recorded):
+                    code, stdout, stderr = self.call()
+                self.assertEqual([], reads, "Complete preflight read source content before rejecting a hardlink")
+                self.assertEqual(1, code)
+                self.assertEqual("", stdout)
+                self.assertIn("multiply-linked", stderr)
+                self.assertIn(Path(relative).name, stderr)
+                self.assertFalse((root / "build").exists())
+                self.assertEqual(dummy, sentinel.read_bytes())
+
+    def test_real_hardlink_created_at_preflight_end_is_rechecked_before_read(self):
+        # Deterministic phase-boundary instrumentation, not concurrent code:
+        # a real additional link appears after the complete preflight stat.
+        alias = self.root / "dummy-outside-allowlist.txt"
+        first = self.root / SOURCE_PATHS[0]
+        last = self.root / SOURCE_PATHS[-1]
+        first.write_bytes(b"DUMMY FIXTURE ONLY: no source contents or credentials.\n")
+        original_lstat, original_read = Path.lstat, Path.read_bytes
+        linked = False
+        reads = []
+
+        def linked_after_preflight(path):
+            nonlocal linked
+            info = original_lstat(path)
+            if path == last and not linked:
+                os.link(first, alias)
+                linked = True
+            return info
+
+        def recorded(path):
+            reads.append(path)
+            return original_read(path)
+
+        with patch.object(Path, "lstat", linked_after_preflight), patch.object(Path, "read_bytes", recorded):
+            code, stdout, stderr = self.call()
+        self.assertTrue(linked)
+        self.assertEqual(2, first.lstat().st_nlink)
+        self.assertEqual([], reads, "Source link count was not rechecked immediately before reading")
+        self.assertEqual(1, code)
+        self.assertEqual("", stdout)
+        self.assertIn("multiply-linked", stderr)
+        self.assertFalse((self.root / "build").exists())
 
     def test_output_directory_file_and_case_aliases_fail_without_source_mutation(self):
         for relative in ("build", "build/governance-bootstrap", "BUILD", "build/Governance-Bootstrap"):
