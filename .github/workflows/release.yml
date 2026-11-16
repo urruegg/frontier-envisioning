@@ -1,99 +1,305 @@
-# Gate L3: a release is built from a tag vX.Y.Z pushed by the release manager (a person).
-# Strict L1 on the tag, release bundle, SBOM (Microsoft SBOM tool), build provenance attestation,
-# then a draft GitHub release after the `release-approval` environment approval. A person publishes the draft.
-# Human-maintained: agent edits are blocked by .github/hooks.
+# Proposed replacement for .github/workflows/release.yml; person adoption required (#55).
+# One owner dispatch is the release action. No push trigger, App, PAT or private-plan gates.
 name: release
 
 on:
-  push:
-    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Approved plugin version, for example 1.11.0 (without v)"
+        required: true
+        type: string
+      manual_checks:
+        description: "I completed the source-qualified Cowork/manual release checks"
+        required: true
+        default: false
+        type: boolean
+      publish:
+        description: "Create the immutable version tag and publish the verified release"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
+concurrency:
+  group: frontier-release
+  cancel-in-progress: false
+
+env:
+  REPOSITORY: ${{ github.repository }}
+  REF: ${{ github.ref }}
+  EVENT: ${{ github.event_name }}
+  ACTOR: ${{ github.actor }}
+  TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+  SOURCE_SHA: ${{ github.sha }}
+  VERSION: ${{ inputs.version }}
+  PUBLISH: ${{ inputs.publish }}
+  MANUAL_CHECKS: ${{ inputs.manual_checks }}
+  RUN_ID: ${{ github.run_id }}
+  RUN_ATTEMPT: ${{ github.run_attempt }}
+
 jobs:
   build:
-    name: Build release ${{ github.ref_name }}
-    if: ${{ vars.RELEASE_ENABLED == 'true' }}
+    name: Verify release source
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/build/playwright-browsers
+    timeout-minutes: 45
     permissions:
       contents: read
-      id-token: write
-      attestations: write
+    defaults:
+      run:
+        shell: bash
+        working-directory: source
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/build/playwright-browsers
+      SITE_AUTH_MODE: none
+    outputs:
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+      sums_sha: ${{ steps.handover.outputs.sums_sha }}
+      notes_sha: ${{ steps.handover.outputs.notes_sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          path: source
+          persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: "3.12"
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: "22"
-      - name: Tag matches the plugin version
+      - name: Validate release request
         run: |
-          v="$(python -c "import json;print(json.load(open('plugin/.claude-plugin/plugin.json'))['version'])")"
-          if [ "v$v" != "$GITHUB_REF_NAME" ]; then echo "tag $GITHUB_REF_NAME does not match plugin version $v"; exit 1; fi
+          python - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          expected = {
+              "REPOSITORY": "urruegg/frontier-envisioning", "REF": "refs/heads/main",
+              "EVENT": "workflow_dispatch", "ACTOR": "urruegg", "TRIGGERING_ACTOR": "urruegg",
+              "PUBLISH": "true", "MANUAL_CHECKS": "true",
+          }
+          for key, value in expected.items():
+              if os.environ.get(key) != value:
+                  raise ValueError(f"release request rejected: {key}")
+          version = os.environ["VERSION"]
+          if not re.fullmatch(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)", version):
+              raise ValueError("version must be canonical X.Y.Z")
+          if not re.fullmatch(r"[0-9a-f]{40}", os.environ["SOURCE_SHA"]):
+              raise ValueError("source must be a full commit SHA")
+          metadata = json.loads(Path("plugin/.claude-plugin/plugin.json").read_text(encoding="utf-8"))
+          if metadata["version"] != version:
+              raise ValueError("requested version does not match the approved source")
+          print("Owner dispatch validated; manual checks are maintainer-reported, not independent approval.")
+          PY
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
       - name: Install development dependencies
         run: |
           python -m pip install -r requirements-dev.txt
-          if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
-      - name: Gate L1 (strict) on the tag
-        run: python tools/dev.py ci
-      - name: Gate L2 on the tag
+          npm ci --no-audit --no-fund
+      - name: Gate L1
+        run: python tools/dev.py check --strict
+      - name: Gate L2
         run: |
           npx playwright install --with-deps chromium
           python tools/dev.py site e2e --strict
-      - name: Release bundle and manifest
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          path: independent
+          persist-credentials: false
+      - name: Independent plugin comparison
         run: |
-          python tools/dev.py bundle
-          python tools/verify_release.py --write release-manifest.json
-          python tools/release_notes.py "$GITHUB_REF_NAME" > release-notes.md
-      - name: Collect the release assets
+          python ../independent/tools/build_package.py
+          test -z "$(git -C ../independent status --porcelain --untracked-files=no)"
+          cmp "dist/frontier-envisioning-plugin-${VERSION}.zip" "../independent/dist/frontier-envisioning-plugin-${VERSION}.zip"
+      - name: Prepare release files
         run: |
-          version="${GITHUB_REF_NAME#v}"
-          mkdir -p release
-          cp "dist/frontier-envisioning-plugin-${version}.zip" release/
-          cp release-manifest.json release/
-      - name: SBOM (SPDX, Microsoft SBOM tool)
+          mkdir release
+          cp "dist/frontier-envisioning-plugin-${VERSION}.zip" release/
+          python tools/verify_release.py --write release/release-manifest.json
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          path = Path("release/release-manifest.json")
+          manifest = json.loads(path.read_text(encoding="utf-8"))
+          manifest["provenance"] = "Built by the owner-dispatched release workflow from source " + os.environ["SOURCE_SHA"] + "."
+          manifest["build_evidence"] = {
+              "profile": "github-owner-dispatch-publication/1.0",
+              "repository": os.environ["REPOSITORY"],
+              "source_commit": os.environ["SOURCE_SHA"], "control_commit": os.environ["SOURCE_SHA"],
+              "intended_tag": "v" + os.environ["VERSION"],
+              "run_id": os.environ["RUN_ID"], "run_attempt": os.environ["RUN_ATTEMPT"],
+              "run_url": "https://github.com/" + os.environ["REPOSITORY"] + "/actions/runs/" + os.environ["RUN_ID"],
+              "manual_checks": "confirmed by dispatching maintainer",
+              "native_attestation": "not-provided",
+          }
+          path.write_text(json.dumps(manifest, indent=1) + "\n", encoding="utf-8", newline="\n")
+          PY
+          python tools/release_notes.py "$VERSION" > release-notes.md
+          printf '\nRelease notifications: Watch > Custom > Releases (opt-in; delivery is not guaranteed to every contributor).\n' >> release-notes.md
+      - name: SBOM
         run: |
           curl -sSfLo "$RUNNER_TEMP/sbom-tool" https://github.com/microsoft/sbom-tool/releases/download/v4.1.5/sbom-tool-linux-x64
           echo "bf5d4f99bc98c119d549d08fc02ae92598a7a42772f17317c01031a92632e05b  $RUNNER_TEMP/sbom-tool" | sha256sum --check --strict
           chmod +x "$RUNNER_TEMP/sbom-tool"
-          "$RUNNER_TEMP/sbom-tool" generate -b release -bc plugin -pn frontier-envisioning -pv "${GITHUB_REF_NAME#v}" \
-            -ps "Microsoft Innovation Hub Switzerland" -nsb "https://github.com/${GITHUB_REPOSITORY}"
-          (cd release/_manifest && zip -qr ../sbom-spdx.zip .)
-          rm -rf release/_manifest
-      - name: Checksums
-        run: (cd release && sha256sum -- * > SHA256SUMS.txt)
-      - name: Build provenance attestation
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+          "$RUNNER_TEMP/sbom-tool" generate -b release -bc plugin -m "$RUNNER_TEMP/release-sbom" \
+            -pn frontier-envisioning -pv "$VERSION" -ps "Microsoft Innovation Hub Switzerland" \
+            -nsb "https://github.com/$REPOSITORY" -li false -F false
+          (cd "$RUNNER_TEMP/release-sbom/_manifest" && zip -qr "$GITHUB_WORKSPACE/source/release/sbom-spdx.zip" .)
+      - name: Checksums and handover
+        id: handover
+        run: |
+          test -z "$(git status --porcelain --untracked-files=no)"
+          (cd release && sha256sum -- "frontier-envisioning-plugin-${VERSION}.zip" release-manifest.json sbom-spdx.zip > SHA256SUMS.txt)
+          python - <<'PY'
+          import hashlib, os
+          from pathlib import Path
+          expected = {"frontier-envisioning-plugin-" + os.environ["VERSION"] + ".zip",
+                      "release-manifest.json", "sbom-spdx.zip", "SHA256SUMS.txt"}
+          if {p.name for p in Path("release").iterdir()} != expected:
+              raise ValueError("unexpected release files")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              for key, path in (("sums_sha", "release/SHA256SUMS.txt"), ("notes_sha", "release-notes.md")):
+                  output.write(key + "=" + hashlib.sha256(Path(path).read_bytes()).hexdigest() + "\n")
+          PY
+      - name: Upload verified files
+        id: upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          subject-path: "release/*"
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: release-${{ github.ref_name }}
+          name: verified-release-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            release/
-            release-notes.md
+            source/release/
+            source/release-notes.md
+          if-no-files-found: error
           retention-days: 90
 
   publish:
-    name: Draft GitHub release
+    name: Tag and publish verified release
     needs: build
     runs-on: ubuntu-latest
-    environment: release-approval
+    timeout-minutes: 10
     permissions:
       contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      EXPECTED_SUMS: ${{ needs.build.outputs.sums_sha }}
+      EXPECTED_NOTES: ${{ needs.build.outputs.notes_sha }}
     steps:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
-          name: release-${{ github.ref_name }}
-          path: out
-      - name: Create the draft release
-        env:
-          GH_TOKEN: ${{ github.token }}
+          artifact-ids: ${{ needs.build.outputs.artifact_id }}
+          path: .
+          merge-multiple: true
+      - name: Verify downloaded files
         run: |
-          gh release create "$GITHUB_REF_NAME" out/release/* --repo "$GITHUB_REPOSITORY" --draft \
-            --title "Frontier Envisioning ${GITHUB_REF_NAME#v}" --notes-file out/release-notes.md --verify-tag
+          python - <<'PY'
+          import hashlib, json, os, re, zipfile
+          from pathlib import Path
+          version = os.environ["VERSION"]
+          if not re.fullmatch(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)", version):
+              raise ValueError("invalid version")
+          names = {"frontier-envisioning-plugin-" + version + ".zip", "release-manifest.json", "sbom-spdx.zip"}
+          folder = Path("release")
+          if {p.name for p in folder.iterdir()} != names | {"SHA256SUMS.txt"}:
+              raise ValueError("release asset allowlist mismatch")
+          for path, digest in ((folder / "SHA256SUMS.txt", os.environ["EXPECTED_SUMS"]),
+                               (Path("release-notes.md"), os.environ["EXPECTED_NOTES"])):
+              if not re.fullmatch(r"[0-9a-f]{64}", digest) or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                  raise ValueError("handover digest mismatch")
+          checked = set()
+          for line in (folder / "SHA256SUMS.txt").read_text(encoding="utf-8").splitlines():
+              digest, name = line.split("  ", 1)
+              if name not in names or name in checked:
+                  raise ValueError("unexpected or repeated checksum path")
+              path = folder / name
+              if path.is_symlink() or not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                  raise ValueError("release asset hash mismatch")
+              checked.add(name)
+          if checked != names:
+              raise ValueError("missing checksum")
+          manifest = json.loads((folder / "release-manifest.json").read_text(encoding="utf-8"))
+          evidence = manifest["build_evidence"]
+          expected = {"profile": "github-owner-dispatch-publication/1.0",
+                      "repository": os.environ["REPOSITORY"],
+                      "source_commit": os.environ["SOURCE_SHA"], "control_commit": os.environ["SOURCE_SHA"],
+                      "run_id": os.environ["RUN_ID"], "run_attempt": os.environ["RUN_ATTEMPT"]}
+          if manifest["version"] != version or any(evidence.get(k) != v for k, v in expected.items()):
+              raise ValueError("source/control/run evidence mismatch")
+          for name in names:
+              if name.endswith(".zip"):
+                  with zipfile.ZipFile(folder / name) as archive:
+                      if archive.testzip() is not None:
+                          raise ValueError("corrupt ZIP")
+          print("Four assets and source/run-bound handover verified.")
+          PY
+      - name: Create or verify annotated tag
+        run: |
+          python - <<'PY'
+          import json, os, re, urllib.error, urllib.request
+          for key, value in {
+              "REPOSITORY": "urruegg/frontier-envisioning", "REF": "refs/heads/main",
+              "EVENT": "workflow_dispatch", "ACTOR": "urruegg", "TRIGGERING_ACTOR": "urruegg",
+              "PUBLISH": "true", "MANUAL_CHECKS": "true",
+          }.items():
+              if os.environ.get(key) != value:
+                  raise ValueError("publication authority mismatch: " + key)
+          repo = os.environ["REPOSITORY"]
+          version, source = os.environ["VERSION"], os.environ["SOURCE_SHA"]
+          if not re.fullmatch(r"[0-9a-f]{40}", source):
+              raise ValueError("invalid source SHA")
+          tag = "v" + version
+          def api(path, data=None, missing_ok=False):
+              request = urllib.request.Request(
+                  "https://api.github.com/repos/" + repo + "/" + path,
+                  data=None if data is None else json.dumps(data).encode("utf-8"),
+                  headers={"Authorization": "Bearer " + os.environ["GH_TOKEN"],
+                           "Accept": "application/vnd.github+json", "Content-Type": "application/json",
+                           "X-GitHub-Api-Version": "2022-11-28"},
+              )
+              try:
+                  with urllib.request.urlopen(request) as response:
+                      return json.load(response)
+              except urllib.error.HTTPError as error:
+                  if missing_ok and error.code == 404:
+                      return None
+                  raise
+          if api("git/ref/heads/main")["object"]["sha"] != source:
+              raise ValueError("main changed since dispatch; review and dispatch the new source")
+          if api("releases/tags/" + tag, missing_ok=True) is not None:
+              raise ValueError("release already exists (including drafts); inspect recovery without overwriting")
+          latest = api("releases/latest", missing_ok=True)
+          if latest is not None:
+              previous = latest["tag_name"]
+              if not re.fullmatch(r"v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)", previous):
+                  raise ValueError("Latest release has an unexpected version")
+              if tuple(map(int, version.split("."))) <= tuple(map(int, previous[1:].split("."))):
+                  raise ValueError("new release version must be newer than Latest")
+          ref = api("git/ref/tags/" + tag, missing_ok=True)
+          if ref is not None:
+              if ref["object"]["type"] != "tag":
+                  raise ValueError("existing tag is not annotated")
+              annotated = api("git/tags/" + ref["object"]["sha"])
+              if annotated["tag"] != tag or annotated["object"]["type"] != "commit" or annotated["object"]["sha"] != source:
+                  raise ValueError("existing tag does not point to the verified source")
+          else:
+              annotated = api("git/tags", {"tag": tag, "message": "Frontier Envisioning " + version,
+                                          "object": source, "type": "commit"})
+              api("git/refs", {"ref": "refs/tags/" + tag, "sha": annotated["sha"]})
+          print("Annotated tag verified at " + source + "; no existing ref was moved.")
+          PY
+      - name: Publish Latest release
+        run: |
+          gh release create "v${VERSION}" \
+            "release/frontier-envisioning-plugin-${VERSION}.zip" release/release-manifest.json \
+            release/sbom-spdx.zip release/SHA256SUMS.txt \
+            --repo "$REPOSITORY" --verify-tag --latest \
+            --title "Frontier Envisioning ${VERSION}" --notes-file release-notes.md
+      - name: Publication summary
+        run: |
+          gh release view "v${VERSION}" --repo "$REPOSITORY" --json url,tagName,isDraft,isPrerelease,assets
+          printf '## Published Frontier Envisioning %s\n\nhttps://github.com/%s/releases/tag/v%s\n\nFour verified assets. No cryptographic build attestation is provided.\n' \
+            "$VERSION" "$REPOSITORY" "$VERSION" >> "$GITHUB_STEP_SUMMARY"
