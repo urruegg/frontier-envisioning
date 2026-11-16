@@ -289,6 +289,119 @@ class ReleaseDocuments(unittest.TestCase):
             )
 
 
+@unittest.skipUnless(shutil.which("git"), "git not installed")
+class LocalReleaseManifest(unittest.TestCase):
+    def setUp(self):
+        self.verifier = load("tools/verify_release.py")
+
+    @contextlib.contextmanager
+    def source_fixture(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "source"
+            root.mkdir()
+            metadata = root / "plugin/.claude-plugin/plugin.json"
+            metadata.parent.mkdir(parents=True)
+            metadata.write_text('{"version":"1.10.0"}\n', encoding="utf-8")
+            (root / ".gitignore").write_text("dist/\nbuild/\n", encoding="utf-8")
+            for _, relative, _ in self.verifier.standard_artefacts("1.10.0"):
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b'{"generated":"2026-11-15","sample":"synthetic"}\n')
+
+            def git(*args):
+                return subprocess.run(
+                    ["git", "-c", "user.name=t", "-c", "user.email=t@example.com", *args],
+                    cwd=root, check=True, capture_output=True, text=True, encoding="utf-8",
+                ).stdout.strip()
+
+            git("init", "-q")
+            git("add", ".gitignore", "plugin")
+            git("commit", "-qm", "synthetic source")
+            commit = git("rev-parse", "HEAD")
+            git("tag", "-a", "v1.10.0", "-m", "synthetic release")
+            yield root, Path(tmp) / "release-manifest.json", commit, git
+
+    def invoke_local(self, root, output, commit, tag="v1.10.0"):
+        args = ["--local-source", str(root), "--write", str(output),
+                "--tag", tag, "--expected-commit", commit]
+        with mock.patch.object(self.verifier, "ROOT", root), \
+                contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()) as error:
+            try:
+                code = self.verifier.main(args)
+            except SystemExit as exc:
+                code = exc.code
+        return code, error.getvalue()
+
+    def test_local_manifest_records_real_tag_without_workflow_or_approval_claims(self):
+        with self.source_fixture() as (root, output, commit, git):
+            code, error = self.invoke_local(root, output, commit)
+            self.assertEqual((code, error), (0, ""))
+            manifest = json.loads(output.read_text(encoding="utf-8"))
+            self.assertIn("locally", manifest["provenance"])
+            self.assertNotIn("release workflow", manifest["provenance"])
+            evidence = manifest["build_evidence"]
+            self.assertEqual(evidence["source_commit"], commit)
+            self.assertEqual(evidence["tag_object"], git("rev-parse", "refs/tags/v1.10.0"))
+            self.assertEqual(evidence["control_commit"], commit)
+            self.assertNotIn("run_id", evidence)
+            self.assertNotIn("workflow_ref", evidence)
+            self.assertNotIn("approved", evidence)
+            self.assertEqual(evidence["native_attestation"], "not-provided")
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(self.verifier.verify(manifest, root), [])
+
+    def test_local_manifest_rejects_invalid_source_before_writing(self):
+        for case in ("wrong-sha", "malformed-tag", "dirty", "lightweight", "wrong-version", "nested-root"):
+            with self.subTest(case=case), self.source_fixture() as (root, output, commit, git):
+                tag = "v1.10.0"
+                if case == "wrong-sha":
+                    commit = "0" * 40
+                elif case == "malformed-tag":
+                    tag = "v1.10.0;echo unsafe"
+                elif case == "dirty":
+                    (root / ".gitignore").write_text("changed\n", encoding="utf-8")
+                elif case == "lightweight":
+                    git("tag", "-d", tag)
+                    git("tag", tag)
+                elif case == "wrong-version":
+                    (root / "plugin/.claude-plugin/plugin.json").write_text(
+                        '{"version":"1.10.1"}\n', encoding="utf-8")
+                    git("add", "plugin")
+                    git("commit", "-qm", "synthetic version mismatch")
+                    commit = git("rev-parse", "HEAD")
+                    git("tag", "-d", tag)
+                    git("tag", "-a", tag, "-m", "synthetic mismatch")
+                elif case == "nested-root":
+                    root = root / "plugin"
+                code, error = self.invoke_local(root, output, commit, tag)
+                self.assertEqual(code, 1)
+                self.assertIn("ERROR:", error)
+                self.assertFalse(output.exists())
+
+    def test_existing_workflow_manifest_writer_keeps_reproduction_contract(self):
+        with self.source_fixture() as (root, output, _, _), \
+                mock.patch.object(self.verifier, "ROOT", root), contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(self.verifier.write_manifest(output, "1.10.0"), 0)
+            manifest = json.loads(output.read_text(encoding="utf-8"))
+            self.assertNotIn("build_evidence", manifest)
+            self.assertIn("release workflow", manifest["provenance"])
+            self.assertEqual(self.verifier.verify(manifest, root), [])
+
+    def test_local_manifest_never_overwrites_tagged_source_or_previous_output(self):
+        with self.source_fixture() as (root, output, commit, _):
+            metadata = root / "plugin/.claude-plugin/plugin.json"
+            before = metadata.read_bytes()
+            code, error = self.invoke_local(root, metadata, commit)
+            self.assertEqual(code, 1)
+            self.assertIn("ERROR:", error)
+            self.assertEqual(metadata.read_bytes(), before)
+            output.write_bytes(b"previous handoff")
+            code, error = self.invoke_local(root, output, commit)
+            self.assertEqual(code, 1)
+            self.assertIn("ERROR:", error)
+            self.assertEqual(output.read_bytes(), b"previous handoff")
+
+
 class ReleaseWorkflowContracts(unittest.TestCase):
     def test_release_requires_explicit_owner_enablement(self):
         import yaml
