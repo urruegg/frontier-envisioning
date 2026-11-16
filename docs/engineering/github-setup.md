@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
-| Date | 2026-11-10 |
+| Version | 0.3 |
+| Date | 2026-11-16 |
 | Author | Original author not recorded; Copilot AI-assisted maintenance |
 | Status | Maintained; approval or administrative permission not inferred |
 | Scope | Repository setup guide; document revision, not product version |
@@ -17,7 +17,10 @@
   enterprise-only account is not an eligible second collaborator for this
   repository. Do not invite it or assign it ownership here. The repository
   remains private; the platform name is not a visibility setting.
-- Git, Python 3.11+ and the GitHub CLI signed in: `gh auth login` (scopes `repo` and `workflow`).
+- Git, Python 3.11+ and the GitHub CLI signed in as `urruegg`.
+  Check `gh api user --jq .login` before repository operations; stop if another
+  account is active. The maintainer switches/signs in privately, without
+  sharing tokens or changing a shared agent environment.
 - Decision ENG-D1: the owner (your account or an organisation) and the visibility (private recommended).
 
 ## 2. Bootstrap
@@ -42,7 +45,12 @@ For a new repository, the script creates the import commit and repository (`--pr
 3. **Rulesets**: verify all three required checks on an actual PR and confirm the review requirements are achievable in the sole-maintainer model below. Do not infer server enforcement from local files or branch metadata.
 4. **Code security**: on a private repository, CodeQL needs GitHub Code Security; when available set the repository variable `CODEQL_ENABLED` to `true`.
 5. **CODEOWNERS**: an authorised person must replace the imported enterprise-account entries with `@urruegg` only, for every path. A single `* @urruegg` rule is sufficient if no later rules override it; remove or correct all old explicit rules too. This is a proposed human edit, not a claim that the protected file already changed. CODEOWNERS assigns ownership, not permissions or an independent reviewer.
-6. **Release approval**: create and verify `release-approval` separately from showcase `prod`, with the approved reviewer and a selected version-tag policy. Confirm private-repository feature availability. Only then set `RELEASE_ENABLED=true`; leave it unset/false while reproduction or approvals are blocked.
+6. **Releases**: keep legacy `RELEASE_ENABLED` unset/false. The old tagged
+   publisher depends on private-environment reviewers/native attestations
+   unavailable on the current Pro profile. Do not revive it by rerunning an
+   old tag. [#55](https://github.com/urruegg/frontier-envisioning/issues/55)
+   proposes a person-adopted replacement, not an already active control.
+   Keep `SHOWCASE_ENABLED` unset/false; release work must not deploy Azure.
 
 ## 4. Sole-maintainer review and merge
 
@@ -85,4 +93,47 @@ model explicitly rather than assuming one exists now.
   the maintainer's sign-off. Verify actual server requirements separately;
   CODEOWNERS does not make the PR author eligible to self-approve.
 - Ask Copilot in a cloud agent session to merge the pull request: the guard hook denies it with a reason.
-- After all release evidence is green and the workflow is explicitly enabled, a person may tag the approved commit and approve `release-approval`. No tag, publication, administration or push was performed during local intake.
+- [1.10.0](https://github.com/urruegg/frontier-envisioning/releases/tag/v1.10.0)
+  was published by the maintainer from the existing tag. Its four downloads
+  were independently retrieved as `urruegg` and matched the verified handoff.
+  That is not evidence that the legacy release workflow ran.
+
+## 6. Proposed upcoming-release procedure (#55)
+
+The maintainer selected a single **Run workflow** action on `main`, rather
+than automatic publication on every version merge. The complete replacement
+for the protected [release workflow](../../.github/workflows/release.yml)
+must first be reviewed, applied and committed by a person. This is a narrow
+person-initiated release-policy adoption, not adoption of #48's App model.
+Until that happens, use the verified manual handoff; do not assume these
+instructions describe a deployed workflow.
+
+After actual adoption:
+
+1. Merge the reviewed release/version changes with passing checks and actual
+   source-qualified Cowork/manual acceptance. Do not reuse a released version.
+2. As `urruegg`, open **Actions > release > Run workflow**, choose `main`,
+   enter the matching `X.Y.Z` version and confirm manual checks/publication.
+   Those confirmations are maintainer reports, not independent review.
+3. Read-only validation runs strict L1/L2, independently rebuilds the plugin
+   and prepares its manifest, pinned Microsoft SBOM, checksums and CHANGELOG
+   notes. No publisher token or persisted checkout credential is used there.
+4. A separate job verifies the handover and unchanged source, then uses the
+   built-in `GITHUB_TOKEN` to create the annotated tag and publish the normal
+   Latest Release. This token acts as GitHub Actions, not as a second person
+   or the owner's interactive CLI account. No App, PAT, private approval
+   environment, native attestation or Azure access is required.
+5. Exactly four files are uploaded: the plugin ZIP, `release-manifest.json`,
+   `sbom-spdx.zip` and `SHA256SUMS.txt`. Demo/identity/complete bundles are not
+   release downloads. Verify the actual published files and reader access.
+
+Changed `main`, conflicting tags/releases, failed checks or invalid inputs
+stop publication. A retry may reuse only the identical annotated tag; an
+existing release, including a partial draft, stops for honest maintainer
+recovery. Never move a tag, overwrite assets or delete failure evidence
+automatically. Protected release-record retention remains person-operated.
+
+The Release itself is the announcement. **Watch > Custom > Releases** is
+opt-in; delivery to every contributor is not guaranteed. No cryptographic
+build attestation or SLSA level is claimed. Agents do not dispatch this
+workflow, tag, publish, merge or change settings under the current agreement.

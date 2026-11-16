@@ -4,6 +4,8 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -289,26 +291,200 @@ class ReleaseDocuments(unittest.TestCase):
             )
 
 
+def release_workflow():
+    import yaml
+
+    path = Path(os.environ.get("FRONTIER_RELEASE_WORKFLOW", ROOT / ".github/workflows/release.yml"))
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
+
+
 class ReleaseWorkflowContracts(unittest.TestCase):
     def test_release_requires_explicit_owner_enablement(self):
-        import yaml
-
-        workflow = yaml.safe_load(
-            (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
-        )
+        workflow = release_workflow()
+        if "workflow_dispatch" in workflow.get("on", workflow.get(True, {})):
+            self.skipTest("owner-dispatch contract replaces legacy variable enablement")
         self.assertEqual(workflow["jobs"]["build"].get("if"), "${{ vars.RELEASE_ENABLED == 'true' }}")
 
     def test_release_checks_the_tag_with_l1_and_l2(self):
-        import yaml
-
-        workflow = yaml.safe_load(
-            (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
-        )
+        workflow = release_workflow()
+        if "workflow_dispatch" in workflow.get("on", workflow.get(True, {})):
+            self.skipTest("owner-dispatch gates the immutable source before creating its tag")
         steps = [step.get("name", "") for step in workflow["jobs"]["build"]["steps"]]
         self.assertIn("Gate L2 on the tag", steps)
         self.assertLess(steps.index("Gate L1 (strict) on the tag"), steps.index("Gate L2 on the tag"))
         self.assertLess(steps.index("Gate L2 on the tag"), steps.index("Release bundle and manifest"))
         self.assertEqual(workflow["jobs"]["publish"]["environment"], "release-approval")
+
+
+class ManualReleaseWorkflow(unittest.TestCase):
+    def setUp(self):
+        self.workflow = release_workflow()
+        event = self.workflow.get("on", self.workflow.get(True, {}))
+        if "workflow_dispatch" not in event and not os.environ.get("FRONTIER_RELEASE_WORKFLOW"):
+            self.skipTest("protected owner-dispatch proposal has not been adopted")
+
+    def step(self, job, name):
+        return next(s for s in self.workflow["jobs"][job]["steps"] if s.get("name") == name)
+
+    def script(self, job, name):
+        run = self.step(job, name)["run"]
+        match = re.search(r"python - <<'PY'\n(.*?)\nPY(?:\n|$)", run, re.S)
+        self.assertIsNotNone(match, name)
+        return match.group(1)
+
+    def execute(self, script, root, env):
+        with mock.patch.dict(os.environ, env, clear=True), \
+                contextlib.redirect_stdout(io.StringIO()), \
+                contextlib.chdir(root):
+            exec(compile(script, "<release-workflow-test>", "exec"), {"__name__": "__main__"})
+
+    def test_owner_dispatch_is_explicit_main_only_and_not_a_tag_trigger(self):
+        event = self.workflow.get("on", self.workflow.get(True, {}))
+        self.assertEqual(set(event), {"workflow_dispatch"})
+        inputs = event["workflow_dispatch"]["inputs"]
+        self.assertEqual(inputs["version"]["type"], "string")
+        for key in ("publish", "manual_checks"):
+            self.assertEqual(inputs[key]["type"], "boolean")
+            self.assertIs(inputs[key]["default"], False)
+        self.assertIs(self.workflow["concurrency"]["cancel-in-progress"], False)
+
+    def test_write_token_is_confined_to_publishing_without_a_checkout(self):
+        self.assertEqual(self.workflow["permissions"], {"contents": "read"})
+        build, publish = (self.workflow["jobs"][name] for name in ("build", "publish"))
+        self.assertEqual(build["permissions"], {"contents": "read"})
+        self.assertEqual(publish["permissions"], {"contents": "write", "actions": "read"})
+        self.assertEqual(publish["needs"], "build")
+        self.assertNotIn("environment", publish)
+        for step in publish["steps"]:
+            self.assertNotIn("checkout@", step.get("uses", ""))
+        for job in self.workflow["jobs"].values():
+            for step in job["steps"]:
+                self.assertNotIn("attest-build-provenance", step.get("uses", ""))
+                if "uses" in step:
+                    self.assertRegex(step["uses"], r"@[0-9a-f]{40}$")
+                if "checkout@" in step.get("uses", ""):
+                    self.assertIs(step["with"]["persist-credentials"], False)
+
+    def test_full_source_gates_and_independent_rebuild_precede_handover(self):
+        names = [s.get("name") for s in self.workflow["jobs"]["build"]["steps"]]
+        ordered = ["Validate release request", "Gate L1", "Gate L2", "Independent plugin comparison",
+                   "Prepare release files", "SBOM", "Checksums and handover", "Upload verified files"]
+        self.assertEqual([names.index(n) for n in ordered], sorted(names.index(n) for n in ordered))
+        self.assertIn("tools/dev.py check --strict", self.step("build", "Gate L1")["run"])
+        self.assertIn("tools/dev.py site e2e --strict", self.step("build", "Gate L2")["run"])
+        self.assertIn("cmp ", self.step("build", "Independent plugin comparison")["run"])
+        sbom = self.step("build", "SBOM")["run"]
+        self.assertIn("bf5d4f99bc98c119d549d08fc02ae92598a7a42772f17317c01031a92632e05b", sbom)
+        self.assertIn("-li false", sbom)
+        self.assertIn("PLAYWRIGHT_BROWSERS_PATH", self.workflow["jobs"]["build"]["env"])
+
+    def test_preflight_rejects_wrong_authority_version_or_confirmation(self):
+        script = self.script("build", "Validate release request")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            metadata = root / "plugin/.claude-plugin/plugin.json"
+            metadata.parent.mkdir(parents=True)
+            metadata.write_text('{"version":"1.11.0"}', encoding="utf-8")
+            env = {"REPOSITORY": "urruegg/frontier-envisioning", "REF": "refs/heads/main",
+                   "ACTOR": "urruegg", "TRIGGERING_ACTOR": "urruegg", "EVENT": "workflow_dispatch",
+                   "VERSION": "1.11.0", "PUBLISH": "true", "MANUAL_CHECKS": "true",
+                   "SOURCE_SHA": "a" * 40}
+            self.execute(script, root, env)
+            for key, value in (("ACTOR", "urruegg_microsoft"), ("TRIGGERING_ACTOR", "another-user"),
+                               ("REF", "refs/heads/feature"), ("REPOSITORY", "other/repo"),
+                               ("EVENT", "push"), ("VERSION", "1.10.0"), ("VERSION", "1.11.0;echo bad"),
+                               ("PUBLISH", "false"), ("MANUAL_CHECKS", "false"), ("SOURCE_SHA", "short")):
+                with self.subTest(key=key, value=value), self.assertRaises((ValueError, SystemExit)):
+                    self.execute(script, root, dict(env, **{key: value}))
+
+    def test_publisher_verifies_exact_files_hashes_and_source_before_any_write(self):
+        script = self.script("publish", "Verify downloaded files")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            assets = root / "release"
+            assets.mkdir()
+            package = "frontier-envisioning-plugin-1.11.0.zip"
+            manifest = {
+                "version": "1.11.0",
+                "build_evidence": {"profile": "github-owner-dispatch-publication/1.0",
+                                   "repository": "urruegg/frontier-envisioning",
+                                   "source_commit": "a" * 40, "control_commit": "a" * 40,
+                                   "run_id": "123", "run_attempt": "1"},
+            }
+            for name in (package, "sbom-spdx.zip"):
+                with zipfile.ZipFile(assets / name, "w") as archive:
+                    archive.writestr("synthetic.txt", "offline fixture")
+            (assets / "release-manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+            import hashlib
+            names = (package, "release-manifest.json", "sbom-spdx.zip")
+            sums = "".join(hashlib.sha256((assets / n).read_bytes()).hexdigest() + "  " + n + "\n" for n in names)
+            (assets / "SHA256SUMS.txt").write_text(sums, encoding="utf-8", newline="\n")
+            (root / "release-notes.md").write_text("Synthetic release notes.\n", encoding="utf-8")
+            env = {"VERSION": "1.11.0", "SOURCE_SHA": "a" * 40, "REPOSITORY": "urruegg/frontier-envisioning",
+                   "RUN_ID": "123", "RUN_ATTEMPT": "1",
+                   "EXPECTED_SUMS": hashlib.sha256((assets / "SHA256SUMS.txt").read_bytes()).hexdigest(),
+                   "EXPECTED_NOTES": hashlib.sha256((root / "release-notes.md").read_bytes()).hexdigest()}
+            self.execute(script, root, env)
+            for name in (*names, "SHA256SUMS.txt", "../release-notes.md"):
+                path = assets / name
+                original = path.read_bytes()
+                path.write_bytes(b"tampered")
+                with self.subTest(name=name), self.assertRaises((ValueError, SystemExit, zipfile.BadZipFile)):
+                    self.execute(script, root, env)
+                path.write_bytes(original)
+            extra = assets / "complete.zip"
+            extra.write_bytes(b"not an allowed download")
+            with self.assertRaises((ValueError, SystemExit)):
+                self.execute(script, root, env)
+
+    def test_tagging_rejects_stale_or_conflicting_state_without_overwriting(self):
+        import urllib.error
+        import urllib.request
+
+        script = self.script("publish", "Create or verify annotated tag")
+        env = {"REPOSITORY": "urruegg/frontier-envisioning", "REF": "refs/heads/main",
+               "ACTOR": "urruegg", "TRIGGERING_ACTOR": "urruegg", "EVENT": "workflow_dispatch",
+               "VERSION": "1.11.0", "PUBLISH": "true", "MANUAL_CHECKS": "true",
+               "SOURCE_SHA": "a" * 40, "GH_TOKEN": "synthetic-never-sent"}
+        cases = ("main-changed", "published", "draft", "rollback", "lightweight",
+                 "different-source", "different-tag-name", "permission-error", "wrong-actor")
+        with tempfile.TemporaryDirectory() as tmp:
+            for case in (*cases, "new", "resume-same-tag"):
+                requests = []
+
+                def respond(request):
+                    method = request.get_method()
+                    path = request.full_url.split("/frontier-envisioning/", 1)[1]
+                    requests.append((method, path))
+                    if case == "permission-error":
+                        raise urllib.error.HTTPError(request.full_url, 403, "synthetic forbidden", {}, None)
+                    if method == "POST":
+                        data = {"sha": "b" * 40}
+                    elif path == "git/ref/heads/main":
+                        data = {"object": {"sha": ("c" if case == "main-changed" else "a") * 40}}
+                    elif path == "releases/tags/v1.11.0" and case in ("published", "draft"):
+                        data = {"draft": case == "draft"}
+                    elif path == "releases/latest":
+                        data = {"tag_name": "v1.12.0" if case == "rollback" else "v1.10.0"}
+                    elif path == "git/ref/tags/v1.11.0" and case != "new":
+                        data = {"object": {"type": "commit" if case == "lightweight" else "tag", "sha": "b" * 40}}
+                    elif path == "git/tags/" + "b" * 40:
+                        data = {"tag": "v1.9.0" if case == "different-tag-name" else "v1.11.0",
+                                "object": {"type": "commit", "sha": ("c" if case == "different-source" else "a") * 40}}
+                    else:
+                        raise urllib.error.HTTPError(request.full_url, 404, "synthetic absent", {}, None)
+                    return io.BytesIO(json.dumps(data).encode("utf-8"))
+
+                with self.subTest(case=case), mock.patch.object(urllib.request, "urlopen", side_effect=respond):
+                    values = dict(env, ACTOR="another-user") if case == "wrong-actor" else env
+                    if case in cases:
+                        with self.assertRaises((ValueError, urllib.error.HTTPError)):
+                            self.execute(script, Path(tmp), values)
+                        self.assertFalse(any(method != "GET" for method, _ in requests), requests)
+                    else:
+                        self.execute(script, Path(tmp), values)
+                        writes = [(method, path) for method, path in requests if method != "GET"]
+                        self.assertEqual(writes, [("POST", "git/tags"), ("POST", "git/refs")] if case == "new" else [])
 
 
 if __name__ == "__main__":
