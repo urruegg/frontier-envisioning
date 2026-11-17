@@ -14,7 +14,7 @@ license: MIT
 metadata:
   category: productivity
   icon: Organization
-  version: "1.10.0"
+  version: "1.10.1"
   plugin: frontier-envisioning
   maturity: ga
   optional: false

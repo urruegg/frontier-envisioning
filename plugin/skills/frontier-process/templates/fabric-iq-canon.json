@@ -1,7 +1,17 @@
 {
  "schema": "frontier-fabric-iq-canon/1.0",
  "checked": "2026-11-11",
- "note": "Microsoft Fabric IQ facts the process ontology relies on, with their Microsoft Learn source. Ontology, its agent integrations and operations agents are in preview: re-check the sources and the Fabric known-issues site before a workshop (90-day rule). Since 1.9 the canon also carries the data architecture the ontology sits on: the Common Data Model as the canonical model of the silver layer, the medallion layers in OneLake, gold semantic models and the data product standard of the Cloud Adoption Framework, Microsoft Purview Unified Catalog and Fabric domains.",
+ "note": "Microsoft Fabric IQ facts with dated sources. Ontology, its agent integrations and operations agents are in preview: re-check the sources and Fabric known issues before a workshop (90-day rule). The overall checked date and S1-S44 are historical; G59 citations and current_guidance record the 17 November 2026 governance/SAP correction. Use the Common Data Model in silver, medallion layers in OneLake, gold semantic models, the Cloud Adoption Framework data product standard and current OneLake catalog/Fabric domain grouping guidance.",
+ "current_guidance": {
+  "governance": {
+   "text": "For new designs use OneLake catalog for discovery and source-qualified governance, and Fabric domains for grouping associated workspaces and items. Fabric domain assignment does not change visibility or access and is not an ACL or security boundary. Unified Catalog and classic Purview data governance are retiring: no new accounts, maintenance through 12 November 2027. Preserve existing Purview-estate context and Purview security/compliance, sensitivity labels and DLP, alongside workspace/item permissions and OneLake security. Confirm contractual, regulated and feature gaps with the governance owner and account team; no full feature parity is claimed.",
+   "src": ["G59-P1", "G59-P2", "G59-P5", "G59-P6"]
+  },
+  "sap": {
+   "text": "The documented candidate for supported SAP families is SAP Datasphere -> ADLS Gen2 -> Fabric/OneLake: an initial snapshot and changes are merged into OneLake Delta tables with a read-only SQL replica. Confirm source support, existing Fabric capacity, a suitable SAP Datasphere Premium Outbound Integration environment, entitlement, ADLS Gen2 staging and required permissions with the named source owner. SAP Datasphere Premium Outbound Integration: unpriced / to confirm. A source-name or public-document match proves none of these estate prerequisites. Unknown routes stay unresolved, not an automatically selected pipeline. Even an owner-asserted design choice is not tenant verification, licence readiness, provider GA or publication authority.",
+   "src": ["G59-P3", "G59-P7"]
+  }
+ },
  "stack": [
   {
    "id": "onelake",
@@ -58,11 +68,16 @@
  ],
  "data_agent_max_sources": 5,
  "paths": {
+  "unresolved": {
+   "item": null,
+   "what": "No route has been selected. Ask the source owner to confirm support, environment, entitlement and permissions.",
+   "src": ["G59-P3", "G59-P7"]
+  },
   "mirroring": {
    "item": "mirrored database",
-   "what": "Mirroring adds an external database or catalog (for example Azure SQL Database, SQL Server, Oracle, SAP, Snowflake, Azure Databricks) and keeps it in sync in OneLake.",
+   "what": "Mirroring adds a supported external database or catalog and keeps it in sync in OneLake. SAP is conditional: the source-qualified Datasphere -> ADLS Gen2 -> Fabric/OneLake route needs owner-confirmed prerequisites; a system name selects no route.",
    "src": [
-    "S12"
+    "S12", "G59-P3", "G59-P7"
    ]
   },
   "shortcut": {
@@ -94,10 +109,23 @@
    ]
   }
  },
+ "sap_route_assessment": {
+  "state": "conditional",
+  "candidate_path": "mirroring",
+  "prerequisites": {
+   "supported_source": {"status": "unknown", "note": "Confirm the source family with its data owner.", "src": []},
+   "fabric_capacity": {"status": "unknown", "note": "Confirm existing Fabric capacity.", "src": []},
+   "datasphere_environment": {"status": "unknown", "note": "Confirm a suitable SAP Datasphere environment.", "src": []},
+   "premium_outbound_integration": {"status": "unknown", "note": "Confirm Premium Outbound Integration entitlement.", "src": []},
+   "adls_gen2_permissions": {"status": "unknown", "note": "Confirm ADLS Gen2 staging and required permissions.", "src": []}
+  },
+  "commercial_note": "SAP Datasphere Premium Outbound Integration: unpriced / to confirm.",
+  "src": ["G59-P3", "G59-P7"]
+ },
  "system_rules": [
   [
-   "sap s/4|s/4hana|sap ecc|sap erp|\\bsap\\b(?!.*ariba)",
-   "mirroring"
+   "\\bsap\\b|\\bs/?4(?:hana)?\\b|\\becc\\b|\\bdatasphere\\b|\\bariba\\b|\\bsuccessfactors\\b",
+   "unresolved"
   ],
   [
    "dynamics 365|dataverse|power apps",
@@ -170,13 +198,13 @@
   {
    "id": "B1",
    "name": "Unify and conform the data in OneLake",
-   "what": "Bring the systems of record into bronze with shortcuts (Link to Fabric for Dataverse and Dynamics 365) or mirroring, conform the business entities to the Common Data Model in silver (one Delta table per entity type: errors fixed, duplicates removed, records matched across systems) and curate the gold data products; the ontology binds to silver (managed lakehouse tables without column mapping; string or integer keys; time series with a UTC timestamp).",
+   "what": "Bring systems of record into bronze through a source-qualified route, then conform business entities to the Common Data Model in silver and curate gold data products. SAP stays conditional until the named owner confirms support, existing Fabric capacity, Datasphere Premium Outbound Integration and ADLS Gen2 permissions; its snapshot/changes become OneLake Delta tables with a read-only SQL replica. The SAP commercial dependency is unpriced / to confirm. The ontology binds to managed silver tables without column mapping, with string/integer keys and UTC timestamps for time series.",
    "src": [
     "S3",
     "S12",
     "S33",
     "S29",
-    "S18"
+    "S18", "G59-P3", "G59-P7"
    ]
   },
   {
@@ -227,13 +255,13 @@
   {
    "id": "B7",
    "name": "Govern",
-   "what": "Workspace and item permissions, OneLake security (row, column, object level), sensitivity labels and DLP apply to the bound data; agents answer with the user's permissions. Publish each data product with its owner, purpose, intended uses, access process and quality status, endorse it (promoted, certified) and make it discoverable in the OneLake catalog and Purview Unified Catalog.",
+   "what": "Workspace and item permissions, OneLake security, Purview sensitivity labels and DLP protect the bound data; agents answer with the user's permissions. Use OneLake catalog for discovery and source-qualified governance, with Fabric domains as logical grouping, never access grants. Confirm owner, purpose, uses, access, quality and upstream source routes before publication. Keep existing Purview-estate transition gaps with the governance owner and account team; no full parity claim.",
    "src": [
     "S2",
     "S15",
     "S13",
     "S35",
-    "S38"
+    "G59-P1", "G59-P2", "G59-P5", "G59-P6"
    ]
   }
  ],
@@ -281,22 +309,22 @@
   },
   {
    "id": "F-05",
-   "item": "Workspaces and domains for the process ontology (DEV, TEST, PROD), with owners per namespace",
-   "why": "Ownership, lifecycle and CI/CD of the ontology",
+   "item": "Workspaces and Fabric domain grouping for the process ontology (DEV, TEST, PROD), with owners per namespace; domain assignment does not grant visibility or access",
+   "why": "Ownership, lifecycle and CI/CD; access controls remain separate from grouping",
    "owner": "Data platform owner",
    "stage": "build",
    "src": [
-    "S12"
+    "S12", "G59-P6"
    ]
   },
   {
    "id": "F-06",
-   "item": "Mirroring and shortcut connections for the systems of record, with service identities and named data owners",
-   "why": "Bindings need the curated data in OneLake",
+   "item": "Source-qualified OneLake routes with named owners and service identities; SAP remains conditional until support, existing Fabric capacity, Datasphere Premium Outbound Integration environment/entitlement and ADLS Gen2 permissions are confirmed",
+   "why": "Recorded routes or done verdicts do not resolve missing SAP prerequisites; the commercial dependency remains unpriced / to confirm",
    "owner": "Data platform owner with the system owners",
    "stage": "build",
    "src": [
-    "S12"
+    "S12", "G59-P3", "G59-P7"
    ]
   },
   {
@@ -374,13 +402,12 @@
   },
   {
    "id": "F-14",
-   "item": "Microsoft Purview Unified Catalog: governance domains (a data domain for the shared business objects, a functional unit per journey), data products, glossary terms from the ontology, critical data elements for the keys",
-   "why": "Business context, access requests and policies across the data estate",
+   "item": "OneLake catalog discovery and source-qualified governance, with Fabric domain grouping for shared business objects and journeys; retain existing Purview-estate transition context, sensitivity labels and DLP",
+   "why": "Grouping is not access; assess contractual, regulated and feature gaps with the governance owner and account team, without a parity claim",
    "owner": "Data governance lead",
    "stage": "build",
    "src": [
-    "S38",
-    "S39"
+    "G59-P1", "G59-P2", "G59-P5", "G59-P6"
    ]
   },
   {
@@ -458,10 +485,10 @@
    "category": "data",
    "likelihood": 3,
    "impact": 3,
-   "mitigation": "Map the entity types of the MVP journey first; keep custom extensions in the domain's namespace with the Common Data Model conventions; verify the columns with the table definition browser",
+   "mitigation": "Map the MVP entity types first and verify columns with the table definition browser. Keep SAP route support, capacity, Datasphere Premium Outbound Integration and ADLS Gen2 permissions as separate owner-confirmation gaps; mapping is not route or entitlement proof.",
    "src": [
     "S18",
-    "S19"
+    "S19", "G59-P3", "G59-P7"
    ]
   },
   {
@@ -470,9 +497,9 @@
    "category": "governance",
    "likelihood": 2,
    "impact": 4,
-   "mitigation": "List the intended uses per data product; route agent actions and external sharing through the domain's review; record the approval with the data product",
+   "mitigation": "List intended uses and upstream conditional route gaps per product; review agent actions and external sharing separately. Fabric domain grouping is not access permission; keep security controls and existing governance transition gaps explicit.",
    "src": [
-    "S35"
+    "S35", "G59-P5", "G59-P6"
    ]
   }
  ],
@@ -492,8 +519,9 @@
   {
    "id": "OD-ONT-3",
    "question": "Which systems of record are mirrored, which are shortcuts and which need a pipeline?",
-   "recommendation": "Mirroring for supported databases and SAP, shortcuts for Dataverse and open formats, pipelines for the rest",
-   "owner": "Data platform owner with the system owners"
+   "recommendation": "Use source-qualified routes. SAP is unresolved until its owner confirms support, existing Fabric capacity, Datasphere Premium Outbound Integration and ADLS Gen2 permissions. The documented candidate is read-only replication via Datasphere and ADLS Gen2, not direct mirroring from any SAP estate or an automatic pipeline fallback; its commercial dependency is unpriced / to confirm.",
+   "owner": "Data platform owner with the system owners",
+   "src": ["G59-P3", "G59-P7"]
   },
   {
    "id": "OD-ONT-4",
@@ -734,6 +762,48 @@
    "id": "S44",
    "title": "Implement medallion architecture with materialized lake views",
    "url": "https://learn.microsoft.com/en-us/fabric/data-engineering/materialized-lake-views/tutorial"
+  },
+  {
+   "id": "G59-P1",
+   "title": "Learn about Microsoft Purview Unified Catalog",
+   "url": "https://learn.microsoft.com/en-us/purview/unified-catalog",
+   "updated": "2026-11-12",
+   "checked": "2026-11-17"
+  },
+  {
+   "id": "G59-P2",
+   "title": "A next step in the evolution of the Microsoft Data Governance strategy",
+   "url": "https://techcommunity.microsoft.com/blog/microsoft-security-blog/a-next-step-in-the-evolution-of-the-microsoft-data-governance-strategy/4572227",
+   "updated": "2026-11-12",
+   "checked": "2026-11-17"
+  },
+  {
+   "id": "G59-P3",
+   "title": "Microsoft Fabric Mirrored Databases From SAP",
+   "url": "https://learn.microsoft.com/en-us/fabric/mirroring/sap",
+   "updated": "2026-06-27",
+   "checked": "2026-11-17"
+  },
+  {
+   "id": "G59-P5",
+   "title": "OneLake catalog overview",
+   "url": "https://learn.microsoft.com/en-us/fabric/governance/onelake-catalog-overview",
+   "updated": "2026-09-29",
+   "checked": "2026-11-17"
+  },
+  {
+   "id": "G59-P6",
+   "title": "Domains",
+   "url": "https://learn.microsoft.com/en-us/fabric/governance/domains",
+   "updated": "2026-09-29",
+   "checked": "2026-11-17"
+  },
+  {
+   "id": "G59-P7",
+   "title": "SAP Datasphere mirroring tutorial",
+   "url": "https://learn.microsoft.com/en-us/fabric/mirroring/sap-datasphere-tutorial",
+   "updated": "2026-06-05",
+   "checked": "2026-11-17"
   }
  ],
  "data_architecture": {
@@ -779,7 +849,7 @@
     ]
    }
   ],
-  "intake": "Prefer patterns that minimise data movement: shortcuts when the data can stay at its source, mirroring when Fabric needs synchronized access to an external database, data movement only when a copy is required. Make source data available in OneLake only for an approved data product or analytical need.",
+  "intake": "Prefer source-qualified shortcuts or mirroring when supported, data movement only when required. SAP needs owner confirmation of the Datasphere -> ADLS Gen2 -> Fabric/OneLake prerequisites and unpriced commercial dependency; no route is selected from its name. Make source data available only for an approved analytical need.",
   "intake_src": [
    "S35"
   ],
@@ -789,16 +859,14 @@
    "events": "{ns}_events"
   },
   "domains": {
-   "fabric": "One Fabric domain per journey and one for the shared business objects; the domain's workspaces (bronze, silver, gold per environment) are assigned to it, and its admins are the business owners.",
+   "fabric": "Group associated workspaces/items in Fabric domains for journeys and shared business objects, with named owners. Assignment does not change visibility or access; configure permissions and OneLake security separately.",
    "purview": {
-    "core": "Data domain",
-    "journey": "Functional unit"
+    "core": "Fabric domain (shared business objects)",
+    "journey": "Fabric domain (journey)"
    },
-   "purview_what": "Purview Unified Catalog governance domains: a data domain for organization-wide entities such as customers, products and assets; a functional unit per journey. Glossary terms carry the ontology's entity types; critical data elements map the keys that differ between systems to one concept.",
+   "purview_what": "Use current OneLake catalog guidance for new discovery/governance proposals. Retain existing Purview-estate context, labels and DLP; resolve regulated, contractual and feature transition gaps with the account team. No full parity is claimed.",
    "src": [
-    "S37",
-    "S39",
-    "S36"
+    "G59-P1", "G59-P2", "G59-P5", "G59-P6"
    ]
   },
   "semantic_models": "One semantic model per journey on its gold lakehouse in Direct Lake on OneLake: fact tables for the journey's events and transactions, conformed dimensions for the shared business objects and a date table; the measures behind the ontology's metrics. Bind the ontology's entity types to lakehouse tables, not to the semantic model, while data agents and operations agents don't support semantic-model bindings (R-ONT-2).",
@@ -839,7 +907,7 @@
    "certified": "An authorized reviewer confirmed that the data product meets the organisation's standards"
   },
   "consumption": "The owning domain defines the uses each data product supports. Approval for one use doesn't imply approval for another: a data product approved for AI grounding isn't automatically approved for an agent that can take consequential actions, and internal reporting doesn't imply external publication.",
-  "discovery": "OneLake catalog for Fabric-native discovery; Microsoft Purview Unified Catalog when the data product needs enterprise business context or governance across the data estate.",
+  "discovery": "OneLake catalog for discovery, endorsement and source-qualified governance; Fabric domains group workspaces/items without granting access. Preserve existing Purview-estate transition context; confirm feature, contractual and regulated gaps with the account team, without a full-parity claim.",
   "security": "A consumption path must not weaken the protection the data product needs: Fabric data agents and Power BI keep the user's identity; indexes and service identities need their own authorization boundary.",
   "uses": {
    "analytics": "Analytics and reporting",
@@ -848,8 +916,7 @@
   },
   "src": [
    "S35",
-   "S38",
-   "S39"
+   "G59-P1", "G59-P2", "G59-P5", "G59-P6"
   ]
  }
 }

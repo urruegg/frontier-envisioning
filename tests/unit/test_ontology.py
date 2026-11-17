@@ -5,14 +5,17 @@ from __future__ import annotations
 
 import contextlib
 import copy
+import hashlib
 import io
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 from tests.unit._util import ROOT, load
@@ -127,7 +130,13 @@ class Caldova(unittest.TestCase):
         ids = {e["id"] for e in o["entity_types"]}
         self.assertTrue({"Customer", "Opportunity", "Quote", "SalesOrder", "Supplier", "PurchaseOrder", "WorkOrder", "AlarmEvent", "LedgerAccount"} <= ids)
         sap = next(s for s in o["sources"] if s["id"] == "src-sap-s-4hana")
-        self.assertEqual((sap["path"], sap["item"]), ("mirroring", "mirrored database"))
+        self.assertEqual((sap["path"], sap["item"], sap["status"]), ("unresolved", None, "later"))
+        self.assertEqual(len(sap["route_assessment"]["prerequisites"]), 5)
+        self.assertTrue(all(p["status"] == "unknown" for p in sap["route_assessment"]["prerequisites"].values()))
+        for entity in o["entity_types"]:
+            if entity.get("source") == sap["id"]:
+                self.assertEqual({key: entity["binding"][key] for key in ("layer", "item", "table", "origin")},
+                                 {"layer": "silver", "item": None, "table": None, "origin": "default"})
         self.assertIn("FI/CO", sap["system"])
         iot = next(s for s in o["sources"] if s["id"] == "src-iot-platform")
         self.assertEqual(iot["item"], "eventhouse")
@@ -151,7 +160,15 @@ class Caldova(unittest.TestCase):
             self.assertEqual(code, 0, out)
             res = json.loads(out)
             self.assertEqual(res["stats"]["entity_types"], 27)
-            self.assertEqual(res["warnings"], ["entity type Employee has no data binding yet"])
+            # The unchanged legacy example records SAP routes, not confirmed prerequisites.
+            expected_route_warnings = [
+                f"source {sid} route prerequisite {key}: unknown; estate confirmation required"
+                for sid in ("src-sap-s-4hana", "src-sap-ariba")
+                for key in ProcessGrounding.prerequisite_keys
+            ]
+            expected_route_warnings.insert(5, "source src-sap-s-4hana route is conditional; recorded choices are not binding or publication proof")
+            expected_route_warnings.append("source src-sap-ariba route is conditional; recorded choices are not binding or publication proof")
+            self.assertEqual(res["warnings"], expected_route_warnings + ["entity type Employee has no data binding yet"])
             md = (t / "out/ontology.md").read_text(encoding="utf-8")
             kit = (t / "out/data-agents.md").read_text(encoding="utf-8")
             ttl = (t / "out/ontology.ttl").read_text(encoding="utf-8")
@@ -199,6 +216,444 @@ class Caldova(unittest.TestCase):
         self.assertEqual(next(e for e in o2["entity_types"] if e["id"] == "WorkOrder")["status"], "validated")
         self.assertEqual(next(a for a in o2["data_agents"] if a["id"] == "DA-03")["status"], "adjusted")
         self.assertEqual(o2["meta"]["status"], "validated")
+
+
+class ProcessGrounding(unittest.TestCase):
+    prerequisite_keys = ("supported_source", "fabric_capacity", "datasphere_environment",
+                         "premium_outbound_integration", "adls_gen2_permissions")
+
+    def selected(self):
+        model = mini()
+        model["sources"][0].update(name="SAP S/4HANA", system="SAP S/4HANA", path="mirroring",
+                                    item="mirrored database", status="now", owner="Synthetic SAP data owner",
+                                    route_assessment={
+                                        "state": "owner_confirmed", "candidate_path": "mirroring",
+                                        "prerequisites": {
+                                            key: {"status": "confirmed", "note": f"Synthetic owner assertion: {key}",
+                                                  "src": [f"ESTATE-{i}"]}
+                                            for i, key in enumerate(self.prerequisite_keys)
+                                        },
+                                        "commercial_note": "SAP Datasphere Premium Outbound Integration: unpriced / to confirm.",
+                                        "src": ["G59-P3", "G59-P7"],
+                                    })
+        bp = {"evidence": [{"id": f"ESTATE-{i}", "type": "estate", "title": f"Synthetic owner record {key}"}
+                           for i, key in enumerate(self.prerequisite_keys)]}
+        return model, bp
+
+    def test_sap_name_never_selects_a_route(self):
+        canon = lib.load_canon()
+        for name in ("SAP S/4HANA", "S/4HANA", "S4", "S4HANA", "SAP ECC", "ECC", "SAP Datasphere", "Datasphere", "SAP Ariba", "Ariba", "SuccessFactors"):
+            with self.subTest(name=name):
+                bp = {"meta": {"short": "Caldova", "date": "2026-11-17"},
+                      "domains": [{"id": "D1", "name": "Finance", "systems": [name]}]}
+                model = seed.seed(bp, lib.load_patterns(), canon)
+                self.assertEqual(seed.system_path(name, canon), "unresolved")
+                source = model["sources"][0]
+                self.assertEqual((source["path"], source["item"], source["status"]), ("unresolved", None, "later"))
+                self.assertIn("route_assessment", source)
+                assessment = source["route_assessment"]
+                self.assertEqual(assessment["candidate_path"], None if name.lower() in ("sap ariba", "ariba", "successfactors") else "mirroring")
+                self.assertEqual(assessment["state"], "conditional")
+                self.assertEqual(set(assessment["prerequisites"]), set(self.prerequisite_keys))
+                self.assertTrue(all(p["status"] == "unknown" and p["note"] and p["src"] == []
+                                    for p in assessment["prerequisites"].values()))
+                for key in self.prerequisite_keys:
+                    self.assertTrue(any(key in todo for todo in model["_todo"]), key)
+
+    def test_unresolved_source_survives_normalize_twice(self):
+        original = mini()
+        original["sources"][0].update(name="SAP ECC", path="unresolved", item=None, status="later")
+        before = copy.deepcopy(original)
+        first = lib.normalize(original)
+        second = lib.normalize(first)
+        for model in (first, second):
+            source = model["sources"][0]
+            self.assertEqual((source["path"], source["item"], source["status"]), ("unresolved", None, "later"))
+            self.assertIn("route_assessment", source)
+            self.assertEqual(source["route_assessment"]["state"], "conditional")
+        self.assertEqual(original, before)
+
+    def test_sap_selected_route_requires_estate_evidence(self):
+        model, bp = self.selected()
+        rep = lib.Rep()
+        selected = lib.normalize(model, bp, rep)
+        self.assertEqual(rep.errors, [])
+        self.assertEqual(selected["sources"][0]["route_assessment"]["state"], "owner_confirmed")
+        cases = {
+            "unknown": lambda s: s["route_assessment"]["prerequisites"]["fabric_capacity"].update(status="unknown"),
+            "unsupported": lambda s: s["route_assessment"]["prerequisites"]["supported_source"].update(status="unsupported"),
+            "blank-note": lambda s: s["route_assessment"]["prerequisites"]["fabric_capacity"].update(note=" "),
+            "public-only": lambda s: s["route_assessment"]["prerequisites"]["fabric_capacity"].update(src=["G59-P7"]),
+            "unresolved-ref": lambda s: s["route_assessment"]["prerequisites"]["fabric_capacity"].update(src=["ESTATE-missing"]),
+            "no-owner": lambda s: s.update(owner=None),
+            "placeholder-owner": lambda s: s.update(owner="to confirm"),
+            "unselected": lambda s: s.update(path="unresolved", item=None),
+            "empty-path": lambda s: s.update(path=""),
+            "unsupported-path": lambda s: s.update(path="not-a-route"),
+            "wrong-item": lambda s: s.update(item="lakehouse"),
+            "missing-assessment": lambda s: s.pop("route_assessment"),
+            "missing-item": lambda s: s.pop("item"),
+        }
+        for name, change in cases.items():
+            with self.subTest(case=name):
+                candidate = copy.deepcopy(model)
+                change(candidate["sources"][0])
+                rep = lib.Rep()
+                result = lib.normalize(candidate, bp, rep)
+                self.assertIn("route_assessment", result["sources"][0])
+                self.assertEqual(result["sources"][0]["route_assessment"]["state"], "conditional")
+                self.assertTrue(rep.warnings)
+                self.assertEqual(result["sources"][0]["path"], candidate["sources"][0]["path"])
+                self.assertEqual(lib.normalize(result, bp)["sources"][0]["route_assessment"]["state"], "conditional")
+        self.assertEqual(lib.normalize(model)["sources"][0]["route_assessment"]["state"], "conditional",
+                         "an authored flag is retained as data, not evidence")
+        public_bp = {"evidence": [{"id": f"ESTATE-{i}", "type": "public",
+                                  "url": "https://learn.microsoft.com/en-us/fabric/mirroring/sap"}
+                                 for i in range(5)]}
+        self.assertEqual(lib.normalize(model, public_bp)["sources"][0]["route_assessment"]["state"], "conditional")
+
+    def test_malformed_assessment_is_an_error(self):
+        for bad in (None, [], "confirmed", {"prerequisites": []}):
+            model, bp = self.selected()
+            model["sources"][0]["route_assessment"] = bad
+            rep = lib.Rep()
+            lib.normalize(model, bp, rep)
+            self.assertTrue(rep.errors, repr(bad))
+        for field, value in (("status", True), ("status", "ready"), ("note", []),
+                             ("src", "ESTATE-0"), ("src", [{}])):
+            model, bp = self.selected()
+            model["sources"][0]["route_assessment"]["prerequisites"]["supported_source"][field] = value
+            rep = lib.Rep()
+            lib.normalize(model, bp, rep)
+            self.assertTrue(rep.errors, (field, value))
+
+    def test_conditional_sources_do_not_become_bound_or_publishable(self):
+        for authored in (False, True):
+            with self.subTest(authored=authored):
+                model = mini()
+                model["sources"][0].update(name="SAP ECC", path="unresolved", item=None, status="later")
+                model["sources"].append({"id": "s-live", "name": "IoT", "path": "eventstream"})
+                model["entity_types"][0]["secondary"] = ["s-live"]
+                model["entity_types"][1].update(source="s-live", event=True)
+                if authored:
+                    model["sources"][0].update(path="mirroring", item="mirrored database", status="now")
+                    model["entity_types"][0]["binding"] = {"layer": "silver", "item": "lakehouse", "table": "recorded.asset"}
+                model["data_products"] = [
+                    {"id": identity, "name": identity, "entities": entities, "owner": "Synthetic owner",
+                     "purpose": "Synthetic", "uses": [{"use": "analytics"}], "access": "Request owner", "quality": "Proposed"}
+                    for identity, entities in (("SAP-only", ["Asset"]), ("Mixed", ["Asset", "WorkOrder"]), ("Live-only", ["WorkOrder"]))
+                ]
+                before = copy.deepcopy(model)
+                normalized = lib.normalize(model)
+                again = lib.normalize(normalized)
+                for result in (normalized, again):
+                    entities = {e["id"]: e for e in result["entity_types"]}
+                    self.assertEqual(result["stats"]["bound"], 1)
+                    self.assertEqual(result["stats"]["data_products_ready"], 1)
+                    binding = entities["Asset"]["binding"]
+                    self.assertEqual(binding["table"], "recorded.asset" if authored else None)
+                    if not authored:
+                        self.assertEqual({k: binding[k] for k in ("layer", "item", "table", "origin")},
+                                         {"layer": "silver", "item": None, "table": None, "origin": "default"})
+                    self.assertEqual(binding["timeseries_table"], "core_events.asset_telemetry")
+                    self.assertEqual(entities["WorkOrder"]["binding"]["item"], "eventhouse")
+                    for product in result["data_products"]:
+                        self.assertEqual(product["gaps"], [] if product["id"] == "Live-only"
+                                         else ["source route s-fs: conditional"])
+                self.assertEqual(model, before)
+
+    def test_current_governance_is_grouping_not_access(self):
+        canon = lib.load_canon()
+        self.assertIn("current_guidance", canon)
+        governance = canon["current_guidance"]["governance"]
+        for text in ("OneLake catalog", "Fabric domain", "does not", "access", "Purview",
+                     "DLP", "sensitivity labels", "existing", "account team", "parity"):
+            self.assertIn(text, governance["text"])
+        self.assertEqual(governance["src"], ["G59-P1", "G59-P2", "G59-P5", "G59-P6"])
+        self.assertEqual(len(canon["readiness"]), 15)
+        self.assertEqual(len(canon["risks"]), 7)
+        readiness = {r["id"]: r for r in canon["readiness"]}
+        self.assertIn("DLP", readiness["F-10"]["item"])
+        self.assertIn("G59-P6", readiness["F-05"]["src"])
+        self.assertIn("G59-P7", readiness["F-06"]["src"])
+        self.assertIn("OneLake catalog", readiness["F-14"]["item"])
+        self.assertIn("G59-P1", readiness["F-14"]["src"])
+        self.assertIn("G59-P3", next(d for d in canon["decisions"] if d["id"] == "OD-ONT-3")["src"])
+        model, bp = self.selected()
+        model["sources"][0]["route_assessment"]["prerequisites"]["fabric_capacity"]["status"] = "unknown"
+        model["readiness"] = [dict(readiness["F-06"], status="done", note="Recorded workshop verdict")]
+        normalized = lib.normalize(model, bp)
+        self.assertEqual(normalized["readiness"], model["readiness"])
+        self.assertEqual(normalized["current_readiness"]["F-06"]["status"], "open")
+        self.assertEqual(normalized["current_readiness"]["F-06"]["gaps"], ["source route s-fs: conditional"])
+        for key in ("governance", "sap"):
+            self.assertEqual(normalized["current_guidance"][key], canon["current_guidance"][key])
+
+    def test_legacy_choices_and_citations_are_not_retargeted(self):
+        model, _ = self.selected()
+        model["sources"][0].pop("route_assessment")
+        model["entity_types"][0]["binding"] = {"layer": "silver", "item": "lakehouse", "table": "recorded.asset"}
+        old_sources = [copy.deepcopy(s) for s in lib.load_canon()["sources"] if s["id"] in ("S38", "S39")]
+        model["sources_doc"] = old_sources
+        model["domains"] = [{"id": "core", "fabric_domain": "Legacy shared estate",
+                             "governance_domain": "Data domain", "note": "Recorded owner choice"},
+                            {"id": "retired-domain", "governance_domain": "Functional unit", "name": "Legacy journey"}]
+        model["readiness"] = [{"id": "F-06", "item": "Recorded route", "status": "done", "note": "Workshop decision", "src": ["S38"]}]
+        model["verdicts"] = {"onto:Asset": {"status": "validated", "note": "Recorded proposal", "src": ["S39"]}}
+        before = copy.deepcopy(model)
+        normalized = lib.normalize(model)
+        self.assertEqual(model, before)
+        self.assertEqual(normalized["domains"][:2], model["domains"])
+        for field in ("path", "item", "status", "owner"):
+            self.assertEqual(normalized["sources"][0][field], model["sources"][0][field])
+        self.assertEqual(normalized["entity_types"][0]["binding"], model["entity_types"][0]["binding"]
+                         | {"timeseries_table": "core_events.asset_telemetry"})
+        for field in ("readiness", "verdicts"):
+            self.assertEqual(normalized[field], model[field])
+        self.assertEqual(normalized["sources_doc"][:2], old_sources)
+        self.assertEqual([s["id"] for s in normalized["sources_doc"][2:]],
+                         ["G59-P1", "G59-P2", "G59-P3", "G59-P5", "G59-P6", "G59-P7"])
+        self.assertEqual(normalized["sources"][0]["route_assessment"]["state"], "conditional")
+        self.assertEqual(normalized["current_readiness"]["F-06"]["status"], "open")
+        self.assertEqual(lib.normalize(normalized)["sources_doc"], normalized["sources_doc"])
+
+    def test_new_citation_collision_fails_without_writes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for identity in ("G59-P1", "G59-P2", "G59-P3", "G59-P5", "G59-P6", "G59-P7"):
+                with self.subTest(identity=identity):
+                    model = mini()
+                    model["sources_doc"] = [{"id": identity, "title": "Different saved fact", "url": "https://example.org/old"}]
+                    path = root / "input.json"
+                    path.write_text(json.dumps(model), encoding="utf-8")
+                    original = path.read_bytes()
+                    out = root / identity
+                    for existing in (False, True):
+                        if existing:
+                            out.mkdir(exist_ok=True)
+                            (out / "ontology.md").write_bytes(b"prior good output\n")
+                        code, text = quiet(build.main, ["--ontology", str(path), "--out-dir", str(out)])
+                        self.assertEqual(code, 1, text)
+                        summary = json.loads(text)
+                        self.assertEqual(summary["files"], {})
+                        self.assertTrue(any("citation collision" in error for error in summary["errors"]))
+                        if existing:
+                            self.assertEqual((out / "ontology.md").read_bytes(), b"prior good output\n")
+                        else:
+                            self.assertFalse(out.exists())
+                    self.assertEqual(path.read_bytes(), original)
+
+    def test_guidance_agrees_across_python_documents(self):
+        model, _ = self.selected()
+        model["sources"][0]["route_assessment"]["prerequisites"]["fabric_capacity"]["status"] = "unknown"
+        model["entity_types"][0]["binding"] = {"layer": "silver", "item": "lakehouse", "table": "recorded.asset"}
+        model["data_products"] = [{"id": "DP-01", "name": "Assets", "entities": ["Asset"], "owner": "Synthetic owner",
+                                   "purpose": "Synthetic", "uses": [{"use": "analytics"}], "access": "Owner", "quality": "Proposed"}]
+        normalized = lib.normalize(model)
+        for document in (lib.to_markdown(normalized), lib.data_products_md(normalized), lib.data_agent_kit(normalized)):
+            for guidance in normalized["current_guidance"].values():
+                self.assertIn(guidance["text"], document)
+                for ref in guidance["src"]:
+                    self.assertIn(ref, document)
+            for text in ("source route s-fs: conditional", "fabric_capacity", "unpriced / to confirm", "read-only SQL"):
+                self.assertIn(text, document)
+            self.assertNotIn("## Set it up in Fabric and Purview", document)
+        for document in (lib.to_markdown(normalized), lib.data_agent_kit(normalized)):
+            self.assertIn("Recorded proposal (conditional): `recorded.asset`", document)
+        self.assertNotIn("### Bound tables", lib.data_agent_kit(normalized))
+
+    def test_assessment_ancestry_survives_projection_and_feedback(self):
+        marker = "SYNTHETIC_G59_PRIVATE"
+        for restriction in ("internal", "src", "content_src", "mixed src", "mixed content_src", "assessment", "journey"):
+            with self.subTest(restriction=restriction), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                model, estate = self.selected()
+                bp = CustomerPrivacy().blueprint()
+                bp["evidence"] += estate["evidence"]
+                source = model["sources"][0]
+                record = source["route_assessment"]["prerequisites"]["fabric_capacity"]
+                record["note"] = marker + " owner note"
+                if restriction == "internal":
+                    record["internal"] = True
+                elif restriction in ("src", "content_src"):
+                    record[restriction] = ["private28"]
+                elif restriction.startswith("mixed "):
+                    record[restriction.removeprefix("mixed ")] = ["private28", "G59-P7"]
+                elif restriction == "assessment":
+                    source["route_assessment"]["content_src"] = ["private28"]
+                else:
+                    source["journeys"] = ["D1"]
+                    bp["domains"][0]["visibility"] = "internal"
+                before = copy.deepcopy(model)
+                normalized = lib.normalize(model, bp)
+                self.assertTrue(lib.private_content(normalized["sources"][0], bp),
+                                "a private prerequisite/journey restricts its source, not just the leaf")
+                anchors = lib.feedback_ancestry(normalized, "Asset", bp)
+                verdict = {"id": "Asset", "target_ancestry": anchors, "note": marker + " retired verdict"}
+                normalized["entity_types"] = []
+                self.assertTrue(lib.feedback_privacy(normalized, verdict, bp)[0])
+                self.assertEqual(model, before)
+                path, bp_path = root / "input.json", root / "bp.json"
+                path.write_text(json.dumps(model), encoding="utf-8")
+                bp_path.write_text(json.dumps(bp), encoding="utf-8")
+                originals = (path.read_bytes(), bp_path.read_bytes())
+                code, text = quiet(build.main, ["--ontology", str(path), "--blueprint", str(bp_path),
+                                                "--out-dir", str(root / "customer"), "--audience", "customer"])
+                self.assertEqual(code, 0, text)
+                for file in (root / "customer").iterdir():
+                    self.assertNotIn(marker, file.read_text(encoding="utf-8"), file.name)
+                projected = lib.customer_ontology(lib.normalize(model, bp), bp)
+                self.assertNotIn(marker, json.dumps(projected))
+                applied = apply_.apply(copy.deepcopy(bp), model, lib.Rep())
+                applied_path = root / "applied.json"
+                applied_path.write_text(json.dumps(applied), encoding="utf-8")
+                code, text = quiet(bpbuild.main, ["--data", str(applied_path), "--audience", "customer",
+                                                  "--out", str(root / "customer.html"), "--no-product-icons"])
+                self.assertEqual(code, 0, text)
+                self.assertNotIn(marker, (root / "customer.html").read_text(encoding="utf-8"))
+                self.assertEqual((path.read_bytes(), bp_path.read_bytes()), originals)
+
+    def test_reused_sap_source_carries_every_journey(self):
+        bp = {"domains": [{"id": "D1", "name": "Finance", "systems": ["SAP ECC"]},
+                          {"id": "D2", "name": "Procurement", "systems": ["SAP ECC"], "visibility": "internal"}]}
+        model = seed.seed(bp, lib.load_patterns(), lib.load_canon())
+        self.assertEqual(len(model["sources"]), 1)
+        self.assertEqual(model["sources"][0]["journeys"], ["D1", "D2"])
+        self.assertTrue(lib.private_content(model["sources"][0], bp))
+        self.assertEqual(lib.customer_ontology(model, bp)["sources"], [])
+
+    def test_unknown_path_does_not_invent_an_item_or_binding(self):
+        model = mini()
+        model["sources"][0]["path"] = "not-a-selected-route"
+        rep = lib.Rep()
+        first = lib.normalize(model, None, rep)
+        self.assertTrue(rep.warnings)
+        for result in (first, lib.normalize(first)):
+            self.assertIsNone(result["sources"][0]["item"])
+            self.assertEqual(result["stats"]["bound"], 0)
+            for entity in result["entity_types"]:
+                self.assertIsNone(entity["binding"]["table"])
+                self.assertIsNone(entity["binding"]["item"])
+
+    def test_candidate_and_unscheduled_defaults_are_source_qualified(self):
+        model, _ = self.selected()
+        model["sources"][0].update(name="SAP Ariba", system="SAP Ariba", path="unresolved", item=None)
+        model["sources"][0].pop("status")
+        model["sources"][0].pop("route_assessment")
+        first = lib.normalize(model)
+        with self.subTest(field="status"):
+            self.assertEqual(first["sources"][0]["status"], "later")
+        first["sources"][0]["route_assessment"]["candidate_path"] = "mirroring"
+        second = lib.normalize(first)
+        with self.subTest(field="candidate_path"):
+            self.assertIsNone(second["sources"][0]["route_assessment"]["candidate_path"])
+
+    def test_route_diagnostics_preserve_good_outputs(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for kind in ("unknown", "unsupported", "malformed-object", "malformed-status", "malformed-refs"):
+                with self.subTest(kind=kind):
+                    model, bp = self.selected()
+                    record = model["sources"][0]["route_assessment"]["prerequisites"]["fabric_capacity"]
+                    if kind in ("unknown", "unsupported"):
+                        record["status"] = kind
+                    elif kind == "malformed-object":
+                        model["sources"][0]["route_assessment"] = []
+                    elif kind == "malformed-status":
+                        record["status"] = "ready"
+                    else:
+                        record["src"] = [{}]
+                    path, bp_path = root / "input.json", root / "bp.json"
+                    path.write_text(json.dumps(model), encoding="utf-8")
+                    bp_path.write_text(json.dumps(bp), encoding="utf-8")
+                    originals = path.read_bytes(), bp_path.read_bytes()
+                    out = root / kind
+                    args = ["--ontology", str(path), "--blueprint", str(bp_path), "--out-dir", str(out)]
+                    code, text = quiet(build.main, args)
+                    if kind in ("unknown", "unsupported"):
+                        self.assertEqual(code, 0, text)
+                        self.assertTrue(json.loads(text)["warnings"])
+                        before = {file.name: file.read_bytes() for file in out.iterdir()}
+                        code, text = quiet(build.main, args)
+                        self.assertEqual(code, 0, text)
+                        self.assertEqual(before, {file.name: file.read_bytes() for file in out.iterdir()})
+                        self.assertTrue(all(b"\r\n" not in content for content in before.values()))
+                        code, text = quiet(build.main, args + ["--strict"])
+                        self.assertEqual(code, 1, text)
+                        self.assertEqual(json.loads(text)["files"], {})
+                        self.assertEqual(before, {file.name: file.read_bytes() for file in out.iterdir()})
+                        args[-1] = str(root / (kind + "-new"))
+                        code, text = quiet(build.main, args + ["--strict"])
+                        self.assertEqual(code, 1, text)
+                        self.assertFalse(Path(args[-1]).exists())
+                    else:
+                        self.assertEqual(code, 1, text)
+                        self.assertTrue(json.loads(text)["errors"])
+                        self.assertEqual(json.loads(text)["files"], {})
+                        self.assertFalse(out.exists())
+                        out.mkdir()
+                        (out / "ontology.md").write_bytes(b"prior good output\n")
+                        code, text = quiet(build.main, args)
+                        self.assertEqual(code, 1, text)
+                        self.assertEqual((out / "ontology.md").read_bytes(), b"prior good output\n")
+                    self.assertEqual((path.read_bytes(), bp_path.read_bytes()), originals)
+
+
+class ProcessGroundingDistribution(unittest.TestCase):
+    def test_extracted_candidate_runs_corrected_process_without_finops(self):
+        packager = load("tools/build_package.py", "g59_packager")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            code, output = quiet(packager.main, ["--dist", str(root / "dist")])
+            self.assertEqual(code, 0, output)
+            archive = next((root / "dist").glob("*.zip"))
+            print(f"G59 extracted source version {json.loads(output)['version']}; package SHA256 "
+                  f"{hashlib.sha256(archive.read_bytes()).hexdigest()}")
+            package = root / "package"
+            with zipfile.ZipFile(archive) as zipped:
+                zipped.extractall(package)
+            env = {key: value for key, value in os.environ.items() if key not in {"PYTHONPATH", "PYTHONHOME"}}
+
+            def run(script, *args, expected=0):
+                proc = subprocess.run([sys.executable, "-E", "-s", "-B", "-X", "utf8",
+                                       str(package / script), *map(str, args)], cwd=root, env=env,
+                                      capture_output=True, text=True, encoding="utf-8", timeout=120)
+                self.assertEqual(proc.returncode, expected, proc.stdout + proc.stderr)
+                return proc
+
+            verified = json.loads(run("install/prepare_install.py", "--root", package).stdout)
+            self.assertTrue(verified["verified"])
+            shutil.rmtree(package / "skills/frontier-finops")
+            blueprint = root / "bp.json"
+            blueprint.write_text(json.dumps({"meta": {"short": "Caldova", "date": "2026-11-17"},
+                                              "domains": [{"id": "D1", "name": "Finance", "systems": ["SAP ECC"]}]}),
+                                 encoding="utf-8")
+            original = blueprint.read_bytes()
+            model = root / "ontology.json"
+            run("skills/frontier-process/scripts/seed_ontology.py", "--blueprint", blueprint, "--out", model)
+            seeded = json.loads(model.read_text(encoding="utf-8"))
+            self.assertEqual((seeded["sources"][0]["path"], seeded["sources"][0]["item"],
+                              seeded["sources"][0]["status"]), ("unresolved", None, "later"))
+            run("skills/frontier-process/scripts/build_ontology.py", "--ontology", model, "--blueprint", blueprint,
+                "--out-dir", root / "output")
+            normalized = json.loads((root / "output/ontology.normalized.json").read_text(encoding="utf-8"))
+            self.assertEqual(normalized["sources"][0]["route_assessment"]["state"], "conditional")
+            self.assertIn("OneLake catalog", normalized["current_guidance"]["governance"]["text"])
+            self.assertEqual(len(list((root / "output").iterdir())), 5)
+            before = {file.name: file.read_bytes() for file in (root / "output").iterdir()}
+            run("skills/frontier-process/scripts/build_ontology.py", "--ontology", model, "--blueprint", blueprint,
+                "--out-dir", root / "output")
+            self.assertEqual(before, {file.name: file.read_bytes() for file in (root / "output").iterdir()})
+            refused = run("skills/frontier-process/scripts/build_ontology.py", "--ontology", model, "--blueprint", blueprint,
+                          "--out-dir", root / "output", "--strict", expected=1)
+            self.assertEqual(json.loads(refused.stdout)["files"], {})
+            self.assertEqual(before, {file.name: file.read_bytes() for file in (root / "output").iterdir()})
+            run("skills/frontier-process/scripts/apply_ontology.py", "--ontology", root / "output/ontology.normalized.json",
+                "--blueprint", blueprint, "--out", root / "applied.json")
+            applied = json.loads((root / "applied.json").read_text(encoding="utf-8"))
+            self.assertEqual(applied["ontology"]["current_guidance"], normalized["current_guidance"])
+            self.assertEqual(applied["ontology"]["current_readiness"]["F-06"]["status"], "open")
+            self.assertEqual(blueprint.read_bytes(), original)
 
 
 class SemanticModel(unittest.TestCase):
@@ -352,9 +807,18 @@ class StrictTypedReferences(unittest.TestCase):
 class Canon(unittest.TestCase):
     def test_sources_are_microsoft_learn(self):
         c = lib.load_canon()
-        self.assertEqual(len(c["sources"]), 44)
+        self.assertEqual(len(c["sources"]), 50)
+        self.assertEqual(hashlib.sha256(json.dumps(c["sources"][:44], sort_keys=True).encode()).hexdigest(),
+                         "62ffae3aa0002a57791ad75637046e72cf448a4f9477e65e872dd1fa37076628",
+                         "S1-S44 content and order remain historical")
+        self.assertEqual(c["checked"], "2026-11-11")
+        self.assertEqual([s["id"] for s in c["sources"][44:]], ["G59-P1", "G59-P2", "G59-P3", "G59-P5", "G59-P6", "G59-P7"])
+        self.assertTrue(all(s["checked"] == "2026-11-17" for s in c["sources"][44:]))
         self.assertTrue(all(s["url"].startswith("https://learn.microsoft.com/en-us/fabric/") for s in c["sources"][:17]), "Fabric IQ")
-        self.assertTrue(all(s["url"].startswith(("https://learn.microsoft.com/en-us/", "https://github.com/MicrosoftDocs/")) for s in c["sources"]),
+        self.assertTrue(all(s["url"].startswith(("https://learn.microsoft.com/en-us/", "https://github.com/MicrosoftDocs/"))
+                            or (s["id"] == "G59-P2" and s["url"] ==
+                                "https://techcommunity.microsoft.com/blog/microsoft-security-blog/a-next-step-in-the-evolution-of-the-microsoft-data-governance-strategy/4572227")
+                            for s in c["sources"]),
                         "Microsoft Learn or Microsoft's documentation repository")
         ids = {s["id"] for s in c["sources"]}
         for block in ("readiness", "risks", "build_steps", "stack"):
@@ -441,8 +905,8 @@ class CommonDataModel(unittest.TestCase):
 
     def test_domains_and_semantic_models(self):
         doms = {d["id"]: d for d in self.o["domains"]}
-        self.assertEqual(doms["core"]["governance_domain"], "Data domain")
-        self.assertEqual(doms["service"]["governance_domain"], "Functional unit")
+        self.assertEqual(doms["core"]["governance_domain"], "Fabric domain (shared business objects)")
+        self.assertEqual(doms["service"]["governance_domain"], "Fabric domain (journey)")
         self.assertEqual((doms["service"]["silver"], doms["service"]["gold"], doms["service"]["events"]), ("service_silver", "service_gold", "service_events"))
         sm = {m["journey"]: m for m in self.o["semantic_models"]}
         self.assertEqual(sm["D3"]["facts"], ["ServiceRequest", "WorkOrder", "ServiceReport", "AlarmEvent"])

@@ -35,7 +35,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ontology_lib import (TYPES, as_list, business_domains, camel, carry_content, inherit_privacy, load_canon, load_json, load_patterns,  # noqa: E402
-                          normalize, pascal, private_content, ptype, slug, text_of, Rep)
+                          new_route_assessment, normalize, pascal, private_content, ptype, slug, text_of, Rep, SAP)
 
 LIVE = re.compile(r"alarm|telemetry|sensor|live event|stream|real-time|iot", re.I)
 MODELLED = re.compile(r"modell?ed as ([^.;]+)", re.I)
@@ -63,6 +63,8 @@ def concept_names(text: str) -> list:
 
 def system_path(system: str, canon: dict):
     s = system.lower()
+    if SAP.search(s):
+        return "unresolved"
     if any(w in s for w in canon.get("not_ontology", [])):
         return None
     for rx, path in canon.get("system_rules", []):
@@ -168,10 +170,13 @@ def seed(bp: dict, lib: dict, canon: dict) -> dict:
             if sid not in sources:
                 sources[sid] = {"id": sid, "name": base, "system": str(sysname), "path": path, "_modules": [],
                                 "item": canon["paths"][path]["item"], "journeys": [jid], "data_class": "confidential",
-                                "status": "later" if re.search(r"to confirm", str(sysname), re.I) else "next", "owner": None}
+                                "status": "later" if path == "unresolved" or re.search(r"to confirm", str(sysname), re.I) else "next", "owner": None}
+                if path == "unresolved":
+                    sources[sid]["route_assessment"] = new_route_assessment(sources[sid], canon)
                 onto["sources"].append(sources[sid])
             elif jid not in sources[sid]["journeys"]:
                 sources[sid]["journeys"].append(jid)
+            carry_content(sources[sid], d, bp=bp)
             if module and module.lower() != "to confirm" and module not in sources[sid]["_modules"]:
                 sources[sid]["_modules"].append(module)
         for e in mine:
@@ -296,6 +301,10 @@ def seed(bp: dict, lib: dict, canon: dict) -> dict:
                      "Confirm the Microsoft standard entity of each entity type (Common Data Model) and verify its columns with the table definition browser",
                      "Name an accountable owner, the intended uses, the access process and the quality status of each data product",
                      "Decide OD-ONT-1 to OD-ONT-6 (see ontology.md)"]
+    for source in onto["sources"]:
+        if source.get("route_assessment"):
+            onto["_todo"] += [f"{source['id']}: {key}: {record['note']}"
+                              for key, record in source["route_assessment"]["prerequisites"].items()]
     return inherit_privacy(onto, bp)
 
 

@@ -33,6 +33,7 @@ TYPE_ALIASES = {"str": "string", "text": "string", "int": "integer", "int64": "i
 CARD = ("1:1", "1:n", "n:1", "n:n")
 STATUS = ("hypothesis", "validated", "adjusted", "rejected", "open")
 SOURCE_STATUS = ("now", "next", "later")
+SAP = re.compile(r"\bsap\b|\bs/?4(?:hana)?\b|\becc\b|\bdatasphere\b|\bariba\b|\bsuccessfactors\b", re.I)
 NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,99}$")
 CONSUMER_KINDS = ("copilot_studio", "m365_copilot", "foundry", "teams")
 STANDARDS = ("cdm", "dataverse", "operations", "custom")
@@ -148,6 +149,85 @@ def agent_ids(bp: dict) -> dict:
     return out
 
 
+def sap_source(source: dict) -> bool:
+    return bool(SAP.search(text_of(source.get("name"), source.get("system"), source.get("id"))))
+
+
+def new_route_assessment(source: dict, canon: dict) -> dict:
+    assessment = copy.deepcopy(canon["sap_route_assessment"])
+    name = text_of(source.get("name"), source.get("system"), source.get("id"))
+    if re.search(r"ariba", name, re.I) or not re.search(r"\bs/?4(?:hana)?\b|ecc|erp|datasphere|\bhana\b|\bbw\b", name, re.I):
+        assessment["candidate_path"] = None
+    return assessment
+
+
+def assess_route(source: dict, bp: dict | None, canon: dict, rep: Rep) -> None:
+    """Derive an owner-asserted design assessment, never tenant/licence readiness."""
+    assessment = source.get("route_assessment")
+    if "route_assessment" not in source:
+        assessment = source["route_assessment"] = new_route_assessment(source, canon)
+    prefix = f"source {source['id']} route_assessment"
+    if not isinstance(assessment, dict):
+        rep.err(f"{prefix} must be an object")
+        return
+    assessment["state"] = "conditional"
+    prerequisites = assessment.get("prerequisites")
+    expected = canon["sap_route_assessment"]["prerequisites"]
+    if not isinstance(prerequisites, dict) or set(prerequisites) != set(expected):
+        rep.err(f"{prefix} prerequisites must contain exactly {', '.join(expected)}")
+        return
+    errors_before = len(rep.errors)
+
+    def refs_valid(value):
+        return isinstance(value, list) and all(isinstance(ref, str) and ref.strip() for ref in value)
+
+    if assessment.get("candidate_path") not in (None, "mirroring"):
+        rep.err(f"{prefix} candidate_path must be mirroring or null")
+    else:
+        assessment["candidate_path"] = new_route_assessment(source, canon)["candidate_path"]
+    if not isinstance(assessment.get("commercial_note"), str) or not refs_valid(assessment.get("src")):
+        rep.err(f"{prefix} requires commercial_note text and a src reference list")
+    estate = {row["id"]: row for row in as_list((bp or {}).get("evidence"))
+              if isinstance(row, dict) and isinstance(row.get("id"), str)
+              and (row.get("type") == "estate" or row["id"].startswith("ESTATE-"))
+              and row.get("type") not in ("public", "documentation")
+              and not str(row.get("url") or "").startswith(("https://learn.microsoft.com/", "https://techcommunity.microsoft.com/"))}
+    complete = True
+    for key, record in prerequisites.items():
+        if (not isinstance(record, dict) or record.get("status") not in ("unknown", "confirmed", "unsupported")
+                or not isinstance(record.get("note"), str) or not refs_valid(record.get("src"))):
+            rep.err(f"{prefix} prerequisite {key} requires status, note text and a src reference list")
+            complete = False
+            continue
+        confirmed = (record["status"] == "confirmed" and bool(record["note"].strip())
+                     and bool(record["src"]) and all(ref in estate for ref in record["src"]))
+        if not confirmed:
+            rep.warn(f"source {source['id']} route prerequisite {key}: {record['status']}; estate confirmation required")
+            complete = False
+    path = source.get("path")
+    chosen = (isinstance(path, str) and path in canon["paths"] and path != "unresolved"
+              and "item" in source and source["item"] == canon["paths"][path]["item"])
+    owner = source.get("owner")
+    named_owner = isinstance(owner, str) and owner.strip().lower() not in ("", "unknown", "to confirm", "tbc", "tbd", "unassigned", "none")
+    if complete and chosen and named_owner and len(rep.errors) == errors_before:
+        assessment["state"] = "owner_confirmed"
+    else:
+        rep.warn(f"source {source['id']} route is conditional; recorded choices are not binding or publication proof")
+
+
+def conditional_source(source: dict) -> bool:
+    assessment = source.get("route_assessment")
+    return (source.get("path") == "unresolved" or (bool(source.get("id")) and source.get("item") is None) or
+            ("route_assessment" in source and
+             (not isinstance(assessment, dict) or assessment.get("state") != "owner_confirmed")))
+
+
+def source_route_gaps(entities: list, sources: dict) -> list[str]:
+    ids = {sid for entity in entities for sid in [entity.get("source"), *as_list(entity.get("secondary"))]
+           if isinstance(sid, str) and sid in sources and conditional_source(sources[sid])}
+    return [f"source route {sid}: conditional" for sid in sorted(ids)]
+
+
 # --------------------------------------------------------------------------- normalise and check
 
 def private_content(obj: dict, bp: dict | None = None) -> bool:
@@ -156,7 +236,7 @@ def private_content(obj: dict, bp: dict | None = None) -> bool:
                    if isinstance(e, dict) and (e.get("internal") is True or str(e.get("visibility", "")).lower() == "internal")}
     refs = as_list(obj.get("content_src", obj.get("src")))
     return (obj.get("internal") is True or str(obj.get("visibility", "")).lower() == "internal"
-            or bool(refs and all(s in private_ids for s in refs))
+            or bool(refs and all(isinstance(s, str) and s in private_ids for s in refs))
             or any(private_content(origin, bp) for origin in as_list(obj.get("content_origins")) if isinstance(origin, dict)))
 
 
@@ -453,6 +533,20 @@ def risk_ancestors(onto: dict, risk: dict, bp: dict | None = None) -> list[dict]
 
 def inherit_privacy(onto: dict, bp: dict | None = None) -> dict:
     """Carry restrictions through containers and source/entity/consumer dependencies."""
+    for source in as_list(onto.get("sources")):
+        if not isinstance(source, dict) or not isinstance(source.get("route_assessment"), dict):
+            continue
+        metadata = _content_metadata(source["route_assessment"])
+        origins = [metadata, *as_list(metadata.get("content_origins"))]
+        # Malformed reference payloads remain for the explicit route validator;
+        # do not hash them or treat them as provenance during projection.
+        if all(isinstance(ref, str) for origin in origins if isinstance(origin, dict)
+               for field in ("src", "content_src") for ref in as_list(origin.get(field))):
+            # Each prerequisite reference contributes independently. Appending
+            # public route documentation must not dilute a private estate ref.
+            references = [{"src": [ref]} for origin in origins if isinstance(origin, dict)
+                          for ref in as_list(origin.get("content_src", origin.get("src")))]
+            carry_content(source, metadata, *references, bp=bp)
     # Resolve the same stable default IDs used by normalize before projection.
     # Otherwise a via:DA-01 link loses its private target while that target is
     # still anonymous in authored input.
@@ -520,6 +614,16 @@ def customer_ontology(onto: dict, bp: dict | None = None) -> dict | None:
         return value
 
     o = scrub(o)
+    # Blueprint's generic customer scrub compacts empty reference lists.
+    # Restore only absent references on explicitly unconfirmed records; never
+    # repair a supplied malformed list or a confirmed assertion.
+    for source in as_list(o.get("sources")):
+        assessment = source.get("route_assessment") if isinstance(source, dict) else None
+        prerequisites = assessment.get("prerequisites") if isinstance(assessment, dict) else None
+        if isinstance(prerequisites, dict):
+            for record in prerequisites.values():
+                if isinstance(record, dict) and record.get("status") in ("unknown", "unsupported"):
+                    record.setdefault("src", [])
     # Never reuse projected material that was derived from the internal model.
     for key in ("domains", "process", "stats"):
         o.pop(key, None)
@@ -728,13 +832,16 @@ def normalize(onto: dict, bp: dict | None = None, rep: Rep | None = None, canon:
             continue
         sids.add(s["id"])
         path = str(s.get("path") or "")
+        if sap_source(s) or "route_assessment" in s:
+            assess_route(s, bp, canon, rep)
         if path not in canon.get("paths", {}):
             rep.warn(f"source {s['id']} path {path!r} should be one of {', '.join(canon.get('paths', {}))}")
-        s.setdefault("item", (canon.get("paths", {}).get(path) or {}).get("item", "lakehouse"))
-        if s["item"] not in items:
+        s.setdefault("item", None if sap_source(s) or "route_assessment" in s else (canon.get("paths", {}).get(path) or {}).get("item"))
+        if s["item"] not in items and path != "unresolved":
             rep.warn(f"source {s['id']} item {s['item']!r} is not a supported binding source ({', '.join(sorted(items))})")
-        st = str(s.get("status") or "next").lower()
-        s["status"] = st if st in SOURCE_STATUS else "next"
+        default_status = "later" if conditional_source(s) else "next"
+        st = str(s.get("status") or default_status).lower()
+        s["status"] = st if st in SOURCE_STATUS else default_status
         srcs.append(s)
     o["sources"] = srcs
     sby = {s["id"]: s for s in srcs}
@@ -805,8 +912,11 @@ def normalize(onto: dict, bp: dict | None = None, rep: Rep | None = None, canon:
         ns = e.get("namespace") or "core"
         b = e.get("binding")
         item = (sby.get(e.get("source")) or {}).get("item")
+        conditional = conditional_source(sby.get(e.get("source")) or {})
         if not isinstance(b, dict) or not b.get("table"):
-            if item == "semantic model":
+            if conditional:
+                b = {"layer": "silver", "item": None, "table": None}
+            elif item == "semantic model":
                 b = {"layer": "gold", "item": "semantic model", "table": e.get("table") or e.get("name") or e["id"]}
             elif e.get("event"):
                 b = {"layer": "silver", "item": "eventhouse", "table": naming["events"].format(ns=ns) + "." + snake(e["id"])}
@@ -816,7 +926,7 @@ def normalize(onto: dict, bp: dict | None = None, rep: Rep | None = None, canon:
         if b.get("layer") not in LAYERS:
             rep.warn(f"entity type {e['id']} binds to layer {b.get('layer')!r}; one of {', '.join(LAYERS)} is expected (silver is used)")
             b["layer"] = "silver"
-        if b.get("item") not in items:
+        if b.get("item") not in items and not (conditional and b.get("item") is None):
             rep.warn(f"entity type {e['id']} binds to a {b.get('item')!r}, which is not a supported binding source")
         if e.get("timeseries") and not b.get("timeseries_table"):
             live = [sby[x] for x in as_list(e.get("secondary")) + [e.get("source")] if x in sby and sby[x].get("item") == "eventhouse"]
@@ -943,15 +1053,18 @@ def normalize(onto: dict, bp: dict | None = None, rep: Rep | None = None, canon:
     jname = {n.get("journey"): (n.get("name") or n["id"]) for n in o["namespaces"] if n.get("journey")}
     if doms:
         jname.update({k: v.get("journey_name") or v.get("name") or k for k, v in doms.items()})
-    domains = []
+    domains = [d for d in as_list(o.get("domains")) if isinstance(d, dict)]
+    saved_domains = {d.get("id") for d in domains}
     for n in o["namespaces"]:
+        if n["id"] in saved_domains:
+            continue
         mine = [e for e in ents if (e.get("namespace") or "core") == n["id"]]
         domains.append({"id": n["id"], "name": n.get("name") or n["id"], "journey": n.get("journey"), "fabric_domain": n.get("name") or n["id"],
                         "governance_domain": pv["journey"] if n.get("journey") else pv["core"], "owner": n.get("owner"),
                         "silver": naming["silver"].format(ns=n["id"]), "gold": naming["gold"].format(ns=n["id"]) if n.get("journey") else None,
                         "events": naming["events"].format(ns=n["id"]) if any(str((e.get("binding") or {}).get(k) or "").startswith(naming["events"].format(ns=n["id"]) + ".")
                                                                                for e in ents for k in ("table", "timeseries_table")) else None,
-                        "entities": [e["id"] for e in mine]})
+                        "entities": [e["id"] for e in mine], "origin": "derived"})
     o["domains"] = domains
     sms = [m for m in as_list(o.get("semantic_models")) if isinstance(m, dict)]
     if not sms:
@@ -1067,7 +1180,8 @@ def normalize(onto: dict, bp: dict | None = None, rep: Rep | None = None, canon:
         d.setdefault("endorsement", "promoted")
         d.setdefault("glossary", [by_id[x].get("name") or x for x in d["entities"]])
         d.setdefault("cde", [f"{by_id[x].get('name') or x} ID" for x in d["entities"] if by_id[x].get("key")])
-        d["gaps"] = [x for x in pub if not d.get(x)] + (["entity types to model"] if not d["entities"] else []) + list(dict.fromkeys(reference_gaps))
+        d["gaps"] = ([x for x in pub if not d.get(x)] + (["entity types to model"] if not d["entities"] else [])
+                     + list(dict.fromkeys(reference_gaps)) + source_route_gaps([by_id[x] for x in d["entities"]], sby))
         dps.append(d)
     o["data_products"] = dps
     o["data_architecture"] = o.get("data_architecture") or copy.deepcopy({k: arch.get(k) for k in ("principle", "layers", "intake", "domains", "semantic_models") if arch.get(k)})
@@ -1077,7 +1191,20 @@ def normalize(onto: dict, bp: dict | None = None, rep: Rep | None = None, canon:
     for k in ("readiness", "risks", "decisions"):
         if not o.get(k):
             o[k] = copy.deepcopy(canon.get(k, []))
+    o["current_guidance"] = copy.deepcopy(canon["current_guidance"])
+    route_gaps = [f"source route {source['id']}: conditional" for source in sorted(srcs, key=lambda source: source["id"])
+                  if conditional_source(source)]
+    recorded_f06 = next((row for row in as_list(o.get("readiness")) if isinstance(row, dict) and row.get("id") == "F-06"), {})
+    o["current_readiness"] = {"F-06": {"status": "open" if route_gaps else recorded_f06.get("status", "open"), "gaps": route_gaps}}
     o["sources_doc"] = o.get("sources_doc") or copy.deepcopy(canon.get("sources", []))
+    for citation in canon.get("sources", []):
+        if not citation["id"].startswith("G59-"):
+            continue
+        occupied = [row for row in as_list(o["sources_doc"]) if isinstance(row, dict) and row.get("id") == citation["id"]]
+        if occupied and any(row != citation for row in occupied):
+            rep.err(f"citation collision for {citation['id']}; saved evidence was not retargeted")
+        elif not occupied:
+            o["sources_doc"].append(copy.deepcopy(citation))
     o["build_steps"] = o.get("build_steps") or copy.deepcopy(canon.get("build_steps", []))
     o["stack"] = o.get("stack") or copy.deepcopy(canon.get("stack", []))
     if bp:
@@ -1085,7 +1212,8 @@ def normalize(onto: dict, bp: dict | None = None, rep: Rep | None = None, canon:
     o["stats"] = {
         "namespaces": len(o["namespaces"]), "entity_types": len(ents), "relationship_types": len(rels),
         "properties": sum(len(e["properties"]) for e in ents), "timeseries": sum(len(e["timeseries"]) for e in ents),
-        "rules": len(rules), "metrics": len(mets), "sources": len(srcs), "bound": sum(1 for e in ents if e.get("source")),
+        "rules": len(rules), "metrics": len(mets), "sources": len(srcs),
+        "bound": sum(1 for e in ents if e.get("source") and not conditional_source(sby.get(e["source"]) or {})),
         "data_agents": len(das), "operations_agents": len(oas), "validated": sum(1 for e in ents if e["status"] == "validated"),
         "standard": sum(1 for e in ents if e["standard"]["standard"] != "custom"), "custom": sum(1 for e in ents if e["standard"]["standard"] == "custom"),
         "to_verify": sum(1 for e in ents if e["standard"]["standard"] != "custom" and not e["standard"].get("checked")),
@@ -1278,6 +1406,7 @@ def data_agent_kit(onto: dict) -> str:
          "(preview) as its context source. Paste the instructions into **Agent instructions**, mount the underlying sources you want to tune, "
          "and add the example questions with the verified source-native query (SQL, KQL or DAX) as **example queries**. A data agent uses up to "
          f"{canon.get('data_agent_max_sources', 5)} sources and answers with the user's permissions.", ""]
+    L += current_guidance_md(onto)
     for a in as_list(onto.get("data_agents")):
         L += [f"## {a['id']} · {a.get('name')}", "", f"**Status** {a.get('status', 'hypothesis')} · **Audience** {_md(a.get('audience'))}", "",
               a.get("description") or "", ""]
@@ -1287,7 +1416,7 @@ def data_agent_kit(onto: dict) -> str:
             if s == "ontology":
                 L.append(f"- Ontology: {onto.get('title')} (context source; queries run on its bound sources)")
             elif s in sby:
-                L.append(f"- {sby[s].get('name')} ({sby[s].get('item')})")
+                L.append(f"- {sby[s].get('name')} ({'conditional recorded proposal' if conditional_source(sby[s]) else sby[s].get('item')})")
         L.append("")
         cons = []
         for c in a.get("consumers", []):
@@ -1295,8 +1424,9 @@ def data_agent_kit(onto: dict) -> str:
             cons.append(nm + (f": {', '.join(c['agents'])}" if c.get("agents") else ""))
         L += ["**Consumed by**: " + ("; ".join(cons) or "Fabric only"), "", "### Agent instructions", "", "```text",
               (a.get("instructions") or default_instructions(a, onto, ents)).strip(), "```", ""]
-        under = [sby[s] for s in a.get("sources", []) if s in sby]
-        bound = sorted({ents[x].get("source") for x in a.get("entities", []) if x in ents and ents[x].get("source")})
+        under = [sby[s] for s in a.get("sources", []) if s in sby and not conditional_source(sby[s])]
+        bound = sorted({ents[x].get("source") for x in a.get("entities", [])
+                        if x in ents and ents[x].get("source") and not conditional_source(sby.get(ents[x]["source"]) or {})})
         under += [sby[s] for s in bound if s in sby and sby[s] not in under]
         if under:
             L += ["### Data source descriptions (for mounted underlying sources)", ""]
@@ -1304,10 +1434,16 @@ def data_agent_kit(onto: dict) -> str:
                 es = [ents[x].get("name") or x for x in a.get("entities", []) if x in ents and ents[x].get("source") == s["id"]]
                 L.append(f"- **{s.get('name')}** ({s.get('item')}): {', '.join(es) or 'supporting data'} from {s.get('system') or s.get('name')}.")
             L.append("")
-        tabs = [ents[x] for x in a.get("entities", []) if x in ents and (ents[x].get("binding") or {}).get("table")]
+        tabs = [ents[x] for x in a.get("entities", []) if x in ents and (ents[x].get("binding") or {}).get("table")
+                and not conditional_source(sby.get(ents[x].get("source")) or {})]
         if tabs:
             L += ["### Bound tables (silver layer, Common Data Model names)", ""]
             L += [f"- `{e['binding']['table']}`: {e.get('name')} · {standard_text(e.get('standard'))}" for e in tabs]
+            L.append("")
+        proposals = [ents[x] for x in a.get("entities", []) if x in ents and conditional_source(sby.get(ents[x].get("source")) or {})]
+        if proposals:
+            L += ["### Conditional table proposals (not mounted/bound)", ""]
+            L += [f"- {e.get('name')}: {binding_text(e, sby)}" for e in proposals]
             L.append("")
         L += ["### Example questions", ""]
         for i, q in enumerate(a.get("questions", []), start=1):
@@ -1319,6 +1455,38 @@ def data_agent_kit(onto: dict) -> str:
 def _uses_text(d: dict) -> str:
     lab = {"analytics": "analytics", "grounding": "AI grounding", "actions": "agent actions (review)"}
     return "; ".join(lab.get(u.get("use"), u.get("use") or "") + (f" via {', '.join(u['via'])}" if u.get("via") else "") for u in as_list(d.get("uses")))
+
+
+def current_guidance_md(onto: dict) -> list[str]:
+    """Current public clarification stays separate from saved blocks and verdicts."""
+    lines = ["## Current guidance (17 November 2026)", "",
+             "Saved choices and verdicts below are recorded proposals, not verification or publication authority.", ""]
+    for key in ("governance", "sap"):
+        guidance = (onto.get("current_guidance") or {}).get(key) or {}
+        lines += [guidance.get("text") or "", "Sources: " + ", ".join(guidance.get("src", [])), ""]
+    for source in as_list(onto.get("sources")):
+        assessment = source.get("route_assessment")
+        if not isinstance(assessment, dict):
+            continue
+        lines += [f"### {source['id']}: {assessment['state']}", "",
+                  f"Recorded choice: {source.get('path') or 'unselected'} / {source.get('item') or 'no selected item'} / {source.get('status')}.",
+                  assessment.get("commercial_note") or "", ""]
+        if conditional_source(source):
+            lines += [f"Open: source route {source['id']}: conditional", ""]
+        lines += _table(["Prerequisite", "Status", "Owner note", "Estate references"],
+                        [[key, record["status"], record["note"], ", ".join(record["src"])]
+                         for key, record in assessment["prerequisites"].items()])
+        lines += ["", "Sources: " + ", ".join(assessment.get("src", [])), ""]
+    for identity, current in (onto.get("current_readiness") or {}).items():
+        lines += [f"Current {identity}: {current['status']}" + ("; " + ", ".join(current["gaps"]) if current["gaps"] else ""), ""]
+    return lines
+
+
+def binding_text(entity: dict, sources: dict) -> str:
+    table = (entity.get("binding") or {}).get("table")
+    if conditional_source(sources.get(entity.get("source")) or {}):
+        return f"Recorded proposal (conditional): `{table}`" if table else "Unresolved source route; no selected table"
+    return f"`{table}`" if table else "[To bind]"
 
 
 def to_markdown(onto: dict, bp: dict | None = None) -> str:
@@ -1345,13 +1513,14 @@ def to_markdown(onto: dict, bp: dict | None = None) -> str:
          "until the workshop and the data owners confirm it.", ""]
     if onto.get("intro"):
         L += [onto["intro"], ""]
+    L += current_guidance_md(onto)
     L += ["## 1 How it fits in Fabric IQ", ""]
     L += _table(["Layer", "What it does", "Source"], [[s["name"], s["what"], ", ".join(s.get("src", []))] for s in as_list(onto.get("stack"))])
     L += ["", "## 2 Entity types", ""]
     L += _table(["Entity type", "Namespace", "Description", "Key", "Properties", "Standard entity", "Bound to"],
                 [[e.get("name"), e.get("namespace") or "", e.get("description"), ", ".join(e.get("key") or []) or "keyless",
                   str(len(e.get("properties") or [])) + (f" + {len(e['timeseries'])} time series" if e.get("timeseries") else ""),
-                  standard_text(e.get("standard")), (e.get("binding") or {}).get("table") or "[To bind]"] for e in ents])
+                  standard_text(e.get("standard")), binding_text(e, sby)] for e in ents])
     for e in ents:
         sd = e.get("standard") or {}
         cols = sd.get("attributes") or {}
@@ -1363,7 +1532,7 @@ def to_markdown(onto: dict, bp: dict | None = None) -> str:
         L += [f"Standard: {standard_text(sd)} ({sd.get('match')} match, {sd.get('role')}{'' if sd.get('checked') or sd.get('standard') == 'custom' else ', to verify'}). "
               + (sd.get("note") or ""), ""]
         if e.get("source") or e.get("binding"):
-            L += [f"Source: {(sby.get(e.get('source')) or {}).get('name') or '[To confirm]'} · binds to `{(e.get('binding') or {}).get('table') or '[To bind]'}`"
+            L += [f"Source: {(sby.get(e.get('source')) or {}).get('name') or '[To confirm]'} · {binding_text(e, sby)}"
                   + (f" · time series `{e['binding']['timeseries_table']}`" if (e.get("binding") or {}).get("timeseries_table") else ""), ""]
         L += _table(["Property", "Type", "Standard column", "Notes"],
                     [[p["name"], p["type"], cols.get(p["name"]) or "", ("key" if p["name"] in (e.get("key") or []) else "") + (" " + p.get("description", "") if p.get("description") else "")]
@@ -1395,8 +1564,8 @@ def to_markdown(onto: dict, bp: dict | None = None) -> str:
     L += _table(["Source", "System of record", "Path into OneLake", "Fabric item", "Entity types", "Data class", "Owner", "Status"],
                 [[s.get("name"), s.get("system"), s.get("path"), s.get("item"), ", ".join(e.get("name") for e in ents if e.get("source") == s["id"]),
                   s.get("data_class"), s.get("owner"), s.get("status")] for s in as_list(onto.get("sources"))])
-    L += ["", "**Domains: Fabric domains and Purview governance domains**", ""]
-    L += _table(["Domain", "Purview governance domain", "Owner", "Silver lakehouse", "Gold lakehouse", "Eventhouse", "Entity types"],
+    L += ["", "**Domains: grouping proposals (saved labels are recorded, not access controls)**", ""]
+    L += _table(["Domain", "Grouping / recorded label", "Owner", "Silver lakehouse", "Gold lakehouse", "Eventhouse", "Entity types"],
                 [[d.get("fabric_domain"), d.get("governance_domain"), d.get("owner"), d.get("silver"), d.get("gold") or "", d.get("events") or "",
                   ", ".join(eby[x].get("name") for x in d.get("entities", []) if x in eby)] for d in as_list(onto.get("domains"))])
     L += ["", "**Gold: one semantic model per journey (star schema, Direct Lake on OneLake)**", ""]
@@ -1407,7 +1576,7 @@ def to_markdown(onto: dict, bp: dict | None = None) -> str:
                  for m in as_list(onto.get("semantic_models"))])
     if arch.get("semantic_models"):
         L += ["", arch["semantic_models"]]
-    L += ["", "## 7 Data products", "", "Canvases, the publication checklist and the set-up in Fabric and Purview: `data-products.md`.", ""]
+    L += ["", "## 7 Data products", "", "Canvases, publication gaps and current Fabric/OneLake guidance: `data-products.md`.", ""]
     L += _table(["ID", "Data product", "Domain", "Owner", "Entity types", "Intended uses", "Open for publication"],
                 [[d["id"], d.get("name") + (" (knowledge)" if d.get("kind") == "knowledge" else ""), d.get("domain"), d.get("owner") if d.get("kind") != "knowledge" else "\u2014",
                   ", ".join(eby[x].get("name") for x in d.get("entities", []) if x in eby) or ("\u2014" if d.get("kind") == "knowledge" else "to model"),
@@ -1466,6 +1635,7 @@ def data_products_md(onto: dict, bp: dict | None = None) -> str:
          "- **Discovery**: " + (std.get("discovery") or ""),
          "- **Security**: " + (std.get("security") or ""), "",
          "Sources: " + ", ".join(std.get("src", [])), ""]
+    L += current_guidance_md(onto)
     L += ["## Overview", ""]
     L += _table(["ID", "Data product", "Domain", "Owner", "Sensitivity", "Endorsement", "Open for publication"],
                 [[d["id"], d.get("name"), d.get("domain"), d.get("owner") if d.get("kind") != "knowledge" else dash,
@@ -1489,9 +1659,9 @@ def data_products_md(onto: dict, bp: dict | None = None) -> str:
         if d.get("gaps"):
             L += ["", "Open before publication: " + ", ".join(d["gaps"]) + "."]
     dom = arch.get("domains") or {}
-    L += ["", "## Set it up in Fabric and Purview", "",
+    L += ["", "## Set it up in Fabric and OneLake catalog", "",
           f"1. **Domains.** {dom.get('fabric') or ''}",
-          f"2. **Layers.** " + " ".join(f"{x.get('name')}: {x.get('what')}" for x in as_list(arch.get("layers"))[:3]),
+          "2. **Layers.** " + " ".join(f"{x.get('name')}: {x.get('what')}" for x in as_list(arch.get("layers"))[:3]),
           "3. **Publish.** Give each data product its owner, purpose, intended uses, access process and quality status; apply the sensitivity label; promote it, certify it after review.",
           f"4. **Catalog.** {std.get('discovery') or ''} {dom.get('purview_what') or ''}",
           "5. **Consume.** Data agents and Power BI keep the user's identity; agent actions and external sharing go through the domain's review.", ""]

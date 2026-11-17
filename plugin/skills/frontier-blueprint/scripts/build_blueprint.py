@@ -54,7 +54,7 @@ DECLARATIONS = ("write_envelope", "refusal_set", "escalation_path", "grounding_s
 DEFAULT_TEMPLATE = Path(__file__).resolve().parent.parent / "templates" / "frontier-blueprint-template.html"
 DEFAULTS = Path(__file__).resolve().parent.parent / "templates" / "blueprint-defaults.json"
 ICONS = Path(__file__).resolve().parent.parent / "templates" / "product-icons.json"
-PLUGIN_VERSION = "1.10.0"
+PLUGIN_VERSION = "1.10.1"
 FIN_SCRIPTS = Path(__file__).resolve().parents[2] / "frontier-finops" / "scripts"
 
 

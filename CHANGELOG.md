@@ -2,6 +2,10 @@
 
 Releases of the Frontier Envisioning plugin. Engineering changes to the repository are recorded in the pull requests.
 
+## 1.10.1 — unreleased
+
+- 
+
 ## 1.10.0
 
 - **Release build (#35, #39, #43).** Baseline-first offline Agent
