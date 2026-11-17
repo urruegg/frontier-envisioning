@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-17 |
 | Author | AI assistant (AI-assisted documentation) |
-| Status | Programme direction and correction written spec approved; implementation plan/readiness approval pending |
+| Status | Programme direction and written correction spec approved; correction plan/readiness at 35ad763 approved for subagent execution |
 | Scope | Programme intake for current process corrections and one optional systems skill with six staged packs |
 | References | [Catalogue](README.md), [Parent #58](https://github.com/urruegg/frontier-envisioning/issues/58), [Correction #59](https://github.com/urruegg/frontier-envisioning/issues/59), [Correction design](../specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](../sprints/SPRINT-011-process-grounding-and-optional-systems.md), [PRD](../prd.md), [Solution design](../solution-design.md) |
 
@@ -64,6 +64,7 @@ These answers resolve the presented directions, not every brief decision.
 | Sequence | `patch-then-d365` | Plan 1.10.1 process corrections first, then 1.11.0 optional framework plus Dynamics 365. No release permission or version change here. |
 | Correction direction | `approve-correction-design` | The two sourced process corrections and compatibility/verification boundaries in the [#59 design](../specs/2026-11-17-process-governance-sap-grounding-design.md). The written spec did not yet exist when this answer was given. |
 | Written correction spec | `approve-written-correction-spec` | Actual review of the written design at SHA-256 `8ab93d9542e3db44f132d4b352551b17ef3c00eb1567ed4e62f85ed93ef78c5f`, recorded on [#59](https://github.com/urruegg/frontier-envisioning/issues/59#issuecomment-6949117136). The subsequent implementation plan is not yet approved. |
+| Correction plan/readiness | `approve-plan-subagents` | Later explicit approval at planning commit `35ad76316aa4eb055b10c62bcfe2e62f7945a66f`, recorded on [#59](https://github.com/urruegg/frontier-envisioning/issues/59#issuecomment-6951849396). Authorises bounded test-first correction work only; the earlier pending-plan statement records the prior checkpoint. |
 
 The approved first-slice direction preserves custom agent hypotheses and IDs.
 Offer sourced **adopt, extend, build or defer** recommendations for workshop
@@ -119,14 +120,14 @@ a future catalogue exclusion, not another #59 plugin correction.
 
 | Stage | Direction | Gate before execution |
 |---|---|---|
-| Current correction, planned 1.10.1 | #59: OneLake catalog/Fabric-domain guidance and conditional SAP Datasphere mirroring guidance; no new skill | Written spec approved; separately review and approve the [implementation plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md)/readiness before execution. |
+| Current correction, planned 1.10.1 | #59: OneLake catalog/Fabric-domain guidance and conditional SAP Datasphere mirroring guidance; no new skill | Written spec and [plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md)/readiness approved; bounded runtime allocation [#60](https://github.com/urruegg/frontier-envisioning/issues/60), no delivery result yet. |
 | Optional foundation and Dynamics 365, planned 1.11.0 | One Preview systems wrapper with only the agreed first slice | Separate written design, real bounded work items, plan, acceptance and human approvals. No child ID is invented here. |
 | Databricks, SAP ERP, SuccessFactors, ServiceNow, Workday | Separate staged pack designs after the first slice | Resolve each pack's evidence, scope, owners and approvals; no release versions or deadlines assigned. |
 
-The written correction spec has actual human approval; the later
-implementation plan now exists and awaits its own review. Neither the earlier
-direction choices nor written-spec approval grants plan approval, readiness,
-publication or deployment authority.
+The written correction spec and later plan now have separate actual human
+approval. Subagent-driven #59 execution is selected; this does not approve the
+later D365 design/implementation, every field-brief decision, publication or
+deployment.
 Human-only [#52](https://github.com/urruegg/frontier-envisioning/issues/52)
 retains immutable 1.10 release-manifest evidence; it remains a final
 release/reproduction dependency. Protected session routing/native controls

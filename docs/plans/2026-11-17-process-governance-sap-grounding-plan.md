@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-17 |
 | Author | AI assistant (AI-assisted planning) |
-| Status | Written specification approved; this plan awaits explicit human plan/readiness approval and execution-mode selection; implementation not started |
+| Status | Human plan/readiness approval at 35ad763 selected subagent-driven execution; bounded runtime handoff #60 |
 | Scope | Bounded #59 correction planned for 1.10.1; no new skill, integration runtime or release authorisation |
 | References | [Catalogue](README.md), [Child #59](https://github.com/urruegg/frontier-envisioning/issues/59), [Parent #58](https://github.com/urruegg/frontier-envisioning/issues/58), [Idea and decisions](../ideas/2026-11-17-optional-systems-extensions.md), [Approved written specification](../specs/2026-11-17-process-governance-sap-grounding-design.md), [SPRINT-011](../sprints/SPRINT-011-process-grounding-and-optional-systems.md), [PRD](../prd.md), [Solution design](../solution-design.md), [ADR-0026](../adr/0026-process-ontology-fabric-iq.md), [ADR-0027](../adr/0027-cdm-grounding-and-data-products.md) |
 
@@ -14,7 +14,8 @@
 > only if the human selects it. Use the equivalent AGENTS method when a skill
 > is unavailable. Execute the checkbox steps
 > test-first, normally 2–5 minutes each; full verification commands take longer.
-> No execution mode or delegated implementation is approved by this document.
+> Actual execution approval is recorded below; this document alone grants no
+> protected permission or release authority.
 
 **Goal:** Stop proposing retiring governance structures and unconfirmed SAP
 routes as current, ready designs, without losing legacy evidence or privacy.
@@ -47,7 +48,17 @@ Journeys/Data, Customer Service and Contact Center, not this patch.
 Issue facts and source checks were verified by the coordinating assistant
 using the approved `urruegg` account and the public sources cited in the spec.
 
-**STOP — human plan decision:** this real plan is linked from SPRINT-011 and
+**Actual human plan decision:** the maintainer selected
+`approve-plan-subagents` for this written plan at
+`35ad76316aa4eb055b10c62bcfe2e62f7945a66f`, separately approving readiness
+and bounded subagent execution for #59. The
+[approval receipt](https://github.com/urruegg/frontier-envisioning/issues/59#issuecomment-6951849396)
+does not grant authority for D365/other packs, protected #52/#8 work or
+publication. The real first runtime allocation is
+[#60](https://github.com/urruegg/frontier-envisioning/issues/60); later
+dependent slices require real linked work items before delegation.
+
+This real plan is linked from SPRINT-011 and
 the written approval is recorded. Initial early-intake validation reported
 three missing-plan-link errors; the real links resolve that mismatch without
 changing `tools/check_docs.py` or borrowing an unrelated plan. Before implementation,
@@ -636,10 +647,10 @@ The coordinating assistant integrated all eight planning files and validated
 them with `python tools/dev.py docs --strict` (zero errors) and whitespace/
 placeholder/acceptance-mapping checks; see the linked sprint checkpoint.
 Those are planning checks, not implementation results.
-**This plan awaits explicit human plan approval and readiness.**
-Present two options only: **inline execution** in this existing worktree with
-checkpoint evidence, or **subagent-driven execution** for approved bounded
-tasks if supported. Where supported, eligible prose may go to `docs-agent`,
+**The actual `approve-plan-subagents` answer is recorded above.**
+Use bounded fresh implementation agents and ordered specification/correctness
+reviews, with no overlapping edits/builders in the shared worktree.
+Where supported, eligible prose may go to `docs-agent`,
 checker/code to `frontier-builder` and HTML to `frontier-renderer`; no agents
 are created now, and no configured handoff bypasses approval or expands scopes.
 Do not commit, push or open a PR as part of this planning handoff.

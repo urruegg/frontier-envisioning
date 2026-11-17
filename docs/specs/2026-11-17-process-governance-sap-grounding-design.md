@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-17 |
 | Author | AI assistant (AI-assisted documentation) |
-| Status | Written specification approved at reviewed digest 8ab93d95; subsequent plan/readiness and execution not approved |
+| Status | Written spec approved at digest 8ab93d95; subsequent plan/readiness at 35ad763 approved for bounded subagent execution |
 | Scope | Focused #59 correction planned for 1.10.1; no optional systems skill or integration runtime |
 | References | [Catalogue](README.md), [Correction #59](https://github.com/urruegg/frontier-envisioning/issues/59), [Parent #58](https://github.com/urruegg/frontier-envisioning/issues/58), [Programme idea](../ideas/2026-11-17-optional-systems-extensions.md), [Implementation plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](../sprints/SPRINT-011-process-grounding-and-optional-systems.md), [PRD](../prd.md), [Solution design](../solution-design.md) |
 
@@ -28,9 +28,11 @@ written design at SHA-256
 the [approval receipt](https://github.com/urruegg/frontier-envisioning/issues/59#issuecomment-6949117136)
 records that distinct review. This revision adds only approval/plan links;
 the agreed behaviour and acceptance criteria are unchanged.
-**The subsequent plan exists but neither plan approval nor readiness has
-been granted.** No labels, assignments, milestones, formal review or release
-permission are inferred.
+The later **`approve-plan-subagents`** response approved the actual plan and
+readiness at `35ad76316aa4eb055b10c62bcfe2e62f7945a66f`; see the
+[separate receipt](https://github.com/urruegg/frontier-envisioning/issues/59#issuecomment-6951849396).
+No protected readiness/approval label, formal review or release permission is
+inferred from either decision.
 
 Published **1.10.0** remains the baseline, not an unpublished candidate.
 Main is `b88b9a2efa1eb342d5542475c63eee5f7bb43e4b`; release source
@@ -213,8 +215,9 @@ does not claim the new regressions exist or have run.
 
 Actual human review of this written spec is recorded above. The subsequent
 [implementation plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md)
-awaits a separate human plan/readiness decision before implementation. This
-document grants no execution, publication or deployment authority.
+has the separate human plan/readiness approval recorded above. Bounded
+implementation begins under that actual decision; this document alone
+grants no protected permission, publication or deployment authority.
 
 Human-only [#52](https://github.com/urruegg/frontier-envisioning/issues/52),
 immutable 1.10 manifest retention, is a named final release/reproduction

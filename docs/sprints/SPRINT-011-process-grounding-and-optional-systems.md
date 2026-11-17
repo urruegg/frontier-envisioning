@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-17 |
 | Author | AI assistant (AI-assisted documentation) |
-| Status | Written correction spec approved; real plan linked for review; plan/readiness and implementation approval pending |
+| Status | Correction written spec and plan/readiness at 35ad763 approved; bounded runtime handoff #60, implementation results pending |
 | Scope | Parent #58 programme and first correction child #59; documentation-only design record |
 | References | [Catalogue](README.md), [Parent #58](https://github.com/urruegg/frontier-envisioning/issues/58), [Correction #59](https://github.com/urruegg/frontier-envisioning/issues/59), [Idea](../ideas/2026-11-17-optional-systems-extensions.md), [Correction spec](../specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md), [Retention #52](https://github.com/urruegg/frontier-envisioning/issues/52), [Protected routing #8](https://github.com/urruegg/frontier-envisioning/issues/8) |
 
@@ -18,10 +18,11 @@ and Dynamics 365 later. This early record is not a ready sprint or a schedule.
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
 | [#58](https://github.com/urruegg/frontier-envisioning/issues/58) | [Programme and actual decisions](../ideas/2026-11-17-optional-systems-extensions.md#actual-human-decisions) | [First correction only](../specs/2026-11-17-process-governance-sap-grounding-design.md); wider pack designs not yet written | [First correction plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md); wider pack plans remain separate | `@urruegg` accountable; issue unassigned | #59 first; separate framework/Dynamics 365 written design and approvals | Decision intake, size M/P1; programme direction agreed, not ready for all-pack execution | Actual written correction approval recorded; no implementation result |
-| [#59](https://github.com/urruegg/frontier-envisioning/issues/59) | [Correction stage](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Tasks 1-12](../plans/2026-11-17-process-governance-sap-grounding-plan.md); explicit plan/readiness approval pending | `@urruegg` accountable; no assignee-field claim | Human plan/readiness approval; [#52](https://github.com/urruegg/frontier-envisioning/issues/52) final release/reproduction retention | Bounded chore, size M/P1; written spec approved at digest 8ab93d95; no implementation | Sources checked 17 November; actual written-spec approval linked below; future patch checks not run |
+| [#59](https://github.com/urruegg/frontier-envisioning/issues/59) | [Correction stage](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Tasks 1-12](../plans/2026-11-17-process-governance-sap-grounding-plan.md); approved at `35ad763` | `@urruegg` accountable and assigned; agent involvement recorded, not approval | Reviewed runtime/rendering/support slices; [#52](https://github.com/urruegg/frontier-envisioning/issues/52) final release/reproduction retention | Subagent-driven plan/readiness approved; no implementation result yet | Sources checked 17 November; distinct spec/plan approval receipts below |
+| [#60](https://github.com/urruegg/frontier-envisioning/issues/60) | [First correction](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01/02/04/07](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Runtime Tasks 1-6 and 8](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-1-verify-the-approved-execution-boundary-and-baseline) | `@urruegg` accountable; bounded builder, size M | Actual #59 plan approval; standard bump before plugin edits | Ready for scoped test-first runtime handoff; no protected ready label asserted | Plan at `35ad763`; initial implementation-branch approval checkpoint only |
 
-Only #58 and #59 are programme work-item rows. There are no invented child
-issues for Dynamics 365 or the remaining packs. A document author is not an
+These are real programme and runtime work-item rows. There are no invented
+child issues for Dynamics 365 or the remaining packs. A document author is not an
 issue owner, assignee, reviewer or approver.
 
 ## Actual decisions and approval boundary
@@ -44,8 +45,12 @@ actual #59 specification at SHA-256
 The [source-qualified receipt](https://github.com/urruegg/frontier-envisioning/issues/59#issuecomment-6949117136)
 records the distinction from direction approval. The real bounded plan was
 written afterwards and is now linked above. Its plan/readiness approval
-remains separate and pending. No ready/approval label, issue field, milestone,
-formal review, publication or deployment authority is inferred.
+was later explicitly granted by `approve-plan-subagents` at planning commit
+`35ad76316aa4eb055b10c62bcfe2e62f7945a66f`; the
+[plan receipt](https://github.com/urruegg/frontier-envisioning/issues/59#issuecomment-6951849396)
+records that actual answer. #59/#60 owner/agent-involvement fields were then
+explicitly applied; protected ready/approval labels, formal review, publication
+or deployment authority are not inferred.
 
 ## Staging and acceptance
 
