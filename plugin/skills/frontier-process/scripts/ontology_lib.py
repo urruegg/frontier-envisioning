@@ -234,6 +234,18 @@ def validate_reserved_citations(onto: dict, rep: Rep, canon: dict | None = None)
     return len(rep.errors) == errors_before
 
 
+def _has_named_owner(value: object) -> bool:
+    """Recognise draft placeholders; this does not authenticate an owner or approval."""
+    if not isinstance(value, str):
+        return False
+    text = " ".join(re.findall(r"[^\W_]+", value.casefold()))
+    absence = r"(?:n ?a|none|null|unknown|t ?b ?[dc]|unassigned|unspecified|not (?:applicable|available|assigned|known))"
+    pending = r"(?:to (?:be )?(?:confirm(?:ed)?|assign(?:ed)?|determin(?:e|ed)|nam(?:e|ed))|pending)"
+    placeholder = rf"(?:{absence}|{pending})"
+    return bool(text) and not (re.fullmatch(rf"(?:owner )?{placeholder}(?: owner)?", text)
+                              or re.search(rf" {placeholder}$", text))
+
+
 def assess_route(source: dict, bp: dict | None, canon: dict, rep: Rep) -> None:
     """Derive an owner-asserted design assessment, never tenant/licence readiness."""
     if "route_assessment" not in source:
@@ -259,9 +271,7 @@ def assess_route(source: dict, bp: dict | None, canon: dict, rep: Rep) -> None:
     path = source.get("path")
     chosen = (isinstance(path, str) and path in canon["paths"] and path != "unresolved"
               and "item" in source and source["item"] == canon["paths"][path]["item"])
-    owner = source.get("owner")
-    named_owner = isinstance(owner, str) and owner.strip().lower() not in ("", "unknown", "to confirm", "tbc", "tbd", "unassigned", "none")
-    if complete and chosen and named_owner:
+    if complete and chosen and _has_named_owner(source.get("owner")):
         assessment["state"] = "owner_confirmed"
     else:
         rep.warn(f"source {source['id']} route is conditional; recorded choices are not binding or publication proof")

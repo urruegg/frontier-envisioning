@@ -1240,6 +1240,110 @@ class ProcessGroundingDomainPrivacyReview(unittest.TestCase):
                         self.assertEqual((source.read_bytes(), ontology.read_bytes()), originals)
 
 
+class ProcessGroundingOwnerReview(unittest.TestCase):
+    call = staticmethod(ProcessGroundingRawBoundary.call)
+    placeholders = (None, "", "   ", "TBD", " t.b.d. ", "TBC", "N/A", " n / a ", "N.A.", "na",
+                    "Not applicable", "NOT-APPLICABLE", "none", "null", "unknown", "unassigned",
+                    "Owner to confirm", " owner: TO   CONFIRM ", "OWNER—TO—CONFIRM",
+                    "[Owner to be confirmed]", "SAP Data Owner (to be confirmed)", "Owner to be assigned",
+                    "Owner pending", "Pending owner", "--")
+    named_roles = ("SAP data owner", "  Chief Data Officer  ", "Accountable service owner",
+                   "Owner of Confirmation Controls", "Pending Orders Process Owner",
+                   "N/A data cleanup owner", "Responsable données – propriétaire SAP")
+
+    @staticmethod
+    def fixture(owner):
+        model, bp = ProcessGroundingRawBoundary.fixture()
+        model["sources"][0]["owner"] = owner
+        model["entity_types"][0].pop("timeseries")
+        for entity in model["entity_types"]:
+            entity["binding"] = {"layer": "silver", "item": "lakehouse", "table": "recorded." + entity["id"]}
+        model["data_products"] = [{"id": "DP-OWNER", "name": "Synthetic route product",
+                                   "entities": ["Asset", "WorkOrder"], "owner": "Synthetic product owner",
+                                   "purpose": "Synthetic process handover", "uses": [{"use": "analytics"}],
+                                   "access": "Synthetic request process", "quality": "Synthetic profile completed"}]
+        model["readiness"] = [{"id": "F-06", "item": "Recorded route decision", "status": "done",
+                               "note": "Recorded owner assertion, not tenant or financial verification"}]
+        return model, bp
+
+    def assert_assessment(self, normalized, owner, confirmed):
+        source = normalized["sources"][0]
+        self.assertEqual(source["owner"], owner, "validation must not rewrite the recorded owner")
+        self.assertEqual((source["path"], source["item"], source["status"]), ("mirroring", "mirrored database", "now"))
+        self.assertEqual(source["route_assessment"]["state"], "owner_confirmed" if confirmed else "conditional")
+        self.assertEqual(normalized["stats"]["bound"], 2 if confirmed else 0)
+        self.assertEqual(normalized["stats"]["data_products_ready"], 1 if confirmed else 0)
+        gaps = [] if confirmed else ["source route s-fs: conditional"]
+        self.assertEqual(normalized["data_products"][0]["gaps"], gaps)
+        self.assertEqual(normalized["current_readiness"]["F-06"], {"status": "done" if confirmed else "open", "gaps": gaps})
+        self.assertEqual(normalized["readiness"][0]["status"], "done", "the old verdict remains recorded")
+        self.assertEqual([entity["binding"]["table"] for entity in normalized["entity_types"]], ["recorded.Asset", "recorded.WorkOrder"])
+
+    def test_absence_and_pending_owner_values_never_satisfy_named_owner(self):
+        for owner in self.placeholders:
+            with self.subTest(owner=owner):
+                model, bp = self.fixture(owner)
+                before = copy.deepcopy(model)
+                rep = lib.Rep()
+                first = lib.normalize(model, bp, rep)
+                self.assertEqual(rep.errors, [])
+                self.assert_assessment(first, owner, False)
+                self.assertTrue(rep.warnings)
+                self.assert_assessment(lib.normalize(first, bp), owner, False)
+                projected = bpbuild.customer_version(dict(bp, ontology=first), bpbuild.Report())
+                self.assert_assessment(projected["ontology"], owner, False)
+                self.assertEqual(model, before)
+
+    def test_named_roles_are_not_rejected_for_incidental_owner_or_pending_words(self):
+        for owner in self.named_roles:
+            with self.subTest(owner=owner):
+                model, bp = self.fixture(owner)
+                before = copy.deepcopy(model)
+                rep = lib.Rep()
+                first = lib.normalize(model, bp, rep)
+                self.assertEqual((rep.errors, rep.warnings), ([], []))
+                self.assert_assessment(first, owner, True)
+                self.assert_assessment(lib.normalize(first, bp), owner, True)
+                projected = bpbuild.customer_version(dict(bp, ontology=first), bpbuild.Report())
+                self.assert_assessment(projected["ontology"], owner, True)
+                for document in (lib.to_markdown(first, bp), lib.data_agent_kit(first), lib.data_products_md(first, bp)):
+                    self.assertIn("owner-asserted design choice is not tenant verification", document)
+                    self.assertIn("licence readiness", document)
+                self.assertEqual(model, before)
+
+    def test_real_process_clis_keep_placeholder_owners_conditional_without_overwriting_strict_outputs(self):
+        for owner in ("N/A", " n / A ", "Owner to confirm", " OWNER: to   CONFIRM ", "", "TBD"):
+            for audience in ("internal", "customer"):
+                with self.subTest(owner=owner, audience=audience), tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    model, bp = self.fixture(owner)
+                    source, ontology = root / "bp.json", root / "model.json"
+                    source.write_text(json.dumps(bp), encoding="utf-8")
+                    ontology.write_text(json.dumps(model), encoding="utf-8")
+                    originals = source.read_bytes(), ontology.read_bytes()
+                    out = root / "process"
+                    args = ["--ontology", ontology, "--blueprint", source, "--audience", audience, "--out-dir", out]
+                    code, text, error = self.call(build.main, args)
+                    self.assertEqual(code, 0, text + error)
+                    self.assertEqual(len(list(out.iterdir())), 5)
+                    normalized = json.loads((out / "ontology.normalized.json").read_text(encoding="utf-8"))
+                    self.assert_assessment(normalized, owner, False)
+                    self.assertTrue(json.loads(text)["warnings"])
+                    before = {file.name: file.read_bytes() for file in out.iterdir()}
+                    code, text, error = self.call(build.main, args + ["--strict"])
+                    self.assertEqual(code, 1, text + error)
+                    self.assertEqual(json.loads(text)["files"], {})
+                    self.assertEqual({file.name: file.read_bytes() for file in out.iterdir()}, before)
+                    bp["ontology"] = normalized
+                    applied = root / "applied.json"
+                    applied.write_text(json.dumps(bp), encoding="utf-8")
+                    code, text, error = self.call(bpbuild.main, ["--data", applied, "--audience", audience,
+                                                                "--save-normalized", root / "blueprint.json", "--no-product-icons"])
+                    self.assertEqual(code, 0, text + error)
+                    self.assert_assessment(json.loads((root / "blueprint.json").read_text(encoding="utf-8"))["ontology"], owner, False)
+                    self.assertEqual((source.read_bytes(), ontology.read_bytes()), originals)
+
+
 class ProcessGroundingDistribution(unittest.TestCase):
     def test_extracted_candidate_runs_corrected_process_without_finops(self):
         packager = load("tools/build_package.py", "g59_packager")
@@ -1356,6 +1460,17 @@ class ProcessGroundingDistribution(unittest.TestCase):
                 for suffix in ("-bp.html", "-customer.json"):
                     self.assertNotIn(ProcessGroundingDomainPrivacyReview.marker, (root / (field + suffix)).read_text(encoding="utf-8"))
                 self.assertEqual((private_bp_file.read_bytes(), private_model_file.read_bytes()), originals)
+            for index, owner in enumerate(("N/A", "Owner to confirm")):
+                owner_model, owner_bp = ProcessGroundingOwnerReview.fixture(owner)
+                owner_source, owner_context = root / f"owner-{index}.json", root / f"owner-bp-{index}.json"
+                owner_source.write_text(json.dumps(owner_model), encoding="utf-8")
+                owner_context.write_text(json.dumps(owner_bp), encoding="utf-8")
+                originals = owner_source.read_bytes(), owner_context.read_bytes()
+                run("skills/frontier-process/scripts/build_ontology.py", "--ontology", owner_source,
+                    "--blueprint", owner_context, "--audience", "customer", "--out-dir", root / f"owner-out-{index}")
+                qualified = json.loads((root / f"owner-out-{index}/ontology.normalized.json").read_text(encoding="utf-8"))
+                ProcessGroundingOwnerReview().assert_assessment(qualified, owner, False)
+                self.assertEqual((owner_source.read_bytes(), owner_context.read_bytes()), originals)
             core = package / "skills/frontier-blueprint/examples/caldova-blueprint.json"
             run("skills/frontier-blueprint/scripts/build_with_identity.py", "--data", core,
                 "--out-dir", root / "core-without-finops", "--no-identity")
