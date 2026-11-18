@@ -161,21 +161,17 @@ def new_route_assessment(source: dict, canon: dict) -> dict:
     return assessment
 
 
-def assess_route(source: dict, bp: dict | None, canon: dict, rep: Rep) -> None:
-    """Derive an owner-asserted design assessment, never tenant/licence readiness."""
-    assessment = source.get("route_assessment")
-    if "route_assessment" not in source:
-        assessment = source["route_assessment"] = new_route_assessment(source, canon)
-    prefix = f"source {source['id']} route_assessment"
+def _validate_route_assessment(assessment: object, canon: dict, rep: Rep) -> bool:
+    """Shape only: no defaults, derivation, private values or source identities."""
+    prefix = "source route_assessment"
     if not isinstance(assessment, dict):
         rep.err(f"{prefix} must be an object")
-        return
-    assessment["state"] = "conditional"
+        return False
     prerequisites = assessment.get("prerequisites")
     expected = canon["sap_route_assessment"]["prerequisites"]
     if not isinstance(prerequisites, dict) or set(prerequisites) != set(expected):
         rep.err(f"{prefix} prerequisites must contain exactly {', '.join(expected)}")
-        return
+        return False
     errors_before = len(rep.errors)
 
     def refs_valid(value):
@@ -183,10 +179,45 @@ def assess_route(source: dict, bp: dict | None, canon: dict, rep: Rep) -> None:
 
     if assessment.get("candidate_path") not in (None, "mirroring"):
         rep.err(f"{prefix} candidate_path must be mirroring or null")
-    else:
-        assessment["candidate_path"] = new_route_assessment(source, canon)["candidate_path"]
     if not isinstance(assessment.get("commercial_note"), str) or not refs_valid(assessment.get("src")):
         rep.err(f"{prefix} requires commercial_note text and a src reference list")
+    if "content_src" in assessment and not refs_valid(assessment["content_src"]):
+        rep.err(f"{prefix} content_src must be a reference list")
+    for key, record in prerequisites.items():
+        if (not isinstance(record, dict) or record.get("status") not in ("unknown", "confirmed", "unsupported")
+                or not isinstance(record.get("note"), str) or not refs_valid(record.get("src"))):
+            rep.err(f"{prefix} prerequisite {key} requires status, note text and a src reference list")
+        elif "content_src" in record and not refs_valid(record["content_src"]):
+            rep.err(f"{prefix} prerequisite {key} content_src must be a reference list")
+    return len(rep.errors) == errors_before
+
+
+def validate_route_assessments(onto: dict, rep: Rep, canon: dict | None = None) -> bool:
+    """Validate authored assessment shapes before any coercion or projection.
+
+    Missing legacy assessments are allowed, not populated. This neither assesses
+    an estate nor changes input; callers retain their existing failure envelopes.
+    """
+    errors_before = len(rep.errors)
+    if isinstance(onto, dict):
+        for source in as_list(onto.get("sources")):
+            if isinstance(source, dict) and "route_assessment" in source:
+                if canon is None:
+                    canon = load_canon()
+                _validate_route_assessment(source["route_assessment"], canon, rep)
+    return len(rep.errors) == errors_before
+
+
+def assess_route(source: dict, bp: dict | None, canon: dict, rep: Rep) -> None:
+    """Derive an owner-asserted design assessment, never tenant/licence readiness."""
+    if "route_assessment" not in source:
+        source["route_assessment"] = new_route_assessment(source, canon)
+    assessment = source["route_assessment"]
+    if not _validate_route_assessment(assessment, canon, rep):
+        return
+    prerequisites = assessment["prerequisites"]
+    assessment["state"] = "conditional"
+    assessment["candidate_path"] = new_route_assessment(source, canon)["candidate_path"]
     estate = {row["id"]: row for row in as_list((bp or {}).get("evidence"))
               if isinstance(row, dict) and isinstance(row.get("id"), str)
               and (row.get("type") == "estate" or row["id"].startswith("ESTATE-"))
@@ -194,11 +225,6 @@ def assess_route(source: dict, bp: dict | None, canon: dict, rep: Rep) -> None:
               and not str(row.get("url") or "").startswith(("https://learn.microsoft.com/", "https://techcommunity.microsoft.com/"))}
     complete = True
     for key, record in prerequisites.items():
-        if (not isinstance(record, dict) or record.get("status") not in ("unknown", "confirmed", "unsupported")
-                or not isinstance(record.get("note"), str) or not refs_valid(record.get("src"))):
-            rep.err(f"{prefix} prerequisite {key} requires status, note text and a src reference list")
-            complete = False
-            continue
         confirmed = (record["status"] == "confirmed" and bool(record["note"].strip())
                      and bool(record["src"]) and all(ref in estate for ref in record["src"]))
         if not confirmed:
@@ -209,7 +235,7 @@ def assess_route(source: dict, bp: dict | None, canon: dict, rep: Rep) -> None:
               and "item" in source and source["item"] == canon["paths"][path]["item"])
     owner = source.get("owner")
     named_owner = isinstance(owner, str) and owner.strip().lower() not in ("", "unknown", "to confirm", "tbc", "tbd", "unassigned", "none")
-    if complete and chosen and named_owner and len(rep.errors) == errors_before:
+    if complete and chosen and named_owner:
         assessment["state"] = "owner_confirmed"
     else:
         rep.warn(f"source {source['id']} route is conditional; recorded choices are not binding or publication proof")
@@ -650,6 +676,8 @@ def normalize(onto: dict, bp: dict | None = None, rep: Rep | None = None, canon:
     canon = canon or load_canon()
     if not isinstance(onto, dict):
         rep.err("ontology must be an object")
+        return {"schema": SCHEMA, "stats": {}}
+    if not validate_route_assessments(onto, rep, canon):
         return {"schema": SCHEMA, "stats": {}}
     o = inherit_privacy(copy.deepcopy(onto), bp)
     if o.get("schema") not in (None, SCHEMA):

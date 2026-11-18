@@ -146,6 +146,12 @@ def agent_finops_flags(a):
 def agent_finops_preflight(a, data, *, acknowledge_finops_preview=False):
     lib = blueprint_library()
     bp = lib.read_document(data)
+    lib.validate_ontology_routes(bp)
+    ontology = None
+    if getattr(a, "ontology", None):
+        ontology = lib.read_document(a.ontology)
+        raw = dict(bp, ontology=ontology)
+        lib.validate_ontology_routes(raw)
     baselines = getattr(a, "agent_finops", ()) or ()
     if getattr(a, "finops", None) and (baselines or "agent_finops" in bp):
         raise ValueError("ambiguous legacy/new financial sources: --finops and --agent-finops are mutually exclusive")
@@ -157,7 +163,6 @@ def agent_finops_preflight(a, data, *, acknowledge_finops_preview=False):
         "acknowledge_finops_preview": acknowledge_finops_preview,
     }
     if baselines and getattr(a, "ontology", None) and acknowledge_finops_preview is True:
-        ontology = lib.read_document(a.ontology)
         original = copy.deepcopy(bp)
         original["ontology"] = ontology
         # Shared policy must see the ORIGINAL authored graph before the process

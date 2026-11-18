@@ -112,6 +112,9 @@ def agent_finops_preflight(blueprint, *, baselines=(), reviews=(), as_of=None, a
     input on a later invocation. Raw inputs are calculated on detached copies;
     existing receipts and frozen wrappers are validated, never silently repaired.
     """
+    # Also used by the ordinary wrapper before its first output effect. Keep
+    # process validation independent of optional financial modules/awareness.
+    validate_ontology_routes(blueprint)
     requested = bool(baselines or reviews or "agent_finops" in blueprint)
     if not requested:
         return None
@@ -439,6 +442,8 @@ def clean_attendees(bp: dict, rep: "Report") -> None:
 
 
 def normalise(bp: dict, rep: Report) -> dict:
+    if not validate_ontology_routes(bp, rep):
+        return bp
     if "agent_finops" in bp:
         raise ValueError("agent_finops is derivative; run explicit authoritative source preflight before normalisation")
     meta = bp.setdefault("meta", {})
@@ -646,6 +651,22 @@ def process_library():
     return ontology_lib
 
 
+def validate_ontology_routes(bp: dict, rep: Report | None = None) -> bool:
+    """Check only authored process assessment shapes, before generic transforms."""
+    onto = bp.get("ontology")
+    if not isinstance(onto, dict):
+        return True
+    process = Path(__file__).resolve().parents[2] / "frontier-process" / "scripts"
+    if not (process / "ontology_lib.py").is_file():
+        raise ValueError("Requested ontology requires frontier-process; install it next to frontier-blueprint")
+    report = rep if rep is not None else Report()
+    valid = process_library().validate_route_assessments(onto, report)
+    if not valid and rep is None:
+        # The shared validator names schema fields, never private values/paths.
+        raise ValueError("; ".join(report.errors))
+    return valid
+
+
 def prepare_ontology_privacy(bp: dict, rep: Report | None = None) -> None:
     """Re-evaluate root/target provenance before projecting promoted content."""
     onto = bp.get("ontology")
@@ -677,6 +698,7 @@ def prepare_ontology_privacy(bp: dict, rep: Report | None = None) -> None:
 
 
 def customer_version(bp: dict, rep: Report, *, _consumed_inputs=None) -> dict:
+    validate_ontology_routes(bp)
     if "agent_finops" in bp:
         raise ValueError("agent_finops is derivative; project authoritative sources before customer serialisation")
     out = copy.deepcopy(bp)

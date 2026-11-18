@@ -4,7 +4,7 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
 
 ## 1.10.1 — unreleased
 
-- 
+- Process grounding (#60): reject malformed SAP route assessments before normalisation, customer projection or wrapper output effects; preserve recorded choices and conditional guidance.
 
 ## 1.10.0
 

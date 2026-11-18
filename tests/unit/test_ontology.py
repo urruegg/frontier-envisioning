@@ -599,6 +599,225 @@ class ProcessGrounding(unittest.TestCase):
                     self.assertEqual((path.read_bytes(), bp_path.read_bytes()), originals)
 
 
+class ProcessGroundingRawBoundary(unittest.TestCase):
+    marker = "SYNTHETIC_G60_PRIVATE"
+    process_files = ("ontology.normalized.json", "ontology.ttl", "ontology.md", "data-agents.md", "data-products.md")
+    malformed = ("src-string", "src-nested", "missing-src", "status", "record", "prerequisites", "assessment", "content-src")
+
+    @classmethod
+    def fixture(cls, private=False, malformed=None):
+        model, estate = ProcessGrounding().selected()
+        model["schema"] = lib.SCHEMA
+        model["meta"].update(short="Caldova", date="2026-11-17")
+        source = model["sources"][0]
+        source["owner"] = cls.marker + " owner"
+        if private:
+            source["internal"] = True
+        assessment = source["route_assessment"]
+        record = assessment["prerequisites"]["fabric_capacity"]
+        record["note"] = cls.marker + " prerequisite note"
+        if malformed == "src-string":
+            record["src"] = "ESTATE-1"
+        elif malformed == "src-nested":
+            record["src"] = [["ESTATE-1"]]
+        elif malformed == "missing-src":
+            record.pop("src")
+        elif malformed == "status":
+            record["status"] = cls.marker
+        elif malformed == "record":
+            assessment["prerequisites"]["fabric_capacity"] = [record]
+        elif malformed == "prerequisites":
+            assessment["prerequisites"] = [assessment["prerequisites"]]
+        elif malformed == "assessment":
+            source["route_assessment"] = [assessment]
+        elif malformed == "content-src":
+            record["content_src"] = cls.marker
+        bp = CustomerPrivacy().blueprint()
+        bp["evidence"] += estate["evidence"]
+        return model, bp
+
+    @staticmethod
+    def call(function, args):
+        output, error = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(error):
+            code = function(list(map(str, args)))
+        return code, output.getvalue(), error.getvalue()
+
+    def assert_rejected(self, code, output, error):
+        self.assertNotEqual(code, 0, "malformed raw assessment was accepted")
+        self.assertIn("route_assessment", output + error)
+        self.assertNotIn(self.marker, output + error, "diagnostics disclosed private payload or input path")
+
+    def test_raw_validator_is_pure_and_does_not_assess_or_default(self):
+        validate = getattr(lib, "validate_route_assessments", None)
+        self.assertTrue(callable(validate), "one shared pure raw-assessment validator is required")
+        for kind in (None, *self.malformed):
+            with self.subTest(kind=kind):
+                model, _ = self.fixture(True, kind)
+                before = copy.deepcopy(model)
+                rep = lib.Rep()
+                self.assertEqual(validate(model, rep), kind is None)
+                self.assertEqual(bool(rep.errors), kind is not None)
+                self.assertEqual(rep.warnings, [])
+                self.assertNotIn(self.marker, json.dumps(rep.errors))
+                self.assertEqual(model, before)
+        model, _ = self.fixture()
+        model["sources"][0].pop("route_assessment")
+        before = copy.deepcopy(model)
+        self.assertTrue(validate(model, lib.Rep()), "missing legacy assessment is not a malformed authored object")
+        self.assertEqual(model, before)
+
+    def test_process_build_rejects_public_and_private_raw_shapes_before_projection(self):
+        for audience in ("internal", "customer"):
+            for private in (False, True):
+                for kind in self.malformed:
+                    with self.subTest(audience=audience, private=private, kind=kind), tempfile.TemporaryDirectory() as directory:
+                        root = Path(directory)
+                        model, bp = self.fixture(private, kind)
+                        source, context = root / (self.marker + ".json"), root / "bp.json"
+                        source.write_text(json.dumps(model), encoding="utf-8")
+                        context.write_text(json.dumps(bp), encoding="utf-8")
+                        originals = source.read_bytes(), context.read_bytes()
+                        out = root / "output"
+                        args = ["--ontology", source, "--blueprint", context, "--out-dir", out, "--audience", audience]
+                        for existing in (False, True):
+                            if existing:
+                                out.mkdir(exist_ok=True)
+                                for name in self.process_files:
+                                    (out / name).write_bytes(b"prior good output\n")
+                            code, output, error = self.call(build.main, args)
+                            self.assertEqual(code, 1, output + error)
+                            summary = json.loads(output)
+                            self.assertEqual(summary["files"], {})
+                            self.assertTrue(summary["errors"])
+                            self.assertNotIn("ontology is internal-only", summary["errors"])
+                            self.assert_rejected(code, output, error)
+                            if existing:
+                                self.assertTrue(all((out / name).read_bytes() == b"prior good output\n" for name in self.process_files))
+                            else:
+                                self.assertFalse(out.exists())
+                        self.assertEqual((source.read_bytes(), context.read_bytes()), originals)
+
+    def test_blueprint_cli_rejects_raw_shapes_before_normalisation_and_customer_scrub(self):
+        for audience in ("internal", "customer"):
+            for private in (False, True):
+                for kind in ("src-string", "status", "record", "content-src"):
+                    with self.subTest(audience=audience, private=private, kind=kind), tempfile.TemporaryDirectory() as directory:
+                        root = Path(directory)
+                        model, bp = self.fixture(private, kind)
+                        bp["ontology"] = model
+                        source = root / (self.marker + ".json")
+                        source.write_text(json.dumps(bp), encoding="utf-8")
+                        original = source.read_bytes()
+                        out = root / "output"
+                        paths = [out / name for name in ("blueprint.html", "blueprint.json", "report.json")]
+                        args = ["--data", source, "--audience", audience, "--out", paths[0],
+                                "--save-normalized", paths[1], "--report", paths[2], "--no-product-icons"]
+                        for existing in (False, True):
+                            if existing:
+                                out.mkdir(exist_ok=True)
+                                for path in paths:
+                                    path.write_bytes(b"prior good output\n")
+                            code, output, error = self.call(bpbuild.main, args)
+                            self.assert_rejected(code, output, error)
+                            if existing:
+                                self.assertTrue(all(path.read_bytes() == b"prior good output\n" for path in paths))
+                            else:
+                                self.assertFalse(out.exists())
+                        self.assertEqual(source.read_bytes(), original)
+
+    def test_direct_customer_and_normalise_reject_before_mutating_raw_shapes(self):
+        for kind in self.malformed:
+            for private in (False, True):
+                model, bp = self.fixture(private, kind)
+                bp["ontology"] = model
+                before = copy.deepcopy(bp)
+                with self.subTest(kind=kind, private=private, operation="customer_version"):
+                    with self.assertRaisesRegex(ValueError, "route_assessment") as raised:
+                        bpbuild.customer_version(bp, bpbuild.Report())
+                    self.assertNotIn(self.marker, str(raised.exception))
+                    self.assertEqual(bp, before)
+                with self.subTest(kind=kind, private=private, operation="normalise"):
+                    rep = bpbuild.Report()
+                    bpbuild.normalise(bp, rep)
+                    self.assertTrue(rep.errors)
+                    self.assertNotIn(self.marker, json.dumps(rep.errors))
+                    self.assertEqual(bp, before)
+
+    def test_core_wrapper_rejects_embedded_and_separate_raw_shapes_before_mkdir(self):
+        wrapper = load("plugin/skills/frontier-blueprint/scripts/build_with_identity.py", "g60_raw_wrapper")
+        for audience in ("internal", "customer"):
+            for private in (False, True):
+                for separate in (False, True):
+                    with self.subTest(audience=audience, private=private, separate=separate), tempfile.TemporaryDirectory() as directory:
+                        root = Path(directory)
+                        model, bp = self.fixture(private, "src-string")
+                        source, ontology = root / (self.marker + ".json"), root / "model.json"
+                        if not separate:
+                            bp["ontology"] = model
+                        source.write_text(json.dumps(bp), encoding="utf-8")
+                        ontology.write_text(json.dumps(model), encoding="utf-8")
+                        originals = source.read_bytes(), ontology.read_bytes()
+                        out = root / "output"
+                        args = ["--data", source, "--out-dir", out, "--audience", audience, "--no-identity"]
+                        if separate:
+                            args += ["--ontology", ontology]
+                        code, output, error = self.call(wrapper.main, args)
+                        self.assert_rejected(code, output, error)
+                        self.assertFalse(out.exists())
+                        out.mkdir()
+                        good = out / "Caldova - Frontier Company Blueprint.html"
+                        good.write_bytes(b"prior good output\n")
+                        code, output, error = self.call(wrapper.main, args)
+                        self.assert_rejected(code, output, error)
+                        self.assertEqual({p.name: p.read_bytes() for p in out.iterdir()}, {good.name: b"prior good output\n"})
+                        self.assertEqual((source.read_bytes(), ontology.read_bytes()), originals)
+
+    def test_authoritative_combined_route_rejects_raw_assessment_first(self):
+        from tests.unit.test_finops_baseline import DAY, example
+
+        wrapper = load("plugin/skills/frontier-blueprint/scripts/build_with_identity.py", "g60_raw_combined_wrapper")
+        for private in (False, True):
+            for separate in (False, True):
+                with self.subTest(private=private, separate=separate), tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    model, bp = self.fixture(private, "src-string")
+                    source, ontology, baseline = root / (self.marker + ".json"), root / "model.json", root / "baseline.json"
+                    if not separate:
+                        bp["ontology"] = model
+                    for path, document in ((source, bp), (ontology, model), (baseline, example())):
+                        path.write_text(json.dumps(document), encoding="utf-8")
+                    originals = [path.read_bytes() for path in (source, ontology, baseline)]
+                    out = root / "output"
+                    args = ["--data", source, "--out-dir", out, "--audience", "customer", "--no-identity",
+                            "--agent-finops", baseline, "--as-of", DAY.isoformat(), "--acknowledge-finops-preview"]
+                    if separate:
+                        args += ["--ontology", ontology]
+                    code, output, error = self.call(wrapper.main, args)
+                    self.assert_rejected(code, output, error)
+                    self.assertFalse(out.exists())
+                    self.assertEqual([path.read_bytes() for path in (source, ontology, baseline)], originals)
+                    if not separate:
+                        with self.assertRaisesRegex(ValueError, "route_assessment") as raised:
+                            bpbuild.agent_finops_preflight(bp, baselines=[str(baseline)], as_of=DAY,
+                                                          audience="customer", acknowledge_finops_preview=True)
+                        self.assertNotIn(self.marker, str(raised.exception))
+
+    def test_valid_customer_projection_preserves_owner_selection_and_omits_private_source(self):
+        for private in (False, True):
+            with self.subTest(private=private):
+                model, bp = self.fixture(private)
+                bp["ontology"] = model
+                before = copy.deepcopy(bp)
+                projected = bpbuild.customer_version(bp, bpbuild.Report())
+                if private:
+                    self.assertEqual(projected["ontology"]["sources"], [])
+                    self.assertNotIn(self.marker, json.dumps(projected))
+                else:
+                    self.assertEqual(projected["ontology"]["sources"][0]["route_assessment"]["state"], "owner_confirmed")
+                self.assertEqual(bp, before)
+
+
 class ProcessGroundingDistribution(unittest.TestCase):
     def test_extracted_candidate_runs_corrected_process_without_finops(self):
         packager = load("tools/build_package.py", "g59_packager")
@@ -654,6 +873,37 @@ class ProcessGroundingDistribution(unittest.TestCase):
             self.assertEqual(applied["ontology"]["current_guidance"], normalized["current_guidance"])
             self.assertEqual(applied["ontology"]["current_readiness"]["F-06"]["status"], "open")
             self.assertEqual(blueprint.read_bytes(), original)
+            # Execute the actual extracted Blueprint/wrapper/process scripts.
+            raw, context = ProcessGroundingRawBoundary.fixture(True, "src-string")
+            context["ontology"] = raw
+            malformed_bp, malformed_onto = root / "raw-bp.json", root / "raw-ontology.json"
+            malformed_bp.write_text(json.dumps(context), encoding="utf-8")
+            malformed_onto.write_text(json.dumps(raw), encoding="utf-8")
+            originals = malformed_bp.read_bytes(), malformed_onto.read_bytes()
+            failed = run("skills/frontier-process/scripts/build_ontology.py", "--ontology", malformed_onto,
+                         "--blueprint", malformed_bp, "--audience", "customer", "--out-dir", root / "bad-process", expected=1)
+            self.assertEqual(json.loads(failed.stdout)["files"], {})
+            for audience in ("internal", "customer"):
+                run("skills/frontier-blueprint/scripts/build_blueprint.py", "--data", malformed_bp,
+                    "--audience", audience, "--out", root / ("bad-" + audience) / "bp.html", expected=2)
+            run("skills/frontier-blueprint/scripts/build_with_identity.py", "--data", malformed_bp,
+                "--ontology", malformed_onto, "--out-dir", root / "bad-wrapper", "--audience", "customer",
+                "--no-identity", expected=2)
+            self.assertFalse(any((root / name).exists() for name in ("bad-process", "bad-internal", "bad-customer", "bad-wrapper")))
+            self.assertEqual((malformed_bp.read_bytes(), malformed_onto.read_bytes()), originals)
+            core = package / "skills/frontier-blueprint/examples/caldova-blueprint.json"
+            run("skills/frontier-blueprint/scripts/build_with_identity.py", "--data", core,
+                "--out-dir", root / "core-without-finops", "--no-identity")
+            self.assertTrue((root / "core-without-finops/Caldova - Frontier Company Blueprint.html").is_file())
+            shutil.rmtree(package / "skills/frontier-process")
+            missing = run("skills/frontier-blueprint/scripts/build_with_identity.py", "--data", core,
+                          "--ontology", malformed_onto, "--out-dir", root / "missing-process",
+                          "--no-identity", expected=2)
+            self.assertIn("requires frontier-process", missing.stderr)
+            self.assertFalse((root / "missing-process").exists())
+            run("skills/frontier-blueprint/scripts/build_blueprint.py", "--data", core,
+                "--out", root / "core-without-process.html")
+            self.assertTrue((root / "core-without-process.html").is_file())
 
 
 class SemanticModel(unittest.TestCase):

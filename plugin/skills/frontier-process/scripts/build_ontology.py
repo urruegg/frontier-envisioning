@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from ontology_lib import Rep, customer_context, customer_ontology, data_agent_kit, data_products_md, load_json, normalize, to_markdown, to_turtle  # noqa: E402
+from ontology_lib import Rep, customer_context, customer_ontology, data_agent_kit, data_products_md, load_json, normalize, to_markdown, to_turtle, validate_route_assessments  # noqa: E402
 
 
 def main(argv=None) -> int:
@@ -48,6 +48,9 @@ def main(argv=None) -> int:
         print(f"ERROR: {e}", file=sys.stderr)
         return 2
     rep = Rep()
+    if not validate_route_assessments(onto, rep):
+        print(json.dumps({"status": "failed", "stats": {}, "files": {}, "errors": rep.errors, "warnings": rep.warnings}))
+        return 1
     if a.audience == "customer":
         onto = customer_ontology(onto, bp)
         if onto is None:
