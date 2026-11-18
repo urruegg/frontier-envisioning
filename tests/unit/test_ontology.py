@@ -818,6 +818,279 @@ class ProcessGroundingRawBoundary(unittest.TestCase):
                 self.assertEqual(bp, before)
 
 
+class ProcessGroundingProjectionReview(unittest.TestCase):
+    marker = "SYNTHETIC_G60_REVIEW_PRIVATE"
+    call = staticmethod(ProcessGroundingRawBoundary.call)
+
+    def empty_fixture(self, status, location):
+        model, bp = ProcessGroundingRawBoundary.fixture()
+        assessment = model["sources"][0]["route_assessment"]
+        assessment["prerequisites"]["fabric_capacity"]["status"] = status
+        if location == "prerequisite":
+            assessment["prerequisites"]["fabric_capacity"]["src"] = []
+        else:
+            assessment["src"] = []
+        bp["ontology"] = model
+        return model, bp
+
+    def test_empty_valid_references_survive_direct_customer_projection(self):
+        for status in ("unknown", "confirmed", "unsupported"):
+            for location in ("prerequisite", "assessment"):
+                with self.subTest(status=status, location=location):
+                    model, bp = self.empty_fixture(status, location)
+                    before = copy.deepcopy(bp)
+                    direct = lib.normalize(model, bp)
+                    expected = "owner_confirmed" if status == "confirmed" and location == "assessment" else "conditional"
+                    self.assertEqual(direct["sources"][0]["route_assessment"]["state"], expected)
+                    try:
+                        projected = bpbuild.customer_version(bp, bpbuild.Report())
+                    except KeyError as error:
+                        self.fail(f"valid empty reference list caused customer projection to crash: {error}")
+                    actual = projected["ontology"]["sources"][0]["route_assessment"]
+                    self.assertEqual(actual["state"], expected)
+                    self.assertEqual(actual["src"], model["sources"][0]["route_assessment"]["src"])
+                    self.assertEqual(actual["prerequisites"]["fabric_capacity"]["src"],
+                                     model["sources"][0]["route_assessment"]["prerequisites"]["fabric_capacity"]["src"])
+                    self.assertEqual(bp, before)
+
+    def test_empty_valid_references_survive_real_customer_clis(self):
+        for status in ("unknown", "confirmed", "unsupported"):
+            for location in ("prerequisite", "assessment"):
+                with self.subTest(status=status, location=location), tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    model, bp = self.empty_fixture(status, location)
+                    source, ontology = root / "bp.json", root / "ontology.json"
+                    source.write_text(json.dumps(bp), encoding="utf-8")
+                    ontology.write_text(json.dumps(model), encoding="utf-8")
+                    originals = source.read_bytes(), ontology.read_bytes()
+                    code, text, error = self.call(build.main, ["--ontology", ontology, "--blueprint", source,
+                                                              "--audience", "customer", "--out-dir", root / "process"])
+                    self.assertEqual(code, 0, text + error)
+                    args = ["--data", source, "--audience", "customer", "--out", root / "bp.html",
+                            "--save-normalized", root / "customer.json", "--no-product-icons"]
+                    try:
+                        code, text, error = self.call(bpbuild.main, args)
+                    except KeyError as error:
+                        self.fail(f"real Blueprint CLI crashed for a valid empty reference list: {error}")
+                    self.assertEqual(code, 0, text + error)
+                    projected = json.loads((root / "customer.json").read_text(encoding="utf-8"))["ontology"]
+                    expected = lib.normalize(model, bp)["sources"][0]["route_assessment"]
+                    self.assertEqual(projected["sources"][0]["route_assessment"]["state"], expected["state"])
+                    self.assertEqual(projected["sources"][0]["route_assessment"]["src"], expected["src"])
+                    self.assertEqual(projected["sources"][0]["route_assessment"]["prerequisites"]["fabric_capacity"]["src"],
+                                     expected["prerequisites"]["fabric_capacity"]["src"])
+                    self.assertEqual((source.read_bytes(), ontology.read_bytes()), originals)
+
+    def test_empty_content_references_are_preserved_not_reinterpreted(self):
+        model, bp = self.empty_fixture("confirmed", "prerequisite")
+        assessment = model["sources"][0]["route_assessment"]
+        assessment["content_src"] = []
+        assessment["prerequisites"]["fabric_capacity"]["content_src"] = []
+        try:
+            projected = bpbuild.customer_version(bp, bpbuild.Report())
+        except KeyError as error:
+            self.fail(f"valid empty provenance references caused projection to crash: {error}")
+        actual = projected["ontology"]["sources"][0]["route_assessment"]
+        self.assertEqual(actual["content_src"], [])
+        self.assertEqual(actual["prerequisites"]["fabric_capacity"]["content_src"], [])
+        self.assertEqual(actual["state"], "conditional")
+
+    def domain_fixture(self):
+        model, bp = ProcessGroundingRawBoundary.fixture()
+        model["namespaces"][1].update(name="Current service grouping", owner="Current service owner")
+        legacy = {"id": "core", "fabric_domain": "Recorded shared estate", "governance_domain": "Data domain",
+                  "owner": "Recorded data owner", "note": "Recorded workshop domain choice"}
+        model["domains"] = [
+            legacy,
+            {"id": "svc", "origin": "derived", "fabric_domain": "Stale grouping",
+             "governance_domain": "Stale derived label", "owner": "Stale owner", "note": "Stale generated cache"},
+            {"id": "private-domain", "namespace": "private-ns", "note": self.marker + " linked domain"},
+            {"id": "nested-domain", "fabric_domain": "Retained public grouping",
+             "note": {"text": self.marker + " nested note", "src": ["G59-P5"], "content_src": ["private28"]}},
+        ]
+        model["namespaces"].append({"id": "private-ns", "visibility": "internal", "owner": self.marker + " owner"})
+        bp["ontology"] = model
+        return model, bp, copy.deepcopy(legacy)
+
+    def test_authored_domains_survive_both_audiences_and_roundtrips(self):
+        for audience in ("internal", "customer"):
+            with self.subTest(audience=audience):
+                model, bp, legacy = self.domain_fixture()
+                before = copy.deepcopy(model)
+                normalized = lib.normalize(model, bp)
+                if audience == "customer":
+                    normalized = bpbuild.customer_version(dict(bp, ontology=normalized), bpbuild.Report())["ontology"]
+                rows = {row["id"]: row for row in normalized["domains"]}
+                self.assertEqual(rows["core"], legacy)
+                again = lib.normalize(normalized, bp if audience == "internal" else lib.customer_context(bp))
+                if audience == "customer":
+                    again = bpbuild.customer_version(dict(lib.customer_context(bp), ontology=again), bpbuild.Report())["ontology"]
+                self.assertEqual(next(row for row in again["domains"] if row["id"] == "core"), legacy)
+                self.assertEqual(model, before)
+
+    def test_only_derived_domains_refresh(self):
+        model, bp, legacy = self.domain_fixture()
+        for audience in ("internal", "customer"):
+            with self.subTest(audience=audience):
+                normalized = lib.normalize(model, bp)
+                if audience == "customer":
+                    normalized = bpbuild.customer_version(dict(bp, ontology=normalized), bpbuild.Report())["ontology"]
+                rows = {row["id"]: row for row in normalized["domains"]}
+                self.assertEqual(rows["core"], legacy)
+                self.assertEqual(rows["svc"]["fabric_domain"], "Current service grouping")
+                self.assertEqual(rows["svc"]["owner"], "Current service owner")
+                self.assertEqual(rows["svc"]["origin"], "derived")
+                self.assertNotIn("note", rows["svc"])
+
+    def test_domain_projection_retains_public_rows_but_not_private_dependencies_or_nested_notes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model, bp, legacy = self.domain_fixture()
+            source, ontology = root / "bp.json", root / "model.json"
+            source.write_text(json.dumps(bp), encoding="utf-8")
+            ontology.write_text(json.dumps(model), encoding="utf-8")
+            code, text, error = self.call(build.main, ["--ontology", ontology, "--blueprint", source,
+                                                      "--audience", "customer", "--out-dir", root / "customer"])
+            self.assertEqual(code, 0, text + error)
+            projected = json.loads((root / "customer/ontology.normalized.json").read_text(encoding="utf-8"))
+            rows = {row["id"]: row for row in projected["domains"]}
+            self.assertEqual(rows["core"], legacy)
+            self.assertNotIn("private-domain", rows)
+            self.assertIn("nested-domain", rows)
+            self.assertNotIn("note", rows["nested-domain"])
+            for file in (root / "customer").iterdir():
+                self.assertNotIn(self.marker, file.read_text(encoding="utf-8"), file.name)
+            code, text, error = self.call(bpbuild.main, ["--data", source, "--audience", "customer",
+                                                        "--out", root / "customer.html", "--no-product-icons"])
+            self.assertEqual(code, 0, text + error)
+            self.assertNotIn(self.marker, (root / "customer.html").read_text(encoding="utf-8"))
+
+    def test_reserved_citation_validator_is_separate_pure_and_idempotent(self):
+        validate = getattr(lib, "validate_reserved_citations", None)
+        self.assertTrue(callable(validate), "raw reserved citation collisions need their own pure validator")
+        current = [row for row in lib.load_canon()["sources"] if row["id"].startswith("G59-")]
+        for canonical in current:
+            for private in (False, True):
+                with self.subTest(identity=canonical["id"], private=private):
+                    model, _ = ProcessGroundingRawBoundary.fixture()
+                    collision = dict(canonical, title=self.marker + " different fact")
+                    if private:
+                        collision["internal"] = True
+                    model["sources_doc"] = [collision]
+                    before = copy.deepcopy(model)
+                    self.assertTrue(lib.validate_route_assessments(model, lib.Rep()), "citation validation is not route-shape validation")
+                    rep = lib.Rep()
+                    self.assertFalse(validate(model, rep))
+                    self.assertTrue(any("citation collision" in error for error in rep.errors))
+                    self.assertNotIn(self.marker, json.dumps(rep.errors))
+                    self.assertEqual(model, before)
+        model, bp = ProcessGroundingRawBoundary.fixture()
+        model["sources_doc"] = copy.deepcopy(current)
+        before = copy.deepcopy(model)
+        self.assertTrue(validate(model, lib.Rep()), "identical legitimate reserved records remain valid")
+        self.assertTrue(validate(model, lib.Rep()))
+        self.assertEqual(model, before)
+        first = lib.normalize(model, bp)
+        second = lib.normalize(first, bp)
+        self.assertEqual(first["sources_doc"], current)
+        self.assertEqual(second["sources_doc"], current)
+        missing, _ = ProcessGroundingRawBoundary.fixture()
+        before = copy.deepcopy(missing)
+        self.assertTrue(validate(missing, lib.Rep()))
+        self.assertEqual(missing, before, "preflight must not append missing canon citations")
+
+    def test_raw_reserved_collision_rejected_before_projection_and_output(self):
+        wrapper = load("plugin/skills/frontier-blueprint/scripts/build_with_identity.py", "g60_citation_wrapper")
+        canonical = next(row for row in lib.load_canon()["sources"] if row["id"] == "G59-P1")
+        for private in (False, True):
+            for audience in ("internal", "customer"):
+                with self.subTest(private=private, audience=audience), tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    model, bp = ProcessGroundingRawBoundary.fixture()
+                    collision = dict(canonical, title=self.marker + " collision", note=self.marker + " note")
+                    if private:
+                        collision["internal"] = True
+                    model["sources_doc"] = [collision]
+                    bp["ontology"] = model
+                    source, ontology = root / (self.marker + ".json"), root / "model.json"
+                    source.write_text(json.dumps(bp), encoding="utf-8")
+                    ontology.write_text(json.dumps(model), encoding="utf-8")
+                    originals = source.read_bytes(), ontology.read_bytes()
+                    for entry in ("process", "blueprint", "wrapper-embedded", "wrapper-separate"):
+                        with self.subTest(entry=entry):
+                            out = root / entry
+                            if entry == "process":
+                                function = build.main
+                                args = ["--ontology", ontology, "--blueprint", source, "--audience", audience, "--out-dir", out]
+                            elif entry == "blueprint":
+                                function = bpbuild.main
+                                args = ["--data", source, "--audience", audience, "--out", out / "bp.html",
+                                        "--save-normalized", out / "bp.json", "--report", out / "report.json", "--no-product-icons"]
+                            else:
+                                function = wrapper.main
+                                args = ["--data", source, "--audience", audience, "--out-dir", out, "--no-identity"]
+                                if entry == "wrapper-separate":
+                                    clean = root / "clean.json"
+                                    clean.write_text(json.dumps({key: value for key, value in bp.items() if key != "ontology"}), encoding="utf-8")
+                                    args[1] = clean
+                                    args += ["--ontology", ontology]
+                            for existing in (False, True):
+                                if existing:
+                                    out.mkdir(exist_ok=True)
+                                    (out / "prior-good.txt").write_bytes(b"prior good output\n")
+                                code, text, error = self.call(function, args)
+                                self.assertNotEqual(code, 0, "raw reserved citation collision was filtered away")
+                                self.assertIn("citation collision", text + error)
+                                self.assertNotIn(self.marker, text + error)
+                                if entry == "process":
+                                    self.assertEqual(json.loads(text)["files"], {})
+                                if existing:
+                                    self.assertEqual({p.name: p.read_bytes() for p in out.iterdir()}, {"prior-good.txt": b"prior good output\n"})
+                                else:
+                                    self.assertFalse(out.exists())
+                    self.assertEqual((source.read_bytes(), ontology.read_bytes()), originals)
+
+    def test_identical_reserved_citations_retain_provenance_without_becoming_collisions(self):
+        canonical = next(row for row in lib.load_canon()["sources"] if row["id"] == "G59-P1")
+        for metadata in ({"internal": True}, {"visibility": "internal"}, {"content_src": ["private28"]}):
+            with self.subTest(metadata=metadata):
+                model, bp = ProcessGroundingRawBoundary.fixture()
+                record = dict(canonical, **metadata)
+                model["sources_doc"] = [record]
+                before = copy.deepcopy(model)
+                rep = lib.Rep()
+                self.assertTrue(lib.validate_reserved_citations(model, rep), "privacy metadata does not change the canonical fact")
+                self.assertEqual(rep.errors, [])
+                self.assertEqual(model, before)
+                normalized = lib.normalize(model, bp)
+                retained = next(row for row in normalized["sources_doc"] if row["id"] == canonical["id"])
+                for key, value in record.items():
+                    self.assertEqual(retained[key], value)
+                bp["ontology"] = normalized
+                projected = bpbuild.customer_version(bp, bpbuild.Report())
+                current = next(row for row in projected["ontology"]["sources_doc"] if row["id"] == canonical["id"])
+                self.assertEqual(current, canonical, "only the known public fact is re-derived, never private annotations")
+
+    def test_direct_blueprint_rejects_raw_reserved_collision_without_mutation(self):
+        canonical = next(row for row in lib.load_canon()["sources"] if row["id"] == "G59-P1")
+        for private in (False, True):
+            model, bp = ProcessGroundingRawBoundary.fixture()
+            model["sources_doc"] = [dict(canonical, title=self.marker, internal=private)]
+            bp["ontology"] = model
+            before = copy.deepcopy(bp)
+            with self.subTest(private=private, operation="customer_version"):
+                with self.assertRaisesRegex(ValueError, "citation collision") as raised:
+                    bpbuild.customer_version(bp, bpbuild.Report())
+                self.assertNotIn(self.marker, str(raised.exception))
+                self.assertEqual(bp, before)
+            with self.subTest(private=private, operation="normalise"):
+                rep = bpbuild.Report()
+                bpbuild.normalise(bp, rep)
+                self.assertTrue(any("citation collision" in error for error in rep.errors))
+                self.assertNotIn(self.marker, json.dumps(rep.errors))
+                self.assertEqual(bp, before)
+
+
 class ProcessGroundingDistribution(unittest.TestCase):
     def test_extracted_candidate_runs_corrected_process_without_finops(self):
         packager = load("tools/build_package.py", "g59_packager")
@@ -891,6 +1164,34 @@ class ProcessGroundingDistribution(unittest.TestCase):
                 "--no-identity", expected=2)
             self.assertFalse(any((root / name).exists() for name in ("bad-process", "bad-internal", "bad-customer", "bad-wrapper")))
             self.assertEqual((malformed_bp.read_bytes(), malformed_onto.read_bytes()), originals)
+            valid, context = ProcessGroundingRawBoundary.fixture()
+            valid["sources"][0]["route_assessment"]["src"] = []
+            valid["sources"][0]["route_assessment"]["prerequisites"]["fabric_capacity"]["src"] = []
+            recorded_domain = {"id": "core", "fabric_domain": "Recorded estate", "governance_domain": "Data domain",
+                               "owner": "Recorded owner", "note": "Recorded proposal"}
+            valid["domains"] = [recorded_domain]
+            context["ontology"] = valid
+            empty_bp = root / "empty-refs.json"
+            empty_bp.write_text(json.dumps(context), encoding="utf-8")
+            run("skills/frontier-blueprint/scripts/build_blueprint.py", "--data", empty_bp, "--audience", "customer",
+                "--save-normalized", root / "empty-output/bp.json", "--out", root / "empty-output/bp.html", "--no-product-icons")
+            projected = json.loads((root / "empty-output/bp.json").read_text(encoding="utf-8"))["ontology"]
+            self.assertEqual(projected["sources"][0]["route_assessment"]["src"], [])
+            self.assertEqual(projected["sources"][0]["route_assessment"]["prerequisites"]["fabric_capacity"]["src"], [])
+            self.assertEqual(projected["sources"][0]["route_assessment"]["state"], "conditional")
+            self.assertEqual(next(row for row in projected["domains"] if row["id"] == "core"), recorded_domain)
+            reserved = next(row for row in lib.load_canon()["sources"] if row["id"] == "G59-P1")
+            valid["sources_doc"] = [dict(reserved, title="Synthetic conflicting private fact", internal=True)]
+            malformed_onto.write_text(json.dumps(valid), encoding="utf-8")
+            empty_bp.write_text(json.dumps(context), encoding="utf-8")
+            failed = run("skills/frontier-process/scripts/build_ontology.py", "--ontology", malformed_onto,
+                         "--blueprint", empty_bp, "--audience", "customer", "--out-dir", root / "collision-process", expected=1)
+            self.assertEqual(json.loads(failed.stdout)["files"], {})
+            run("skills/frontier-blueprint/scripts/build_blueprint.py", "--data", empty_bp, "--audience", "customer",
+                "--out", root / "collision-blueprint/bp.html", expected=2)
+            run("skills/frontier-blueprint/scripts/build_with_identity.py", "--data", empty_bp, "--ontology", malformed_onto,
+                "--out-dir", root / "collision-wrapper", "--audience", "customer", "--no-identity", expected=2)
+            self.assertFalse(any((root / name).exists() for name in ("collision-process", "collision-blueprint", "collision-wrapper")))
             core = package / "skills/frontier-blueprint/examples/caldova-blueprint.json"
             run("skills/frontier-blueprint/scripts/build_with_identity.py", "--data", core,
                 "--out-dir", root / "core-without-finops", "--no-identity")

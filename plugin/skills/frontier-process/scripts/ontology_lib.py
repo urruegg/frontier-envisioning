@@ -208,6 +208,32 @@ def validate_route_assessments(onto: dict, rep: Rep, canon: dict | None = None) 
     return len(rep.errors) == errors_before
 
 
+def validate_reserved_citations(onto: dict, rep: Rep, canon: dict | None = None) -> bool:
+    """Reject raw reserved-ID collisions before privacy can hide them.
+
+    Compare fact content, retaining the existing provenance metadata contract.
+    Inherited privacy flags do not change a public fact; changed fact fields or
+    additional descriptive payload still collide. Never append or retarget here.
+    """
+    errors_before = len(rep.errors)
+    if not isinstance(onto, dict) or not onto.get("sources_doc"):
+        return True
+    canon = canon if canon is not None else load_canon()
+
+    def fact_content(record):
+        provenance = _content_metadata(record)
+        return {key: value for key, value in record.items() if key not in provenance}
+
+    for citation in canon.get("sources", []):
+        if not citation["id"].startswith("G59-"):
+            continue
+        occupied = [row for row in as_list(onto.get("sources_doc")) if isinstance(row, dict) and row.get("id") == citation["id"]]
+        expected = fact_content(citation)
+        if any(fact_content(row) != expected for row in occupied):
+            rep.err(f"citation collision for {citation['id']}; saved evidence was not retargeted")
+    return len(rep.errors) == errors_before
+
+
 def assess_route(source: dict, bp: dict | None, canon: dict, rep: Rep) -> None:
     """Derive an owner-asserted design assessment, never tenant/licence readiness."""
     if "route_assessment" not in source:
@@ -640,19 +666,10 @@ def customer_ontology(onto: dict, bp: dict | None = None) -> dict | None:
         return value
 
     o = scrub(o)
-    # Blueprint's generic customer scrub compacts empty reference lists.
-    # Restore only absent references on explicitly unconfirmed records; never
-    # repair a supplied malformed list or a confirmed assertion.
-    for source in as_list(o.get("sources")):
-        assessment = source.get("route_assessment") if isinstance(source, dict) else None
-        prerequisites = assessment.get("prerequisites") if isinstance(assessment, dict) else None
-        if isinstance(prerequisites, dict):
-            for record in prerequisites.values():
-                if isinstance(record, dict) and record.get("status") in ("unknown", "unsupported"):
-                    record.setdefault("src", [])
     # Never reuse projected material that was derived from the internal model.
-    for key in ("domains", "process", "stats"):
+    for key in ("process", "stats"):
         o.pop(key, None)
+    o["domains"] = [row for row in as_list(o.get("domains")) if isinstance(row, dict) and row.get("origin") != "derived"]
     for key in ("data_products", "semantic_models"):
         o[key] = [row for row in as_list(o.get(key)) if row.get("origin") not in ("data agent", "derived")]
     return o
@@ -677,7 +694,9 @@ def normalize(onto: dict, bp: dict | None = None, rep: Rep | None = None, canon:
     if not isinstance(onto, dict):
         rep.err("ontology must be an object")
         return {"schema": SCHEMA, "stats": {}}
-    if not validate_route_assessments(onto, rep, canon):
+    routes_valid = validate_route_assessments(onto, rep, canon)
+    citations_valid = validate_reserved_citations(onto, rep, canon)
+    if not (routes_valid and citations_valid):
         return {"schema": SCHEMA, "stats": {}}
     o = inherit_privacy(copy.deepcopy(onto), bp)
     if o.get("schema") not in (None, SCHEMA):
@@ -1081,7 +1100,7 @@ def normalize(onto: dict, bp: dict | None = None, rep: Rep | None = None, canon:
     jname = {n.get("journey"): (n.get("name") or n["id"]) for n in o["namespaces"] if n.get("journey")}
     if doms:
         jname.update({k: v.get("journey_name") or v.get("name") or k for k, v in doms.items()})
-    domains = [d for d in as_list(o.get("domains")) if isinstance(d, dict)]
+    domains = [d for d in as_list(o.get("domains")) if isinstance(d, dict) and d.get("origin") != "derived"]
     saved_domains = {d.get("id") for d in domains}
     for n in o["namespaces"]:
         if n["id"] in saved_domains:
@@ -1229,9 +1248,7 @@ def normalize(onto: dict, bp: dict | None = None, rep: Rep | None = None, canon:
         if not citation["id"].startswith("G59-"):
             continue
         occupied = [row for row in as_list(o["sources_doc"]) if isinstance(row, dict) and row.get("id") == citation["id"]]
-        if occupied and any(row != citation for row in occupied):
-            rep.err(f"citation collision for {citation['id']}; saved evidence was not retargeted")
-        elif not occupied:
+        if not occupied:
             o["sources_doc"].append(copy.deepcopy(citation))
     o["build_steps"] = o.get("build_steps") or copy.deepcopy(canon.get("build_steps", []))
     o["stack"] = o.get("stack") or copy.deepcopy(canon.get("stack", []))
