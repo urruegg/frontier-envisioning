@@ -1091,6 +1091,155 @@ class ProcessGroundingProjectionReview(unittest.TestCase):
                 self.assertEqual(bp, before)
 
 
+class ProcessGroundingDomainPrivacyReview(unittest.TestCase):
+    marker = "SYNTHETIC_G60_DOMAIN_PRIVATE"
+    call = staticmethod(ProcessGroundingRawBoundary.call)
+
+    @classmethod
+    def fixture(cls, field="content_src", refs=None):
+        model, bp = ProcessGroundingRawBoundary.fixture()
+        refs = ["private28", "G59-P5"] if refs is None else list(refs)
+        restricted = "private28" in refs
+        label = cls.marker if restricted else "Public recorded"
+        row = {"id": "core", "fabric_domain": label + " grouping", "governance_domain": "Data domain",
+               "owner": label + " owner", "note": label + " note", field: refs}
+        if field == "content_src":
+            row["src"] = ["G59-P5"]
+        model["domains"] = [row]
+        bp["ontology"] = model
+        return model, bp
+
+    def test_domain_references_are_independent_contributors_in_either_order(self):
+        cases = (["private28", "G59-P5"], ["G59-P5", "private28"], ["private28"],
+                 ["G59-P5"], [], ["unknown-domain-reference"], ["unknown-domain-reference", "G59-P5"],
+                 ["private28", "unknown-domain-reference"])
+        for field in ("src", "content_src"):
+            for refs in cases:
+                with self.subTest(field=field, refs=refs):
+                    model, bp = self.fixture(field, refs)
+                    before = copy.deepcopy(bp)
+                    projected = bpbuild.customer_version(bp, bpbuild.Report())
+                    text = json.dumps(projected)
+                    if "private28" in refs:
+                        self.assertNotIn(self.marker, text)
+                        rows = {row["id"]: row for row in projected["ontology"]["domains"]}
+                        if "core" in rows:
+                            self.assertEqual(rows["core"]["origin"], "derived")
+                            self.assertNotIn("note", rows["core"], "current derivation must not copy a hidden authored note back")
+                    else:
+                        actual = next(row for row in projected["ontology"]["domains"] if row["id"] == "core")
+                        self.assertEqual(actual, model["domains"][0], "public/empty/unknown references retain the existing draft contract")
+                    self.assertEqual(bp, before)
+
+    def test_content_src_keeps_its_existing_meaning_and_recorded_private_lineage_cannot_be_diluted(self):
+        for content in ([], ["G59-P5"], ["unknown-domain-reference"]):
+            with self.subTest(content=content):
+                model, bp = self.fixture("src", ["G59-P5"])
+                model["domains"][0].update(src=["private28"], content_src=content)
+                projected = bpbuild.customer_version(bp, bpbuild.Report())
+                actual = next(row for row in projected["ontology"]["domains"] if row["id"] == "core")
+                self.assertEqual(actual, model["domains"][0], "content_src, when present, is the separate content ancestry")
+        for field in ("src", "content_src"):
+            with self.subTest(recorded_lineage=field):
+                model, bp = self.fixture("src", ["G59-P5"])
+                row = model["domains"][0]
+                row["note"] = self.marker
+                row["content_origins"] = [{field: ["G59-P5", "private28"]}]
+                before = copy.deepcopy(bp)
+                projected = bpbuild.customer_version(bp, bpbuild.Report())
+                self.assertNotIn(self.marker, json.dumps(projected))
+                self.assertEqual(bp, before)
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    source, ontology = root / "bp.json", root / "model.json"
+                    source.write_text(json.dumps(bp), encoding="utf-8")
+                    ontology.write_text(json.dumps(model), encoding="utf-8")
+                    originals = source.read_bytes(), ontology.read_bytes()
+                    code, text, error = self.call(build.main, ["--ontology", ontology, "--blueprint", source,
+                                                              "--audience", "customer", "--out-dir", root / "process"])
+                    self.assertEqual(code, 0, text + error)
+                    for file in (root / "process").iterdir():
+                        self.assertNotIn(self.marker, file.read_text(encoding="utf-8"), file.name)
+                    code, text, error = self.call(bpbuild.main, ["--data", source, "--audience", "customer",
+                                                                "--out", root / "bp.html", "--save-normalized", root / "customer.json",
+                                                                "--no-product-icons"])
+                    self.assertEqual(code, 0, text + error)
+                    for name in ("bp.html", "customer.json"):
+                        self.assertNotIn(self.marker, (root / name).read_text(encoding="utf-8"), name)
+                    self.assertEqual((source.read_bytes(), ontology.read_bytes()), originals)
+
+    def test_nested_note_and_namespace_entity_ancestry_remain_private(self):
+        for kind in ("nested-note", "namespace", "entity", "entity-namespace", "entity-source"):
+            with self.subTest(kind=kind):
+                model, bp = self.fixture("src", ["G59-P5"])
+                row = model["domains"][0]
+                if kind == "nested-note":
+                    row["note"] = {"text": self.marker, "src": ["G59-P5"],
+                                   "content_src": ["G59-P5", "private28"]}
+                else:
+                    row["note"] = self.marker
+                    if kind == "namespace":
+                        row["namespace"] = "core"
+                        model["namespaces"][0].update(owner=self.marker, src=["G59-P5", "private28"])
+                    else:
+                        row["entities"] = ["Asset"]
+                        if kind == "entity":
+                            model["entity_types"][0].update(description=self.marker, src=["G59-P5", "private28"])
+                        elif kind == "entity-namespace":
+                            model["namespaces"][0].update(owner=self.marker, content_src=["private28", "G59-P5"])
+                        else:
+                            model["sources"][0].update(content_src=["G59-P5", "private28"], owner=self.marker)
+                before = copy.deepcopy(bp)
+                projected = bpbuild.customer_version(bp, bpbuild.Report())
+                self.assertNotIn(self.marker, json.dumps(projected))
+                self.assertEqual(bp, before)
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    source, ontology = root / "bp.json", root / "model.json"
+                    source.write_text(json.dumps(bp), encoding="utf-8")
+                    ontology.write_text(json.dumps(model), encoding="utf-8")
+                    originals = source.read_bytes(), ontology.read_bytes()
+                    code, text, error = self.call(build.main, ["--ontology", ontology, "--blueprint", source,
+                                                              "--audience", "customer", "--out-dir", root / "process"])
+                    self.assertEqual(code, 0, text + error)
+                    for file in (root / "process").iterdir():
+                        self.assertNotIn(self.marker, file.read_text(encoding="utf-8"), file.name)
+                    code, text, error = self.call(bpbuild.main, ["--data", source, "--audience", "customer",
+                                                                "--out", root / "bp.html", "--save-normalized", root / "customer.json",
+                                                                "--no-product-icons"])
+                    self.assertEqual(code, 0, text + error)
+                    for name in ("bp.html", "customer.json"):
+                        self.assertNotIn(self.marker, (root / name).read_text(encoding="utf-8"), name)
+                    self.assertEqual((source.read_bytes(), ontology.read_bytes()), originals)
+
+    def test_mixed_domain_contributors_are_private_in_real_customer_exports(self):
+        for field in ("src", "content_src"):
+            for refs in (["private28", "G59-P5"], ["G59-P5", "private28"]):
+                for normalized in (False, True):
+                    with self.subTest(field=field, refs=refs, normalized=normalized), tempfile.TemporaryDirectory() as directory:
+                        root = Path(directory)
+                        model, bp = self.fixture(field, refs)
+                        if normalized:
+                            model = lib.normalize(model, bp)
+                            bp["ontology"] = model
+                        source, ontology = root / "bp.json", root / "model.json"
+                        source.write_text(json.dumps(bp), encoding="utf-8")
+                        ontology.write_text(json.dumps(model), encoding="utf-8")
+                        originals = source.read_bytes(), ontology.read_bytes()
+                        code, text, error = self.call(build.main, ["--ontology", ontology, "--blueprint", source,
+                                                                  "--audience", "customer", "--out-dir", root / "process"])
+                        self.assertEqual(code, 0, text + error)
+                        for file in (root / "process").iterdir():
+                            self.assertNotIn(self.marker, file.read_text(encoding="utf-8"), file.name)
+                        code, text, error = self.call(bpbuild.main, ["--data", source, "--audience", "customer",
+                                                                    "--out", root / "bp.html", "--save-normalized", root / "customer.json",
+                                                                    "--no-product-icons"])
+                        self.assertEqual(code, 0, text + error)
+                        for name in ("bp.html", "customer.json"):
+                            self.assertNotIn(self.marker, (root / name).read_text(encoding="utf-8"), name)
+                        self.assertEqual((source.read_bytes(), ontology.read_bytes()), originals)
+
+
 class ProcessGroundingDistribution(unittest.TestCase):
     def test_extracted_candidate_runs_corrected_process_without_finops(self):
         packager = load("tools/build_package.py", "g59_packager")
@@ -1192,6 +1341,21 @@ class ProcessGroundingDistribution(unittest.TestCase):
             run("skills/frontier-blueprint/scripts/build_with_identity.py", "--data", empty_bp, "--ontology", malformed_onto,
                 "--out-dir", root / "collision-wrapper", "--audience", "customer", "--no-identity", expected=2)
             self.assertFalse(any((root / name).exists() for name in ("collision-process", "collision-blueprint", "collision-wrapper")))
+            for field in ("src", "content_src"):
+                private_model, private_bp = ProcessGroundingDomainPrivacyReview.fixture(field, ["G59-P5", "private28"])
+                private_bp_file, private_model_file = root / (field + "-bp.json"), root / (field + "-model.json")
+                private_bp_file.write_text(json.dumps(private_bp), encoding="utf-8")
+                private_model_file.write_text(json.dumps(private_model), encoding="utf-8")
+                originals = private_bp_file.read_bytes(), private_model_file.read_bytes()
+                run("skills/frontier-process/scripts/build_ontology.py", "--ontology", private_model_file,
+                    "--blueprint", private_bp_file, "--audience", "customer", "--out-dir", root / (field + "-process"))
+                for file in (root / (field + "-process")).iterdir():
+                    self.assertNotIn(ProcessGroundingDomainPrivacyReview.marker, file.read_text(encoding="utf-8"))
+                run("skills/frontier-blueprint/scripts/build_blueprint.py", "--data", private_bp_file, "--audience", "customer",
+                    "--out", root / (field + "-bp.html"), "--save-normalized", root / (field + "-customer.json"), "--no-product-icons")
+                for suffix in ("-bp.html", "-customer.json"):
+                    self.assertNotIn(ProcessGroundingDomainPrivacyReview.marker, (root / (field + suffix)).read_text(encoding="utf-8"))
+                self.assertEqual((private_bp_file.read_bytes(), private_model_file.read_bytes()), originals)
             core = package / "skills/frontier-blueprint/examples/caldova-blueprint.json"
             run("skills/frontier-blueprint/scripts/build_with_identity.py", "--data", core,
                 "--out-dir", root / "core-without-finops", "--no-identity")

@@ -320,6 +320,24 @@ def carry_content(target: dict, *origins: dict, bp: dict | None = None) -> dict:
     return target
 
 
+def _contributing_content(origin: dict, bp: dict | None = None) -> dict:
+    """Keep content ancestry independent of later citations, including mixed lists."""
+    metadata = {"content_src": []}
+    pending, seen = [origin], set()
+    while pending:
+        current = pending.pop()
+        if not isinstance(current, dict) or id(current) in seen:
+            continue
+        seen.add(id(current))
+        refs = as_list(current.get("content_src", current.get("src")))
+        if not all(isinstance(ref, str) for field in ("src", "content_src") for ref in as_list(current.get(field))):
+            metadata["internal"] = True  # inseparable malformed provenance is not shareable
+            continue
+        carry_content(metadata, current, *({"src": [ref]} for ref in refs), bp=bp)
+        pending.extend(as_list(current.get("content_origins")))
+    return metadata
+
+
 def _ancestry_pools(onto: dict, bp: dict | None = None) -> dict:
     pools = {key: {row["id"]: row for row in as_list(onto.get(key)) if isinstance(row, dict) and isinstance(row.get("id"), str)}
              for key in ("entity_types", "relationship_types", "sources", "namespaces", "data_agents", "operations_agents", "data_products",
@@ -583,22 +601,60 @@ def risk_ancestors(onto: dict, risk: dict, bp: dict | None = None) -> list[dict]
     return nodes
 
 
+def _inherit_domain_content(onto: dict, bp: dict | None = None) -> None:
+    """Restrict retained grouping content and its typed contributors before projection."""
+    pools = _ancestry_pools(onto, bp)
+    links = {"namespace": "namespaces", "entity": "entity_types", "entities": "entity_types", "base": "entity_types",
+             "source": "sources", "sources": "sources", "secondary": "sources",
+             "journey": "blueprint.domains", "journeys": "blueprint.domains"}
+    visited = set()
+
+    def visit_content(value):
+        if isinstance(value, dict):
+            if id(value) in visited:
+                return
+            visited.add(id(value))
+            for key, child in list(value.items()):
+                if key != "content_origins":  # handled as recorded contributors, not descriptive children
+                    visit_content(child)
+            metadata = _contributing_content(value, bp)
+            if private_content(metadata, bp) and value.get("internal") is not True:
+                carry_content(value, metadata, bp=bp)
+        elif isinstance(value, list):
+            for child in value:
+                visit_content(child)
+
+    # Namespaces supply current derived labels/owners. Restrict them before
+    # filtering too, so regeneration cannot recover restricted grouping text.
+    for target in as_list(onto.get("namespaces")) + as_list(onto.get("domains")):
+        if not isinstance(target, dict):
+            continue
+        queue, seen = [(None, target)], set()
+        while queue:
+            pool, node = queue.pop()
+            identity = (pool, id(node))
+            if identity in seen:
+                continue
+            seen.add(identity)
+            if pool != "blueprint.domains":
+                visit_content(node)
+            # A Blueprint journey contributes its header, not unrelated sibling
+            # agents. Other typed dependencies retain their nested provenance.
+            origin = node if node is target or pool == "blueprint.domains" else _content_metadata(node)
+            metadata = _contributing_content(origin, bp)
+            if node is not target and private_content(metadata, bp):
+                carry_content(target, metadata, bp=bp)
+            for field, destination in links.items():
+                for ref in as_list(node.get(field)):
+                    if isinstance(ref, str) and ref in pools[destination]:
+                        queue.append((destination, pools[destination][ref]))
+
+
 def inherit_privacy(onto: dict, bp: dict | None = None) -> dict:
     """Carry restrictions through containers and source/entity/consumer dependencies."""
     for source in as_list(onto.get("sources")):
-        if not isinstance(source, dict) or not isinstance(source.get("route_assessment"), dict):
-            continue
-        metadata = _content_metadata(source["route_assessment"])
-        origins = [metadata, *as_list(metadata.get("content_origins"))]
-        # Malformed reference payloads remain for the explicit route validator;
-        # do not hash them or treat them as provenance during projection.
-        if all(isinstance(ref, str) for origin in origins if isinstance(origin, dict)
-               for field in ("src", "content_src") for ref in as_list(origin.get(field))):
-            # Each prerequisite reference contributes independently. Appending
-            # public route documentation must not dilute a private estate ref.
-            references = [{"src": [ref]} for origin in origins if isinstance(origin, dict)
-                          for ref in as_list(origin.get("content_src", origin.get("src")))]
-            carry_content(source, metadata, *references, bp=bp)
+        if isinstance(source, dict) and isinstance(source.get("route_assessment"), dict):
+            carry_content(source, _contributing_content(_content_metadata(source["route_assessment"]), bp), bp=bp)
     # Resolve the same stable default IDs used by normalize before projection.
     # Otherwise a via:DA-01 link loses its private target while that target is
     # still anonymous in authored input.
@@ -606,6 +662,7 @@ def inherit_privacy(onto: dict, bp: dict | None = None) -> dict:
         for index, row in enumerate(as_list(onto.get(key)), start=1):
             if isinstance(row, dict):
                 row.setdefault("id", f"{prefix}-{index:02d}")
+    _inherit_domain_content(onto, bp)
     def visit(value):
         if isinstance(value, dict):
             if private_content(value, bp):
