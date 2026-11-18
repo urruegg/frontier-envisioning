@@ -1,8 +1,9 @@
 import { it } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import path from "node:path";
 import { spawnSync } from "node:child_process";
-import { openBlueprint, PREVIEW_HTML, acknowledgePreview, txt, wait } from "./helpers.mjs";
+import { openBlueprint, DEFAULT_HTML, PREVIEW_HTML, acknowledgePreview, txt, wait } from "./helpers.mjs";
 
 const NOTICE = "Frontier FinOps is Preview. Its grounding and cost model are not GA and need refinement. Results are provisional planning estimates, not validated pricing, budget approval or purchase/commitment advice. Verify rates and assumptions independently before decisions.";
 const CORE = ["overview", "org", "blueprint", "journeys", "usecases", "prd", "agents", "identity",
@@ -81,7 +82,7 @@ it("D3 ontology exports Python-identical Turtle and semantic Markdown without op
       assert.ok(b, name); b.click();
     }
     const texts = await Promise.all(downloads.map((b) => b.text()));
-    assert.equal(texts[0], fs.readFileSync("build/demo/ontology/ontology.ttl", "utf8"));
+    assert.equal(texts[0], fs.readFileSync(path.join(path.dirname(process.env.BLUEPRINT_HTML || DEFAULT_HTML), "ontology", "ontology.ttl"), "utf8"));
     for (const token of ["customerId", "accountnumber", "core_silver.customer", "to verify", "Rules", "Metrics"]) assert.ok(texts[1].includes(token), token);
     for (const token of ["DA-01", "instructions", "questions", "sources"]) assert.ok(texts[2].includes(token), token);
     for (const token of ["DP-01", "quality", "access", "commitment"]) assert.ok(texts[3].includes(token), token);
@@ -248,6 +249,135 @@ function downloadsFor(bp) {
   bp.doc.addEventListener("click", (e) => { if (e.target.closest("a[download]")) e.preventDefault(); });
   return blobs;
 }
+
+// Exercise the reviewed consumer contract, not a JS imitation of owner validation
+// or customer projection. Turtle expectations come from this same process library.
+function g59Change(data, variant) {
+  const o = data.ontology, sap = o.sources.find((s) => s.id === "src-sap-s-4hana");
+  if (variant !== "legacy") {
+    Object.assign(sap, { path: "unresolved", item: null, status: "later" });
+    for (const e of o.entity_types.filter((e) => e.source === sap.id)) {
+      e.binding = { layer: "silver", item: null, table: null, origin: "default" };
+    }
+  }
+  if (variant === "legacy") {
+    o.entity_types.find((e) => e.id === "Product").binding.table = "recorded.product";
+    o.domains.push({ id: "saved-domain", name: "Saved public grouping", owner: "Synthetic governance owner",
+      governance_domain: "Functional unit", note: "Recorded domain choice", src: ["G59-P6"] });
+    o.build_steps.push({ id: "saved-step", text: "Create a Purview functional unit (saved choice)", src: ["S38"] });
+  }
+  if (variant === "selected") {
+    Object.assign(sap, { path: "mirroring", item: "mirrored database", owner: "Synthetic SAP data owner" });
+    for (const [i, record] of Object.values(sap.route_assessment.prerequisites).entries()) {
+      Object.assign(record, { status: "confirmed", note: "Synthetic offline owner assertion", src: ["ESTATE-G59-" + i] });
+      data.evidence.push({ id: "ESTATE-G59-" + i, type: "estate", title: "Synthetic owner record" });
+    }
+    o.entity_types.find((e) => e.id === "Product").binding =
+      { layer: "silver", item: "lakehouse", table: "selected.product" };
+  }
+  o.domains.push({ id: "private-g59", name: "PRIVATE-G59-NOTE", internal: true, src: ["G59-P6"] });
+  const python = spawnSync(process.platform === "win32" ? "python" : "python3", ["-c",
+    "import json,sys;sys.path.insert(0,'plugin/skills/frontier-process/scripts');import ontology_lib as lib;bp=json.load(sys.stdin);rep=lib.Rep();o=lib.normalize(bp['ontology'],bp,rep);assert not rep.errors,rep.errors;o=lib.customer_ontology(o,bp) if sys.argv[1]=='projected' else o;print(json.dumps(o))",
+    variant], { input: JSON.stringify(data), encoding: "utf8", maxBuffer: 8 * 1024 * 1024 });
+  assert.equal(python.status, 0, python.stderr);
+  data.ontology = JSON.parse(python.stdout);
+  if (variant === "empty-refs") {
+    for (const g of Object.values(data.ontology.current_guidance)) g.src = [];
+    data.ontology.current_guidance.governance.text += ' Café <img src=x onerror="alert(1)">';
+  }
+  if (variant === "no-current") {
+    delete data.ontology.current_guidance;
+    delete data.ontology.current_readiness;
+    // This compatibility fixture predates additive fields but explicitly has
+    // an unresolved route. No SAP-name heuristic may manufacture support.
+    delete data.ontology.sources.find((s) => s.id === sap.id).route_assessment;
+  }
+}
+
+it("G59 current and legacy grounding remain distinct", async (t) => {
+  for (const variant of ["unknown", "legacy", "selected", "no-current", "empty-refs"]) {
+    await t.test(variant, async () => {
+      const bp = await openBlueprint(undefined, { change: (data) => g59Change(data, variant) });
+      try {
+        await bp.go("#/ontology");
+        assert.deepEqual(routes(bp), CORE);
+        const node = bp.view().querySelector('.onode[data-entity="Product"]');
+        assert.ok(!node.closest("details"), "graph stays available outside design disclosures");
+        assert.ok(![...bp.view().querySelectorAll("button")].find((b) => txt(b) === "Download ontology.ttl").closest("details"));
+        const conditional = variant !== "selected";
+        assert.match(txt(node.querySelector(".osub")), conditional ? /conditional|to bind/i : /bound/);
+        assert.equal(node.querySelector("rect").classList.contains("unbound"), conditional);
+        node.focus();
+        node.dispatchEvent(new bp.window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+        await wait(20);
+        const panel = bp.view().querySelector("#opanel");
+        assert.match(txt(panel), conditional ? /conditional|unresolved/i : /owner-asserted design selection/i);
+        if (variant === "legacy") {
+          assert.match(txt(panel), /[Rr]ecorded proposal.*recorded\.product/);
+          assert.match(txt(bp.view()), /[Rr]ecorded choices/);
+          assert.match(txt(bp.view()), /Saved public grouping.*Functional unit.*Recorded domain choice/);
+        } else if (conditional) {
+          assert.match(txt(panel), /[Nn]o selected table|[Nn]ot bound/);
+          assert.doesNotMatch(txt(panel), /core_silver\.product/);
+        } else {
+          assert.match(txt(panel), /selected\.product/);
+          assert.match(txt(panel), /not tenant verification/i);
+        }
+        const alarm = bp.view().querySelector('.onode[data-entity="AlarmEvent"] .osub');
+        assert.match(txt(alarm), /\bbound\b/, "independent eventhouse remains bound");
+        if (variant !== "no-current") {
+          assert.match(txt(bp.view()), /OneLake catalog.*Fabric domains.*not an ACL/);
+          assert.match(txt(bp.view()), /SAP Datasphere -> ADLS Gen2 -> Fabric\/OneLake/);
+          assert.ok(bp.view().querySelectorAll(".ev").length > 0);
+        }
+        assert.equal(bp.view().querySelectorAll('img[src="x"]').length, 0);
+        assert.doesNotMatch(txt(bp.view()), /\bundefined\b|\bNone\b.*selected|mounted-confirmed/);
+        assert.deepEqual(bp.errors, []);
+      } finally { await bp.close(); }
+    });
+  }
+});
+
+it("G59 conditional route downloads retain guidance and Turtle parity", async (t) => {
+  for (const variant of ["unknown", "legacy", "selected", "projected", "empty-refs"]) {
+    await t.test(variant, async () => {
+      const bp = await openBlueprint(undefined, { change: (data) => g59Change(data, variant) });
+      try {
+        await bp.go("#/ontology");
+        const o = JSON.parse(bp.doc.getElementById("bp-data").textContent).ontology;
+        const python = spawnSync(process.platform === "win32" ? "python" : "python3", ["-c",
+          "import json,sys;sys.path.insert(0,'plugin/skills/frontier-process/scripts');from ontology_lib import to_turtle;sys.stdout.buffer.write(to_turtle(json.load(sys.stdin)).encode('utf-8'))"],
+        { input: JSON.stringify(o), encoding: "utf8" });
+        assert.equal(python.status, 0, python.stderr);
+        const blobs = downloadsFor(bp);
+        for (const name of ["ontology.ttl", "ontology.md", "data-agents.md", "data-products.md"]) {
+          [...bp.view().querySelectorAll("button")].find((b) => txt(b) === "Download " + name).click();
+        }
+        assert.equal(await blobs[0].text(), python.stdout);
+        for (const blob of blobs.slice(1)) {
+          const text = await blob.text();
+          for (const token of ["Current guidance", "Recorded choices", "OneLake catalog", "not an ACL",
+            "sensitivity labels and DLP", "SAP Datasphere", "ADLS Gen2", "snapshot", "Delta tables",
+            "read-only SQL replica", "unpriced / to confirm", "G59-P3", "G59-P6", "source route src-sap-ariba: conditional"]) {
+            assert.ok(text.includes(token), token);
+          }
+          assert.doesNotMatch(text, /\bundefined\b|\bNone\b|\bnull\b|mounted-confirmed/);
+          if (variant === "legacy") {
+            assert.match(text, /[Rr]ecorded proposal \(conditional\).*recorded\.product/);
+          }
+          if (variant === "selected") assert.match(text, /owner-asserted design selection/i);
+          if (variant === "projected") assert.ok(!text.includes("PRIVATE-G59-NOTE"));
+          if (variant === "empty-refs") {
+            assert.ok(text.includes("Café &lt;img"));
+            assert.ok(!text.includes("<img"));
+          }
+        }
+        if (variant === "projected") assert.ok(!txt(bp.view()).includes("PRIVATE-G59-NOTE"));
+        assert.deepEqual(bp.errors, []);
+      } finally { await bp.close(); }
+    });
+  }
+});
 
 it("D3 review inverse-detachment gates aggregate costs, NPV, ranking and sensitivity from contributing cases", async () => {
   const bp = await openBlueprint(PREVIEW_HTML, { change: inverseDetachment });

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import fs from "node:fs";
+import path from "node:path";
 import axe from "axe-core";
 
 const NOTICE = "Frontier FinOps is Preview. Its grounding and cost model are not GA and need refinement. Results are provisional planning estimates, not validated pricing, budget approval or purchase/commitment advice. Verify rates and assumptions independently before decisions.";
@@ -22,6 +23,48 @@ async function scan(page) {
   const results = await page.evaluate(async () => window.axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"] } }));
   expect(results.violations).toEqual([]);
 }
+test("G59 governance and conditional SAP downloads under CSP", async ({ page }, info) => {
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+  await open(page, "/blueprint.html#/ontology");
+  await expect(page.locator("#view")).toContainText("OneLake catalog");
+  await expect(page.locator("#view")).toContainText("not an ACL");
+  const product = page.locator('.onode[data-entity="Product"]');
+  await expect(product.locator(".osub")).toContainText("conditional");
+  await product.focus(); await page.keyboard.press("Enter");
+  await expect(product).toBeFocused();
+  await expect(page.locator("#opanel")).toContainText("Recorded proposal (conditional)");
+  await expect(page.locator("#opanel")).toContainText("core_silver.product");
+  await page.locator("#v-onto-Product-note").fill("Recorded proposal café ✓");
+  await page.reload();
+  await page.locator('.onode[data-entity="Product"]').click();
+  await expect(page.locator("#v-onto-Product-note")).toHaveValue("Recorded proposal café ✓");
+  // Compare bytes with the actual Python fixture consumed by the site build.
+  const root = process.env.BLUEPRINT_HTML
+    ? path.join(path.dirname(process.env.BLUEPRINT_HTML), "ontology", "ontology.ttl")
+    : "build/demo/ontology/ontology.ttl";
+  expect(await bytes(page, "Download ontology.ttl")).toEqual(fs.readFileSync(root));
+  for (const name of ["ontology.md", "data-agents.md", "data-products.md"]) {
+    const text = (await bytes(page, "Download " + name)).toString("utf8");
+    for (const token of ["Current guidance", "Recorded choices", "OneLake catalog", "not an ACL",
+      "ADLS Gen2", "read-only SQL replica", "unpriced / to confirm", "G59-P3",
+      "source route src-sap-s-4hana: conditional"]) expect(text).toContain(token);
+    expect(text).not.toMatch(/\bundefined\b|\bNone\b|\bnull\b/);
+  }
+  await page.locator("#opanel .ev").first().click();
+  await expect(page.locator("#drawer")).toBeVisible();
+  await page.keyboard.press("Escape");
+  for (const width of [1440, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await scan(page);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    const screenshot = info.outputPath(`g59-current-recorded-${width}.png`);
+    await page.screenshot({ path: screenshot, fullPage: true });
+    await info.attach(`g59-current-recorded-${width}`, { path: screenshot, contentType: "image/png" });
+  }
+  expect(errors).toEqual([]);
+});
 test("D3 real ontology downloads match Python output and preserve semantic design UTF-8", async ({ page }) => {
   await open(page, "/blueprint.html#/ontology");
   expect(await bytes(page, "Download ontology.ttl")).toEqual(fs.readFileSync("build/demo/ontology/ontology.ttl"));

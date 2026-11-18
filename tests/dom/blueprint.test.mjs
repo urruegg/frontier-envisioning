@@ -7,6 +7,51 @@ import { openBlueprint, txt, wait } from "./helpers.mjs";
 const VIEWS = ["Overview", "Org model", "Blueprint", "Journeys", "Use cases", "PRD", "Agents", "Agent identity", "Target architecture",
   "Ontology", "IT readiness", "Roadmap", "Plan", "Attendees", "Discovery", "Risks", "Evidence"];
 
+it("G59 saved readiness cannot certify conditional SAP", async (t) => {
+  for (const variant of ["current", "no-current", "other-group"]) {
+    await t.test(variant, async () => {
+      const bp = await openBlueprint(undefined, { change(data) {
+        for (const g of data.it_readiness.groups) {
+          for (const it of g.items) it.status = "done";
+          if (variant === "other-group" && g.id === "fabric-iq") g.id = "unrelated";
+        }
+        if (variant === "no-current") delete data.ontology.current_readiness;
+        data.ontology.readiness.find((it) => it.id === "F-06").status = "done";
+      } });
+      try {
+        await bp.go("#/readiness");
+        const row = [...bp.view().querySelectorAll(".rgroup tbody tr")].find((r) => txt(r).startsWith("F-06 "));
+        row.querySelector('input[value="open"]').click();
+        row.querySelector('input[value="done"]').click();
+        const input = row.querySelector(".assnote");
+        input.value = "Recorded workshop verdict ✓";
+        input.dispatchEvent(new bp.window.Event("input", { bubbles: true }));
+        const saved = JSON.stringify(bp.notes()["val|ready|F-06"]);
+        await bp.go("#/overview"); await bp.go("#/readiness");
+        const build = [...bp.view().querySelectorAll(".vkpi")].find((k) => txt(k).startsWith("Ready for the first build"));
+        assert.equal(txt(build.querySelector("b")), variant === "other-group" ? "Yes" : "Not yet");
+        const currentRow = [...bp.view().querySelectorAll(".rgroup tbody tr")].find((r) => txt(r).startsWith("F-06 "));
+        assert.ok(currentRow.querySelector('input[value="done"]').checked, "recorded verdict stays done");
+        if (variant !== "other-group") {
+          assert.match(txt(currentRow), /Current assessment: open/);
+          assert.match(txt(currentRow), /[Rr]ecorded verdict: done/);
+          assert.match(txt(currentRow), /source route src-sap-s-4hana: conditional/);
+        }
+        assert.equal(JSON.stringify(bp.notes()["val|ready|F-06"]), saved);
+        const blobs = [];
+        bp.window.URL.createObjectURL = (blob) => { blobs.push(blob); return "blob:test"; };
+        bp.doc.addEventListener("click", (e) => { if (e.target.closest("a[download]")) e.preventDefault(); });
+        await bp.go("#/discovery");
+        [...bp.view().querySelectorAll("button")].find((b) => txt(b) === "Export workshop feedback (JSON)").click();
+        const feedback = JSON.parse(await blobs[0].text());
+        assert.equal(feedback.validations["ready:F-06"].status, "done");
+        assert.equal(feedback.validations["ready:F-06"].note, "Recorded workshop verdict ✓");
+        assert.deepEqual(bp.errors, []);
+      } finally { await bp.close(); }
+    });
+  }
+});
+
 describe("Frontier Company Blueprint (Caldova demo)", () => {
   let bp;
   before(async () => { bp = await openBlueprint(); });

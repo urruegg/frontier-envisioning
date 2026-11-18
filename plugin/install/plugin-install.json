@@ -58,7 +58,7 @@
     "scripts/seed_blueprint.py": "6cf1dc28a62c52736b87baf6fb81023f2215ac42ee1ccb2e33e10ac4821ab46b",
     "scripts/workflow.py": "354b70925f3db24f6a5a2ff03d32d612dab56c3d68a90d1ee82ade35e02605bc",
     "templates/blueprint-defaults.json": "d4276a5ed090db2ba53b333bd3900a1beba8a44e45b2916f7838225ba61f7c97",
-    "templates/frontier-blueprint-template.html": "d43d0105ce3892538b31edeb7949fa8d79852689f709faa1bc3fd237082db006",
+    "templates/frontier-blueprint-template.html": "00974191c7b34ff4cd8c1dcd7deb06851f76a6c75cf44204611cb142ca5831bc",
     "templates/product-icons.json": "2526d3563ca4214ece1e00fdeb553438e6f6938491d0da2f102e73705c88fd92"
    },
    "maturity": "ga",
