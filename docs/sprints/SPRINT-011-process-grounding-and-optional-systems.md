@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
-| Date | 2026-11-17 |
+| Version | 0.4 |
+| Date | 2026-11-18 |
 | Author | AI assistant (AI-assisted documentation) |
-| Status | Correction written spec and plan/readiness at 35ad763 approved; bounded runtime handoff #60, implementation results pending |
-| Scope | Parent #58 programme and first correction child #59; documentation-only design record |
+| Status | Runtime #60 implemented and both bounded review stages passed at 0e1c389; renderer/profile/prose and full verification pending |
+| Scope | Parent #58 programme and approved 1.10.1 correction #59; staged implementation and evidence |
 | References | [Catalogue](README.md), [Parent #58](https://github.com/urruegg/frontier-envisioning/issues/58), [Correction #59](https://github.com/urruegg/frontier-envisioning/issues/59), [Idea](../ideas/2026-11-17-optional-systems-extensions.md), [Correction spec](../specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md), [Retention #52](https://github.com/urruegg/frontier-envisioning/issues/52), [Protected routing #8](https://github.com/urruegg/frontier-envisioning/issues/8) |
 
 ## Outcome and early work items
@@ -18,8 +18,11 @@ and Dynamics 365 later. This early record is not a ready sprint or a schedule.
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
 | [#58](https://github.com/urruegg/frontier-envisioning/issues/58) | [Programme and actual decisions](../ideas/2026-11-17-optional-systems-extensions.md#actual-human-decisions) | [First correction only](../specs/2026-11-17-process-governance-sap-grounding-design.md); wider pack designs not yet written | [First correction plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md); wider pack plans remain separate | `@urruegg` accountable; issue unassigned | #59 first; separate framework/Dynamics 365 written design and approvals | Decision intake, size M/P1; programme direction agreed, not ready for all-pack execution | Actual written correction approval recorded; no implementation result |
-| [#59](https://github.com/urruegg/frontier-envisioning/issues/59) | [Correction stage](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Tasks 1-12](../plans/2026-11-17-process-governance-sap-grounding-plan.md); approved at `35ad763` | `@urruegg` accountable and assigned; agent involvement recorded, not approval | Reviewed runtime/rendering/support slices; [#52](https://github.com/urruegg/frontier-envisioning/issues/52) final release/reproduction retention | Subagent-driven plan/readiness approved; no implementation result yet | Sources checked 17 November; distinct spec/plan approval receipts below |
-| [#60](https://github.com/urruegg/frontier-envisioning/issues/60) | [First correction](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01/02/04/07](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Runtime Tasks 1-6 and 8](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-1-verify-the-approved-execution-boundary-and-baseline) | `@urruegg` accountable; bounded builder, size M | Actual #59 plan approval; standard bump before plugin edits | Ready for scoped test-first runtime handoff; no protected ready label asserted | Plan at `35ad763`; initial implementation-branch approval checkpoint only |
+| [#59](https://github.com/urruegg/frontier-envisioning/issues/59) | [Correction stage](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Tasks 1-12](../plans/2026-11-17-process-governance-sap-grounding-plan.md); approved at `35ad763` | `@urruegg` accountable and assigned; agent involvement recorded, not approval | Reviewed runtime/rendering/support slices; [#52](https://github.com/urruegg/frontier-envisioning/issues/52) final release/reproduction retention | Runtime implemented/reviewed; remaining integration and full gates pending | Sources checked 17 November; runtime `0e1c389` checkpoint below |
+| [#60](https://github.com/urruegg/frontier-envisioning/issues/60) | [First correction](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01/02/04/07](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Runtime Tasks 1-6 and 8](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-1-verify-the-approved-execution-boundary-and-baseline) | `@urruegg` accountable; bounded builder, size M | Actual #59 plan approval; standard bump before plugin edits | Both bounded advisory stages passed; whole-product acceptance separate | `0e1c389`; 39 reviewer tests plus independent owner probes; broader builder result qualified below |
+| [#62](https://github.com/urruegg/frontier-envisioning/issues/62) | [Correction output](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-03/04](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Renderer Task 7](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-7-test-then-correct-markdown-html-and-actual-downloads) | `@urruegg` accountable; bounded renderer, size M | Reviewed #60 runtime contract | Ready for scoped test-first handoff; no protected ready label claimed | Real issue, approved plan and runtime review; no renderer result yet |
+| [#63](https://github.com/urruegg/frontier-envisioning/issues/63) | [Correction verification](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-05 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Profile/distribution Tasks 9-10](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-9-add-only-the-necessary-named-1101-raster-input-profile) | `@urruegg` accountable; bounded builder, size M | Reviewed #60/#62 interfaces | Pending finite profile, example and final extracted-package proof | No profile, self-test or final package result yet |
+| [#61](https://github.com/urruegg/frontier-envisioning/issues/61) | [Current guidance](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-05](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Prose Task 11](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-11-update-the-example-and-current-methodrequirements-documentation) | `@urruegg` accountable; bounded documentation, size S | Reviewed runtime fields and actual CLI behaviour | Pending method/schema-reference/current product-record alignment | No completed prose or future gate claims |
 
 These are real programme and runtime work-item rows. There are no invented
 child issues for Dynamics 365 or the remaining packs. A document author is not an
@@ -91,6 +94,50 @@ baseline or bump merely to bypass a failure.
 human-only protected session-routing/native-controls dependency; current
 routing is not silently treated as migrated. This work does not decide either
 issue's workflow or mutate its fields.
+
+## Runtime implementation and ordered review (#60)
+
+The standard bump changed the candidate to unreleased **1.10.1** before
+manual plugin edits. Runtime commits `6af11dd`, `d123454`, `43f9cf7`,
+`b89fb60` and `0e1c389` implement the approved canon, conditional route,
+legacy-record, Python-output and validation boundaries.
+No renderer/profile/prose integration or new skill is included in this
+runtime acceptance checkpoint.
+
+The builder's entrypoint audit reproduced malformed input being healed or
+filtered before validation and a wrapper creating its output directory before
+rejection. The tightly coupled Blueprint/process callers now share pure raw
+shape/citation checks before projection or output effects. Actual failing
+then passing CLI/extracted-package regressions cover those boundaries.
+
+Independent ordered review found valid empty-reference crashes, loss of
+authored public domains, a hidden reserved-citation collision, mixed-reference
+domain privacy leakage and placeholder-owner confirmation. Each finding was
+reproduced and fixed test-first; none was waived. At
+`0e1c389e2301c1200fbeaed3277aeeca7de77ec2`, the reviewer confirmed
+**specification PASS, bounded correctness/quality PASS**, with no remaining
+Critical/Important/Minor findings in that scope.
+
+The reviewer independently ran **39 focused contract tests**, including
+extracted execution, and **12 owner values across both CLI audiences**.
+The owner's recorded text remains unchanged; missing/pending values do not
+grant current confirmation. The new owner regressions failed against the
+parent implementation with 25 assertion failures and no import errors.
+Template/repository rules/neutrality/scoped Ruff/strict docs/whitespace and
+all **93 installer file hashes** passed their bounded checks.
+
+The builder separately reported **113 targeted tests passed**. Broader
+independent suite attempts timed out at 360/420 seconds, so that count is
+**not** independently reproduced by the reviewer. No full L1/L2 result is
+claimed from either report; stable integration verification remains pending.
+
+The parent verified clean committed source, cumulative whitespace and
+runtime-only candidate SHA-256
+`9fffcad5bb98b68c201f82d6d09f3604457bc7216ee4a05c574a93aa08ef4932`.
+It also rechecked the unchanged published 1.10.0 annotated tag/source
+identities. This candidate hash is not a final integrated package or a
+published release. Advisory code review is not human approval or financial,
+licensing, tenant or deployment authority.
 
 ## Documentation evidence and handoff
 
