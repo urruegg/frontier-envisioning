@@ -96,12 +96,23 @@ def process_checks(t: Path, sample: Path, check) -> None:
     blueprint = load(S / "frontier-blueprint/scripts/build_blueprint.py")
     work = t / "process-checks"
     work.mkdir()
+    example = process / "examples/caldova-ontology.json"
+    originals = {path: path.read_bytes() for path in (sample, example)}
     code, text = run(seed, ["--blueprint", str(sample), "--out", str(work / "seed.json")])
     seeded = json.loads((work / "seed.json").read_text(encoding="utf-8")) if code == 0 else {}
     check("process seed derives standard entities and OneLake sources", code == 0
           and {"Customer", "WorkOrder", "AlarmEvent"} <= {e["id"] for e in seeded.get("entity_types", [])}
           and len(seeded.get("sources", [])) == 9, text[-300:])
-    args = ["--ontology", str(process / "examples/caldova-ontology.json"), "--blueprint", str(sample), "--out-dir", str(work / "artifacts")]
+    sap = [source for source in seeded.get("sources", []) if source["id"].startswith("src-sap")]
+    prerequisites = {"supported_source", "fabric_capacity", "datasphere_environment",
+                     "premium_outbound_integration", "adls_gen2_permissions"}
+    check("process SAP seeds retain five unknown prerequisites", bool(sap) and all(
+        (source["path"], source["item"], source["status"]) == ("unresolved", None, "later")
+        and source["route_assessment"]["state"] == "conditional"
+        and set(source["route_assessment"]["prerequisites"]) == prerequisites
+        and all(row["status"] == "unknown" and row["src"] == []
+                for row in source["route_assessment"]["prerequisites"].values()) for source in sap))
+    args = ["--ontology", str(example), "--blueprint", str(sample), "--out-dir", str(work / "artifacts")]
     code, text = run(build, args)
     files = {p.name: p.read_bytes() for p in (work / "artifacts").iterdir()} if code == 0 else {}
     expected = {"ontology.normalized.json", "ontology.ttl", "ontology.md", "data-agents.md", "data-products.md"}
@@ -109,6 +120,15 @@ def process_checks(t: Path, sample: Path, check) -> None:
     check("process builds five deterministic artifacts with explicit mapping gaps",
           code == 0 and set(files) == expected and norm.get("stats", {}).get("to_verify") == 6
           and files.get("ontology.ttl", b"").count(b" a owl:Class") == 27, text[-300:])
+    governance = norm.get("current_guidance", {}).get("governance", {}).get("text", "")
+    check("process current governance separates grouping from access",
+          all(term in governance for term in ("OneLake catalog", "Fabric domain", "does not", "access", "DLP", "parity")))
+    products = {row["id"]: row for row in norm.get("data_products", [])}
+    check("process conditional SAP products remain unpublishable",
+          all(f"source route {source}: conditional" in products.get(product, {}).get("gaps", [])
+              for product, source in (("DP-07", "src-sap-s-4hana"), ("DP-08", "src-sap-ariba"),
+                                      ("DP-16", "src-sap-s-4hana")))
+          and norm.get("current_readiness", {}).get("F-06", {}).get("status") == "open")
     code2, _ = run(build, args)
     check("process rebuild is byte-identical and LF-only", code2 == 0 and files == {p.name: p.read_bytes() for p in (work / "artifacts").iterdir()}
           and all(b"\r\n" not in content for content in files.values()))
@@ -139,6 +159,7 @@ def process_checks(t: Path, sample: Path, check) -> None:
                                 "--save-normalized", str(work / "customer.json"), "--no-product-icons"])
     customer = (work / "customer.json").read_text(encoding="utf-8") if code == 0 else sentinel
     check("process root privacy precedes customer projection", code == 0 and sentinel not in customer and '"ontology"' not in customer, text[-300:])
+    check("process inputs remain byte-identical", originals == {path: path.read_bytes() for path in originals})
 
 
 def installed_run(script: Path, argv: list[str], work: Path) -> subprocess.CompletedProcess:
@@ -307,11 +328,52 @@ def installed_core_check(package: Path, work: Path, check) -> None:
     """Only call on our temporary extracted package, after installer verification."""
     skills = package / "skills"
     shutil.rmtree(skills / "frontier-finops")
+    sample = skills / "frontier-blueprint/examples/caldova-blueprint.json"
+    value = skills / "frontier-value-case/examples/caldova-value.json"
+    example = skills / "frontier-process/examples/caldova-ontology.json"
+    originals = {path: path.read_bytes() for path in (sample, value, example)}
+    process = skills / "frontier-process/scripts"
+    model = work / "installed-process-seed.json"
+    proc = installed_run(process / "seed_ontology.py", ["--blueprint", str(sample), "--out", str(model)], work)
+    seeded = json.loads(model.read_text(encoding="utf-8")) if proc.returncode == 0 else {}
+    sap = [source for source in seeded.get("sources", []) if source["id"].startswith("src-sap")]
+    prerequisites = {"supported_source", "fabric_capacity", "datasphere_environment",
+                     "premium_outbound_integration", "adls_gen2_permissions"}
+    check("installed process seeds unknown SAP prerequisites", proc.returncode == 0 and bool(sap) and all(
+        (source["path"], source["item"], source["status"]) == ("unresolved", None, "later")
+        and source["route_assessment"]["state"] == "conditional"
+        and set(source["route_assessment"]["prerequisites"]) == prerequisites
+        and all(row["status"] == "unknown" and row["src"] == []
+                for row in source["route_assessment"]["prerequisites"].values()) for source in sap), proc.stderr[-300:])
+    if model.is_file():
+        originals[model] = model.read_bytes()
+    artifacts = work / "installed-process"
+    args = ["--ontology", str(model), "--blueprint", str(sample), "--out-dir", str(artifacts)]
+    proc = installed_run(process / "build_ontology.py", args, work)
+    files = {path.name: path.read_bytes() for path in artifacts.iterdir()} if artifacts.is_dir() else {}
+    normalized = json.loads(files.get("ontology.normalized.json", b"{}"))
+    governance = normalized.get("current_guidance", {}).get("governance", {}).get("text", "")
+    check("installed process current guidance and five artifacts", proc.returncode == 0
+          and set(files) == {"ontology.normalized.json", "ontology.ttl", "ontology.md", "data-agents.md", "data-products.md"}
+          and all(term in governance for term in ("OneLake catalog", "does not", "access", "DLP", "parity")), proc.stderr[-300:])
+    repeated = installed_run(process / "build_ontology.py", args, work)
+    refused = installed_run(process / "build_ontology.py", args + ["--strict"], work)
+    absent = work / "installed-strict-no-create"
+    no_create = installed_run(process / "build_ontology.py", args[:-1] + [str(absent), "--strict"], work)
+    applied = work / "installed-process-applied.json"
+    apply = installed_run(process / "apply_ontology.py",
+                          ["--blueprint", str(sample), "--ontology", str(artifacts / "ontology.normalized.json"),
+                           "--out", str(applied)], work)
+    applied_model = json.loads(applied.read_text(encoding="utf-8")).get("ontology", {}) if applied.is_file() else {}
+    check("installed process strict warnings preserve outputs and inputs",
+          repeated.returncode == 0 and refused.returncode == 1 and no_create.returncode == 1 and not absent.exists()
+          and json.loads(refused.stdout).get("files") == {}
+          and files == {path.name: path.read_bytes() for path in artifacts.iterdir()}
+          and apply.returncode == 0 and applied_model.get("current_guidance") == normalized.get("current_guidance")
+          and originals == {path: path.read_bytes() for path in originals}, refused.stderr[-300:])
     output = work / "core-without-finops"
     proc = installed_run(skills / "frontier-blueprint/scripts/build_with_identity.py", [
-        "--data", str(skills / "frontier-blueprint/examples/caldova-blueprint.json"),
-        "--value", str(skills / "frontier-value-case/examples/caldova-value.json"),
-        "--ontology", str(skills / "frontier-process/examples/caldova-ontology.json"),
+        "--data", str(sample), "--value", str(value), "--ontology", str(example),
         "--no-identity", "--out-dir", str(output),
     ], work)
     summary = json.loads(proc.stdout[proc.stdout.index("{"):]) if proc.returncode == 0 else {}
@@ -322,6 +384,19 @@ def installed_core_check(package: Path, work: Path, check) -> None:
     check("installed core value/ontology build works with FinOps removed",
           proc.returncode == 0 and bool(data.get("value_case")) and bool(data.get("ontology"))
           and "finops" not in data and "agent_finops" not in data, proc.stderr[-300:])
+    serialised = json.dumps(data)
+    check("installed core has no financial output or consent", proc.returncode == 0
+          and not any(term in serialised for term in ('"finops"', '"agent_finops"', '"financial_permission"', '"preview_ack"'))
+          and summary.get("value_finops", {}).get("finops") is None
+          and not any(key in summary for key in ("finops", "agent_finops", "finops_preview"))
+          and all('"finops_preview"' not in path.read_text(encoding="utf-8")
+                  for path in output.rglob("*.json"))
+          and originals == {path: path.read_bytes() for path in originals})
+    ontology = data.get("ontology", {})
+    check("installed core current conditional SAP guidance survives",
+          bool(ontology.get("current_guidance")) and ontology.get("current_readiness", {}).get("F-06", {}).get("status") == "open"
+          and all(source.get("route_assessment", {}).get("state") == "conditional"
+                  for source in ontology.get("sources", []) if source["id"].startswith("src-sap")))
 
 
 def main() -> int:

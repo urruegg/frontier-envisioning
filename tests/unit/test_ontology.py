@@ -160,7 +160,20 @@ class Caldova(unittest.TestCase):
             self.assertEqual(code, 0, out)
             res = json.loads(out)
             self.assertEqual(res["stats"]["entity_types"], 27)
-            # The unchanged legacy example records SAP routes, not confirmed prerequisites.
+            current = json.loads(EXAMPLE.read_text(encoding="utf-8"))
+            self.assertIn("conditional", current["intro"])
+            for source in current["sources"]:
+                if source["id"] not in ("src-sap-s-4hana", "src-sap-ariba"):
+                    continue
+                self.assertEqual((source["path"], source["item"], source["status"]), ("unresolved", None, "later"))
+                assessment = source["route_assessment"]
+                self.assertEqual(assessment["state"], "conditional")
+                self.assertEqual(assessment["candidate_path"], "mirroring" if source["id"] == "src-sap-s-4hana" else None)
+                self.assertEqual(set(assessment["prerequisites"]), set(ProcessGrounding.prerequisite_keys))
+                self.assertTrue(all(p["status"] == "unknown" and p["note"] and p["src"] == []
+                                    for p in assessment["prerequisites"].values()))
+                self.assertIn("unpriced / to confirm", assessment["commercial_note"])
+            # Route warnings remain exact; no Employee warning is lost among them.
             expected_route_warnings = [
                 f"source {sid} route prerequisite {key}: unknown; estate confirmation required"
                 for sid in ("src-sap-s-4hana", "src-sap-ariba")
@@ -1370,7 +1383,7 @@ class ProcessGroundingDistribution(unittest.TestCase):
             self.assertTrue(verified["verified"])
             shutil.rmtree(package / "skills/frontier-finops")
             blueprint = root / "bp.json"
-            blueprint.write_text(json.dumps({"meta": {"short": "Caldova", "date": "2026-11-17"},
+            blueprint.write_text(json.dumps({"meta": {"customer": "Caldova Industrial AG", "short": "Caldova", "date": "2026-11-17"},
                                               "domains": [{"id": "D1", "name": "Finance", "systems": ["SAP ECC"]}]}),
                                  encoding="utf-8")
             original = blueprint.read_bytes()
@@ -1379,12 +1392,19 @@ class ProcessGroundingDistribution(unittest.TestCase):
             seeded = json.loads(model.read_text(encoding="utf-8"))
             self.assertEqual((seeded["sources"][0]["path"], seeded["sources"][0]["item"],
                               seeded["sources"][0]["status"]), ("unresolved", None, "later"))
+            assessment = seeded["sources"][0]["route_assessment"]
+            self.assertEqual(set(assessment["prerequisites"]), set(ProcessGrounding.prerequisite_keys))
+            self.assertTrue(all(row["status"] == "unknown" and row["src"] == []
+                                for row in assessment["prerequisites"].values()))
+            model_original = model.read_bytes()
             run("skills/frontier-process/scripts/build_ontology.py", "--ontology", model, "--blueprint", blueprint,
                 "--out-dir", root / "output")
             normalized = json.loads((root / "output/ontology.normalized.json").read_text(encoding="utf-8"))
             self.assertEqual(normalized["sources"][0]["route_assessment"]["state"], "conditional")
-            self.assertIn("OneLake catalog", normalized["current_guidance"]["governance"]["text"])
-            self.assertEqual(len(list((root / "output").iterdir())), 5)
+            for term in ("OneLake catalog", "Fabric domain", "does not", "access", "DLP", "parity"):
+                self.assertIn(term, normalized["current_guidance"]["governance"]["text"])
+            self.assertEqual({file.name for file in (root / "output").iterdir()},
+                             {"ontology.normalized.json", "ontology.ttl", "ontology.md", "data-agents.md", "data-products.md"})
             before = {file.name: file.read_bytes() for file in (root / "output").iterdir()}
             run("skills/frontier-process/scripts/build_ontology.py", "--ontology", model, "--blueprint", blueprint,
                 "--out-dir", root / "output")
@@ -1393,12 +1413,20 @@ class ProcessGroundingDistribution(unittest.TestCase):
                           "--out-dir", root / "output", "--strict", expected=1)
             self.assertEqual(json.loads(refused.stdout)["files"], {})
             self.assertEqual(before, {file.name: file.read_bytes() for file in (root / "output").iterdir()})
+            run("skills/frontier-process/scripts/build_ontology.py", "--ontology", model, "--blueprint", blueprint,
+                "--out-dir", root / "strict-no-create", "--strict", expected=1)
+            self.assertFalse((root / "strict-no-create").exists())
             run("skills/frontier-process/scripts/apply_ontology.py", "--ontology", root / "output/ontology.normalized.json",
                 "--blueprint", blueprint, "--out", root / "applied.json")
             applied = json.loads((root / "applied.json").read_text(encoding="utf-8"))
             self.assertEqual(applied["ontology"]["current_guidance"], normalized["current_guidance"])
             self.assertEqual(applied["ontology"]["current_readiness"]["F-06"]["status"], "open")
             self.assertEqual(blueprint.read_bytes(), original)
+            self.assertEqual(model.read_bytes(), model_original)
+            run("skills/frontier-blueprint/scripts/build_blueprint.py", "--data", root / "applied.json",
+                "--out", root / "fresh.html", "--save-normalized", root / "fresh.json", "--no-product-icons")
+            fresh = json.loads((root / "fresh.json").read_text(encoding="utf-8"))
+            self.assertEqual(fresh["ontology"]["current_guidance"], normalized["current_guidance"])
             # Execute the actual extracted Blueprint/wrapper/process scripts.
             raw, context = ProcessGroundingRawBoundary.fixture(True, "src-string")
             context["ontology"] = raw
@@ -1472,9 +1500,104 @@ class ProcessGroundingDistribution(unittest.TestCase):
                 ProcessGroundingOwnerReview().assert_assessment(qualified, owner, False)
                 self.assertEqual((owner_source.read_bytes(), owner_context.read_bytes()), originals)
             core = package / "skills/frontier-blueprint/examples/caldova-blueprint.json"
-            run("skills/frontier-blueprint/scripts/build_with_identity.py", "--data", core,
-                "--out-dir", root / "core-without-finops", "--no-identity")
-            self.assertTrue((root / "core-without-finops/Caldova - Frontier Company Blueprint.html").is_file())
+            value = package / "skills/frontier-value-case/examples/caldova-value.json"
+            example = package / "skills/frontier-process/examples/caldova-ontology.json"
+            core_originals = {path: path.read_bytes() for path in (core, value, example)}
+            built = run("skills/frontier-blueprint/scripts/build_with_identity.py", "--data", core,
+                        "--value", value, "--ontology", example, "--out-dir", root / "core-without-finops", "--no-identity")
+            summary = json.loads(built.stdout[built.stdout.index("{"):])
+            html = Path(summary["html"]).read_text(encoding="utf-8")
+            island = re.search(r'<script[^>]+id="bp-data"[^>]*>(.*?)</script>', html, re.S)
+            self.assertIsNotNone(island)
+            ordinary = json.loads(island[1])
+            self.assertTrue(ordinary["value_case"])
+            self.assertEqual(ordinary["ontology"]["current_readiness"]["F-06"]["status"], "open")
+            self.assertIsNone(summary["value_finops"]["finops"])
+            for document in (ordinary, summary):
+                for key in ('"finops_preview"', '"agent_finops"', '"financial_permission"', '"preview_ack"'):
+                    self.assertNotIn(key, json.dumps(document))
+            self.assertNotIn("finops", ordinary)
+            self.assertNotIn("finops", summary)
+            self.assertEqual(core_originals, {path: path.read_bytes() for path in core_originals})
+
+            # Saved SAP/domain/evidence choices stay original, separately qualified.
+            legacy = mini()
+            legacy["sources"][0].update(name="SAP ECC", path="mirroring", item="mirrored database", status="now")
+            legacy["entity_types"][0]["binding"] = {"layer": "silver", "item": "lakehouse", "table": "recorded.asset"}
+            canon = json.loads((package / "skills/frontier-process/templates/fabric-iq-canon.json").read_bytes())
+            citations = [row for row in canon["sources"] if row["id"] in ("S38", "S39")]
+            self.assertEqual([row["id"] for row in citations], ["S38", "S39"])
+            legacy["sources_doc"] = citations
+            legacy["domains"] = [{"id": "core", "fabric_domain": "Legacy shared estate",
+                                  "governance_domain": "Data domain", "note": "Recorded owner choice"}]
+            legacy["readiness"] = [{"id": "F-06", "item": "Recorded route", "status": "done",
+                                    "note": "Recorded workshop verdict", "src": ["S38"]}]
+            legacy["verdicts"] = {"onto:Asset": {"status": "validated", "src": ["S39"]}}
+            legacy_file, legacy_bp = root / "legacy.json", root / "legacy-bp.json"
+            legacy_file.write_text(json.dumps(legacy), encoding="utf-8")
+            context = {"meta": {"customer": "Caldova Industrial AG", "short": "Caldova", "date": "2026-11-17"},
+                       "domains": [{"id": "D1", "name": "Service"}], "evidence": [
+                {"id": "private63", "visibility": "internal", "title": "Synthetic private estate record"}]}
+            legacy_bp.write_text(json.dumps(context), encoding="utf-8")
+            legacy_originals = legacy_file.read_bytes(), legacy_bp.read_bytes()
+            for audience in ("internal", "customer"):
+                output_dir = root / ("legacy-" + audience)
+                run("skills/frontier-process/scripts/build_ontology.py", "--ontology", legacy_file, "--blueprint", legacy_bp,
+                    "--audience", audience, "--out-dir", output_dir)
+                saved = json.loads((output_dir / "ontology.normalized.json").read_bytes())
+                self.assertEqual(saved["sources"][0]["id"], "s-fs")
+                for key in ("path", "item", "status"):
+                    self.assertEqual(saved["sources"][0][key], legacy["sources"][0][key])
+                self.assertEqual(saved["sources"][0]["route_assessment"]["state"], "conditional")
+                self.assertEqual(saved["entity_types"][0]["binding"]["table"], "recorded.asset")
+                self.assertEqual(saved["domains"][0], legacy["domains"][0])
+                self.assertEqual(saved["sources_doc"][:2], citations)
+                self.assertEqual(saved["readiness"], legacy["readiness"])
+                self.assertEqual(saved["verdicts"], legacy["verdicts"])
+                self.assertEqual(saved["current_readiness"]["F-06"]["status"], "open")
+                self.assertIn("OneLake catalog", saved["current_guidance"]["governance"]["text"])
+            self.assertEqual((legacy_file.read_bytes(), legacy_bp.read_bytes()), legacy_originals)
+
+            # Capture ancestry with extracted feedback code, then retire its target.
+            marker = "SYNTHETIC_G63_PRIVATE_ANCESTRY"
+            private = copy.deepcopy(legacy)
+            private["sources"][0]["route_assessment"] = {
+                "state": "conditional", "candidate_path": "mirroring",
+                "prerequisites": {key: {"status": "unknown", "note": marker, "src": ["private63"]}
+                                  for key in ProcessGrounding.prerequisite_keys},
+                "commercial_note": "unpriced / to confirm", "src": ["G59-P3", "G59-P7"]}
+            private["data_products"] = [{"id": "DP-PRIVATE63", "name": "Synthetic private product", "entities": ["Asset"]}]
+            private_input = root / "private-bp.json"
+            private_input.write_text(json.dumps(dict(context, ontology=private)), encoding="utf-8")
+            feedback = root / "private-feedback.json"
+            feedback.write_text(json.dumps({"type": "frontier-blueprint-feedback", "exported": "2026-11-17T10:00:00Z",
+                                           "validations": {"onto:DP-PRIVATE63": {"status": "validated", "note": marker}}}),
+                                encoding="utf-8")
+            private_originals = private_input.read_bytes(), feedback.read_bytes()
+            merged = root / "private-merged.json"
+            run("skills/frontier-blueprint/scripts/merge_feedback.py", "--blueprint", private_input,
+                "--feedback", feedback, "--out", merged)
+            retired = json.loads(merged.read_bytes())
+            verdict = next(row for row in retired["ontology_feedback"] if row["id"] == "DP-PRIVATE63")
+            self.assertIn({"pool": "sources", "id": "s-fs"}, [
+                {"pool": row["pool"], "id": row["id"]} for row in verdict["target_ancestry"]])
+            retired["ontology"]["data_products"] = []
+            retired_file, retired_ontology = root / "retired-bp.json", root / "retired-ontology.json"
+            retired_file.write_text(json.dumps(retired), encoding="utf-8")
+            retired_ontology.write_text(json.dumps(retired["ontology"]), encoding="utf-8")
+            retired_originals = retired_file.read_bytes(), retired_ontology.read_bytes()
+            run("skills/frontier-process/scripts/build_ontology.py", "--ontology", retired_ontology, "--blueprint", retired_file,
+                "--audience", "customer", "--out-dir", root / "private-customer")
+            run("skills/frontier-blueprint/scripts/build_blueprint.py", "--data", retired_file, "--audience", "customer",
+                "--out", root / "private-customer/bp.html", "--save-normalized", root / "private-customer/bp.json",
+                "--no-product-icons")
+            for path in (root / "private-customer").iterdir():
+                self.assertNotIn(marker, path.read_text(encoding="utf-8"), path.name)
+            projected = json.loads((root / "private-customer/bp.json").read_bytes())
+            self.assertNotIn("DP-PRIVATE63", [row["id"] for row in projected.get("ontology_feedback", [])])
+            self.assertIn("OneLake catalog", projected["ontology"]["current_guidance"]["governance"]["text"])
+            self.assertEqual((private_input.read_bytes(), feedback.read_bytes()), private_originals)
+            self.assertEqual((retired_file.read_bytes(), retired_ontology.read_bytes()), retired_originals)
             shutil.rmtree(package / "skills/frontier-process")
             missing = run("skills/frontier-blueprint/scripts/build_with_identity.py", "--data", core,
                           "--ontology", malformed_onto, "--out-dir", root / "missing-process",
@@ -1733,6 +1856,17 @@ class CommonDataModel(unittest.TestCase):
         self.assertEqual((st["standard"], st["custom"], st["to_verify"], st["mapped_properties"]), (24, 3, 6, 61))
         self.assertEqual(self.E["ServiceReport"]["standard"]["match"], "custom")
 
+    def test_current_sap_bindings_are_unresolved_not_recorded_estate(self):
+        authored = json.loads(EXAMPLE.read_text(encoding="utf-8"))
+        for entity in authored["entity_types"]:
+            if entity.get("source") in ("src-sap-s-4hana", "src-sap-ariba"):
+                self.assertEqual(entity["binding"], {"layer": "silver", "item": None, "table": None, "origin": "default"},
+                                 entity["id"])
+                self.assertEqual(self.E[entity["id"]]["binding"], entity["binding"])
+                self.assertEqual({key: self.E[entity["id"]]["standard"][key] for key in entity["standard"]},
+                                 entity["standard"])
+        self.assertIn("OneLake catalog", self.o["current_guidance"]["governance"]["text"])
+
     def test_domains_and_semantic_models(self):
         doms = {d["id"]: d for d in self.o["domains"]}
         self.assertEqual(doms["core"]["governance_domain"], "Fabric domain (shared business objects)")
@@ -1759,6 +1893,10 @@ class CommonDataModel(unittest.TestCase):
         self.assertFalse(any(u["use"] == "actions" for u in dps["Installed base"]["uses"]), "only the journey's own operations agent")
         self.assertEqual(dps["Work orders"]["gaps"], ["access", "quality"])
         self.assertIn("entity types to model", dps["Spend cube"]["gaps"])
+        for name, source in (("Supplier 360", "src-sap-s-4hana"), ("Contracts & prices", "src-sap-ariba"),
+                             ("General ledger", "src-sap-s-4hana")):
+            self.assertIn(f"source route {source}: conditional", dps[name]["gaps"])
+            self.assertIn("Conditional proposal", dps[name]["purpose"])
 
     def test_nineteen_unique_rows_are_eighteen_products_and_one_knowledge_source(self):
         received = json.loads(EXAMPLE.read_text(encoding="utf-8"))
@@ -2222,9 +2360,35 @@ class ProcessSelftest(unittest.TestCase):
     def test_new_selftest_checks_execute_process_behavior(self):
         selftest = load("tools/selftest.py", "on_selftest")
         results = []
+
+        def check(name, condition, detail=""):
+            results.append((name, condition, detail))
+
         with tempfile.TemporaryDirectory() as directory:
-            selftest.process_checks(Path(directory), BLUEPRINT, lambda name, condition, detail="": results.append((name, condition, detail)))
-        self.assertGreaterEqual(len(results), 5)
+            root = Path(directory)
+            selftest.process_checks(root, BLUEPRINT, check)
+            packager = load("tools/build_package.py", "on_selftest_packager")
+            code, text = quiet(packager.main, ["--dist", str(root / "dist")])
+            self.assertEqual(code, 0, text)
+            package = root / "package"
+            with zipfile.ZipFile(next((root / "dist").glob("*.zip"))) as archive:
+                archive.extractall(package)
+            verified = selftest.installed_run(package / "install/prepare_install.py", ["--root", str(package)], root)
+            self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
+            self.assertTrue(json.loads(verified.stdout)["verified"])
+            selftest.installed_core_check(package, root, check)
+        expected = {
+            "process SAP seeds retain five unknown prerequisites",
+            "process current governance separates grouping from access",
+            "process conditional SAP products remain unpublishable",
+            "process inputs remain byte-identical",
+            "installed process seeds unknown SAP prerequisites",
+            "installed process current guidance and five artifacts",
+            "installed process strict warnings preserve outputs and inputs",
+            "installed core has no financial output or consent",
+            "installed core current conditional SAP guidance survives",
+        }
+        self.assertLessEqual(expected, {name for name, _, _ in results})
         self.assertTrue(all(condition for _, condition, _ in results), results)
 
     def test_seed_date_comes_from_fixed_input_not_wall_clock(self):

@@ -163,7 +163,7 @@
    "folder": "skills/frontier-process",
    "files": {
     "SKILL.md": "ea0c5bca0db84558e9963dbd079e444146f6d5640103b01604498eb7713615c7",
-    "examples/caldova-ontology.json": "287fbf6bc1b5b202af64ddeed5a3070560415a02ddc843311a1df34fb1b8eb6f",
+    "examples/caldova-ontology.json": "22e527bdad432456befe157ba56008ef4d57ebe34d4786c5b4bca4059c1b4bc3",
     "references/ontology-method.md": "866f8de486395746064c9a377f07cd773bc416197e32d663f842be06c717beec",
     "scripts/apply_ontology.py": "b05affc6ee70055b82c6220e4bd64eb475a292b8baf67f32113b4dc9023d33e2",
     "scripts/build_ontology.py": "20ac2f1e783bd36cfce86ac11fe785a44cc0f1b20d84c04910345b86a5aaa38f",

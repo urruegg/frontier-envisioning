@@ -14,7 +14,7 @@ class Baseline110Raster(unittest.TestCase):
     def test_only_named_baseline_candidate_is_added(self):
         module = load("tools/demo_raster.py")
         self.assertEqual(module.SUPPORTED_VERSIONS, {"1.4.0", "1.5.0", "1.6.0"})
-        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1", "1.7.1", "1.9.1", "1.9.2", "1.10.0"})
+        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1", "1.7.1", "1.9.1", "1.9.2", "1.10.0", "1.10.1"})
 
     def test_measured_record_is_lf_pinned_and_preserves_192_a6_inputs(self):
         module = load("tools/demo_raster.py")
@@ -117,9 +117,9 @@ class Baseline110Raster(unittest.TestCase):
                 with self.assertRaisesRegex(module.RasterProfileError, "finished identity archive"):
                     module.verify_release_identity(final, report)
 
-    def test_future_1101_and_unsupported_193_cannot_inherit_support(self):
+    def test_future_1102_and_unsupported_193_cannot_inherit_support(self):
         fixtures = fixture_module.RasterReplay()
-        for version in ("1.10.1", "1.9.3"):
+        for version in ("1.10.2", "1.9.3"):
             with self.subTest(version=version), tempfile.TemporaryDirectory() as directory:
                 module = fixtures.module()
                 kit, profile, _ = fixtures.current_fixture(Path(directory))

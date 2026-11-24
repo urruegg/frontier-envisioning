@@ -10,7 +10,7 @@
   "namespace_uri": "https://example.org/frontier/caldova/ontology#"
  },
  "title": "Caldova process ontology",
- "intro": "Caldova Industrial AG is fictitious. The ontology names the business objects the four business journeys run on (customers, opportunities, quotes and orders; suppliers, contracts and invoices; the installed base, work orders and service reports; ledger accounts and close tasks), binds them to SAP S/4HANA, Dynamics 365 and the IoT platform in OneLake and grounds one data agent per journey and an operations agent for the installed base in the same vocabulary.",
+ "intro": "Caldova Industrial AG is fictitious. The ontology proposes business objects for four journeys and a shared vocabulary for data and operations agents. Dynamics 365 and IoT bindings are synthetic proposals. SAP routes and dependent bindings remain unresolved and conditional: source support, Fabric capacity, SAP Datasphere environment, Premium Outbound Integration and ADLS Gen2 permissions are unknown. Mirroring is only a candidate for supported sources through SAP Datasphere and ADLS Gen2, not a generic S/4HANA or ECC route. The read-only SQL route and any commercial entitlement remain to confirm; no real estate, access or publication is verified.",
  "namespaces": [
   {
    "id": "core",
@@ -193,8 +193,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "core_silver.product",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -328,8 +328,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "core_silver.site",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -615,8 +615,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "commercial_silver.sales_order",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -684,8 +684,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "core_silver.supplier",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -744,8 +744,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "core_silver.legal_entity",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -815,8 +815,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "procurement_silver.requisition",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -885,8 +885,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "procurement_silver.purchase_order",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -956,8 +956,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "procurement_silver.contract",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -1015,8 +1015,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "procurement_silver.goods_receipt",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -1086,8 +1086,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "procurement_silver.supplier_invoice",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -1587,8 +1587,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "finance_silver.ledger_account",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -1658,8 +1658,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "finance_silver.journal_entry",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -1837,8 +1837,8 @@
    },
    "binding": {
     "layer": "silver",
-    "item": "lakehouse",
-    "table": "finance_silver.cost_center",
+    "item": null,
+    "table": null,
     "origin": "default"
    }
   },
@@ -2472,8 +2472,8 @@
    "id": "src-sap-s-4hana",
    "name": "SAP S/4HANA",
    "system": "SAP S/4HANA (SD, MM, service billing, FI/CO)",
-   "path": "mirroring",
-   "item": "mirrored database",
+   "path": "unresolved",
+   "item": null,
    "journeys": [
     "D1",
     "D2",
@@ -2481,8 +2481,21 @@
     "D4"
    ],
    "data_class": "confidential",
-   "status": "now",
-   "owner": "SAP competence center"
+   "status": "later",
+   "owner": "SAP competence center",
+   "route_assessment": {
+    "state": "conditional",
+    "candidate_path": "mirroring",
+    "prerequisites": {
+     "supported_source": {"status": "unknown", "note": "Confirm source support through SAP Datasphere; the system name is not proof.", "src": []},
+     "fabric_capacity": {"status": "unknown", "note": "Confirm the required Fabric capacity with its owner.", "src": []},
+     "datasphere_environment": {"status": "unknown", "note": "Confirm the SAP Datasphere environment with its owner.", "src": []},
+     "premium_outbound_integration": {"status": "unknown", "note": "Confirm Premium Outbound Integration entitlement with the SAP owner.", "src": []},
+     "adls_gen2_permissions": {"status": "unknown", "note": "Confirm ADLS Gen2 staging and permissions with the storage owner.", "src": []}
+    },
+    "commercial_note": "SAP Datasphere Premium Outbound Integration: unpriced / to confirm.",
+    "src": ["G59-P3", "G59-P7"]
+   }
   },
   {
    "id": "src-product-configurator",
@@ -2501,14 +2514,27 @@
    "id": "src-sap-ariba",
    "name": "SAP Ariba",
    "system": "SAP Ariba",
-   "path": "pipeline",
-   "item": "lakehouse",
+   "path": "unresolved",
+   "item": null,
    "journeys": [
     "D2"
    ],
    "data_class": "confidential",
-   "status": "next",
-   "owner": null
+   "status": "later",
+   "owner": null,
+   "route_assessment": {
+    "state": "conditional",
+    "candidate_path": null,
+    "prerequisites": {
+     "supported_source": {"status": "unknown", "note": "Confirm a supported source route; Ariba does not select one.", "src": []},
+     "fabric_capacity": {"status": "unknown", "note": "Confirm the required Fabric capacity with its owner.", "src": []},
+     "datasphere_environment": {"status": "unknown", "note": "Confirm whether a SAP Datasphere environment applies.", "src": []},
+     "premium_outbound_integration": {"status": "unknown", "note": "Confirm whether Premium Outbound Integration entitlement applies.", "src": []},
+     "adls_gen2_permissions": {"status": "unknown", "note": "Confirm whether ADLS Gen2 staging and permissions apply.", "src": []}
+    },
+    "commercial_note": "SAP Datasphere Premium Outbound Integration: unpriced / to confirm.",
+    "src": ["G59-P3", "G59-P7"]
+   }
   },
   {
    "id": "src-supplier-risk-feed",
@@ -3226,7 +3252,7 @@
    "domain": "Procurement",
    "status": "hypothesis",
    "owner": "Chief Procurement Officer",
-   "purpose": "Trusted supplier 360 for the Source-to-Pay Journey: reports and the journey's agents",
+   "purpose": "Conditional proposal for supplier 360 in the Source-to-Pay Journey: output ports are proposals until the SAP source route and prerequisites are confirmed",
    "uses": [
     {
      "use": "analytics"
@@ -3268,7 +3294,7 @@
    "domain": "Procurement",
    "status": "hypothesis",
    "owner": "Chief Procurement Officer",
-   "purpose": "Trusted contracts & prices for the Source-to-Pay Journey: reports and the journey's agents",
+   "purpose": "Conditional proposal for contracts & prices in the Source-to-Pay Journey: output ports are proposals until the SAP Ariba source route and prerequisites are confirmed",
    "uses": [
     {
      "use": "analytics"
@@ -3575,7 +3601,7 @@
    "domain": "Finance",
    "status": "hypothesis",
    "owner": "Chief Financial Officer",
-   "purpose": "Trusted general ledger for the Record-to-Report Journey: reports and the journey's agents",
+   "purpose": "Conditional proposal for general ledger in the Record-to-Report Journey: output ports are proposals until the SAP source route and prerequisites are confirmed",
    "uses": [
     {
      "use": "analytics"
