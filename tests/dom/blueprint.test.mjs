@@ -7,6 +7,67 @@ import { openBlueprint, txt, wait } from "./helpers.mjs";
 const VIEWS = ["Overview", "Org model", "Blueprint", "Journeys", "Use cases", "PRD", "Agents", "Agent identity", "Target architecture",
   "Ontology", "IT readiness", "Roadmap", "Plan", "Attendees", "Discovery", "Risks", "Evidence"];
 
+it("G66 PRD download preserves backslashes and pipes while folding CRLF cells", async () => {
+  const bp = await openBlueprint(undefined, { change(data) {
+    data.prd.maturity = [
+      ["Caldova \\| readiness\r\nNext line", "Current\\", "Target | agreed"],
+      ["Ordinary maturity", "Current", "Target"],
+      ["Unconfirmed", "", null]
+    ];
+  } });
+  try {
+    await bp.go("#/prd");
+    const blobs = [], names = [];
+    bp.window.URL.createObjectURL = (blob) => { blobs.push(blob); return "blob:test"; };
+    bp.doc.addEventListener("click", (e) => {
+      const link = e.target.closest("a[download]");
+      if (link) { names.push(link.download); e.preventDefault(); }
+    });
+    const button = [...bp.view().querySelectorAll("button")].find((b) => txt(b) === "Download the PRD (Markdown)");
+    assert.ok(button, "actual PRD download control");
+    button.click();
+    assert.deepEqual(names, ["caldova-prd.md"]);
+    assert.equal(blobs.length, 1);
+    assert.equal(blobs[0].type, "text/markdown;charset=utf-8");
+    const rows = (await blobs[0].text()).split("\n");
+    assert.equal(rows.find((row) => row.startsWith("| Caldova")),
+      String.raw`| Caldova \\\| readiness Next line | Current\\ | Target \| agreed |`);
+    assert.ok(rows.includes("| Ordinary maturity | Current | Target |"));
+    assert.ok(rows.includes("| Unconfirmed | [To complete] | [To complete] |"));
+    assert.deepEqual(bp.errors, []);
+  } finally { await bp.close(); }
+});
+
+it("G66 render failure presents HTML-like exception text literally", async () => {
+  const bp = await openBlueprint();
+  const createElement = bp.doc.createElement;
+  const message = '<em data-error-test>Caldova render failure</em><img src=x onerror="window.errorExecuted = true">';
+  try {
+    // Fail within renderPrd, not the navigation chrome outside render's catch.
+    bp.doc.createElement = function(tag, options) {
+      if (tag === "blockquote") throw new bp.window.Error(message);
+      return createElement.call(this, tag, options);
+    };
+    await bp.go("#/prd");
+    const notice = bp.view().querySelector(".empty");
+    assert.ok(notice, "render failure notice");
+    assert.equal(notice.querySelector("b").textContent, "This view could not be drawn.");
+    assert.equal(notice.querySelector("p").textContent, message);
+    assert.equal(notice.querySelector("p").children.length, 0);
+    assert.equal(bp.doc.querySelector("[data-error-test]"), null);
+    assert.equal(bp.doc.querySelector('img[src="x"]'), null);
+    assert.equal(bp.window.errorExecuted, undefined);
+    assert.ok(bp.errors.length > 0, "console diagnostic retained");
+    assert.ok(bp.errors.every((error) => error.startsWith("console.error: Error: " + message)), bp.errors.join("\n"));
+    bp.doc.createElement = createElement;
+    await bp.go("#/overview");
+    assert.equal(bp.view().querySelector(".empty"), null, "navigation recovers after render failure");
+  } finally {
+    bp.doc.createElement = createElement;
+    await bp.close();
+  }
+});
+
 it("G59 saved readiness cannot certify conditional SAP", async (t) => {
   for (const variant of ["current", "no-current", "other-group"]) {
     await t.test(variant, async () => {

@@ -3521,7 +3521,7 @@ function renderPrd(){
   return out;
 }
 function mdTable(cols, rows){
-  function esc(x){ return String(x === undefined || x === null || x === "" ? "[To complete]" : x).replace(/\|/g, "\\|").replace(/\r?\n/g, " "); }
+  function esc(x){ return String(x === undefined || x === null || x === "" ? "[To complete]" : x).replace(/\\/g,"\\\\").replace(/\|/g, "\\|").replace(/\r?\n/g, " "); }
   return ["| " + cols.join(" | ") + " |", "|" + cols.map(function(){ return "---"; }).join("|") + "|"]
     .concat(rows.map(function(r){ return "| " + r.map(esc).join(" | ") + " |"; })).concat([""]);
 }
@@ -4000,7 +4000,12 @@ function render(scrollTop){
   var v = document.getElementById("view");
   var out;
   try { out = RENDER[state.view](); if (previewPresent()) out = [previewNotice()].concat(out); }
-  catch (e) { out = [h("div",{class:"empty"}, h("b",null,"This view could not be drawn."), h("p",null, String(e && e.message || e)))]; if (window.console) console.error(e); }
+  catch (e) {
+    var errorText = h("p");
+    errorText.textContent = String(e && e.message || e);
+    out = [h("div",{class:"empty"}, h("b",null,"This view could not be drawn."), errorText)];
+    if (window.console) console.error(e);
+  }
   var selectedJourney = document.querySelector('#subnav [role="tab"][aria-selected="true"]');
   var content = selectedJourney ? h("section",{id:"journey-panel",role:"tabpanel","aria-labelledby":selectedJourney.id}, out) : out;
   v.replaceChildren(); add(v, content); v.appendChild(pager());
