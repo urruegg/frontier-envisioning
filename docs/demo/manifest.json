@@ -1,13 +1,13 @@
 {
   "schema": "frontier-docs-demo/1.0",
   "profile": "core",
-  "plugin_version": "1.10.0",
-  "source_sha256": "90647a52fe3b96739fee6398281746de8b3b8f1540903e19c1d4d086de57323f",
+  "plugin_version": "1.10.1",
+  "source_sha256": "50bd9ff95bfeb5871dd95d4f39dc71924e0a2f3e3e229af37eb21a7bd1aa7a8b",
   "html": {
     "file": "caldova-blueprint.html",
-    "sha256": "2e8d837642dd65659d20cb513884824d2ee0158c6a5cd0cbaa39880943d65bd2",
-    "canonical_sha256": "df012181483342ebefac79ea0d0a5fe09e97695076e28def125eb9278b0c7d5a",
-    "generated": "2026-11-13"
+    "sha256": "c90582e79f33789cb0de8c0800d16e3e0ede6a5048ae5a3ad2c5d14f9fb978b6",
+    "canonical_sha256": "981affa496f357a8f7794e7d80fefa2e0b0b401d31937e15ba8ef35fa9e312df",
+    "generated": "2026-11-24"
   },
   "capture": {
     "browser": "156.0.8078.4",
@@ -59,7 +59,7 @@
         "file": "ontology.png",
         "width": 1440,
         "height": 1000,
-        "sha256": "e313335afbc9342942ece1fbcc92f46af936357ba6ec5b9c426023784bc386a2"
+        "sha256": "cddf8d00e3dbdc8004d54215856f34565f9cfe0d524586dc668e5c0d8eb797b7"
       },
       {
         "name": "landing-zone",
