@@ -226,3 +226,22 @@ or bump a version merely to escape a failure. Human-only protected session
 routing/native controls [#8](https://github.com/urruegg/frontier-envisioning/issues/8)
 remain outstanding; do not edit or treat them as migrated. Their workflow
 decisions are not part of this correction.
+
+## Bounded CodeQL follow-up, 24 November 2026
+
+The regenerated demo in draft [#65](https://github.com/urruegg/frontier-envisioning/pull/65)
+exposed existing Markdown escaping and exception-text analysis alerts.
+The maintainer was shown the bounded design and test-first plan, then selected
+**`approve-bounded-codeql-fix`**. Real
+[#66](https://github.com/urruegg/frontier-envisioning/issues/66) records that
+separate scope/inline-plan/readiness decision and its acceptance criteria.
+It is not approval of a broader audit or a protected label/control change.
+
+Escape Markdown backslashes and table separators without losing literal cell
+content. Keep render failures explicitly text-only with the existing visible
+error notice and console diagnostic. The generic DOM helper already uses text
+nodes for strings; no exploitable exception path is asserted. Do not suppress
+or dismiss either alert. Use focused actual-download/error regressions, existing
+generators and final quality/browser/CodeQL checks. No layout, route, icon,
+data-model, FinOps, dependency or version change is added. The original G59
+criteria and human #52/#8 boundaries remain unchanged.

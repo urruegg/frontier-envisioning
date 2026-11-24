@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.7 |
+| Version | 0.8 |
 | Date | 2026-11-24 |
 | Author | AI assistant (AI-assisted documentation) |
-| Status | Runtime #60, renderer #62 and profile/distribution #63 passed bounded reviews; #61 prose validated; integrated gates and human acceptance pending |
+| Status | Core correction strict L1 passed; separately human-approved #66 CodeQL follow-up, full L2 and final handover remain pending |
 | Scope | Parent #58 programme and approved 1.10.1 correction #59; staged implementation and evidence |
 | References | [Catalogue](README.md), [Parent #58](https://github.com/urruegg/frontier-envisioning/issues/58), [Correction #59](https://github.com/urruegg/frontier-envisioning/issues/59), [Idea](../ideas/2026-11-17-optional-systems-extensions.md), [Correction spec](../specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md), [Retention #52](https://github.com/urruegg/frontier-envisioning/issues/52), [Protected routing #8](https://github.com/urruegg/frontier-envisioning/issues/8) |
 
@@ -23,6 +23,7 @@ and Dynamics 365 later. This early record is not a ready sprint or a schedule.
 | [#62](https://github.com/urruegg/frontier-envisioning/issues/62) | [Correction output](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-03/04](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Renderer Task 7](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-7-test-then-correct-markdown-html-and-actual-downloads) | `@urruegg` accountable; bounded renderer, size M | Reviewed #60 runtime contract | Both bounded advisory review stages passed; integrated L2 still pending | `ccd72ce`; source-qualified review checkpoint below, not human sign-off |
 | [#63](https://github.com/urruegg/frontier-envisioning/issues/63) | [Correction verification](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-05 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Profile/distribution Tasks 9-10](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-9-add-only-the-necessary-named-1101-raster-input-profile) | `@urruegg` accountable; bounded builder, size M | Reviewed #60/#62 interfaces | Finite profile, current example and extracted process checks passed both bounded reviews; final integration pending | `da363ce`; independent 37 raster/14 example tests and qualified extracted probes below |
 | [#61](https://github.com/urruegg/frontier-envisioning/issues/61) | [Current guidance](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-05](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Prose Task 11](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-11-update-the-example-and-current-methodrequirements-documentation) | `@urruegg` accountable; bounded documentation, size S | Reviewed runtime fields and actual CLI behaviour | Method/schema-reference/current product records aligned; parent prose review and strict docs passed | Eight scoped files; no fabricated prose RED or final integrated gate claim |
+| [#66](https://github.com/urruegg/frontier-envisioning/issues/66) | [Correction programme](../ideas/2026-11-17-optional-systems-extensions.md) | [Bounded helper follow-up](../specs/2026-11-17-process-governance-sap-grounding-design.md#bounded-codeql-follow-up-24-november-2026) | [Approved inline amendment](../plans/2026-11-17-process-governance-sap-grounding-plan.md#approved-bounded-codeql-amendment-24-november-2026) | `@urruegg` accountable and assigned; bounded renderer, size S | Actual `approve-bounded-codeql-fix` answer; current gate freeze released before edits | Approved implementation pending; no protected ready label | Two existing helper alerts in draft #65; no alert suppression or dismissal |
 
 These are real programme and runtime work-item rows. There are no invented
 child issues for Dynamics 365 or the remaining packs. A document author is not an
@@ -236,6 +237,37 @@ validation or commit. The controller reviewed the actual prose and ran
 `git diff --check`: zero documentation errors, **ALL GATES PASSED**, clean
 Ruff and whitespace. The Python change is descriptive docstring only.
 No artificial RED is claimed for prose.
+
+## First complete strict integration gate
+
+Against the core correction at `2e9bfbd1b110eb5c860f8f4fe8d21be962f9d33e`,
+`python tools/dev.py check --strict` ended with **ALL GATES PASSED**:
+858 unit/pipeline tests and 2,946 subtests passed; seven tests were skipped
+(four Windows symlink-privilege cases, two superseded release contracts and
+the unreleased current-version comparison). All 199 DOM tests passed.
+Ruff and documentation checks passed; the six existing ESLint warnings remain.
+The normal full demo, finite profile, ten-capture drift check, self-test,
+package and neutrality checks passed with no missing optional tool.
+
+The plugin SHA-256 at this checkpoint is
+`9866fa1032c6916ba8d092225195c6c6378c8c096b51283367eacee5ea60e8ae`.
+The 1.10.1 release step reports that there is no manifest yet; its successful
+step status is **not** published 1.10.0 reproduction or #52 acceptance.
+The earlier actual-published-manifest comparison remains separately recorded.
+
+The first strict attempt exposed the coupled product-document contract:
+new approved identifiers and explicit A.12/A.13/B.9 qualifications were not
+isolated from historical receipt checks, and current Status fields needed the
+explicit no-release-approval statement. Focused RED/GREEN in `90b1809` and
+`4bebfdf` fixed these without changing receipt hashes. All 27 preservation
+tests and 301 subtests passed. A reviewer also passed seven focused checks
+and rejected nine additional historical-row/boundary mutations.
+
+Full repository checks do not replace CodeQL. The pushed draft exposed two
+existing helper alerts. The maintainer explicitly approved the bounded #66
+design/inline plan in the structured answer recorded in that issue; scope
+was not silently expanded. Its implementation and final L2/CodeQL/new-head
+verification remain separate from this complete core-correction gate.
 
 ## Historical planning validation and handoff
 

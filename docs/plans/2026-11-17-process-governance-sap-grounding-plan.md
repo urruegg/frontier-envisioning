@@ -654,3 +654,27 @@ Where supported, eligible prose may go to `docs-agent`,
 checker/code to `frontier-builder` and HTML to `frontier-renderer`; no agents
 are created now, and no configured handoff bypasses approval or expands scopes.
 Do not commit, push or open a PR as part of this planning handoff.
+
+## Approved bounded CodeQL amendment, 24 November 2026
+
+After draft [#65](https://github.com/urruegg/frontier-envisioning/pull/65)
+surfaced two existing helper alerts, the maintainer selected the structured
+answer **`approve-bounded-codeql-fix`** for the exact bounded scope below.
+The real [#66 inline work package](https://github.com/urruegg/frontier-envisioning/issues/66)
+records owner, decision and testable acceptance. This small-change amendment
+does not reuse the original `35ad763` approval as authority for new work.
+
+1. In existing DOM tests, reproduce actual Markdown download cells containing
+   backslashes, pipes and newlines; observe assertion RED, then minimally fix
+   `mdTable` escaping in `src/renderer/template.js` and observe GREEN.
+2. Exercise an HTML-like render error as literal text with no inserted element.
+   Make its text-only DOM assignment explicit, preserving the visible notice
+   and console diagnostic. Record an already-passing assertion as regression
+   evidence, not fictional RED.
+3. Regenerate template/install/gallery only through existing commands; run
+   focused DOM/CSP checks and ordered bounded reviews before final full checks,
+   L2 and the actual CodeQL result on the pushed head.
+
+Only these helpers, existing focused tests, generated outputs and related
+evidence change. Do not dismiss/suppress alerts, edit controls/workflows, add
+dependencies, change the 1.10.1 version, or perform human #52/#8 actions.
