@@ -4,7 +4,33 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
 
 ## 1.10.1 — unreleased
 
-- Process grounding (#60): reject malformed SAP route assessments before normalisation, customer projection or wrapper output effects; preserve recorded choices and conditional guidance.
+- **Current governance (#59, #60, #61, #62).** New process guidance uses
+  source-qualified OneLake catalog/Fabric-domain grouping, not creation of
+  retiring Unified Catalog/classic governance structures. Grouping is not
+  visibility, access or enforced security. Preserve Purview security/compliance,
+  labels/DLP and existing-estate migration gaps without claiming full parity.
+- **Conditional SAP routes (#60, #61, #62).** Document the supported-family
+  Datasphere → ADLS Gen2 → Fabric/OneLake route, snapshot/changes, Delta tables
+  and read-only SQL replica. Require five owner-evidenced estate prerequisites;
+  keep Premium Outbound Integration unpriced/to confirm. Fresh sources remain
+  unresolved/null/later; neither names nor complete prerequisites select a
+  route automatically. No ready pipeline fallback or automatic FinOps work.
+- **Recorded evidence, current assessment (#60, #62).** Preserve saved
+  paths/items/statuses/tables/domains, IDs/citations and feedback/verdicts.
+  Add current guidance/readiness without turning conditional routes into bound,
+  mounted or publishable claims; saved F-06 verdicts cannot pass current readiness.
+  Ordinary conditional drafts warn; strict warnings fail before output/new
+  directories/overwrite. Malformed assessments and citation collisions fail
+  even ordinarily, before projection/output effects. Privacy/Turtle contracts
+  and eight skills (seven GA wrappers, optional Preview FinOps) are unchanged.
+- **Finite profile and distribution proof (#63).** Add only the named 1.10.1
+  raster input profile and extracted process/core-without-FinOps checks.
+  The measured 205 non-raster inputs, 223 PNG hashes and identity ZIP are
+  unchanged; historical profiles/assets are retained. The
+  [current verification record](docs/solution-design.md#process-correction-verification-24-november-2026)
+  separates focused results from pending final post-prose strict L1/L2,
+  docs-demo regeneration and exact-package/extraction proof. This is not a
+  release; published 1.10.0 and human #52/#8 acceptance remain separate.
 
 ## 1.10.0
 

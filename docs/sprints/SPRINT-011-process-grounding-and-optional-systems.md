@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
-| Date | 2026-11-18 |
+| Version | 0.7 |
+| Date | 2026-11-24 |
 | Author | AI assistant (AI-assisted documentation) |
-| Status | Runtime #60 implemented and both bounded review stages passed at 0e1c389; renderer/profile/prose and full verification pending |
+| Status | Runtime #60, renderer #62 and profile/distribution #63 passed bounded reviews; #61 prose validated; integrated gates and human acceptance pending |
 | Scope | Parent #58 programme and approved 1.10.1 correction #59; staged implementation and evidence |
 | References | [Catalogue](README.md), [Parent #58](https://github.com/urruegg/frontier-envisioning/issues/58), [Correction #59](https://github.com/urruegg/frontier-envisioning/issues/59), [Idea](../ideas/2026-11-17-optional-systems-extensions.md), [Correction spec](../specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md), [Retention #52](https://github.com/urruegg/frontier-envisioning/issues/52), [Protected routing #8](https://github.com/urruegg/frontier-envisioning/issues/8) |
 
@@ -18,11 +18,11 @@ and Dynamics 365 later. This early record is not a ready sprint or a schedule.
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
 | [#58](https://github.com/urruegg/frontier-envisioning/issues/58) | [Programme and actual decisions](../ideas/2026-11-17-optional-systems-extensions.md#actual-human-decisions) | [First correction only](../specs/2026-11-17-process-governance-sap-grounding-design.md); wider pack designs not yet written | [First correction plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md); wider pack plans remain separate | `@urruegg` accountable; issue unassigned | #59 first; separate framework/Dynamics 365 written design and approvals | Decision intake, size M/P1; programme direction agreed, not ready for all-pack execution | Actual written correction approval recorded; no implementation result |
-| [#59](https://github.com/urruegg/frontier-envisioning/issues/59) | [Correction stage](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Tasks 1-12](../plans/2026-11-17-process-governance-sap-grounding-plan.md); approved at `35ad763` | `@urruegg` accountable and assigned; agent involvement recorded, not approval | Reviewed runtime/rendering/support slices; [#52](https://github.com/urruegg/frontier-envisioning/issues/52) final release/reproduction retention | Runtime implemented/reviewed; remaining integration and full gates pending | Sources checked 17 November; runtime `0e1c389` checkpoint below |
+| [#59](https://github.com/urruegg/frontier-envisioning/issues/59) | [Correction stage](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Tasks 1-12](../plans/2026-11-17-process-governance-sap-grounding-plan.md); approved at `35ad763` | `@urruegg` accountable and assigned; agent involvement recorded, not approval | Reviewed runtime/rendering/support slices; [#52](https://github.com/urruegg/frontier-envisioning/issues/52) final release/reproduction retention | Runtime, renderer and support implemented/reviewed; prose validated; integrated gates pending | Sources checked 17 November; commit-qualified checkpoints below |
 | [#60](https://github.com/urruegg/frontier-envisioning/issues/60) | [First correction](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01/02/04/07](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Runtime Tasks 1-6 and 8](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-1-verify-the-approved-execution-boundary-and-baseline) | `@urruegg` accountable; bounded builder, size M | Actual #59 plan approval; standard bump before plugin edits | Both bounded advisory stages passed; whole-product acceptance separate | `0e1c389`; 39 reviewer tests plus independent owner probes; broader builder result qualified below |
-| [#62](https://github.com/urruegg/frontier-envisioning/issues/62) | [Correction output](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-03/04](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Renderer Task 7](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-7-test-then-correct-markdown-html-and-actual-downloads) | `@urruegg` accountable; bounded renderer, size M | Reviewed #60 runtime contract | Ready for scoped test-first handoff; no protected ready label claimed | Real issue, approved plan and runtime review; no renderer result yet |
-| [#63](https://github.com/urruegg/frontier-envisioning/issues/63) | [Correction verification](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-05 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Profile/distribution Tasks 9-10](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-9-add-only-the-necessary-named-1101-raster-input-profile) | `@urruegg` accountable; bounded builder, size M | Reviewed #60/#62 interfaces | Pending finite profile, example and final extracted-package proof | No profile, self-test or final package result yet |
-| [#61](https://github.com/urruegg/frontier-envisioning/issues/61) | [Current guidance](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-05](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Prose Task 11](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-11-update-the-example-and-current-methodrequirements-documentation) | `@urruegg` accountable; bounded documentation, size S | Reviewed runtime fields and actual CLI behaviour | Pending method/schema-reference/current product-record alignment | No completed prose or future gate claims |
+| [#62](https://github.com/urruegg/frontier-envisioning/issues/62) | [Correction output](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-03/04](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Renderer Task 7](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-7-test-then-correct-markdown-html-and-actual-downloads) | `@urruegg` accountable; bounded renderer, size M | Reviewed #60 runtime contract | Both bounded advisory review stages passed; integrated L2 still pending | `ccd72ce`; source-qualified review checkpoint below, not human sign-off |
+| [#63](https://github.com/urruegg/frontier-envisioning/issues/63) | [Correction verification](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-05 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Profile/distribution Tasks 9-10](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-9-add-only-the-necessary-named-1101-raster-input-profile) | `@urruegg` accountable; bounded builder, size M | Reviewed #60/#62 interfaces | Finite profile, current example and extracted process checks passed both bounded reviews; final integration pending | `da363ce`; independent 37 raster/14 example tests and qualified extracted probes below |
+| [#61](https://github.com/urruegg/frontier-envisioning/issues/61) | [Current guidance](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-05](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Prose Task 11](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-11-update-the-example-and-current-methodrequirements-documentation) | `@urruegg` accountable; bounded documentation, size S | Reviewed runtime fields and actual CLI behaviour | Method/schema-reference/current product records aligned; parent prose review and strict docs passed | Eight scoped files; no fabricated prose RED or final integrated gate claim |
 
 These are real programme and runtime work-item rows. There are no invented
 child issues for Dynamics 365 or the remaining packs. A document author is not an
@@ -139,7 +139,108 @@ identities. This candidate hash is not a final integrated package or a
 published release. Advisory code review is not human approval or financial,
 licensing, tenant or deployment authority.
 
-## Documentation evidence and handoff
+## Renderer review and resumed verification, 24 November
+
+The maintainer requested continuation of the existing approved correction.
+The linked worktree remains `fix/59-process-grounding`; the unrelated primary
+checkout's editor settings and original field briefs remain untouched.
+
+At `ccd72ce4e95d9e98a9fe364b105cde60dfb3965f`, a read-only reviewer passed
+the renderer specification stage, followed by a separate read-only
+correctness reviewer. Neither reported Critical, Important or Minor findings
+in the bounded #62 scope. These are advisory code assessments, not human
+approval or whole-product acceptance.
+
+The specification reviewer reported 16 passing G59 DOM cases, a failing
+base-renderer control, Python document/Turtle parity and the actual G59 browser
+callback passing under strict CSP. Its browser callback used a verified
+development-only SVG fixture and an installed browser; it was **not** the
+standard Playwright runner or final L2/package proof. Template and generated
+install-inventory comparisons passed. The controller subsequently restored the
+standard runner's missing Chromium revision in the isolated worktree.
+
+The controller's earlier `python tools/dev.py check` used global Python 3.14,
+not the plan's existing primary virtual environment. It observed **849 tests
+passed, seven skipped**, a passing plugin self-test and package build, then
+**GATE FAILED: demo build** because normal 1.10.1 generation fell back to an
+unavailable PNG converter. Ruff was also absent from that global environment.
+The primary virtual environment supplies Python 3.11 and Ruff; its existing
+1.10.0 finite-profile baseline passed five tests. The required finite 1.10.1
+profile remains #63, not a reason to use SVG-only output as final proof.
+
+The actual published 1.10.0 plugin ZIP and release manifest were downloaded
+read-only from the approved release. Their SHA-256 values match
+`9e7985731040ee05d83c8dbcee92ad20bc09c584b70b4e994f7fde71dfaf4b89`
+and `41cefe7d44411d6f58d68a7bd6d2ebf6d15074ecf0d385dfea10153ab5dd14a3`.
+Against the clean independent worktree at the immutable release source,
+`python tools/verify_release.py --manifest <downloaded-release-manifest.json> --force`
+reported **release 1.10.0: 4 of 4 artefacts reproduced**. This compares existing
+tag-build outputs with the actual published manifest; it is not a new build
+or a 1.10.1-to-1.10.0 comparison. The tag object and source still match the
+identities recorded above.
+
+Protected `releases/1.10.0/manifest.json` is still absent on main. This evidence
+does not complete human-only #52 retention/merge acceptance. Read-only GitHub
+inspection also reports main unprotected with no rulesets; protected routing
+and effective native controls remain human-only #8 work.
+
+## Profile and distribution implementation checkpoint
+
+Commit `da363cebaf4acf3d40ec40fb5f1c9f2c9dcdde69` adds only the named
+1.10.1 raster profile, its focused tests, the current conditional Caldova
+example and installed process/self-test coverage. The builder reported these
+actual test-first results:
+
+- Raster RED: six new tests, 19 failures because 1.10.1 replay was rejected;
+  GREEN: 37 tests across the six approved raster modules.
+- Example RED: 12 Caldova/CommonDataModel tests, three failures; corrected
+  unknown-route proposals preserve identifiers, mappings and Employee gaps.
+- Executed self-test assertion RED: one failure for nine missing checks;
+  GREEN: 16 extracted-process/self-test/distribution tests, then 118 tests
+  across ontology and distribution.
+- Plugin self-test: 77 checks passed. Package and precommit passed, with
+  Ruff clean and the six existing renderer ESLint warnings unchanged.
+
+The measured 205 non-raster inputs and 223 PNG hashes remain unchanged.
+Historical profiles/assets and their pins were not altered. The new input
+profile SHA-256 is
+`3a75f4ffe3d12cf20c137663df6daf1bc48b7a2033a8a9e03ddaa8a3152c8b4e`;
+the normal full-demo identity ZIP remains
+`e40b132d2e1d396ad7ee681d09931b3e35cd5728081cb01235b17396059cfdf9`.
+The builder's verified extracted intermediate plugin candidate is
+`a91dd40f7b47500edce1a47f3fb7f9a6cc959d751a75d988d6192954297650c7`.
+That digest predates #61 prose and is not the final integrated package.
+
+The independent #63 reviewer subsequently passed specification, then bounded
+correctness, with no Critical, Important or Minor findings. It independently ran
+37 raster and 14 example/CommonDataModel tests, verified the existing full
+identity artefacts and checked the candidate's 101 members against source.
+Two extracted/self-test probes reused the verified existing candidate ZIP
+instead of invoking a builder; this was not a new final package build.
+In-memory counterfactual checks reproduced test sensitivity, not historical
+execution order. Final strict L1/L2, regenerated documentation, final package
+identity and extracted execution remain integration tasks.
+
+The controller then ran the standard Playwright G59 case against the full
+normal demo under real CSP: **one test passed** with Chromium revision 1248.
+The filename filter `ontology-preview.spec.mjs` avoids interpreting Windows
+path separators as regular-expression escapes. This focused result is not
+the final full L2 suite.
+
+## Current documentation integration
+
+The documentation agent aligned the eight approved #61 prose/docstring files
+with the reviewed contract. It had no shell tool, so it did not run or claim
+validation or commit. The controller reviewed the actual prose and ran
+`python tools/dev.py docs --strict`, scoped Ruff on `build_ontology.py` and
+`git diff --check`: zero documentation errors, **ALL GATES PASSED**, clean
+Ruff and whitespace. The Python change is descriptive docstring only.
+No artificial RED is claimed for prose.
+
+## Historical planning validation and handoff
+
+The following paragraphs retain the original planning checkpoint; the later
+implementation and review evidence above supersedes its next-step wording.
 
 The pre-edit `python tools/dev.py docs --strict` baseline passed with zero
 errors. The first six-document draft then produced **three real errors**:

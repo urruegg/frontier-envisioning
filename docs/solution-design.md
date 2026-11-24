@@ -3,11 +3,11 @@
 | Field | Value |
 |---|---|
 | Version | 1.8 |
-| Date | 2026-11-13 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence) |
-| Status | Maintained design; 1.10.0 local runtime gates verified, archive/human acceptance separate; no release approval implied |
-| Scope | Approved 1.10.0 release-build architecture and scope-qualified verification; preserved 1.9.2/1.9.1 and earlier design/verification/inventory |
-| References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md) |
+| Date | 2026-11-24 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose) |
+| Status | Maintained design; bounded 1.10.1 slices reviewed, final integrated/human acceptance pending; published 1.10.0 baseline retained |
+| Scope | Bounded unreleased 1.10.1 process flow/verification and preserved 1.10.0/earlier design, evidence and inventory |
+| References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61) |
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Both builders reuse the package
 module's bounded, recursive byte/ZIP validator before writing inventory,
@@ -27,6 +27,146 @@ results or approvals. The appendix retains the original 1.6.0 inventory
 (including its former combined-document path); it is not a current file list.
 The [unreleased 1.6.1 requirement](prd.md#161-patch-workflow-legend-accessibility)
 remains separate from these historical claims.
+
+## 1.10.1 process grounding correction
+
+**24 November 2026: bounded implementation for an unreleased patch.**
+The [current PRD requirements/acceptance](prd.md#patch-requirements-and-acceptance),
+[approved spec](specs/2026-11-17-process-governance-sap-grounding-design.md),
+[exact plan](plans/2026-11-17-process-governance-sap-grounding-plan.md) and
+[SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md) govern
+[#59](https://github.com/urruegg/frontier-envisioning/issues/59) and this
+[#61 prose slice](https://github.com/urruegg/frontier-envisioning/issues/61).
+`@urruegg` is accountable. The written-spec and plan/readiness receipts record
+actual human decisions; the [plan approval at 35ad763](https://github.com/urruegg/frontier-envisioning/issues/59#issuecomment-6951849396)
+does not grant release, protected-record or tenant authority.
+Published 1.10.0 and every historical checkpoint/count below are retained,
+not revalidated by these notes.
+
+### Current process flow and evidence boundaries
+
+The reviewed implementation corrects the existing offline stdlib pipeline,
+not a new route framework. Schema versions remain `frontier-blueprint/1.0`,
+`frontier-ontology/1.0` and `frontier-fabric-iq-canon/1.0`.
+The [schema reference](../plugin/skills/frontier-blueprint/references/blueprint-schema.md#additive-process-grounding-unreleased-1101)
+and [method](../plugin/skills/frontier-process/references/ontology-method.md)
+document the actual fields and CLI boundaries.
+
+1. **Seed:** SAP names are intercepted before generic rules. Fresh sources
+   have `path: "unresolved"`, `item: null`, `status: "later"` and an unknown
+   five-record `route_assessment`; the candidate is `"mirroring"` or `null`,
+   not a route selection or ready pipeline fallback.
+2. **Preflight and project:** validate raw assessment shapes and reserved
+   citation identities before coercion, audience projection or output effects.
+   Preserve `internal`/visibility/`src`/`content_src` ancestry, including nested
+   prerequisite notes, domain proposals and feedback. Public guidance cannot
+   launder restricted evidence into JSON, HTML, Markdown or Turtle.
+3. **Normalise a detached proposal:** preserve saved route/item/scheduling
+   status, table/domain choices, IDs, citations and feedback/verdicts as
+   **recorded evidence**. Missing legacy SAP assessments receive the unknown
+   checklist. Derive `route_assessment.state`; do not trust imported flags.
+   Append current citations without rewriting originals or retargeting S IDs.
+4. **Assess design selection:** require a named source owner, an explicitly
+   selected supported path/matching item and all five confirmed prerequisites
+   with non-empty notes and resolvable owner-authored estate references in
+   Blueprint `evidence`. Estate typing/IDs are local structural checks, not
+   authentication. Public documentation, names and placeholder owners are not
+   confirmation. `owner_confirmed` is an offline owner assertion, not tenant,
+   licence, provider-GA, deployment or publication verification. Complete
+   prerequisites do not auto-select an unresolved path.
+5. **Bindings and products:** new unresolved default bindings have silver
+   layer, null item/table and `origin: "default"`. Retain authored tables as
+   recorded proposals, but exclude conditional sources from current bound/
+   mounted claims and `stats.bound`. Add `source route <id>: conditional` gaps
+   to dependent products even when their other publication fields are filled.
+   Independent supported eventhouse/secondary bindings remain intact.
+6. **Apply, render and export:** add `current_guidance.governance`/`.sap`,
+   each `{text, src}`, alongside saved blocks. Derive
+   `current_readiness["F-06"]` with `status`/`gaps`; any conditional route keeps
+   it open without changing the saved F-06 verdict or note. The Blueprint
+   honours that effective process F-06 status in readiness aggregates. HTML
+   and all three Markdown variants/downloads carry the same current guidance.
+   Existing grouping/privacy/feedback/Turtle contracts remain unchanged.
+
+Ordinary conditional drafts succeed with named warnings. For
+`build_ontology.py --strict`, warnings fail with `files: {}` before creating a
+new output directory or replacing good outputs. Malformed assessments and
+reserved G59 citation collisions fail even without strict mode, before
+projection/output effects. Invalid references remain diagnostic; no unknown
+prerequisite becomes a success default. Local deterministic files do not
+certify native Fabric import or ready tenant items.
+
+### Current sources and historical governance direction
+
+The parent checked the [six official source records](specs/2026-11-17-process-governance-sap-grounding-design.md#evidence-known-facts-and-assessment)
+on **17 November 2026**, not 24 November. Canon `checked: 2026-11-11` and
+S1–S44 remain historical; G59-P1/P2/P3/P5/P6/P7 have their own updated/checked
+dates and are appended to detached `sources_doc`.
+
+New guidance uses **OneLake catalog and Fabric-domain grouping**
+(G59-P1/P2/P5/P6). Assignment does not change item visibility/access, grant
+permission or enforce security. Preserve actual workspace/item permissions,
+OneLake security, Purview security/compliance, sensitivity labels and DLP.
+Unified Catalog/classic data-governance retirement is not retirement of all
+Purview. Existing-estate feature/contractual/regulatory gaps need the governance
+owner/account team; no full feature parity or migration approval is asserted.
+Derived `fabric_domain`/`governance_domain` keys remain for compatibility;
+new labels describe grouping, while authored saved domain rows remain recorded.
+
+[ADR-0027](adr/0027-cdm-grounding-and-data-products.md)'s earlier Purview-domain
+direction and S38/S39 context are historical rationale, **qualified for current
+designs by this section and the approved #59 spec**, not new creation guidance.
+The ADR is not edited or accepted. It and
+[ADR-0026](adr/0026-process-ontology-fabric-iq.md) remain **Proposed**; no new ADR
+is needed for this sourced-guidance correction.
+
+The SAP candidate (G59-P3/P7) is **SAP Datasphere → ADLS Gen2 → Fabric/OneLake**:
+initial snapshot and changes into OneLake Delta tables with a read-only
+replicated SQL surface. The five prerequisites are `supported_source`,
+`fabric_capacity`, `datasphere_environment`, `premium_outbound_integration`
+and `adls_gen2_permissions`. Confirm actual source-family support, existing
+capacity, suitable environment, entitlement and staging permissions with the
+owner. Premium Outbound Integration stays **unpriced / to confirm**; naming
+that dependency is not pricing, licence approval or a FinOps operation.
+
+Eight skills remain seven non-FinOps GA wrappers plus optional Preview FinOps;
+core/process/ordinary value works without it. Separately requested financial
+work keeps its awareness and strict fully priced handover requirements.
+Future systems/Dynamics 365 1.11 is a separate design, not a ninth skill or
+current integration capability. Unrelated manual release-workflow cleanup
+[#9](https://github.com/urruegg/frontier-envisioning/issues/9) is not part of
+this correction.
+
+### Process correction verification (24 November 2026)
+
+The following is returned parent/builder/reviewer evidence, not commands run
+by this prose editor and not final whole-product acceptance.
+
+| Checkpoint | Actual returned evidence and limits |
+|---|---|
+| Runtime #60, `0e1c389` | Specification and bounded correctness review PASS; source-qualified focused RED/GREEN and preservation/privacy evidence remain in SPRINT-011. |
+| Renderer #62, `ccd72ce` | Specification and correctness review PASS. Current/recorded guidance, binding/readiness and real download semantics reviewed; not final L2. |
+| Support #63, `da363ce` | Specification and correctness review PASS. Builder: 37 raster tests, 118 ontology/distribution tests and 77 self-test checks passed. Independent review: 37 raster tests, 14 example/CDM tests, two extracted tests and self-test passed. Counts describe separate runs, not an additive whole-product total. |
+| Parent standard Playwright G59 selector | `node node_modules\@playwright\test\cli.js test ontology-preview.spec.mjs --grep G59`: one case passed under real CSP with the normal full demo and Chromium revision 1248. This is focused browser proof, not full strict L2. |
+| Published 1.10.0 baseline | Downloaded manifest/ZIP hashes matched; existing independent tag-build outputs reproduced 4/4 artefacts against that manifest. Not a new build, a corrected-source reproduction of 1.10.0, or completion of #52 retention/merge. |
+| Post-prose candidate | Final strict L1/L2, `docs --strict`, docs-demo regeneration, final package identity and extracted execution remain pending in the parent/CI loop. No final candidate digest or release acceptance is claimed. |
+
+The finite named 1.10.1 raster profile preserves the measured **205 non-raster
+inputs** and **223 PNG hashes**; historical profiles/assets/pins are unchanged.
+The normal full-demo identity ZIP remains SHA-256
+`e40b132d2e1d396ad7ee681d09931b3e35cd5728081cb01235b17396059cfdf9`.
+This is the identity ZIP, **not** a final integrated plugin-package hash.
+
+The parent owns stable final `python tools/dev.py check --strict`,
+`python tools/dev.py site e2e --strict`, `python tools/dev.py docs --strict`,
+generated gallery/captures and exact post-prose package/extraction/repeat-build
+proof. No full gate/site/demo/capture is run by this writer.
+Human-only [#52](https://github.com/urruegg/frontier-envisioning/issues/52)
+manifest retention/merge and
+[#8](https://github.com/urruegg/frontier-envisioning/issues/8) protected routing/
+native controls remain pending. Cowork/manual tenant, source/entitlement/
+permissions, licence, native-import, financial review, sharing and release
+sign-off are separate. Bounded reviews do not waive them.
 
 ## 1.10.0 development candidate
 
@@ -795,6 +935,14 @@ Availability snapshot (22 October 2026, per sources): Microsoft 365 E7 and Agent
 Versioning follows semantic versioning; `manifest.json` and `plugin.json` must carry the same version (checked by the package builder). Builder metadata (`packageMetadata.json` with builder name, environment id, creator id and owners) is environment-specific and added by the publisher when the target catalogue requires it (TD-04).
 
 ## B.9 Quality and testing
+
+**Current qualification, 24 November 2026.** The table below retains the original
+release results/counts. Unreleased 1.10.1 uses the separate
+[process correction verification](#process-correction-verification-24-november-2026)
+record, mapped to [G59-01–08 requirements/acceptance](prd.md#patch-requirements-and-acceptance).
+Focused reviewed checkpoints and one standard G59 browser case are not final
+post-prose strict L1/L2, docs-demo or extracted-package acceptance. Those checks
+and human #52/#8 dependencies remain pending; no historical result is extended.
 
 | Check | Tool | Result at release |
 |---|---|---|

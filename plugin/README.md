@@ -1,6 +1,6 @@
 # Frontier Envisioning — plugin for Copilot Cowork
 
-**Version 1.10.1 · Release build · Microsoft Innovation Hub Switzerland · 12 November 2026**
+**Version 1.10.1 · Unreleased candidate · Microsoft Innovation Hub Switzerland · 24 November 2026**
 
 *Guide maintenance: Copilot AI-assisted; original authorship retained.*
 
@@ -122,9 +122,10 @@ Agent identity icons and Microsoft product icons make each part easy to read. No
 
 The core example with explicitly requested Ontology has seventeen route
 identities and no FinOps; the explicit legacy Preview profile has eighteen.
-The process canon records a source check dated 11 November 2026, not
-independent current availability or
-native Fabric import verification. The catalogue's eleven unverified F&O entries
+The process canon retains its overall source check dated 11 November 2026;
+the governance/SAP correction adds sources checked by the parent on
+17 November 2026, not a fresh 24 November fetch, independent tenant availability
+or native Fabric import verification. The catalogue's eleven unverified F&O entries
 and integrated model's six mappings to verify/Employee binding gap are different
 scopes; standard mapping is a proposal, not automatic Dynamics 365 verification.
 
@@ -135,6 +136,47 @@ design scope retains canonical requirement IDs rather than renumbering them.
 Plan CSV needs destination mapping; it is not live Azure Boards/GitHub Projects
 integration or native compatibility certification. WIP/readiness, scope verdicts
 and metadata do not authorise a build, deployment or distribution.
+
+### Process grounding correction — unreleased 1.10.1
+
+New process proposals use **OneLake catalog and Fabric-domain grouping** rather
+than creating retiring Unified Catalog/classic Purview governance structures.
+Domain assignment does not change item visibility/access or enforce security.
+Purview security/compliance, sensitivity labels and DLP remain relevant, alongside
+actual workspace/item permissions and OneLake security. This is not retirement
+of all Purview or a claim of full replacement parity. Existing-estate feature,
+contractual and regulated migration gaps need the governance owner/account team.
+
+For supported SAP families, the documented candidate is **SAP Datasphere →
+ADLS Gen2 → Fabric/OneLake**: initial snapshot and changes into OneLake Delta
+tables with a read-only replicated SQL surface. Confirm source support,
+existing Fabric capacity, a suitable Datasphere environment, Premium Outbound
+Integration entitlement and staging permissions with the named source owner
+and real estate evidence. The commercial dependency is **unpriced / to confirm**,
+not a price, licence approval or reason to invoke FinOps.
+
+Fresh SAP proposals stay unresolved (`item: null`, `status: "later"`) with a
+conditional `route_assessment`. Public documentation or a system name confirms
+no prerequisite; all five confirmed records still do not auto-select a route.
+`owner_confirmed` means only an estate-evidenced owner-asserted design choice,
+not verified tenant, licence, deployment or publication readiness.
+See the [process method and dated Microsoft sources](skills/frontier-process/references/ontology-method.md)
+and [additive schema fields](skills/frontier-blueprint/references/blueprint-schema.md#additive-process-grounding-unreleased-1101).
+
+Saved routes, items, scheduling statuses, tables, domain labels, IDs, citations,
+feedback and verdicts remain **recorded evidence**. Separate `current_guidance`
+and `current_readiness` qualify them. Conditional routes do not count as bound,
+mounted or publishable; saved F-06 verdicts remain, but current readiness stays
+open. Ordinary drafts succeed with warnings; strict warning builds fail before
+new directories, output or overwrite. Malformed assessments/citation collisions
+fail even ordinarily. Privacy, grouping, feedback and Turtle contracts remain
+unchanged.
+
+The named finite 1.10.1 raster profile and extracted-package regressions support
+this correction; final integrated post-prose strict gates/package proof remain
+pending. No release or actual Cowork/Fabric acceptance is claimed. The separate
+future 1.11 systems/Dynamics 365 design is not a current capability or ninth
+skill. Core/process/ordinary value still work without optional Preview FinOps.
 
 ## Optional FinOps Preview — awareness first
 

@@ -3,11 +3,11 @@
 | Field | Value |
 |---|---|
 | Version | 1.8 |
-| Date | 2026-11-13 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence) |
-| Status | Maintained requirements; 1.10.0 local runtime gates verified, archive/human acceptance separate; no release approval implied |
-| Scope | Approved 1.10.0 release-build scope, shared product context and preserved 1.9.2/1.9.1 and earlier requirements/history |
-| References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md) |
+| Date | 2026-11-24 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose) |
+| Status | Maintained requirements; approved 1.10.1 correction in implementation, final integrated/human acceptance pending; published 1.10.0 baseline retained |
+| Scope | Bounded unreleased 1.10.1 process correction and preserved 1.10.0/earlier requirements/history |
+| References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61) |
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Current source references are
 anonymised without changing attribution or private historical evidence. Plugin
@@ -23,6 +23,72 @@ The split preserves historical results and claims, including the original
 1.6.0 acceptance and release plan. It does not rerun or extend those claims,
 approve a release, change pricing or alter plugin behaviour. The 1.6.1 note
 below remains unreleased.
+
+## 1.10.1 process grounding correction
+
+**24 November 2026: unreleased patch candidate, not release acceptance.**
+Published **1.10.0** remains the immutable baseline. The bounded correction
+[#59](https://github.com/urruegg/frontier-envisioning/issues/59) is governed by
+the [approved written spec](specs/2026-11-17-process-governance-sap-grounding-design.md),
+[exact plan](plans/2026-11-17-process-governance-sap-grounding-plan.md) and
+[SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md).
+The accountable human owner is `@urruegg`. Written-spec approval and the
+separate plan/readiness approval at `35ad763` are recorded in the
+[receipts](specs/2026-11-17-process-governance-sap-grounding-design.md#outcome-and-authority),
+including the [plan decision](https://github.com/urruegg/frontier-envisioning/issues/59#issuecomment-6951849396).
+No protected label, formal GitHub review or release permission is inferred.
+
+The public facts were checked by the parent on **17 November 2026**, as recorded
+with actual titles, dates and links in the
+[spec evidence](specs/2026-11-17-process-governance-sap-grounding-design.md#evidence-known-facts-and-assessment)
+and [process method](../plugin/skills/frontier-process/references/ontology-method.md#1-sources-and-limits).
+This prose pass claims no new source fetch. The
+[current solution flow and verification](solution-design.md#1101-process-grounding-correction)
+describe the reviewed implementation, not speculative fields.
+
+### Patch requirements and acceptance
+
+These narrowly scoped requirements/acceptance targets supplement, not rewrite,
+the historical tables. Bounded runtime `0e1c389`, renderer `ccd72ce` and support
+`da363ce` passed their specification/correctness reviews. Final integrated
+post-prose acceptance against G59-01–08 remains pending.
+
+| Requirement / acceptance | Spec criterion | Required outcome and acceptance target |
+|---|---|---|
+| FR-0154 / AC-057 | [G59-01](specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | New proposals use source-qualified OneLake catalog/Fabric-domain guidance, not new retiring Unified Catalog/classic governance structures. Preserve Purview security/compliance, labels/DLP and existing-estate migration gaps; no full parity or retirement of all Purview claim. |
+| FR-0155 / AC-058 | [G59-02](specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | Name Datasphere → ADLS Gen2 → Fabric/OneLake, snapshot/changes, Delta tables and read-only SQL replication. Confirm supported source, existing Fabric capacity, Datasphere environment, Premium Outbound Integration entitlement and staging permissions through named-owner estate evidence. Commercial dependency stays unpriced/to confirm. Fresh sources remain unresolved/null/later; unconfirmed saved choices stay recorded and conditional, with no ready fallback. Complete prerequisites do not auto-select a route. |
+| FR-0156 / AC-059 | [G59-03](specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | Domain assignment is grouping, not visibility/access/enforced security. Canon, proposals, JSON, HTML, all Markdown/downloads, method, readiness/risks and Caldova agree on current conditional meaning; no new layout/view/network behaviour. |
+| FR-0157 / AC-060 | [G59-04](specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | Preserve inputs and saved paths/items/statuses/tables/domains, IDs/citations, feedback and verdicts as recorded evidence. Add actual route assessment/current guidance/current readiness without counting conditional sources as bound, mounted or publishable. Saved F-06 verdict stays; effective current readiness is open. Retain fail-closed audience/ancestry projection and unchanged feedback/Turtle contracts. |
+| FR-0158 / AC-061 | [G59-05](specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | Eight skills remain seven non-FinOps GA wrappers plus optional Preview FinOps. Core/process/ordinary value works with FinOps absent or declined. No automatic money/licensing/ROI/time-to-value claim; separately requested financial work retains its existing awareness and fully priced handover gates. |
+| FR-0159 / AC-062 | [G59-06](specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | Preserve published 1.10.0 source/tag/ZIP and immutable records. Only the finite named 1.10.1 profile is added; historical profiles/assets and identity inputs remain unchanged. Final release/reproduction acceptance still requires human #52 retention/merge evidence. |
+| FR-0160 / AC-063 | [G59-07](specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | Remain offline, deterministic and stdlib-only. Ordinary conditional drafts succeed with warnings; strict warnings fail before output/new directories/overwrite. Malformed assessments/citation collisions fail ordinarily. Repeated outputs and original/good-output bytes are checked; unknown never defaults to success. |
+| FR-0161 / AC-064 | [G59-08](specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | Bind observed focused RED/GREEN, regenerated artefacts, strict L1/L2/docs checks and extracted final-package execution to the actual post-prose candidate. Focused prior checks are not a final integrated pass or final candidate hash; report remaining human checks honestly. |
+
+### Patch boundaries and release position
+
+The additive model keeps `frontier-blueprint/1.0`, `frontier-ontology/1.0` and
+`frontier-fabric-iq-canon/1.0`. A derived `owner_confirmed` assessment is only
+an owner-asserted design selection with five estate-evidenced prerequisites,
+named owner and explicit path/matching item. Public documentation, a name match,
+an imported flag or a placeholder owner is not confirmation; the plugin does
+not authenticate evidence, verify tenant access or approve licences.
+
+No new systems skill, route framework or integration runtime is delivered.
+The common systems foundation/Dynamics 365 **1.11** slice needs its separate
+future written design and approval; it is not current capability. Existing
+manual release-workflow cleanup
+[#9](https://github.com/urruegg/frontier-envisioning/issues/9) remains separate;
+this correction does not rewrite engineering governance.
+
+The [verification record](solution-design.md#process-correction-verification-24-november-2026)
+distinguishes returned focused evidence from pending final strict L1/L2,
+docs-demo regeneration and exact post-prose package/extraction proof.
+Published-baseline hash/reproduction evidence does not complete human-only
+[#52](https://github.com/urruegg/frontier-envisioning/issues/52) retention/merge.
+Protected session routing/native controls
+[#8](https://github.com/urruegg/frontier-envisioning/issues/8) also remain
+human-pending. Actual Cowork behaviour, estate/tenant prerequisites, licences,
+native import, financial review, sharing and release acceptance are separate.
 
 ## 1.10.0 release preparation
 
@@ -739,6 +805,14 @@ Priority: **M** must, **S** should, **C** could. Verified by: **T** automated te
 
 ## A.12 Release plan
 
+**Current qualification, 24 November 2026.** The table below is the original
+release roadmap, including its historical “this release” label, not a current
+delivery claim. Published 1.10.0 remains the baseline. The
+[unreleased 1.10.1 correction](#1101-process-grounding-correction) is limited to
+#59/G59-01–08; final integrated verification and human #52/#8 dependencies
+remain open. The separate future 1.11 systems/Dynamics 365 design is not
+implemented by this patch. No new release or release-workflow authority follows.
+
 | Release | Content |
 |---|---|
 | 1.0 | Four skills, template, scripts, canon, examples, self-test, packages |
@@ -755,6 +829,17 @@ Priority: **M** must, **S** should, **C** could. Verified by: **T** automated te
 | 2.0 | Work IQ APIs for richer context retrieval; Agent 365 registry export of validated agents; usage telemetry for the success measures |
 
 ## A.13 Open decisions
+
+**Current qualification, 24 November 2026.** `@urruegg` approved the actual
+#59 written spec and exact plan/readiness at `35ad763`, as linked in the
+[patch authority](#1101-process-grounding-correction). That decision authorises
+the bounded correction, not Proposed ADR acceptance, protected labels,
+publication or tenant/licence/financial approval. Per-estate source routes and
+governance migration gaps still need real named-owner evidence; complete SAP
+prerequisites alone do not select an unresolved path. Human #52 manifest
+retention/merge and #8 routing/native controls remain pending; #9 workflow
+cleanup and future systems/Dynamics 365 design remain separate. The original
+decision table is retained unchanged below.
 
 | ID | Decision | Owner |
 |---|---|---|
