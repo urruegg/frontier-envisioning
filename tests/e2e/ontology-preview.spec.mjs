@@ -34,8 +34,9 @@ test("G59 governance and conditional SAP downloads under CSP", async ({ page }, 
   await expect(product.locator(".osub")).toContainText("conditional");
   await product.focus(); await page.keyboard.press("Enter");
   await expect(product).toBeFocused();
-  await expect(page.locator("#opanel")).toContainText("Recorded proposal (conditional)");
-  await expect(page.locator("#opanel")).toContainText("core_silver.product");
+  await expect(page.locator("#opanel")).toContainText("Unresolved source route; no selected table");
+  await expect(page.locator("#opanel")).toContainText("Recorded choice: unresolved / no selected item / later");
+  await expect(page.locator("#opanel")).not.toContainText("core_silver.product");
   await page.locator("#v-onto-Product-note").fill("Recorded proposal café ✓");
   await page.reload();
   await page.locator('.onode[data-entity="Product"]').click();

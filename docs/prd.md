@@ -5,7 +5,7 @@
 | Version | 1.8 |
 | Date | 2026-11-24 |
 | Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose) |
-| Status | Maintained requirements; approved 1.10.1 correction in implementation, final integrated/human acceptance pending; published 1.10.0 baseline retained; no release approval implied |
+| Status | Maintained requirements; 1.10.1 correction implemented, reviewed-head verification indexed in PR #65; human acceptance pending; published 1.10.0 baseline retained; no release approval implied |
 | Scope | Bounded unreleased 1.10.1 process correction and preserved 1.10.0/earlier requirements/history |
 | References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61) |
 
@@ -81,8 +81,9 @@ manual release-workflow cleanup
 this correction does not rewrite engineering governance.
 
 The [verification record](solution-design.md#process-correction-verification-24-november-2026)
-distinguishes returned focused evidence from pending final strict L1/L2,
-docs-demo regeneration and exact post-prose package/extraction proof.
+distinguishes focused checkpoints, regenerated artefacts, full local browser
+results and exact-package proof. [Draft PR #65](https://github.com/urruegg/frontier-envisioning/pull/65)
+binds the final full gate and server checks to the reviewed head.
 Published-baseline hash/reproduction evidence does not complete human-only
 [#52](https://github.com/urruegg/frontier-envisioning/issues/52) retention/merge.
 Protected session routing/native controls
@@ -809,8 +810,9 @@ Priority: **M** must, **S** should, **C** could. Verified by: **T** automated te
 release roadmap, including its historical “this release” label, not a current
 delivery claim. Published 1.10.0 remains the baseline. The
 [unreleased 1.10.1 correction](#1101-process-grounding-correction) is limited to
-#59/G59-01–08; final integrated verification and human #52/#8 dependencies
-remain open. The separate future 1.11 systems/Dynamics 365 design is not
+#59/G59-01–08; reviewed-head verification is indexed in
+[PR #65](https://github.com/urruegg/frontier-envisioning/pull/65), while human
+#52/#8 dependencies remain open. The separate future 1.11 systems/Dynamics 365 design is not
 implemented by this patch. No new release or release-workflow authority follows.
 
 | Release | Content |

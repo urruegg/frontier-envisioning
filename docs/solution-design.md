@@ -5,7 +5,7 @@
 | Version | 1.8 |
 | Date | 2026-11-24 |
 | Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose) |
-| Status | Maintained design; bounded 1.10.1 slices reviewed, final integrated/human acceptance pending; published 1.10.0 baseline retained; no release approval implied |
+| Status | Maintained design; 1.10.1 implementation reviewed, exact-head gates indexed in PR #65; human acceptance pending; published 1.10.0 baseline retained; no release approval implied |
 | Scope | Bounded unreleased 1.10.1 process flow/verification and preserved 1.10.0/earlier design, evidence and inventory |
 | References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61) |
 
@@ -139,17 +139,24 @@ this correction.
 
 ### Process correction verification (24 November 2026)
 
-The following is returned parent/builder/reviewer evidence, not commands run
-by this prose editor and not final whole-product acceptance.
+The following is source-qualified engineering evidence, not human acceptance
+or release approval. The early prose checkpoint and later controller checks
+are distinguished rather than extending an old result to a new candidate.
 
 | Checkpoint | Actual returned evidence and limits |
 |---|---|
 | Runtime #60, `0e1c389` | Specification and bounded correctness review PASS; source-qualified focused RED/GREEN and preservation/privacy evidence remain in SPRINT-011. |
 | Renderer #62, `ccd72ce` | Specification and correctness review PASS. Current/recorded guidance, binding/readiness and real download semantics reviewed; not final L2. |
-| Support #63, `da363ce` | Specification and correctness review PASS. Builder: 37 raster tests, 118 ontology/distribution tests and 77 self-test checks passed. Independent review: 37 raster tests, 14 example/CDM tests, two extracted tests and self-test passed. Counts describe separate runs, not an additive whole-product total. |
-| Parent standard Playwright G59 selector | `node node_modules\@playwright\test\cli.js test ontology-preview.spec.mjs --grep G59`: one case passed under real CSP with the normal full demo and Chromium revision 1248. This is focused browser proof, not full strict L2. |
+| Support #63, `da363ce` | Specification and correctness review PASS. Builder: 37 raster tests, 118 ontology/distribution tests and 77 self-test checks passed. Independent review: 37 raster tests, 14 example/CDM tests and two extracted/self-test probes using the verified existing ZIP. Counts describe separate runs, not an additive whole-product total. |
+| Early parent G59 selector | One standard CSP case passed using an existing full-profile fixture. CI later exposed its stale legacy-table assumption after the current example changed. This is not fresh current-candidate proof; see the regenerated follow-up below. |
 | Published 1.10.0 baseline | Downloaded manifest/ZIP hashes matched; existing independent tag-build outputs reproduced 4/4 artefacts against that manifest. Not a new build, a corrected-source reproduction of 1.10.0, or completion of #52 retention/merge. |
-| Post-prose candidate | Final strict L1/L2, `docs --strict`, docs-demo regeneration, final package identity and extracted execution remain pending in the parent/CI loop. No final candidate digest or release acceptance is claimed. |
+| Core correction, `2e9bfbd` | `python tools/dev.py check --strict`: ALL GATES PASSED; 858 unit/pipeline tests, 2,946 subtests and 199 DOM tests passed; seven platform/intentional skips. No missing optional tools; six existing ESLint warnings. This predates the separately approved #66 helper changes. |
+| Approved #66, `6401da6` | Actual `approve-bounded-codeql-fix` answer and inline amendment recorded before implementation. Markdown download assertion RED then GREEN; exception-text safety already passed and remains regression evidence. Fourteen focused DOM cases passed; ordered specification/correctness reviews passed, including two independent DOM regressions. No alert suppression/dismissal or server-control change. |
+| Fresh current-example G59 | After full regeneration, one standard CSP test passed. The assertion now requires unresolved/no-selected-table, the exact recorded unresolved choice and absence of the old table. Separate legacy coverage is retained; no binding/readiness threshold is weakened. |
+| Post-helper local L2 | `python tools/dev.py site e2e --strict`: ALL GATES PASSED; all 76 Chromium tests passed, including G59 downloads, keyboard/CSP/reflow, ordinary value and Preview acknowledgement/privacy regressions. |
+| Post-helper exact package | `ProcessGroundingDistribution` executed the actual isolated extracted candidate and passed; its printed plugin SHA-256 equals the normal distribution ZIP, `cedffe556b93176877b138da729e087ada7b2a5c88184ec990d1a411e39f5fa5`. Core/process/value work with FinOps removed; strict no-write, legacy/privacy and repeated-byte checks passed. |
+| Repeat generation | Normal package/demo rebuilt without a converter or golden-ZIP substitution. Plugin ZIP, identity ZIP, generated-date-normalised HTML and all five process artefacts matched byte-for-byte/digest-for-digest. |
+| Final reviewed-head gate and server analysis | [Draft PR #65](https://github.com/urruegg/frontier-envisioning/pull/65) records the exact final head, full gate summary and actual CI/CodeQL outcomes. Do not treat the earlier core checkpoint or a local test as the new head's server-analysis result. |
 
 The finite named 1.10.1 raster profile preserves the measured **205 non-raster
 inputs** and **223 PNG hashes**; historical profiles/assets/pins are unchanged.
@@ -157,10 +164,10 @@ The normal full-demo identity ZIP remains SHA-256
 `e40b132d2e1d396ad7ee681d09931b3e35cd5728081cb01235b17396059cfdf9`.
 This is the identity ZIP, **not** a final integrated plugin-package hash.
 
-The parent owns stable final `python tools/dev.py check --strict`,
-`python tools/dev.py site e2e --strict`, `python tools/dev.py docs --strict`,
-generated gallery/captures and exact post-prose package/extraction/repeat-build
-proof. No full gate/site/demo/capture is run by this writer.
+The controller's final `python tools/dev.py check` runs with `CI=true`
+(strict mode) after the evidence and generator updates. Its returned summary
+and exact-head CI/CodeQL results belong in PR #65; they are not assumed here.
+The gallery retains ten generated captures and its current version/hashes.
 Human-only [#52](https://github.com/urruegg/frontier-envisioning/issues/52)
 manifest retention/merge and
 [#8](https://github.com/urruegg/frontier-envisioning/issues/8) protected routing/
@@ -940,9 +947,10 @@ Versioning follows semantic versioning; `manifest.json` and `plugin.json` must c
 release results/counts. Unreleased 1.10.1 uses the separate
 [process correction verification](#process-correction-verification-24-november-2026)
 record, mapped to [G59-01–08 requirements/acceptance](prd.md#patch-requirements-and-acceptance).
-Focused reviewed checkpoints and one standard G59 browser case are not final
-post-prose strict L1/L2, docs-demo or extracted-package acceptance. Those checks
-and human #52/#8 dependencies remain pending; no historical result is extended.
+The record separates the first core gate, post-helper local L2/extraction and
+the exact reviewed-head gate/server results in
+[PR #65](https://github.com/urruegg/frontier-envisioning/pull/65).
+Human #52/#8 dependencies remain pending; no historical result is extended.
 
 | Check | Tool | Result at release |
 |---|---|---|

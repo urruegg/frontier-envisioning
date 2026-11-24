@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.5 |
-| Date | 2026-11-13 |
+| Version | 0.6 |
+| Date | 2026-11-24 |
 | Author | Copilot; AI-assisted documentation |
 | Status | Maintained internal example; not deployment or release evidence |
 | Scope | Offline core sample, ten viewport captures and regeneration; document revision, not product or capture version |
@@ -21,7 +21,10 @@ download and open the file locally in **Edge or Chrome**. GitHub and OneDrive
 previews do not execute the HTML. There is no hosted URL or tenant deployment
 to visit. This is one offline HTML file, not a custom application or live backend.
 
-The plugin is **release build 1.10.0**. Check
+The published baseline is **1.10.0**. This gallery is regenerated from the
+**unreleased 1.10.1 correction** tracked in
+[SPRINT-011](../sprints/SPRINT-011-process-grounding-and-optional-systems.md).
+Check
 [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
 for actual publication status; this example is not publication evidence. The gallery
 retains its core example scope: identity, ordinary value and explicitly

@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.8 |
+| Version | 0.9 |
 | Date | 2026-11-24 |
 | Author | AI assistant (AI-assisted documentation) |
-| Status | Core correction strict L1 passed; separately human-approved #66 CodeQL follow-up, full L2 and final handover remain pending |
+| Status | Implementation and bounded reviews complete; post-helper local L2/exact-package proof passed; reviewed-head full gate/server evidence indexed in PR #65; human acceptance pending |
 | Scope | Parent #58 programme and approved 1.10.1 correction #59; staged implementation and evidence |
 | References | [Catalogue](README.md), [Parent #58](https://github.com/urruegg/frontier-envisioning/issues/58), [Correction #59](https://github.com/urruegg/frontier-envisioning/issues/59), [Idea](../ideas/2026-11-17-optional-systems-extensions.md), [Correction spec](../specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md), [Retention #52](https://github.com/urruegg/frontier-envisioning/issues/52), [Protected routing #8](https://github.com/urruegg/frontier-envisioning/issues/8) |
 
@@ -18,12 +18,12 @@ and Dynamics 365 later. This early record is not a ready sprint or a schedule.
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
 | [#58](https://github.com/urruegg/frontier-envisioning/issues/58) | [Programme and actual decisions](../ideas/2026-11-17-optional-systems-extensions.md#actual-human-decisions) | [First correction only](../specs/2026-11-17-process-governance-sap-grounding-design.md); wider pack designs not yet written | [First correction plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md); wider pack plans remain separate | `@urruegg` accountable; issue unassigned | #59 first; separate framework/Dynamics 365 written design and approvals | Decision intake, size M/P1; programme direction agreed, not ready for all-pack execution | Actual written correction approval recorded; no implementation result |
-| [#59](https://github.com/urruegg/frontier-envisioning/issues/59) | [Correction stage](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Tasks 1-12](../plans/2026-11-17-process-governance-sap-grounding-plan.md); approved at `35ad763` | `@urruegg` accountable and assigned; agent involvement recorded, not approval | Reviewed runtime/rendering/support slices; [#52](https://github.com/urruegg/frontier-envisioning/issues/52) final release/reproduction retention | Runtime, renderer and support implemented/reviewed; prose validated; integrated gates pending | Sources checked 17 November; commit-qualified checkpoints below |
+| [#59](https://github.com/urruegg/frontier-envisioning/issues/59) | [Correction stage](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Tasks 1-12](../plans/2026-11-17-process-governance-sap-grounding-plan.md); approved at `35ad763` | `@urruegg` accountable and assigned; agent involvement recorded, not approval | Reviewed runtime/rendering/support slices; [#52](https://github.com/urruegg/frontier-envisioning/issues/52) final release/reproduction retention | Implementation/reviews complete; reviewed-head gate and remaining human acceptance indexed in PR #65 | Sources checked 17 November; commit-qualified checkpoints below |
 | [#60](https://github.com/urruegg/frontier-envisioning/issues/60) | [First correction](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01/02/04/07](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Runtime Tasks 1-6 and 8](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-1-verify-the-approved-execution-boundary-and-baseline) | `@urruegg` accountable; bounded builder, size M | Actual #59 plan approval; standard bump before plugin edits | Both bounded advisory stages passed; whole-product acceptance separate | `0e1c389`; 39 reviewer tests plus independent owner probes; broader builder result qualified below |
-| [#62](https://github.com/urruegg/frontier-envisioning/issues/62) | [Correction output](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-03/04](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Renderer Task 7](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-7-test-then-correct-markdown-html-and-actual-downloads) | `@urruegg` accountable; bounded renderer, size M | Reviewed #60 runtime contract | Both bounded advisory review stages passed; integrated L2 still pending | `ccd72ce`; source-qualified review checkpoint below, not human sign-off |
-| [#63](https://github.com/urruegg/frontier-envisioning/issues/63) | [Correction verification](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-05 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Profile/distribution Tasks 9-10](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-9-add-only-the-necessary-named-1101-raster-input-profile) | `@urruegg` accountable; bounded builder, size M | Reviewed #60/#62 interfaces | Finite profile, current example and extracted process checks passed both bounded reviews; final integration pending | `da363ce`; independent 37 raster/14 example tests and qualified extracted probes below |
+| [#62](https://github.com/urruegg/frontier-envisioning/issues/62) | [Correction output](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-03/04](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Renderer Task 7](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-7-test-then-correct-markdown-html-and-actual-downloads) | `@urruegg` accountable; bounded renderer, size M | Reviewed #60 runtime contract | Both bounded reviews and post-helper full local L2 passed; exact-head server results in PR #65 | `ccd72ce` and later reviewed helper `6401da6`; not human sign-off |
+| [#63](https://github.com/urruegg/frontier-envisioning/issues/63) | [Correction verification](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-05 to G59-08](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Profile/distribution Tasks 9-10](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-9-add-only-the-necessary-named-1101-raster-input-profile) | `@urruegg` accountable; bounded builder, size M | Reviewed #60/#62 interfaces | Finite profile, current example, repeat generation and isolated exact-candidate proof verified; human #52 still separate | `da363ce`; current package digest and actual extracted execution below |
 | [#61](https://github.com/urruegg/frontier-envisioning/issues/61) | [Current guidance](../ideas/2026-11-17-optional-systems-extensions.md#staged-roadmap-and-next-decision) | [G59-01 to G59-05](../specs/2026-11-17-process-governance-sap-grounding-design.md#acceptance-and-verification) | [Prose Task 11](../plans/2026-11-17-process-governance-sap-grounding-plan.md#task-11-update-the-example-and-current-methodrequirements-documentation) | `@urruegg` accountable; bounded documentation, size S | Reviewed runtime fields and actual CLI behaviour | Method/schema-reference/current product records aligned; parent prose review and strict docs passed | Eight scoped files; no fabricated prose RED or final integrated gate claim |
-| [#66](https://github.com/urruegg/frontier-envisioning/issues/66) | [Correction programme](../ideas/2026-11-17-optional-systems-extensions.md) | [Bounded helper follow-up](../specs/2026-11-17-process-governance-sap-grounding-design.md#bounded-codeql-follow-up-24-november-2026) | [Approved inline amendment](../plans/2026-11-17-process-governance-sap-grounding-plan.md#approved-bounded-codeql-amendment-24-november-2026) | `@urruegg` accountable and assigned; bounded renderer, size S | Actual `approve-bounded-codeql-fix` answer; current gate freeze released before edits | Approved implementation pending; no protected ready label | Two existing helper alerts in draft #65; no alert suppression or dismissal |
+| [#66](https://github.com/urruegg/frontier-envisioning/issues/66) | [Correction programme](../ideas/2026-11-17-optional-systems-extensions.md) | [Bounded helper follow-up](../specs/2026-11-17-process-governance-sap-grounding-design.md#bounded-codeql-follow-up-24-november-2026) | [Approved inline amendment](../plans/2026-11-17-process-governance-sap-grounding-plan.md#approved-bounded-codeql-amendment-24-november-2026) | `@urruegg` accountable and assigned; bounded renderer, size S | Actual `approve-bounded-codeql-fix` answer; source freeze released before edits | `6401da6` implemented; specification then correctness PASS; actual server result indexed in PR #65 | Two helper fixes and actual download/error regressions; no suppression/dismissal or protected ready label |
 
 These are real programme and runtime work-item rows. There are no invented
 child issues for Dynamics 365 or the remaining packs. A document author is not an
@@ -268,6 +268,45 @@ existing helper alerts. The maintainer explicitly approved the bounded #66
 design/inline plan in the structured answer recorded in that issue; scope
 was not silently expanded. Its implementation and final L2/CodeQL/new-head
 verification remain separate from this complete core-correction gate.
+
+## Post-helper browser and exact-package proof
+
+The approved #66 implementation is `6401da6bf9370a1f6173bacfb3dcd95fd3dbeef2`.
+The real PRD download test failed before backslash escaping and passed after.
+HTML-like exception text was already safe; the explicit `textContent` path
+retains that regression, visible notice, console diagnostic and recovery.
+Fourteen focused DOM cases passed. The reviewer passed specification, then
+bounded correctness; its two DOM regressions and backslash-run probes passed.
+No actual CodeQL success was inferred from those local results.
+
+CI on the earlier core head passed L1/IaC but caught one obsolete G59 browser
+expectation: the old sample had a recorded table, whereas the corrected current
+sample intentionally has no selected table. The parent now requires the exact
+unresolved/no-selected-table state and rejects the old table text. Existing
+legacy tests remain. This also qualifies the earlier focused local pass: its
+existing full-profile fixture was not fresh current-example proof.
+
+After full template/package/demo/gallery/site regeneration, the corrected
+standard G59 browser case passed. The complete
+`python tools/dev.py site e2e --strict` then ended with **ALL GATES PASSED**:
+all **76 Chromium tests passed**, with keyboard/CSP/reflow, exports, ordinary
+value and Preview acknowledgement/privacy checks retained.
+
+The post-helper plugin ZIP SHA-256 is
+`cedffe556b93176877b138da729e087ada7b2a5c88184ec990d1a411e39f5fa5`.
+Normal package/demo regeneration produced the same plugin and identity ZIP
+bytes, generated-date-normalised HTML and all five process artefacts.
+`ProcessGroundingDistribution` then passed using isolated extracted scripts;
+its printed package SHA-256 exactly matches that distribution ZIP.
+The identity ZIP remains
+`e40b132d2e1d396ad7ee681d09931b3e35cd5728081cb01235b17396059cfdf9`;
+all 205 inputs and 223 PNG hashes remain protected by the finite profile.
+
+The final full `check` runs in strict mode (`CI=true`) after these evidence
+updates. Its exact source head, returned summary and actual server CodeQL/CI
+outcomes are recorded in [draft PR #65](https://github.com/urruegg/frontier-envisioning/pull/65),
+not assumed from the earlier core result. Human #52/#8, actual Cowork/Fabric/
+licence/import checks, sign-off and publication remain separate.
 
 ## Historical planning validation and handoff
 

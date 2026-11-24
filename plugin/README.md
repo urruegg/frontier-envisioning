@@ -173,8 +173,10 @@ fail even ordinarily. Privacy, grouping, feedback and Turtle contracts remain
 unchanged.
 
 The named finite 1.10.1 raster profile and extracted-package regressions support
-this correction; final integrated post-prose strict gates/package proof remain
-pending. No release or actual Cowork/Fabric acceptance is claimed. The separate
+this correction. [Draft PR #65](https://github.com/urruegg/frontier-envisioning/pull/65)
+records reviewed-source quality/browser results and exact-package evidence,
+including any remaining gaps. No release or actual Cowork/Fabric acceptance
+is claimed. The separate
 future 1.11 systems/Dynamics 365 design is not a current capability or ninth
 skill. Core/process/ordinary value still work without optional Preview FinOps.
 

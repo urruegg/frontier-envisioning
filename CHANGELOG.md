@@ -28,9 +28,13 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
   The measured 205 non-raster inputs, 223 PNG hashes and identity ZIP are
   unchanged; historical profiles/assets are retained. The
   [current verification record](docs/solution-design.md#process-correction-verification-24-november-2026)
-  separates focused results from pending final post-prose strict L1/L2,
-  docs-demo regeneration and exact-package/extraction proof. This is not a
+  separates focused checkpoints from reviewed-head quality/browser results,
+  regenerated artefacts and exact-package/extraction evidence. This is not a
   release; published 1.10.0 and human #52/#8 acceptance remain separate.
+- **Markdown and error text (#66).** Table downloads preserve literal
+  backslashes and separators. Render failures keep their existing notice and
+  console diagnostic, with the message assigned explicitly as plain text.
+  No alert suppression, security-setting or business-workflow change.
 
 ## 1.10.0
 
