@@ -237,6 +237,10 @@ class ProductDocumentSplit(unittest.TestCase):
         self.assertIn(candidate, ((0, 0), (1, 1)), "1.10.0 additions need one explicit boundary in each product document")
         if candidate == (1, 1):
             additions |= {f"FR-{i:04d}" for i in range(142, 154)} | {f"AC-{i:03d}" for i in range(45, 57)} | {"ADR-0028"}
+        patch = tuple(self.headings(text).count("## 1.10.1 process grounding correction") for text in self.documents.values())
+        self.assertIn(patch, ((0, 0), (1, 1)), "1.10.1 additions need one explicit boundary in each product document")
+        if patch == (1, 1):
+            additions |= {f"FR-{i:04d}" for i in range(154, 162)} | {f"AC-{i:03d}" for i in range(57, 65)}
         self.assertEqual(ids, sorted(set(self.baseline["identifiers"]) | additions))
         self.assertEqual(ids, sorted(set(ids)))
         self.assertRegex(self.baseline["source_sha256"], r"^[0-9a-f]{64}$")
@@ -451,6 +455,12 @@ class ProductDocumentPreservationRegressions(unittest.TestCase):
     def test_approved_191_identifiers_are_bounded_without_rewriting_history(self) -> None:
         original = {}
         for name, text in self.contract.documents.items():
+            if "## 1.10.1 process grounding correction" in self.contract.headings(text):
+                boundary = "release preparation" if name == "prd.md" else "development candidate"
+                text, _ = self.contract.split_development_block(
+                    text, "\n\n## 1.10.1 process grounding correction",
+                    "\n\n## 1.10.0 " + boundary,
+                )
             if "## 1.10.0 development candidate" in self.contract.headings(text):
                 text, _ = self.contract.split_development_block(
                     text, "\n\n## 1.10.0 development candidate", "\n\n## 1.9.2 internal build candidate"
@@ -499,6 +509,12 @@ class ProductDocumentPreservationRegressions(unittest.TestCase):
         original = {}
         marker = "## 1.10.0 development candidate"
         for name, text in self.contract.documents.items():
+            if "## 1.10.1 process grounding correction" in self.contract.headings(text):
+                boundary = "release preparation" if name == "prd.md" else "development candidate"
+                text, _ = self.contract.split_development_block(
+                    text, "\n\n## 1.10.1 process grounding correction",
+                    "\n\n## 1.10.0 " + boundary,
+                )
             if marker in self.contract.headings(text):
                 text, _ = self.contract.split_development_block(
                     text, "\n\n" + marker, "\n\n## 1.9.2 internal build candidate"
@@ -530,6 +546,29 @@ class ProductDocumentPreservationRegressions(unittest.TestCase):
                     self.contract.test_original_identifiers_and_section_headings_are_retained()
         for name in approved:
             for replacement in ("## Unnamed development candidate", marker + "\n\n" + marker):
+                with self.subTest(document=name, development_boundary=replacement):
+                    self.contract.documents = {
+                        **approved,
+                        name: approved[name].replace(marker, replacement, 1),
+                    }
+                    with self.assertRaises(AssertionError):
+                        self.contract.test_original_identifiers_and_section_headings_are_retained()
+
+    def test_approved_1101_identifiers_are_bounded_without_rewriting_history(self) -> None:
+        approved = dict(self.contract.documents)
+        self.contract.test_original_identifiers_and_section_headings_are_retained()
+        self.contract.test_substantive_original_section_content_is_unchanged()
+        self.contract.test_original_product_context_unreleased_note_and_inventory_are_retained()
+        for extra in ("FR-0162", "AC-065", "ADR-0029", "NFR-9999"):
+            with self.subTest(unapproved_identifier=extra):
+                self.contract.documents = {
+                    **approved, "prd.md": approved["prd.md"] + "\n" + extra,
+                }
+                with self.assertRaises(AssertionError):
+                    self.contract.test_original_identifiers_and_section_headings_are_retained()
+        marker = "## 1.10.1 process grounding correction"
+        for name in approved:
+            for replacement in ("## Unnamed process correction", marker + "\n\n" + marker):
                 with self.subTest(document=name, development_boundary=replacement):
                     self.contract.documents = {
                         **approved,
