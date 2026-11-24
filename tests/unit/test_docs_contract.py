@@ -174,7 +174,17 @@ class ProductDocumentSplit(unittest.TestCase):
         return prefix, start + addition
 
     def original_section_content(self, section: str, block: str) -> str:
-        """Keep the D2 migration receipt while admitting only approved A5 deltas."""
+        """Keep the migration receipt and isolate explicit approved additions."""
+        qualification_tables = {
+            "A.12 Release plan": "\n\n| Release | Content |",
+            "A.13 Open decisions": "\n\n| ID | Decision | Owner |",
+            "B.9 Quality and testing": "\n\n| Check | Tool | Result at release |",
+        }
+        qualification = "\n\n**Current qualification, 24 November 2026.**"
+        if section in qualification_tables and qualification in block:
+            block = self.split_development_block(
+                block, qualification, qualification_tables[section],
+            )[0]
         if section == "A.8 Non-functional requirements":
             rows = re.findall(r"(?m)^\| NFR-0012 \| [^\n]+$", block)
             self.assertEqual(len(rows), 1, "NFR-0012 must remain one table row")
@@ -576,6 +586,26 @@ class ProductDocumentPreservationRegressions(unittest.TestCase):
                     }
                     with self.assertRaises(AssertionError):
                         self.contract.test_original_identifiers_and_section_headings_are_retained()
+
+    def test_current_1101_qualifications_preserve_historical_content(self) -> None:
+        approved = dict(self.contract.documents)
+        self.contract.test_substantive_original_section_content_is_unchanged()
+        marker = "**Current qualification, 24 November 2026.**"
+        for document, heading in (
+            ("prd.md", "## A.12 Release plan"),
+            ("prd.md", "## A.13 Open decisions"),
+            ("solution-design.md", "## B.9 Quality and testing"),
+        ):
+            prefix, section = approved[document].split(heading, 1)
+            self.assertIn(marker, section)
+            for replacement in ("", marker + "\n\n" + marker):
+                with self.subTest(section=heading, marker=replacement):
+                    self.contract.documents = {
+                        **approved,
+                        document: prefix + heading + section.replace(marker, replacement, 1),
+                    }
+                    with self.assertRaises(AssertionError):
+                        self.contract.test_substantive_original_section_content_is_unchanged()
 
     def assert_mutation_rejected(
         self, document: str, original: str, replacement: str, check: str
