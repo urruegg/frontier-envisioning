@@ -2150,7 +2150,16 @@ function renderAttendees(){
 /* ---------------- Agent Factory: agent workflow, handover, steps ---------------- */
 var STAGE_ORDER = ["hypothesis","validated","designed","ready","build","release","operate"];
 function rdItems(){ var R = BP.it_readiness || {}; return arr(R.groups).reduce(function(acc, g){ return acc.concat(arr(g.items)); }, []); }
-function rdStatus(it, def){ var n = note("val|ready|" + it.id); return String(n.status || it.status || def || "open").toLowerCase(); }
+function rdCurrent(it){
+  /* Qualify only the process group's actual item, never another F-06 by ID.
+     Saved workshop verdicts remain records, not route-assessment authority. */
+  var processItem = arr((BP.it_readiness || {}).groups).some(function(g){ return g.id === "fabric-iq" && arr(g.items).indexOf(it) >= 0; });
+  if (!processItem || it.id !== "F-06" || !ONT) return null;
+  var current = (ONT.current_readiness || {})["F-06"], gaps = current ? arr(current.gaps) : [];
+  gaps = gaps.concat(ontRouteGaps()).filter(function(g, i, all){ return all.indexOf(g) === i; }).sort();
+  return gaps.length ? {status:"open",gaps:gaps} : null;
+}
+function rdStatus(it, def){ var current = rdCurrent(it), n = note("val|ready|" + it.id); return current ? current.status : String(n.status || it.status || def || "open").toLowerCase(); }
 function readinessShare(stages){
   var its = rdItems().filter(function(it){ return !stages || stages.indexOf(String(it.stage || "build")) >= 0; });
   if (!its.length) return 0;
@@ -2557,7 +2566,9 @@ function renderReadiness(){
       return h("details",{class:"acc rgroup",open: gi === 0 ? true : null},
         h("summary",null, logoRow(g.logos, 20) || h("span",{class:"n"}, String(gi + 1)), h("span",{class:"rgt"}, g.title || g.id), rProgress(gl, stOf)),
         h("div",{class:"bd"}, h("div",{class:"tscroll"}, h("table",{class:"t rt"}, h("thead",null, h("tr",null, ["Item","Why","Owner","When","Status"].map(function(c){ return h("th",{scope:"col"}, c); }))),
-          h("tbody",null, gl.map(function(it){ return h("tr",null, h("td",null, h("b",null, it.id + " "), it.item || ""), h("td",{class:"note"}, it.why || ""), h("td",null, it.owner || TBC), h("td",null, RSTAGE[it.stage] || it.stage || ""), h("td",null, rBox(it.id, R_OPTS, it.status))); }))))));
+          h("tbody",null, gl.map(function(it){ var current = rdCurrent(it); return h("tr",null, h("td",null, h("b",null, it.id + " "), it.item || ""), h("td",{class:"note"}, it.why || ""), h("td",null, it.owner || TBC), h("td",null, RSTAGE[it.stage] || it.stage || ""), h("td",null,
+            current ? h("p",{class:"note"},"Current assessment: " + current.status + ". Recorded verdict: " + (note("val|ready|" + it.id).status || it.status || "open") + ".",ul(current.gaps)) : null,
+            rBox(it.id, R_OPTS, it.status))); }))))));
     })));
   }
   if (checks.length){
@@ -3510,7 +3521,7 @@ function renderPrd(){
   return out;
 }
 function mdTable(cols, rows){
-  function esc(x){ return String(x === undefined || x === null || x === "" ? "[To complete]" : x).replace(/\|/g, "\\|").replace(/\r?\n/g, " "); }
+  function esc(x){ return String(x === undefined || x === null || x === "" ? "[To complete]" : x).replace(/\\/g,"\\\\").replace(/\|/g, "\\|").replace(/\r?\n/g, " "); }
   return ["| " + cols.join(" | ") + " |", "|" + cols.map(function(){ return "---"; }).join("|") + "|"]
     .concat(rows.map(function(r){ return "| " + r.map(esc).join(" | ") + " |"; })).concat([""]);
 }
@@ -3767,6 +3778,39 @@ function ontStdText(st){
   if (st.standard === "operations") return "Common Data Model, finance and operations: " + en;
   return "Custom extension (no standard entity)";
 }
+function ontSource(id){ return arr(ONT && ONT.sources).filter(function(source){ return source.id === id; })[0] || null; }
+/* Presentation mirrors ontology_lib.conditional_source. Normalisation owns
+   prerequisite/owner validation; never infer confirmation from a system name. */
+function ontConditional(source){
+  if (!source) return false;
+  return source.path === "unresolved" || (!!source.id && source.item == null) ||
+    (Object.prototype.hasOwnProperty.call(source,"route_assessment") && (!source.route_assessment || source.route_assessment.state !== "owner_confirmed"));
+}
+function ontBound(e){ var source = ontSource(e.source); return !!source && !ontConditional(source); }
+function ontRouteGaps(){
+  return arr(ONT && ONT.sources).filter(ontConditional).map(function(source){ return "source route " + source.id + ": conditional"; }).sort();
+}
+function ontBindingText(e){
+  var table = (e.binding || {}).table;
+  if (ontConditional(ontSource(e.source))) return table ? "Recorded proposal (conditional): " + table : "Unresolved source route; no selected table";
+  return ontBound(e) && table ? "Recorded design binding: " + table : "Not bound yet \u2014 to bind";
+}
+function ontRouteText(source){
+  var assessment = source.route_assessment || {};
+  var qualification = ontConditional(source) ? "Conditional source route. " :
+    assessment.state === "owner_confirmed" ? "Owner-asserted design selection (offline), not tenant verification, licence readiness, deployment or publication authority. " :
+      "Recorded design route, not deployment verification. ";
+  return qualification + "Recorded choice: " + (source.path || "unselected") + " / " + (source.item || "no selected item") + " / " + (source.status || TBC) + ".";
+}
+function ontRouteDetails(source){
+  if (!source) return null;
+  var assessment = source.route_assessment || {};
+  return [h("p",{class:"note"},ontRouteText(source),evPills(assessment.src)),
+    ontFields(assessment),Object.keys(assessment.prerequisites || {}).map(function(key){
+      var refs = assessment.prerequisites[key].src;
+      return arr(refs).length ? h("p",{class:"note"},key.replace(/_/g," "),evPills(refs)) : null;
+    })];
+}
 function ontGraph(){
   var ents = ontEnts().filter(ontVisible), width = 1040, positions = {};
   ents.forEach(function(e,i){ positions[e.id] = {x:20 + (i % 5) * 205,y:30 + Math.floor(i / 5) * 90}; });
@@ -3781,9 +3825,9 @@ function ontGraph(){
     function pick(){ state.ontSel = selected ? null : e.id; refreshControl(id); }
     var g = s("g",{id:id,class:"onode" + (selected ? " sel" : ""),role:"button",tabindex:"0","aria-pressed":String(selected),"data-entity":e.id,
       "aria-label":"Entity type " + (e.name || e.id) + ", " + arr(e.properties).length + " properties, " + ontStatus(e),transform:"translate(" + p.x + "," + p.y + ")"},
-      s("rect",{width:180,height:48,rx:6,class:e.source ? "" : "unbound"}),
+      s("rect",{width:180,height:48,rx:6,class:ontBound(e) ? "" : "unbound"}),
       s("text",{x:10,y:20},wrapWords(e.name || e.id,24,1)[0]),
-      s("text",{x:10,y:38,class:"osub"},arr(e.properties).length + " properties \u00b7 " + (e.source ? "bound" : "to bind")));
+      s("text",{x:10,y:38,class:"osub"},arr(e.properties).length + " properties \u00b7 " + (ontConditional(ontSource(e.source)) ? "conditional" : ontBound(e) ? "bound" : "to bind")));
     g.addEventListener("click",pick);
     g.addEventListener("keydown",function(ev){ if (ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); ev.stopPropagation(); pick(); } });
     svg.appendChild(g);
@@ -3794,7 +3838,8 @@ function ontPanel(e){
   var st = e.standard || {}, columns = st.attributes || {};
   return h("section",{class:"panel opanel",id:"opanel","data-entity":e.id,"aria-label":"Selected entity " + (e.name || e.id)},
     h("h3",null,e.name || e.id),h("p",null,e.description || TBC),statusPill(ontStatus(e)),evPills(e.src),
-    h("p",null,ontStdText(st), " \u00b7 ", st.checked ? "checked" : "to verify", " \u00b7 ", e.source && (e.binding || {}).table ? e.binding.table : "Not bound yet \u2014 to bind"),
+    h("p",null,ontStdText(st), " \u00b7 ", st.checked ? "checked" : "to verify", " \u00b7 ",ontBindingText(e)),
+    ontRouteDetails(ontSource(e.source)),
     dataTable(["Property","Type","Standard column","Key / notes"],arr(e.properties).concat(arr(e.timeseries)).map(function(p){
       return [p.name,p.type,columns[p.name] || TBC,(arr(e.key).indexOf(p.name) >= 0 ? "Key. " : "") + (p.description || "") + (p.unit ? " (" + p.unit + ")" : "")];
     }),"oproperties"),
@@ -3807,7 +3852,10 @@ function ontPanel(e){
 function ontCards(key, cls){
   return h("div",{class:"ontology-cards"},arr(ONT[key]).map(function(x){
     return h("article",{class:"panel " + (cls || "")},h("h4",null,(x.id ? x.id + " \u00b7 " : "") + (x.name || x.title || x.item || "")),
-      x.id ? statusPill(ontStatus(x)) : null,ontFields(x),
+      x.id ? statusPill(ontStatus(x)) : null,
+      key === "sources" ? h("p",{class:"note"},ontRouteText(x),evPills((x.route_assessment || {}).src)) : null,
+      key === "domains" && x.origin !== "derived" ? h("p",{class:"note"},"Recorded domain choice; grouping is not access policy.") : null,
+      ontFields(x),
       ontFeedbackIds().indexOf(x.id) >= 0 ? h("details",{class:"acc"},h("summary",null,"Workshop verdict"),valBox("onto",x.id)) : null);
   }));
 }
@@ -3866,7 +3914,21 @@ function ontMarkdown(kind){
     if (value && typeof value === "object") return Object.keys(value).map(function(k){ return indent + "- **" + md(k) + "**: " + (value[k] && typeof value[k] === "object" ? "\n" + lines(value[k],indent + "  ") : md(value[k]).replace(/\r?\n/g,"\n" + indent + "  ")); }).join("\n");
     return indent + md(value);
   }
-  var out = ["# " + md(ONT.title || "Process ontology"),"","Fabric ontology and agent integrations are Preview. Native Fabric import and binding require manual verification; this download is a design handover, not an import success.",""];
+  var out = ["# " + md(ONT.title || "Process ontology"),"","Fabric ontology and agent integrations are Preview. Native Fabric import and binding require manual verification; this download is a design handover, not an import success.","",
+    "## Current guidance",""];
+  ["governance","sap"].forEach(function(key){
+    var guidance = (ONT.current_guidance || {})[key];
+    if (guidance) out.push(md(guidance.text),"Sources: " + arr(guidance.src).map(md).join(", "),"");
+  });
+  out.push("## Current bindings and source routes","");
+  ontEnts().forEach(function(e){ out.push("- " + md(e.id) + ": " + md(ontBindingText(e))); });
+  arr(ONT.sources).forEach(function(source){
+    out.push("",md(source.id) + ": " + md(ontRouteText(source)));
+    if (source.route_assessment) out.push(lines(ontSafe(source.route_assessment),""));
+  });
+  out.push("",lines(ontRouteGaps(),""),"",lines(ONT.current_readiness || {},""),"",
+    "## Recorded choices","",
+    "Saved routes, tables, domain labels, build steps and verdicts below are recorded proposals, not verification or publication authority. Fresh derived Fabric domains are grouping, not access policy.","");
   sections.forEach(function(k){ if (has(ONT[k])) out.push("## " + k.replace(/_/g," ").replace(/^\w/,function(c){ return c.toUpperCase(); }),"",lines(ontSafe(ONT[k]),""),""); });
   out.push("Verify standard mappings marked to verify and preserve all source/access restrictions. No budget or purchase approval is implied.");
   return out.join("\n") + "\n";
@@ -3879,6 +3941,13 @@ function renderOntology(){
   var unknown = Object.keys(NOTES).filter(function(k){ return k.indexOf("val|onto|") === 0 && ontFeedbackIds().indexOf(k.slice(9)) < 0; });
   var out = [h("h2",{class:"sec"},ONT.title || "Process ontology"),h("p",{class:"lead"},ONT.intro || "Business entities, properties and relationships grounded in OneLake."),
     h("p",{class:"ontology-warning",role:"note"},"Fabric ontology and agent integrations are Preview. Native Fabric import is manual: verify mappings, permissions, bindings and provider availability. The GA skill wrapper does not change provider Preview status."),
+    h("p",{class:"note"},h("b",null,"Current guidance")),["governance","sap"].map(function(key){
+      var guidance = (ONT.current_guidance || {})[key];
+      return guidance ? h("p",{class:"note"},guidance.text,evPills(guidance.src)) : null;
+    }),
+    h("p",{class:"note"},"Recorded choices: saved routes, tables, domain labels, build steps and verdicts remain recorded proposals, not verification or publication authority. Fresh derived Fabric domains are grouping, not access policy."),
+    ontRouteGaps().length ? h("p",{class:"note"},"Current source-route gaps: " + ontRouteGaps().join("; ")) : null,
+    ONT.current_readiness ? ontFields({current_readiness:ONT.current_readiness}) : null,
     unknown.length ? h("p",{role:"status"},"Unknown ontology feedback IDs retained for review: " + unknown.map(function(k){ return k.slice(9); }).join(", ")) : null,
     h("div",{class:"btnrow"},["ontology.ttl","ontology.md","data-agents.md","data-products.md"].map(function(name){
       return h("button",{type:"button",class:"btn",onclick:function(){ download(fileSlug() + "-" + name,name === "ontology.ttl" ? ontTurtle() : ontMarkdown(name.replace(".md","")),name === "ontology.ttl" ? "text/turtle;charset=utf-8" : "text/markdown;charset=utf-8",stEl); }},"Download " + name);
@@ -3931,7 +4000,12 @@ function render(scrollTop){
   var v = document.getElementById("view");
   var out;
   try { out = RENDER[state.view](); if (previewPresent()) out = [previewNotice()].concat(out); }
-  catch (e) { out = [h("div",{class:"empty"}, h("b",null,"This view could not be drawn."), h("p",null, String(e && e.message || e)))]; if (window.console) console.error(e); }
+  catch (e) {
+    var errorText = h("p");
+    errorText.textContent = String(e && e.message || e);
+    out = [h("div",{class:"empty"}, h("b",null,"This view could not be drawn."), errorText)];
+    if (window.console) console.error(e);
+  }
   var selectedJourney = document.querySelector('#subnav [role="tab"][aria-selected="true"]');
   var content = selectedJourney ? h("section",{id:"journey-panel",role:"tabpanel","aria-labelledby":selectedJourney.id}, out) : out;
   v.replaceChildren(); add(v, content); v.appendChild(pager());

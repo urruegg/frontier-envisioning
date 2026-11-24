@@ -13,7 +13,7 @@ license: MIT
 metadata:
   category: productivity
   icon: DataUsage
-  version: "1.10.0"
+  version: "1.10.1"
   plugin: frontier-envisioning
   maturity: ga
   optional: true
@@ -21,6 +21,8 @@ metadata:
 ---
 
 # Frontier process ontology (Fabric IQ)
+
+*Procedure maintenance: Copilot AI-assisted, 24 November 2026; original authorship retained.*
 
 The optional data-design capability of the Frontier method. It proposes business
 objects, Microsoft standard-entity mappings, medallion bindings, data products
@@ -30,8 +32,10 @@ confirm it. GA is the maintainer's wrapper designation, not result confidence,
 provider GA, release/deployment or external/IP clearance.
 
 Terms and source IDs are in [references/ontology-method.md](references/ontology-method.md).
-The canon `templates/fabric-iq-canon.json` records a source check date of
-11 November 2026, not a new independent availability check. Re-check dated Learn
+The canon `templates/fabric-iq-canon.json` retains its overall source check date
+of 11 November 2026 and historical S1–S44 citations. The additive G59 citations
+record governance/SAP sources checked by the parent on 17 November 2026;
+this procedure does not claim a new source fetch. Re-check dated Microsoft
 sources and known issues before a workshop. Proposed standard mappings are in
 `templates/cdm-map.json`; Dynamics 365/Dataverse origins do not verify every table.
 
@@ -82,32 +86,43 @@ User: "Build the process ontology for the Caldova blueprint"
 3. Facts on systems of record, data owners and data quality come from the context pack and the transcripts (frontier-context-discovery); cite their evidence ids in `src`.
 
 ### Step 2: Seed
-`python scripts/seed_ontology.py --blueprint blueprint.normalized.json --out ontology.json [--semantic-model model.bim --journey D3]`. The seed picks a journey pattern per journey (Lead-to-Order, Source-to-Pay, Request-to-Resolution, Record-to-Report, Hire-to-Retire, Plan-to-Produce), adds the shared core entity types, the concepts the feedback loop names for Fabric IQ, OneLake sources with a proposed path per system, bindings, metrics from the KPIs, the approval seam as a rule, one data agent per journey (with its data products mapped to entity types) and an operations agent where a journey has live signals. The `_todo` list names what to confirm.
+`python scripts/seed_ontology.py --blueprint blueprint.normalized.json --out ontology.json [--semantic-model model.bim --journey D3]`. The seed picks a journey pattern per journey (Lead-to-Order, Source-to-Pay, Request-to-Resolution, Record-to-Report, Hire-to-Retire, Plan-to-Produce), adds the shared core entity types, the concepts the feedback loop names for Fabric IQ, OneLake source proposals, bindings, metrics from the KPIs, the approval seam as a rule, one data agent per journey (with its data products mapped to entity types) and an operations agent where a journey has live signals. SAP names seed `path: "unresolved"`, `item: null`, `status: "later"` and a conditional `route_assessment`, not a selected route or a ready pipeline fallback. The `_todo` list names what to confirm.
 
 ### Step 3: Write the hypothesis
 Follow [references/ontology-method.md](references/ontology-method.md):
 1. Entity types in business language with a string or integer key; properties with supported types (string, integer, double, boolean, datetime); one type per property name across the ontology; time series only for values that change over time.
 2. Relationship types as verbs (`places`, `resolved_by`) with cardinality; inheritance only where one concept really specialises another.
-3. OneLake: mirroring for supported databases and SAP, shortcuts for Dataverse and open formats, eventstreams into an eventhouse for live events, pipelines for the rest. Documents, mail and web stay with Foundry IQ, Work IQ and Web IQ.
+3. OneLake: propose mirroring only for source-qualified supported databases, shortcuts for supported Dataverse/open formats, eventstreams into an eventhouse for live events, or applicable pipelines. For SAP, the documented candidate is **SAP Datasphere → ADLS Gen2 → Fabric/OneLake**: snapshot and changes into OneLake Delta tables with a read-only replicated SQL surface (G59-P3/P7). Confirm source-family support, existing Fabric capacity, Datasphere environment, Premium Outbound Integration entitlement and staging permissions with the named source owner and estate evidence. The commercial dependency is **unpriced / to confirm**, not a cost figure or licence approval. A name or public document cannot confirm it; keep an unselected route unresolved, even with complete prerequisites. See the [method's assessment contract](references/ontology-method.md#32-conditional-sap-routes). Documents, mail and web stay with Foundry IQ, Work IQ and Web IQ.
 4. Rules in one sentence each; metrics named after the journey KPIs with the semantic model and DAX measure, or "to define".
 5. Data agents: up to five sources each, the journey's agents as consumers, five realistic example questions; publish to Microsoft 365 Copilot only after the data protection review (OD-ONT-4).
 6. Operations agents: natural-language rules and actions, approved by a named role in Teams.
 7. Common Data Model: the seed takes each entity type's standard entity, table and columns from `templates/cdm-map.json`; keep the business name and confirm the mapping with the data owner. Entries marked "to verify" are checked in the table definition browser; with no standard entity, keep a custom extension (OD-ONT-5).
-8. Semantic layer: propose silver tables `<namespace>_silver.<entity>` conformed to the agreed canonical model, live events in `<namespace>_events` and a gold semantic model per journey owning measures. Propose Fabric/Purview domains with the data owner; none is created here.
+8. Semantic layer: propose silver tables `<namespace>_silver.<entity>` conformed to the agreed canonical model, live events in `<namespace>_events` and a gold semantic model per journey owning measures. Conditional sources receive no default item/table binding; saved tables remain recorded proposals, not current bound claims. Use current OneLake catalog guidance and Fabric-domain grouping with the data owner (G59-P1/P2/P5/P6), not new retiring Unified Catalog/classic governance structures. Domain assignment does not change visibility/access or enforce security. Preserve Purview security/compliance, sensitivity labels and DLP, actual permissions and existing-estate migration gaps; do not claim feature parity. No domains or controls are created here.
 9. Data products: one per data agent product, with an accountable owner, business purpose, intended uses, access process and quality status; agent actions always need an additional review (R-ONT-7, OD-ONT-6).
 
 ### Step 4: Build and check
 `python scripts/build_ontology.py --ontology ontology.json --blueprint blueprint.normalized.json --out-dir <folder>`. Fix every error (names, keys, types, unknown ends, more than five sources). Read the warnings: unbound entity types, unknown agents or journeys, standard entities or columns that don't fit, entity types bound to a semantic model that a data agent uses (known issue R-ONT-2). It writes `ontology.ttl`, `ontology.md`, `data-products.md`, `data-agents.md` and `ontology.normalized.json`.
 
-Use `--strict` when warnings must block handoff. Invalid models or strict warnings
-fail before publishable writes; do not overwrite good artifacts or suppress
-mapping gaps. Customer projections must exclude internal-derived descriptions,
+An ordinary conditional draft succeeds with route/prerequisite warnings.
+Use `--strict` when warnings must block handoff: it fails with no output files,
+no new output directory and no replacement of good outputs. Malformed route
+assessments or reserved G59 citation collisions fail even without `--strict`,
+before projection or output effects. Do not suppress gaps.
+Customer projections must exclude internal-derived descriptions,
 bindings, instructions, products, rules, metrics and operations proposals, not
 just source IDs.
 
 ### Step 5: Blueprint page and publish
 1. Rebuild the blueprint with `--ontology ontology.json` (frontier-blueprint's `build_with_identity.py`): the Ontology page appears in Part 2 Design, the Fabric prerequisites in IT readiness and the ontology risks in the register.
 2. `CopyArtifact(surface="output", ...)` for the HTML, `ontology.ttl`, `ontology.md`, `data-products.md` and `data-agents.md`; confirm `"ok": true` for each.
+
+This publishes local workshop files, not tenant items. Keep saved paths, items,
+scheduling statuses, tables, domain labels, IDs, citations and feedback/verdicts
+as **recorded evidence**. Current guidance qualifies them without rewriting the
+input. Conditional routes do not count as bound, mounted or publishable. Saved
+F-06 verdicts remain, but `current_readiness["F-06"]` stays open while a route is
+conditional and cannot contribute a “done” result to the Blueprint readiness
+aggregate. Public citations never declassify restricted estate evidence.
 
 ### Step 6: After the workshop
 `python scripts/merge_ontology_feedback.py --ontology ontology.json --feedback <customer>-workshop-feedback.json --out ontology.v0.2.json`, then build again. Validated, adjusted and rejected verdicts and notes land on the entity types, relationship types, data products, data agents and operations agents; `onto:model` validated marks the whole model.
@@ -117,7 +132,7 @@ just source IDs.
 - File names: the blueprint HTML, `ontology.ttl`, `ontology.md`, `data-products.md`, `data-agents.md`.
 - One table: per journey the entity types, the OneLake sources and their path, the data agent and its consumers.
 - Grounding: how many entity types rest on a standard entity, which are custom, which mappings to verify; data products ready to publish and their gaps.
-- Gaps: entity types without binding, data products still to model, metrics without a measure.
+- Gaps: unresolved/conditional source routes and their five prerequisites, entity types without binding, data products still to model, metrics without a measure; distinguish recorded F-06 verdicts from effective current readiness.
 - The decisions to take (OD-ONT-1 to OD-ONT-6) and the preview caveats that matter for this customer.
 - Manual next step: verify native import into an empty Fabric ontology (Preview)
   item, then keys/bindings/rules/metrics and data-agent behaviour in the tenant.
@@ -136,6 +151,7 @@ just source IDs.
 
 - If the normalized blueprint is missing: run frontier-blueprint first; never seed an ontology from memory.
 - If a system of record, key, table or owner is not found in the evidence: keep it "to confirm" with the data owner as the open question; never fabricate a table or a column.
+- If SAP prerequisites are unknown or unsupported: retain the conditional draft and named gaps; do not substitute a ready pipeline or turn `candidate_path` into a selection. `owner_confirmed` is an offline owner assertion with estate references, not tenant, licence or publication verification.
 - If the Power BI tool is unavailable or the semantic model cannot be read: seed from the blueprint only and keep the metrics "to define".
 - If a journey matches no pattern: the generic pattern applies; ask the process owner for the five to eight business objects before the workshop.
 - `build_ontology.py` reports errors: fix the named field and build again; never hand-edit `ontology.ttl`.

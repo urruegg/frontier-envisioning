@@ -1,6 +1,6 @@
-# Blueprint JSON reference (frontier-blueprint/1.0, plugin 1.10.0 release build)
+# Blueprint JSON reference (frontier-blueprint/1.0)
 
-*AI-assisted procedure maintenance, 13 November 2026; original authorship retained.*
+*Copilot AI-assisted procedure maintenance, 24 November 2026; original authorship retained.*
 
 Every field is optional unless marked required. Missing fields render as "To be confirmed". Unknown fields are kept but not shown. `src` is always a list of evidence ids.
 Financial inputs and generated reports follow the stricter contracts below;
@@ -302,6 +302,68 @@ The Ontology page is optional in Design. Preserve dated canon, checked/to-verify
 mappings, source visibility and workshop `onto:<id>` verdicts. Native Fabric
 import and tenant agents remain manual Preview checks, not consequences of
 local file generation. This path does not require FinOps.
+
+### Additive process grounding (unreleased 1.10.1)
+
+The contracts stay `frontier-blueprint/1.0`, `frontier-ontology/1.0` and
+`frontier-fabric-iq-canon/1.0`. This is a bounded SAP/governance correction, not
+a global route framework. The process canon retains `checked: 2026-11-11` and
+S1–S44; appended G59-P1/P2/P3/P5/P6/P7 records carry `checked: 2026-11-17`.
+See the [dated sources and method](../../frontier-process/references/ontology-method.md#1-sources-and-limits);
+no new source fetch or catalogue-wide re-verification is implied.
+
+| Location within `ontology` | Actual shape and meaning |
+|---|---|
+| `sources[].path`, `item`, `status` | Fresh SAP sources use `"unresolved"`, `null`, `"later"`. Unresolved means no selected route/item, not a binding source. Saved selections/scheduling statuses remain recorded evidence. |
+| `sources[].route_assessment` | Source-local object with derived `state`, derived `candidate_path`, `prerequisites`, text `commercial_note` and `src` list. Existing `content_src`/visibility ancestry still applies. |
+| `route_assessment.state` | Derived `"conditional"` or `"owner_confirmed"`, never trusted from an imported flag. Owner-confirmed means an offline owner-asserted design selection only. |
+| `route_assessment.candidate_path` | `"mirroring"` or `null`, derived from source-family hints. An option, not selected support; Ariba/unrecognised family hints have no mirroring candidate. |
+| `route_assessment.prerequisites` | Exactly `supported_source`, `fabric_capacity`, `datasphere_environment`, `premium_outbound_integration`, `adls_gen2_permissions`. Each record requires `status` (`"unknown"`, `"confirmed"` or `"unsupported"`), text `note` and `src` list. |
+| `entity_types[].binding` | New unresolved defaults: `{"layer":"silver","item":null,"table":null,"origin":"default"}`. Saved tables remain recorded proposals, not effective binding proof. |
+| `current_guidance` | Derived `governance` and `sap` entries, each `{text, src}`. Current sourced clarification alongside, not replacement of, saved architecture/build/readiness/risk text. |
+| `current_readiness` | Derived `{"F-06":{"status":"open","gaps":["source route <id>: conditional"]}}` while any source route is conditional. Without such gaps, uses recorded F-06 status (default `"open"`) and `gaps: []`. |
+| `sources_doc` | Retains saved evidence snapshots; appends missing G59 records without reusing S IDs. Different fact content occupying a reserved G59 ID is an error. |
+
+Confirm all five prerequisites with real owner-authored estate evidence,
+non-empty notes and references resolving in the supplied Blueprint `evidence`
+register, plus a named source `owner` and an explicitly selected supported
+`path` with its matching `item`. The resolver recognises `type: "estate"` or
+`ESTATE-` IDs, excluding public/documentation records and Microsoft Learn/
+Tech Community URLs. These structural markers do not authenticate the evidence.
+Public sources, name matches, missing Blueprint context and placeholder owners
+do not establish confirmation. Complete prerequisites never auto-select
+`path: "unresolved"` or supply a ready pipeline fallback.
+
+The documented candidate is **SAP Datasphere → ADLS Gen2 → Fabric/OneLake**:
+snapshot and changes, OneLake Delta tables and a read-only replicated SQL
+surface. Existing Fabric capacity, Datasphere environment, source support,
+Premium Outbound Integration entitlement and staging permissions remain estate
+checks. Keep the commercial dependency **unpriced / to confirm**; this neither
+invokes FinOps nor grants licensing/financial approval.
+
+Current governance uses OneLake catalog and Fabric-domain grouping, not new
+retiring Unified Catalog/classic governance creation. Domain assignment does
+not affect visibility/access or enforce security. Preserve actual permissions,
+OneLake security, Purview security/compliance, sensitivity labels and DLP.
+Existing-estate feature/contractual/regulatory migration gaps need the governance
+owner/account team; no full parity or retirement of all Purview is claimed.
+Derived `fabric_domain`/`governance_domain` keys remain, with grouping labels;
+saved authored domain rows/labels remain recorded.
+
+Preserve paths/items/statuses/tables/domains, IDs, citations, feedback and
+verdicts as **recorded evidence**. Conditional sources do not count in
+`stats.bound`, graph/panel bound claims, mounted-table claims or dependent
+publication readiness. Products retain `source route <id>: conditional` gaps.
+The saved F-06 verdict stays unchanged; effective process F-06 stays open in
+the Blueprint readiness aggregate. Independent supported eventhouse/secondary
+bindings, grouping, feedback and Turtle/import contracts are unchanged.
+Current guidance appears in HTML and all three Markdown variants/downloads.
+
+Ordinary conditional drafts succeed with warnings. `build_ontology.py --strict`
+fails on warnings with `files: {}`, before a new output directory or overwrite.
+Malformed assessments and reserved citation collisions fail even without
+strict mode, before projection/output effects. Public guidance cannot launder
+restricted notes, bindings or feedback into customer output.
 
 ## agent_finops (optional versioned Preview derivative)
 

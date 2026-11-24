@@ -13,13 +13,22 @@ Writes into <folder>:
                             Common Data Model, process map, semantic data layer (bronze, silver, gold, domains,
                             semantic models), data products, rules, metrics, data agents, operations agents, build
                             steps, readiness, risks, decisions, diagram
-  data-agents.md            per data agent: instructions, source descriptions, bound tables and example questions
+  data-agents.md            per data agent: instructions, source descriptions, recorded binding proposals and example questions
   data-products.md          per data product: owner, purpose, intended uses, output ports, quality, access, what is
-                            open before publication; the set-up in Fabric domains and Purview Unified Catalog
+                            open before publication; current OneLake catalog/Fabric-domain grouping guidance,
+                            separate from access/security and retained legacy choices
 Checks follow the ontology (preview) rules: names, string or integer keys, supported property types, one type per
 property name, relationship ends, inheritance, at most five sources per data agent, known issues; standard entities,
 bindings and data products are checked against the Common Data Model map and the data product standard. Errors stop the
 build (exit 1); warnings are listed in the JSON summary (--strict makes them errors).
+Conditional SAP routes retain prerequisite/publication gaps, not bound or mounted claims. The documented candidate
+is SAP Datasphere -> ADLS Gen2 -> Fabric/OneLake, snapshot plus changes into Delta tables with a read-only SQL replica.
+Confirm source support, existing Fabric capacity, Datasphere environment, Premium Outbound Integration entitlement
+and staging permissions with owner-authored estate evidence. The commercial dependency stays unpriced / to confirm.
+Current guidance/readiness qualifies saved evidence without rewriting inputs or verdicts. Ordinary conditional
+drafts succeed with warnings; errors or strict warnings return no files before creating directories or replacing
+good outputs. Malformed route assessments and reserved citation collisions fail even without --strict.
+Local files do not verify native import, tenant availability, licences, access or publication.
 Standard library only; no network access.
 """
 from __future__ import annotations
@@ -30,7 +39,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from ontology_lib import Rep, customer_context, customer_ontology, data_agent_kit, data_products_md, load_json, normalize, to_markdown, to_turtle  # noqa: E402
+from ontology_lib import (Rep, customer_context, customer_ontology, data_agent_kit, data_products_md, load_json, normalize,  # noqa: E402
+                          to_markdown, to_turtle, validate_reserved_citations, validate_route_assessments)
 
 
 def main(argv=None) -> int:
@@ -48,6 +58,11 @@ def main(argv=None) -> int:
         print(f"ERROR: {e}", file=sys.stderr)
         return 2
     rep = Rep()
+    routes_valid = validate_route_assessments(onto, rep)
+    citations_valid = validate_reserved_citations(onto, rep)
+    if not (routes_valid and citations_valid):
+        print(json.dumps({"status": "failed", "stats": {}, "files": {}, "errors": rep.errors, "warnings": rep.warnings}))
+        return 1
     if a.audience == "customer":
         onto = customer_ontology(onto, bp)
         if onto is None:
