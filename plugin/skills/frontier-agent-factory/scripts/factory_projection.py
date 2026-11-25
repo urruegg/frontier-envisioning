@@ -289,18 +289,23 @@ def check_sharing(request, records, baseline, original_blueprint):
             process.inherit_privacy(context["ontology"], context)
         private_strings = set()
 
-        def private_tokens(value, inherited=False):
+        def private_tokens(value, inherited=False, private_field=False):
             if isinstance(value, dict):
                 restricted = inherited or process.private_content(value, context)
                 for key, child in value.items():
-                    if restricted and isinstance(child, str) and key not in {
+                    child_private_field = private_field or key == "internal_notes"
+                    if not child_private_field and isinstance(child, str) and key in {
                             "visibility", "sharingClassification", "customer_scope", "status", "schema"}:
-                        if child.strip():
-                            private_strings.add(child.casefold())
-                    private_tokens(child, restricted)
+                        continue
+                    # The customer helpers strip internal_notes independently
+                    # of visibility. Its entire value is private, even when a
+                    # note's arbitrary keys resemble protocol metadata.
+                    private_tokens(child, restricted or child_private_field, child_private_field)
             elif isinstance(value, list):
                 for child in value:
-                    private_tokens(child, inherited)
+                    private_tokens(child, inherited, private_field)
+            elif isinstance(value, str) and inherited and value.strip():
+                private_strings.add(value.casefold())
         private_tokens(context)
         terms = context.get("meta", {}).get("internal_terms", [])
         need(isinstance(terms, list) and all(isinstance(t, str) for t in terms), "FACTORY_SHARING")
@@ -394,6 +399,7 @@ def financial_check(request, records, baseline, source_root, acknowledged):
                             detected.add(qualified)
     financial = request["financial"]
     if not financial["requested"]:
+        need(financial["claim"] == "review", "FACTORY_FINANCIAL_READY")
         need(not detected and not financial["packets"] and financial["as_of"] is None,
                  "FACTORY_FINANCIAL_ACK")
         return "not-requested"

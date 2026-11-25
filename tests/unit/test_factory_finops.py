@@ -97,6 +97,33 @@ class Financial(unittest.TestCase):
             self.assertEqual(self.check(), "not-requested")
             self.assertEqual(self.check(True), "not-requested")
 
+    def test_unrequested_build_handover_cannot_bypass_strict_readiness(self):
+        self.f["request"]["financial"]["claim"] = "build-handover"
+        original = self.p.sibling
+        def guarded(skill, module):
+            self.assertNotEqual(skill, "frontier-finops", "Unrequested content imported optional FinOps")
+            return original(skill, module)
+        with mock.patch.object(self.p, "sibling", side_effect=guarded):
+            for acknowledged in (False, True):
+                with self.subTest(acknowledged=acknowledged), self.assertRaisesRegex(
+                        self.m.common.FactoryError, "^FACTORY_FINANCIAL_READY$"):
+                    self.check(acknowledged)
+
+    def test_cli_unrequested_build_handover_without_ack_preserves_old_good(self):
+        self.f["request"]["financial"]["claim"] = "build-handover"
+        save(self.f)
+        self.f["out"].write_bytes(b"old-good")
+        inputs = {path: path.read_bytes() for root in (self.f["source"], self.f["baseline"])
+                  for path in root.rglob("*") if path.is_file()}
+        run = invoke(self.f)
+        self.assertEqual(run.returncode, 1, (run.stdout, run.stderr))
+        self.assertEqual(json.loads(run.stdout)["error"], "FACTORY_FINANCIAL_READY")
+        self.assertEqual(len(run.stdout.splitlines()), 1)
+        self.assertEqual(run.stderr, "")
+        self.assertEqual(self.f["out"].read_bytes(), b"old-good")
+        self.assertEqual(list(self.f["out"].parent.glob(".factory-*.tmp")), [])
+        self.assertTrue(all(path.read_bytes() == raw for path, raw in inputs.items()))
+
     def test_role_schema_and_nested_markers_require_request_and_current_ack(self):
         cases = [
             ("finops", b"%PDF-1.7 opaque financial review", "costs.pdf"),

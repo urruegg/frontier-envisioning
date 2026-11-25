@@ -227,6 +227,97 @@ class Privacy(unittest.TestCase):
                     self.assertNotIn("private-fixture-token", run.stdout + run.stderr)
                     self.assertEqual(fixture["out"].read_bytes(), b"old-good")
 
+    def _assert_private_original_copy_refused(self, private_field):
+        from tests.factory_fixture import save
+        from tests.unit.test_factory_export import add_history, exporter, invoke
+        module = exporter(self)
+        token = "caldova-internal-draft.md"
+        for destination in ("sharing-metadata", "current-file", "history-file", "history-metadata"):
+            with self.subTest(private_field=private_field, destination=destination), tempfile.TemporaryDirectory() as folder:
+                fixture = prepare(folder)
+                original_path = fixture["source"] / "blueprint.json"
+                original = json.loads(original_path.read_bytes())
+                if private_field == "array":
+                    original["evidence"][0]["references"] = [token]
+                elif private_field == "nested-array":
+                    original["evidence"][0]["references"] = [{"documents": [[token]]}]
+                elif private_field == "internal-notes":
+                    original["meta"]["internal_notes"] = token
+                else:
+                    # These are arbitrary private notes, not protocol fields.
+                    original["meta"]["internal_notes"] = {"drafts": [{"status": token}]}
+                original_path.write_bytes(encode(original))
+                # The actual customer helper removes this private context. Its
+                # presence alone must not reject an otherwise safe export.
+                with self.p.sibling("frontier-blueprint", "build_blueprint") as bp:
+                    report = bp.Report()
+                    customer = bp.customer_version(original, report)
+                    self.assertEqual(report.errors, [])
+                target = fixture["baseline"] / fixture["request"]["blueprint"]["baseline_path"]
+                target.write_bytes(encode(customer))
+                if destination.startswith("history-"):
+                    record, _ = add_history(fixture, module.contract, module.common)
+                else:
+                    record = fixture["request"]["intake"]
+                save(fixture)
+                control = invoke(fixture)
+                self.assertEqual(control.returncode, 0, (control.stdout, control.stderr))
+
+                if destination == "sharing-metadata":
+                    fixture["request"]["sharing_review"]["metadata"]["reference"] = token
+                elif destination == "history-metadata":
+                    record["source"]["references"].append(token)
+                else:
+                    row = next(row for row in record["artifacts"] if row["id"] == "prd")
+                    path = fixture["baseline"] / row["baseline"]["path"]
+                    raw = path.read_bytes() + ("\nReviewed reference: " + token + "\n").encode()
+                    path.write_bytes(raw)
+                    if destination == "current-file":
+                        (fixture["source"] / row["source"]["path"]).write_bytes(raw)
+                    else:
+                        row["baseline"]["sha256"] = module.common.digest(raw)
+                        row["source"]["sha256"] = module.common.digest(raw)
+                if destination.startswith("history-"):
+                    path = fixture["baseline"] / "docs/intake/records/previous-intake/intake.json"
+                    path.write_bytes(encode(record))
+                save(fixture)
+                fixture["out"].write_bytes(b"old-good")
+                inputs = {path: path.read_bytes()
+                          for root in (fixture["source"], fixture["baseline"])
+                          for path in root.rglob("*") if path.is_file()}
+                run = invoke(fixture)
+                self.assertEqual(run.returncode, 1, (run.stdout, run.stderr))
+                self.assertEqual(json.loads(run.stdout)["error"], "FACTORY_SHARING")
+                self.assertEqual(len(run.stdout.splitlines()), 1)
+                self.assertEqual(run.stderr, "")
+                self.assertNotIn(token, run.stdout)
+                self.assertEqual(fixture["out"].read_bytes(), b"old-good")
+                self.assertEqual(list(fixture["out"].parent.glob(".factory-*.tmp")), [])
+                self.assertTrue(all(path.read_bytes() == raw for path, raw in inputs.items()))
+
+    def test_cli_private_array_references_cannot_be_copied_into_exports(self):
+        self._assert_private_original_copy_refused("array")
+
+    def test_cli_private_nested_array_references_cannot_be_copied_into_exports(self):
+        self._assert_private_original_copy_refused("nested-array")
+
+    def test_cli_stripped_internal_notes_cannot_be_copied_into_exports(self):
+        self._assert_private_original_copy_refused("internal-notes")
+        self._assert_private_original_copy_refused("internal-notes-container")
+
+    def test_private_protocol_values_do_not_reclassify_public_metadata(self):
+        from tests.factory_fixture import save
+        from tests.unit.test_factory_export import invoke
+        path = self.f["source"] / "blueprint.json"
+        original = json.loads(path.read_bytes())
+        original["evidence"][0].update(
+            status="provided", schema="frontier-agent-factory-handover/1.0",
+            customer_scope=self.r["customer_scope"])
+        path.write_bytes(encode(original))
+        save(self.f)
+        run = invoke(self.f)
+        self.assertEqual(run.returncode, 0, (run.stdout, run.stderr))
+
     def test_internal_financial_paths_are_not_export_metadata(self):
         original, _ = self.blueprint()
         original["meta"]["internal_terms"] = ["private-staging-name"]
