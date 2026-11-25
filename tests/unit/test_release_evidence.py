@@ -7,11 +7,13 @@ import io
 import json
 import os
 from pathlib import Path
+import struct
 import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
 import zipfile
+import zlib
 
 from tools import release_evidence as evidence
 from tools.verify_release import standard_artefacts
@@ -43,6 +45,31 @@ def tiny_zip(name="synthetic.txt", data=b"offline fixture", symlink=False, compr
         info.compress_type = compression
         archive.writestr(info, data)
     return stream.getvalue()
+
+
+def forged_zip_size(data, size=1, crc=zlib.crc32(b"A")):
+    """Lie consistently in both headers, leaving the full compressed stream."""
+    data = bytearray(data)
+    central = data.index(b"PK\x01\x02")
+    for crc_offset, size_offset in ((14, 22), (central + 16, central + 24)):
+        struct.pack_into("<I", data, crc_offset, crc)
+        struct.pack_into("<I", data, size_offset, size)
+    return bytes(data)
+
+
+def changed_compressed_payload(data, change):
+    """Replace the sole member's compressed span and repair ZIP offsets/sizes."""
+    header = struct.unpack_from("<4s5H3I2H", data)
+    start = 30 + header[-2] + header[-1]
+    size = header[7]
+    payload = change(data[start:start + size])
+    result = bytearray(data[:start] + payload + data[start + size:])
+    central = result.index(b"PK\x01\x02")
+    end = result.index(b"PK\x05\x06")
+    struct.pack_into("<I", result, 18, len(payload))
+    struct.pack_into("<I", result, central + 20, len(payload))
+    struct.pack_into("<I", result, end + 16, central)
+    return bytes(result)
 
 
 class FakeProcess:
@@ -158,11 +185,12 @@ class ReleaseEvidence(unittest.TestCase):
     def assert_rejected(self, online=True):
         before = {p.relative_to(self.version_cache): p.read_bytes()
                   for p in self.version_cache.rglob("*") if p.is_file()} if self.version_cache.exists() else None
-        with self.assertRaises(evidence.EvidenceError):
+        with self.assertRaises(evidence.EvidenceError) as raised:
             self.resolve(online)
         after = {p.relative_to(self.version_cache): p.read_bytes()
                  for p in self.version_cache.rglob("*") if p.is_file()} if self.version_cache.exists() else None
         self.assertEqual(after, before, "Failure must not change or partly populate the cache")
+        return raised.exception
 
     def test_exact_published_version_is_validated_and_cached(self):
         result = self.resolve()
@@ -410,6 +438,98 @@ class ReleaseEvidence(unittest.TestCase):
         except Exception as exc:
             self.fail(f"Invalid LZMA properties must raise EvidenceError, not {type(exc).__name__}: {exc}")
         self.assertFalse(self.version_cache.exists())
+
+    def test_forged_deflate_size_is_bounded_before_cache_write(self):
+        data = forged_zip_size(tiny_zip(data=b"A" * (evidence.TOTAL_LIMIT + 1), compression=zipfile.ZIP_DEFLATED))
+        # This is intentionally invisible to the stdlib's declared-size-limited reader.
+        with zipfile.ZipFile(io.BytesIO(data)) as archive:
+            self.assertIsNone(archive.testzip())
+        self.assets[PLUGIN] = data
+        self.manifest["artefacts"][0].update(bytes=len(data), sha256=digest(data))
+        self.refresh()
+        error = self.assert_rejected()
+        self.assertIn("2 > 1", str(error))  # Decode only a one-byte sentinel beyond the declared limit.
+        self.assertFalse(self.version_cache.exists())
+
+    def test_forged_deflate_size_preserves_previous_cache(self):
+        self.resolve()
+        data = forged_zip_size(tiny_zip(data=b"A" * 10000, compression=zipfile.ZIP_DEFLATED))
+        self.assets[PLUGIN] = data
+        self.manifest["artefacts"][0].update(bytes=len(data), sha256=digest(data))
+        self.refresh()
+        error = self.assert_rejected()
+        self.assertIn("2 > 1", str(error))
+
+    def test_forged_stored_size_is_rejected(self):
+        data = forged_zip_size(tiny_zip(data=b"AA"))
+        with zipfile.ZipFile(io.BytesIO(data)) as archive:
+            self.assertIsNone(archive.testzip())
+        self.assets[PLUGIN] = data
+        self.manifest["artefacts"][0].update(bytes=len(data), sha256=digest(data))
+        self.refresh()
+        self.assert_rejected()
+
+    def test_forged_lzma_size_is_rejected_as_unsupported_before_cache(self):
+        data = forged_zip_size(tiny_zip(data=b"A" * (evidence.TOTAL_LIMIT + 1), compression=zipfile.ZIP_LZMA))
+        with zipfile.ZipFile(io.BytesIO(data)) as archive:
+            self.assertIsNone(archive.testzip())
+        self.assets[PLUGIN] = data
+        self.manifest["artefacts"][0].update(bytes=len(data), sha256=digest(data))
+        self.refresh()
+        error = self.assert_rejected()
+        self.assertIn("compression method", str(error))
+        self.assertFalse(self.version_cache.exists())
+
+    def test_bzip2_is_rejected_before_cache(self):
+        data = tiny_zip(compression=zipfile.ZIP_BZIP2)
+        self.assets["sbom-spdx.zip"] = data
+        self.refresh()
+        error = self.assert_rejected()
+        self.assertIn("compression method", str(error))
+
+    def test_deflate_requires_eof_and_no_extra_compressed_bytes(self):
+        original = tiny_zip(data=b"A" * 1000, compression=zipfile.ZIP_DEFLATED)
+        for label, change in (("truncated", lambda payload: payload[:-1]), ("trailing", lambda payload: payload + b"extra"),
+                              ("concatenated", lambda payload: payload + payload)):
+            with self.subTest(case=label):
+                data = changed_compressed_payload(original, change)
+                self.assets[PLUGIN] = data
+                self.manifest["artefacts"][0].update(bytes=len(data), sha256=digest(data))
+                self.refresh()
+                error = self.assert_rejected()
+                self.assertIn("DEFLATE stream", str(error))
+
+    def test_valid_stored_and_deflated_streams_are_accepted(self):
+        stream = io.BytesIO()
+        with zipfile.ZipFile(stream, "w") as archive:
+            for name, method in (("stored.txt", zipfile.ZIP_STORED), ("deflated.txt", zipfile.ZIP_DEFLATED)):
+                info = zipfile.ZipInfo(name, (2026, 1, 1, 0, 0, 0))
+                info.compress_type = method
+                archive.writestr(info, b"normal decoded output" * 10000)
+        self.assets[PLUGIN] = data = stream.getvalue()
+        self.manifest["artefacts"][0].update(bytes=len(data), sha256=digest(data))
+        self.refresh()
+        self.assertEqual(self.resolve()["status"], "published")
+        self.requests.clear()
+        self.assertEqual(self.resolve(False)["status"], "published")
+        self.assertEqual(self.requests, [])
+
+    def test_offline_forged_deflate_is_rejected_despite_consistent_cache_hashes(self):
+        self.resolve()
+        data = forged_zip_size(tiny_zip(data=b"A" * 10000, compression=zipfile.ZIP_DEFLATED))
+        self.assets[PLUGIN] = data
+        self.manifest["artefacts"][0].update(bytes=len(data), sha256=digest(data))
+        self.refresh()
+        for name, raw in self.assets.items():
+            (self.cache / name).write_bytes(raw)
+        path = self.cache / "evidence.json"
+        record = json.loads(path.read_bytes())
+        record["files"] = {name: digest(raw) for name, raw in self.assets.items()}
+        path.write_bytes(encode(record))
+        self.requests.clear()
+        error = self.assert_rejected(False)
+        self.assertIn("2 > 1", str(error))
+        self.assertEqual(self.requests, [])
 
     def test_malformed_nonexact_tag_response_cannot_prove_development(self):
         self.routes[BASE + "/releases?per_page=100&page=1"] = []

@@ -12,11 +12,11 @@ import datetime as dt
 import hashlib
 import io
 import json
-import lzma
 import os
 from pathlib import Path
 import re
 import stat
+import struct
 import subprocess
 import tempfile
 import threading
@@ -245,6 +245,52 @@ def _expected(rows, version):
     return result
 
 
+def _zip_member(data, entry, remaining):
+    """Validate the full raw STORED/DEFLATED span, not ZipExtFile's truncated view."""
+    _require(entry.compress_type in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED),
+             "Unsupported ZIP compression method; only STORED and DEFLATED are accepted")
+    offset = entry.header_offset
+    _require(0 <= offset <= len(data) - 30, "Invalid ZIP local header offset")
+    header = struct.unpack_from("<4s5H3I2H", data, offset)
+    _require(header[0] == b"PK\x03\x04" and header[2] == entry.flag_bits and header[3] == entry.compress_type,
+             "ZIP local/central header mismatch")
+    if not entry.flag_bits & 8:  # Streaming writers may leave sizes/CRC to a data descriptor.
+        _require(header[6:9] == (entry.CRC, entry.compress_size, entry.file_size), "ZIP local/central size or CRC mismatch")
+    position = offset + 30 + header[-2] + header[-1]
+    end = position + entry.compress_size
+    _require(position <= end <= len(data), "ZIP compressed span exceeds archive")
+    allowed = min(entry.file_size, remaining)
+    count = crc = 0
+    decoder = zlib.decompressobj(-zlib.MAX_WBITS) if entry.compress_type == zipfile.ZIP_DEFLATED else None
+    pending = b""
+    while True:
+        # A one-byte sentinel detects a dishonest length without expanding the rest.
+        maximum = min(65536, allowed - count + 1)
+        if decoder is None:
+            output = data[position:min(end, position + maximum)]
+            position += len(output)
+        else:
+            if not pending and position < end:
+                pending = data[position:min(end, position + 65536)]
+                position += len(pending)
+            output = decoder.decompress(pending, maximum)
+            pending = decoder.unconsumed_tail
+        count += len(output)
+        _require(count <= allowed, f"ZIP expanded content exceeds allowed size ({count} > {allowed})")
+        crc = zlib.crc32(output, crc)
+        if decoder is None:
+            if position == end:
+                break
+        elif decoder.eof:
+            _require(not decoder.unused_data and not pending and position == end, "Extra bytes after complete DEFLATE stream")
+            break
+        else:
+            _require(pending or position < end or output, "Incomplete DEFLATE stream")
+    _require(count == entry.file_size, "ZIP actual decoded size differs from declared size")
+    _require(crc == entry.CRC, "ZIP actual decoded CRC mismatch")
+    return count
+
+
 def _zip(data):
     try:
         with zipfile.ZipFile(io.BytesIO(data)) as archive:
@@ -259,10 +305,12 @@ def _zip(data):
                 mode = entry.external_attr >> 16
                 _require(stat.S_IFMT(mode) in (0, stat.S_IFREG, stat.S_IFDIR), "Symlink or special ZIP member")
                 _require(not entry.flag_bits & 1, "Encrypted ZIP is not supported")
-                expanded += entry.file_size
-                _require(expanded <= TOTAL_LIMIT, "ZIP expanded content exceeds 64 MiB")
+                _require(entry.file_size <= TOTAL_LIMIT - expanded, "ZIP expanded content exceeds 64 MiB")
+                expanded += _zip_member(data, entry, TOTAL_LIMIT - expanded)
+            # Retain the reader's structural/local-name/overlap checks, but only
+            # after raw streams have passed complete, bounded size/CRC validation.
             _require(archive.testzip() is None, "ZIP integrity check failed")
-    except (zipfile.BadZipFile, zlib.error, lzma.LZMAError, RuntimeError, NotImplementedError, OSError, EOFError) as exc:
+    except (zipfile.BadZipFile, zlib.error, struct.error, RuntimeError, NotImplementedError, OSError, EOFError) as exc:
         raise EvidenceError("Invalid release ZIP") from exc
 
 
