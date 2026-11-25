@@ -17,7 +17,7 @@ Commands
   package         build the plugin package into dist/ (and refresh plugin/install/plugin-install.json)
   demo            build the Caldova demo into build/demo (blueprint, identity kit, catalogue)
   docs-demo       regenerate the tracked offline Caldova HTML and ten documentation images
-  verify-release  compare dist/ and build/demo with releases/<version>/manifest.json
+  verify-release  compare dist/ and build/demo with validated exact-version published evidence
   dom             core and explicitly acknowledged Preview fixture tests in a headless DOM
   site            assemble the showcase site into build/site (SITE_AUTH_MODE / SITE_AUTH_TENANT_ID)
   serve           serve build/site on http://127.0.0.1:4173 with the hosting headers
@@ -29,6 +29,7 @@ Commands
   ci              what the L1 workflow runs: check --strict
 
 --strict (and CI=true) turns missing optional tools (ruff, eslint, PyYAML, happy-dom) into failures.
+ci and CI=true also require fresh online release evidence; local --strict does not enable networking.
 """
 from __future__ import annotations
 
@@ -46,6 +47,7 @@ from fe_lib import BUILD, DEMO_DIR, DEMO_HTML_NAME, DIST, PLUGIN, ROOT, call_mai
 
 TOOLS = ROOT / "tools"
 STRICT = False
+ONLINE = False
 RESULTS: list[tuple[str, str, float]] = []
 
 
@@ -203,8 +205,17 @@ def cmd_docs_demo():
 
 @step("release reproduction")
 def cmd_verify_release():
-    if tool("verify_release", []):
-        raise GateFailure("the build does not reproduce the release manifest")
+    verifier = load_module(TOOLS / "verify_release.py", "fe_verify_release")
+    try:
+        result = verifier.check(ROOT, verifier.plugin_version(), online=ONLINE)
+    except (OSError, ValueError) as exc:
+        raise GateFailure(f"release verification: {exc}") from exc
+    print(f"release {result['version']} status: {result['status']}; "
+          f"source_commit: {result['source_commit'] or 'unavailable'}")
+    print(result["message"])
+    if ONLINE and result["status"] == "not-performed":
+        raise GateFailure("online release verification was not performed")
+    return f"{result['status']}: {result['message']}"
 
 
 def prepare_preview_fixture() -> Path:
@@ -329,12 +340,14 @@ def cmd_setup():
 def summary() -> None:
     print("\n=== summary")
     for name, status, secs in RESULTS:
-        print(f"{status[:60]:<60}  {secs:6.1f}s  {name}")
+        print(f"{status:<60}  {secs:6.1f}s  {name}")
 
 
 def main(argv=None) -> int:
-    global STRICT
+    global STRICT, ONLINE
     argv = list(sys.argv[1:] if argv is None else argv)
+    RESULTS.clear()
+    ONLINE = "ci" in argv or os.environ.get("CI", "").lower() == "true"
     STRICT = "--strict" in argv or os.environ.get("CI", "").lower() == "true"
     argv = [a for a in argv if a != "--strict"]
     if not argv or argv[0] in ("-h", "--help", "help"):
@@ -369,7 +382,11 @@ def main(argv=None) -> int:
         return 1
     if RESULTS:
         summary()
-        print("\nALL GATES PASSED" if not code else "")
+        if not code:
+            unavailable = any(name == "release reproduction" and status.startswith("not-performed:")
+                              for name, status, _ in RESULTS)
+            print("\nLOCAL CHECKS COMPLETED; published-release verification NOT PERFORMED"
+                  if unavailable else "\nALL GATES PASSED")
     return code
 
 

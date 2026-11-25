@@ -278,6 +278,12 @@ class BootstrapContractTests(unittest.TestCase):
         self.assertIn("actual human approval", operative)
         self.assertEqual(source.split("## Publish", 1)[0], revised.split("## Publish", 1)[0])
         self.assertIn("Keep released records immutable.", revised)
+        publication = operative.split("## Publish", 1)[1]
+        self.assertNotIn("chooses **Actions > release > Run workflow**", publication)
+        self.assertNotIn("hand the immutable release-manifest record to the person for a follow-up PR", publication)
+        self.assertIn("Exact-version release assets remain canonical", publication)
+        self.assertIn("no routine manual retention PR", publication)
+        self.assertIn("\n\nAgents never dispatch" + source.split("\n\nAgents never dispatch", 1)[1], revised)
 
     def test_reconstructed_release_manager_no_longer_prescribes_legacy_sequence(self):
         relative = ".github/agents/frontier-release-manager.agent.md"
@@ -299,6 +305,30 @@ class BootstrapContractTests(unittest.TestCase):
         old_handoff = current_anchor(source, prefix)
         self.assertIn(source.split(old_handoff, 1)[1], revised)
         self.assertEqual(source.split("---", 2)[:2], revised.split("---", 2)[:2])
+        self.assertNotIn("Actions > release > Run workflow", handoff)
+
+    def test_release_guidance_body_mutations_are_rejected_before_output(self):
+        for relative, old, new in (
+            (".github/skills/frontier-release/SKILL.md",
+             "The maintainer reviews the exact release head", "Anyone may publish an arbitrary head"),
+            (".github/agents/frontier-release-manager.agent.md",
+             "Once its existing L1 step has read access", "Without any source or L1 checks"),
+        ):
+            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                seed(root)
+                path = root / relative
+                source = path.read_text(encoding="utf-8")
+                self.assertEqual(1, source.count(old))
+                path.write_text(source.replace(old, new, 1), encoding="utf-8", newline="\n")
+                before = snapshot(root)
+                with patch.object(self.module, "ROOT", root):
+                    code, stdout, stderr = self.call()
+                self.assertEqual(1, code)
+                self.assertEqual("", stdout)
+                self.assertIn("unsupported source shape: " + relative, stderr)
+                self.assertEqual(before, snapshot(root))
+                self.assertFalse((root / "build").exists())
 
     def test_reconstructed_instruction_proposals_align_current_and_future_roles(self):
         outputs = self.outputs()
