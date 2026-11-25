@@ -5,7 +5,7 @@
 | Version | 0.2 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Written spec approved at 67dc9a5; subsequent concrete plan/readiness approval pending |
+| Status | Written spec approved at 67dc9a5; later written plan/execution at 22f512f approved; bounded implementation in progress |
 | Scope | Exact-version published evidence, offline local checks and strict CI without manual manifest retention |
 | References | [Catalogue](README.md), [Issue #67](https://github.com/urruegg/frontier-envisioning/issues/67), [Idea and actual choices](../ideas/2026-11-24-release-evidence-simplification.md), [SPRINT-012](../sprints/SPRINT-012-release-evidence-simplification.md), [Written plan](../plans/2026-11-25-release-evidence-simplification-plan.md), [PRD](../prd.md), [Solution design](../solution-design.md), [Retention #52](https://github.com/urruegg/frontier-envisioning/issues/52) |
 
@@ -27,7 +27,10 @@ can implement"**, referring to the actual written draft at
 The [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155486060)
 records that distinct written-spec decision. This revision adds the receipt
 and real later plan/sprint links, not changed acceptance criteria. The
-subsequently written implementation plan still needs separate approval.
+subsequently written implementation plan was then presented at `22f512f`.
+The maintainer's later explicit direction to start implementing is recorded in
+the [separate execution receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155657072).
+Neither decision grants protected adoption, label or publication authority.
 
 Owner: `@urruegg`. A later plan must link real bounded implementation work and
 separately obtain plan/readiness approval. No protected label, formal review,
@@ -144,7 +147,8 @@ This planning-only draft starts from merged main
 Existing documentation validation passed before the draft was written.
 Written-spec review has now occurred, with the actual receipt above. The
 [concrete implementation plan](../plans/2026-11-25-release-evidence-simplification-plan.md)
-was written afterwards and awaits its own approval. Subagent-driven
-implementation remains the selected mode once that real plan is approved.
-No code, tests, protected record, workflow or runtime changes are made by
-creating these planning records.
+was written afterwards and explicitly presented at `22f512f`. Its subsequent
+actual execution direction is recorded above. Subagent-driven implementation
+now proceeds through the real bounded child allocations in SPRINT-012.
+Creating these planning records itself made no production or protected change;
+implementation results must be recorded separately.

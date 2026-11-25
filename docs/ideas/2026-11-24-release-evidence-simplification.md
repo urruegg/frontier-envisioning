@@ -5,7 +5,7 @@
 | Version | 0.2 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Written spec approved at 67dc9a5; concrete plan/readiness approval pending |
+| Status | Written spec and concrete plan/execution approved; bounded implementation in progress |
 | Scope | Remove recurring manual release-evidence handling, retain automated verification and human publication |
 | References | [Catalogue](README.md), [Issue #67](https://github.com/urruegg/frontier-envisioning/issues/67), [Design](../specs/2026-11-24-release-evidence-simplification-design.md), [Plan](../plans/2026-11-25-release-evidence-simplification-plan.md), [SPRINT-012](../sprints/SPRINT-012-release-evidence-simplification.md), [Retention #52](https://github.com/urruegg/frontier-envisioning/issues/52), [Guidance #9](https://github.com/urruegg/frontier-envisioning/issues/9) |
 
@@ -37,7 +37,10 @@ On 25 November the maintainer approved the actual written specification with
 **"spec is approved and you can implement"**; the
 [receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155486060)
 binds that decision to `67dc9a5` and its reviewed digest. The subsequent
-real written plan needs its own approval before delegated implementation.
+real written plan was separately presented at `22f512f`. The later explicit
+instruction to start implementation and continue autonomously is recorded in
+the [execution receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155657072).
+It is not approval of protected adoption or publication.
 
 Accountable owner: `@urruegg`. No issue assignment, milestone, `status:ready`
 or `approved:*` label is inferred from those choices.
@@ -64,5 +67,6 @@ The [policy catalogue](../../.github/agent-policy/README.md) remains Proposed;
 protected routing/native-controls work under #8 remains separate.
 
 The written design is approved. The real test-first implementation plan and
-fully linked sprint record now exist; obtain actual plan/readiness approval
-before delegation. No placeholder plan file or invented approval is used.
+fully linked sprint record now exist, with the actual subsequent execution
+direction recorded. Real bounded children #68/#69/#70 govern delegated work.
+No placeholder plan file or invented approval is used.

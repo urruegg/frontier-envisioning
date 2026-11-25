@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Written specification approved; concrete plan/readiness approval pending |
+| Status | Written spec and plan/execution approved; bounded evidence implementation #68 in progress |
 | Scope | Issue #67 developer evidence/checker/guidance slices; protected workflow adoption remains separate |
 | References | [Catalogue](README.md), [#67](https://github.com/urruegg/frontier-envisioning/issues/67), [Idea](../ideas/2026-11-24-release-evidence-simplification.md), [Approved spec](../specs/2026-11-24-release-evidence-simplification-design.md), [Written plan](../plans/2026-11-25-release-evidence-simplification-plan.md), [Spec receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155486060), [#52](https://github.com/urruegg/frontier-envisioning/issues/52), [#8](https://github.com/urruegg/frontier-envisioning/issues/8) |
 
@@ -18,7 +18,10 @@ not-performed outcome when no validated evidence is available.
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#67](https://github.com/urruegg/frontier-envisioning/issues/67) | [Actual choices](../ideas/2026-11-24-release-evidence-simplification.md) | [RE-01–08](../specs/2026-11-24-release-evidence-simplification-design.md#6-testable-acceptance) | [Tasks 1–4](../plans/2026-11-25-release-evidence-simplification-plan.md) | `@urruegg` accountable; no inferred assignment | Actual approval of the concrete plan; reviewed code slices before prose/integration; human protected-workflow adoption | Written spec approved; plan/readiness pending, not ready for delegation | [Spec receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155486060); no implementation or publication result |
+| [#67](https://github.com/urruegg/frontier-envisioning/issues/67) | [Actual choices](../ideas/2026-11-24-release-evidence-simplification.md) | [RE-01–08](../specs/2026-11-24-release-evidence-simplification-design.md#6-testable-acceptance) | [Tasks 1–4](../plans/2026-11-25-release-evidence-simplification-plan.md) | `@urruegg` accountable | Reviewed child slices before stable integration; separate human protected adoption | Actual plan/execution direction recorded; implementation in progress | [Execution receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155657072); no publication/adoption result |
+| [#68](https://github.com/urruegg/frontier-envisioning/issues/68) | [Evidence outcome](../ideas/2026-11-24-release-evidence-simplification.md) | [RE-02–06](../specs/2026-11-24-release-evidence-simplification-design.md#6-testable-acceptance) | [Task 1](../plans/2026-11-25-release-evidence-simplification-plan.md#task-1-validated-published-evidence-and-offline-cache) | `@urruegg` accountable and assigned; bounded builder | Approved plan at `22f512f` | Test-first helper/cache implementation in progress | Real child allocated before delegation; results pending |
+| [#69](https://github.com/urruegg/frontier-envisioning/issues/69) | [Automated checks](../ideas/2026-11-24-release-evidence-simplification.md) | [RE-01–06](../specs/2026-11-24-release-evidence-simplification-design.md#6-testable-acceptance) | [Task 2](../plans/2026-11-25-release-evidence-simplification-plan.md#task-2-gatecli-integration-and-existing-ci-read-access) | `@urruegg` accountable and assigned; bounded builder | Reviewed #68 contract | Waiting for reviewed helper | No gate implementation or protected adoption claimed |
+| [#70](https://github.com/urruegg/frontier-envisioning/issues/70) | [No recurring ceremony](../ideas/2026-11-24-release-evidence-simplification.md) | [RE-01/07/08](../specs/2026-11-24-release-evidence-simplification-design.md#6-testable-acceptance) | [Task 3](../plans/2026-11-25-release-evidence-simplification-plan.md#task-3-active-guidance-and-bounded-human-adoption) | `@urruegg` accountable and assigned; bounded documentation | Reviewed #69 CLI/outcomes | Waiting for actual contract | No future validation/adoption result invented |
 
 Do not invent child IDs before the plan is approved. At execution, allocate the
 bounded evidence builder, gate consumer and documentation work in real linked
@@ -34,9 +37,13 @@ approved on 25 November with **"spec is approved and you can implement"**,
 referring to `67dc9a542d734ea7af91a2b40dda3ad823550375` and reviewed spec digest
 `584b85e05780b1c276a637b48553191ebfd33c6ede0dc45ecf7c862f971d3926`.
 
-The linked real plan was written afterwards. Its own plan/readiness approval
-is still pending. No `status:ready`/`approved:*` label, assignee, milestone,
-protected-file permission or publication is inferred from either decision.
+The linked real plan was written afterwards and presented at `22f512f`.
+The maintainer subsequently directed **"stop planning and start implementing"**,
+with continued autonomous execution. The
+[actual receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155657072)
+records that distinct plan/execution decision. Real #68/#69/#70 children were
+created and assigned afterwards, before delegation. No `status:ready`/
+`approved:*` label, milestone, protected permission or publication is inferred.
 
 ## Baseline and actual planning validation
 

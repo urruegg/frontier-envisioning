@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Written specification approved; this implementation plan/readiness awaits separate human approval |
+| Status | Written specification and plan/execution approved; bounded subagent implementation in progress |
 | Scope | Issue #67 developer tooling, tests and active guidance; no plugin change or agent publication |
 | References | [Catalogue](README.md), [#67](https://github.com/urruegg/frontier-envisioning/issues/67), [Idea](../ideas/2026-11-24-release-evidence-simplification.md), [Approved spec](../specs/2026-11-24-release-evidence-simplification-design.md), [SPRINT-012](../sprints/SPRINT-012-release-evidence-simplification.md), [Written-spec receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155486060), [#52](https://github.com/urruegg/frontier-envisioning/issues/52), [#8](https://github.com/urruegg/frontier-envisioning/issues/8) |
 
@@ -35,13 +35,17 @@ read operations, `unittest`/existing pytest runner, existing L1/L2 tools.
 The actual 25 November answer was **"spec is approved and you can implement"**,
 referring to written spec `67dc9a542d734ea7af91a2b40dda3ad823550375`,
 SHA-256 `584b85e05780b1c276a637b48553191ebfd33c6ede0dc45ecf7c862f971d3926`.
-The receipt above records that actual approval and selected subagent mode.
-It is not approval of this subsequently written plan. Obtain that distinct
-plan/readiness decision before delegated implementation; do not infer labels.
+The receipt above records that actual approval and selected subagent mode,
+separately from this subsequently written plan. After the real plan at
+`22f512fd90b93f72c0aa538bf8f918b79ac0d157` was presented, the maintainer
+directed **"stop planning and start implementing"** and continued autonomous
+execution. The [actual execution receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155657072)
+records that decision, not an unavailable form response. It approves this
+bounded plan/execution, not protected actions or labels.
 
 Use the existing isolated `frontier-envisioning-wt-48` worktree. Planning branch
 is `docs/67-release-evidence-design`, based on merged main `b9e41e8`.
-After actual plan approval, start `chore/67-release-evidence` from the exact
+Implementation branch `chore/67-release-evidence` starts from that exact
 approved committed planning package, with no reset or unrelated checkout edits.
 Do not touch the primary checkout's editor settings, field briefs or any
 human-authored #52 copy/branch.
@@ -64,8 +68,8 @@ download. Do not confuse those two inventories.
 | Unit | Exact allowed files | Responsibility |
 |---|---|---|
 | Evidence builder slice | New `tools/release_evidence.py`, new `tests/unit/test_release_evidence.py` | Bounded GitHub GET/download adapter, exact-version/source checks, validated ignored cache; no plugin imports/networking |
-| Gate builder slice | `tools/verify_release.py`, `tools/dev.py`, `tests/unit/test_release_tools.py`, `tests/unit/test_tools_core.py`, narrowly `tests/pipeline/test_release_reproduction.py`, `.github/workflows/ci.yml` | Existing comparisons/writers, explicit result propagation, automatic CI lookup and read-only credential wiring |
-| Documentation slice | `.github/skills/frontier-release/SKILL.md`, `.github/agents/frontier-release-manager.agent.md`, `docs/engineering/github-setup.md`, `docs/engineering/handbook.md`, `docs/engineering/testing-strategy.md`, new `docs/engineering/release-evidence-adoption.md`, `docs/engineering/README.md` | Accurate normal workflow, offline/CI outcomes, bounded human adoption handover; no weakening of authorisation |
+| Gate builder slice | `tools/verify_release.py`, `tools/dev.py`, `tests/unit/test_release_tools.py`, `tests/unit/test_tools_core.py`, narrowly `tests/pipeline/test_release_reproduction.py`, `.github/workflows/ci.yml`; directly coupled release-guidance anchors in `tools/governance_bootstrap.py` / `tests/unit/test_governance_bootstrap.py` if reproduced | Existing comparisons/writers, explicit result propagation, automatic CI lookup and read-only credential wiring; keep dormant proposal anchors honest, not live automation |
+| Documentation slice | `.github/skills/frontier-release/SKILL.md`, `.github/agents/frontier-release-manager.agent.md`, `docs/engineering/github-setup.md`, `docs/engineering/handbook.md`, `docs/engineering/testing-strategy.md`, new `docs/engineering/release-evidence-adoption.md`, `docs/README.md` | Accurate normal workflow, offline/CI outcomes, bounded human adoption handover; no weakening of authorisation |
 | Requirements/rationale/evidence | `docs/prd.md`, `docs/solution-design.md`, new Proposed `docs/adr/0031-release-assets-as-evidence.md`, `docs/adr/README.md`, narrowly coupled `tests/unit/test_docs_contract.py`, SPRINT-012 and directly related catalogues | Engineering acceptance, rationale and actual source-qualified test/adoption evidence |
 
 Do not duplicate parsing/hash/normalisation logic across these units.
@@ -359,6 +363,13 @@ Start after the reviewed actual CLI/JSON contract from Task 2 is available.
 - [ ] Validate with `python tools/dev.py docs --strict` and scoped neutrality.
   Prose has no fictional code RED. Commit only this bounded documentation,
   with `Refs #67, #52, #9`. Complete independent document/contract review.
+- [ ] Existing `governance_bootstrap.py` contains exact-source replacements
+  for the two release guidance files. After the prose update, reproduce any
+  anchor failure, then have the builder update only those directly coupled
+  source anchors and their tests. Preserve the blocked live-adoption report,
+  desired authority boundaries and executable guard bytes. Never leave old
+  operative text in a historical wrapper merely to trick the anchor check,
+  waive a mismatch, or activate #48 automation.
 
 ## Task 4: Stable exact-version proof and final handover
 
@@ -423,6 +434,14 @@ do not parallelise their shared-contract edits. Route the subsequent prose to
 review precedes correctness. Create real child allocations only after actual
 plan approval and before delegation. Do not infer formal review or protected
 approval from advisory agent findings.
+
+The actual allocations are [#68 evidence/cache](https://github.com/urruegg/frontier-envisioning/issues/68),
+[#69 gate/CI integration](https://github.com/urruegg/frontier-envisioning/issues/69)
+and [#70 guidance/adoption handover](https://github.com/urruegg/frontier-envisioning/issues/70).
+They were created after the actual execution receipt and before delegation.
+Execution inspection found no `docs/engineering/README.md`; the file map uses
+the existing `docs/README.md` index instead of creating an unnecessary catalogue.
+This corrects a path, not the approved scope or authorisation boundaries.
 
 The plan author inspected the existing verifier, task runner, workflow,
 ten-test baseline, release/pipeline/task-runner tests, shared helpers, active
