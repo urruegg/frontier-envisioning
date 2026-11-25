@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
+| Version | 0.5 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Evidence/cache #68 implemented and both bounded reviews passed; gate integration #69 in progress |
+| Status | Software/guidance implemented; reviewed-head gate and adoption evidence indexed in PR #71; protected human adoption remains separate |
 | Scope | Issue #67 developer evidence/checker/guidance slices; protected workflow adoption remains separate |
 | References | [Catalogue](README.md), [#67](https://github.com/urruegg/frontier-envisioning/issues/67), [Idea](../ideas/2026-11-24-release-evidence-simplification.md), [Approved spec](../specs/2026-11-24-release-evidence-simplification-design.md), [Written plan](../plans/2026-11-25-release-evidence-simplification-plan.md), [Spec receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155486060), [#52](https://github.com/urruegg/frontier-envisioning/issues/52), [#8](https://github.com/urruegg/frontier-envisioning/issues/8) |
 
@@ -18,10 +18,10 @@ not-performed outcome when no validated evidence is available.
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#67](https://github.com/urruegg/frontier-envisioning/issues/67) | [Actual choices](../ideas/2026-11-24-release-evidence-simplification.md) | [RE-01–08](../specs/2026-11-24-release-evidence-simplification-design.md#6-testable-acceptance) | [Tasks 1–4](../plans/2026-11-25-release-evidence-simplification-plan.md) | `@urruegg` accountable | Reviewed child slices before stable integration; separate human protected adoption | Actual plan/execution direction recorded; implementation in progress | [Execution receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155657072); no publication/adoption result |
+| [#67](https://github.com/urruegg/frontier-envisioning/issues/67) | [Actual choices](../ideas/2026-11-24-release-evidence-simplification.md) | [RE-01–08](../specs/2026-11-24-release-evidence-simplification-design.md#6-testable-acceptance) | [Tasks 1–4](../plans/2026-11-25-release-evidence-simplification-plan.md) | `@urruegg` accountable | Reviewed child slices; separate human protected adoption | Software implemented; exact-head gates and outstanding human adoption indexed in PR #71 | [Execution receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155657072); no agent publication/adoption |
 | [#68](https://github.com/urruegg/frontier-envisioning/issues/68) | [Evidence outcome](../ideas/2026-11-24-release-evidence-simplification.md) | [RE-02–06](../specs/2026-11-24-release-evidence-simplification-design.md#6-testable-acceptance) | [Task 1](../plans/2026-11-25-release-evidence-simplification-plan.md#task-1-validated-published-evidence-and-offline-cache) | `@urruegg` accountable and assigned; bounded builder | Approved plan at `22f512f` | Implemented; specification then correctness PASS | `33e6a76`; focused RED/GREEN and live exact-version proof below |
-| [#69](https://github.com/urruegg/frontier-envisioning/issues/69) | [Automated checks](../ideas/2026-11-24-release-evidence-simplification.md) | [RE-01–06](../specs/2026-11-24-release-evidence-simplification-design.md#6-testable-acceptance) | [Task 2](../plans/2026-11-25-release-evidence-simplification-plan.md#task-2-gatecli-integration-and-existing-ci-read-access) | `@urruegg` accountable and assigned; bounded builder | Reviewed #68 contract | Test-first gate/CLI/CI integration in progress | No final full gate or protected adoption claimed |
-| [#70](https://github.com/urruegg/frontier-envisioning/issues/70) | [No recurring ceremony](../ideas/2026-11-24-release-evidence-simplification.md) | [RE-01/07/08](../specs/2026-11-24-release-evidence-simplification-design.md#6-testable-acceptance) | [Task 3](../plans/2026-11-25-release-evidence-simplification-plan.md#task-3-active-guidance-and-bounded-human-adoption) | `@urruegg` accountable and assigned; bounded documentation | Reviewed #69 CLI/outcomes | Waiting for actual contract | No future validation/adoption result invented |
+| [#69](https://github.com/urruegg/frontier-envisioning/issues/69) | [Automated checks](../ideas/2026-11-24-release-evidence-simplification.md) | [RE-01–06](../specs/2026-11-24-release-evidence-simplification-design.md#6-testable-acceptance) | [Task 2](../plans/2026-11-25-release-evidence-simplification-plan.md#task-2-gatecli-integration-and-existing-ci-read-access) | `@urruegg` accountable and assigned; bounded builder | Reviewed #68 contract | Main integration specification/correctness PASS; source-anchor repair committed | `b8cba42`, coupled `8aa8100`; exact-head review/gates in PR #71 |
+| [#70](https://github.com/urruegg/frontier-envisioning/issues/70) | [No recurring ceremony](../ideas/2026-11-24-release-evidence-simplification.md) | [RE-01/07/08](../specs/2026-11-24-release-evidence-simplification-design.md#6-testable-acceptance) | [Task 3](../plans/2026-11-25-release-evidence-simplification-plan.md#task-3-active-guidance-and-bounded-human-adoption) | `@urruegg` accountable and assigned; bounded documentation | Reviewed #69 CLI/outcomes; separate human adoption | Eleven prose files implemented; specification then correctness PASS; strict docs/preservation passed | No protected adoption or publication claimed |
 
 Do not invent child IDs before the plan is approved. At execution, allocate the
 bounded evidence builder, gate consumer and documentation work in real linked
@@ -137,3 +137,55 @@ The controller also executed the real task-runner entry point twice:
 
 These are focused integration results. Ordered #69 reviews, final full gates,
 actual CI and protected human adoption remain separate at this checkpoint.
+
+The subsequent #69 specification review ran 33 tests (31 passed, two
+existing skips) and rejected five baseline counterfactual cases without
+errors. Correctness review passed eight invalid-manifest probes and a
+directory-as-artefact read-error probe, preserving error diagnostics and
+avoiding false verified/pass outcomes. Both stages reported no findings.
+
+The controller then exercised the integrated `check` API, not only the raw
+resolver: automatic online and offline cached checks each returned `verified`
+for the exact 1.10.0 source and four normally rebuilt artefacts. This required
+no copied protected manifest and did not publish anything.
+
+## Guidance and coupled-checker integration
+
+The documentation agent edited the eleven approved guidance/rationale files,
+without running shell checks or claiming a commit. The controller ran strict
+documentation validation: zero errors / ALL GATES PASSED. Historical document
+preservation passed 27 tests and 305 subtests.
+
+The two existing release-guidance bootstrap tests had passed before the prose
+change. They then failed with `unsupported source shape` at the old exact
+release-skill anchor. This is observed coupling, not a waived baseline.
+The bounded builder was assigned only those source anchors and focused tests,
+preserving the dormant proposal's blocked authority and all executable guards.
+
+The resulting repair is `8aa8100f7113b97b3805b0bdeb60b8ad6a3e4739`: the two
+original selectors passed, followed by 43 governance-bootstrap tests run
+(39 passed, four Windows filesystem-symlink privilege skips). Unknown/interior
+source mutations still reject before output. Only exact source replacements
+and their focused tests changed; validator logic and all guards stayed intact.
+
+Both independent #70 prose review stages passed with no findings. The
+specification reviewer checked all eleven files and actual CLI help, scoped
+neutrality (zero findings) and whitespace. The correctness stage confirmed
+the exact one-time token handover, inventories, offline/CI reporting and
+historical/authority boundaries. No new full-gate or protected-adoption result
+was invented by the writer or reviewers.
+
+Read-only repository metadata reported `private: false`, unlike the stated
+private-baseline guidance. No visibility/settings change was performed, no
+private field input was copied, and human reconciliation is required.
+This does not grant public/IP clearance or alter the publication boundary.
+
+## Reviewed-head verification index
+
+[Draft PR #71](https://github.com/urruegg/frontier-envisioning/pull/71) owns the
+exact final source head, full `CI=true` quality-gate summary, automatic CI/
+CodeQL results and final integration-review outcome. The checkpoints above
+remain source-qualified rather than being silently extended to later edits.
+Normal publication must still wait for the real human protected-workflow
+adoption described in the linked engineering handover; no per-release manual
+hash/download/retention ceremony is proposed.

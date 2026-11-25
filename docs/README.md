@@ -2,9 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.0 |
-| Date | 2026-11-13 |
-| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Version | 1.1 |
+| Date | 2026-11-25 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance; AI assistant (AI-assisted #70 release evidence guidance) |
 | Status | Maintained catalogue; approval not inferred |
 | Scope | Using the plugin, engineering guidance and historical records; document revision, not product version |
 | References | [Repository](../README.md), [Product requirements](prd.md), [Solution design](solution-design.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Issue #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Guidance #39](https://github.com/urruegg/frontier-envisioning/issues/39), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md) |
@@ -16,8 +16,11 @@ Start here to evaluate **release build 1.10.0**. Check
 for actual publication and downloads. No repository visibility change,
 publication or external sharing clearance is implied by build metadata.
 The sole human maintainer is [@urruegg](https://github.com/urruegg).
-The approved private source/issue/PR host is
+The approved source/issue/PR host, with intended private/internal classification, is
 [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning).
+The controller's 25 November metadata report (`private:false`) conflicts with
+that policy and needs [human reconciliation](engineering/release-evidence-adoption.md#classification-and-access);
+it grants no external sharing clearance.
 Eight skills are bundled: seven non-FinOps GA wrappers and optional Preview
 FinOps. Core workshops, ordinary value and identity work without FinOps;
 process/ontology is requested separately and retains its Fabric Preview caveats.
@@ -50,6 +53,7 @@ The separate synthetic Caldova baseline is not current pricing or real approval.
 | [Testing strategy](engineering/testing-strategy.md) | What each test level proves and its limits |
 | [Copilot and Superpowers](engineering/copilot-and-superpowers.md) | AI-assisted engineering, supported harnesses and guardrails |
 | [GitHub setup](engineering/github-setup.md) | Repository configuration and sole-maintainer review model |
+| [Release evidence adoption](engineering/release-evidence-adoption.md) | #67 exact-version verification, offline/CI outcomes and the pending one-time protected handover; no routine manifest-retention PR |
 | [Deployment](engineering/deployment.md) | Controlled showcase hosting; not needed to inspect the offline example |
 
 ### Work-package catalogues
@@ -60,6 +64,18 @@ The separate synthetic Caldova baseline is not current pricing or real approval.
 | [specs/](specs/README.md) | Governing specifications |
 | [plans/](plans/README.md) | Test-first implementation plans |
 | [sprints/](sprints/README.md) | Linked delivery records |
+
+Release-evidence simplification is
+[#67](https://github.com/urruegg/frontier-envisioning/issues/67), with
+[#70 guidance](https://github.com/urruegg/frontier-envisioning/issues/70):
+[approved spec](specs/2026-11-24-release-evidence-simplification-design.md),
+[plan](plans/2026-11-25-release-evidence-simplification-plan.md),
+[SPRINT-012](sprints/SPRINT-012-release-evidence-simplification.md) and
+[Proposed release evidence rationale](adr/0031-release-assets-as-evidence.md).
+The normal future flow is review/merge, human Run release workflow, then
+automated verification/publication. Protected read-access adoption, final
+strict gate and actual PR #71 CI remain pending; #52 supersession requires
+verified replacement and actual adoption, not invented historical retention.
 
 Baseline-first FinOps is [#35](https://github.com/urruegg/frontier-envisioning/issues/35),
 governed by the actual [decisions #36](https://github.com/urruegg/frontier-envisioning/issues/36),

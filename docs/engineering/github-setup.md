@@ -2,21 +2,25 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
-| Date | 2026-11-16 |
-| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Version | 0.4 |
+| Date | 2026-11-25 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance; AI assistant (AI-assisted #70 release evidence guidance) |
 | Status | Maintained; approval or administrative permission not inferred |
 | Scope | Repository setup guide; document revision, not product version |
-| References | [Documentation](../README.md), [Working agreement](../../AGENTS.md), [Workstation setup](workstation-setup.md), [Engineering handbook](handbook.md) |
+| References | [Documentation](../README.md), [Working agreement](../../AGENTS.md), [Workstation setup](workstation-setup.md), [Engineering handbook](handbook.md), [Release evidence adoption](release-evidence-adoption.md), [Approved #67 spec](../specs/2026-11-24-release-evidence-simplification-design.md) |
 
 ## 1. Prerequisites
 
-- Approved home: [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning), private. The user confirmed Microsoft approval on 9 November 2026. This does not authorize public visibility or automatic server administration.
+- Approved home and intended classification: [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning), private/internal. The user confirmed Microsoft approval on 9 November 2026. This does not authorise public visibility or automatic server administration.
 - Account decision on 10 November 2026: `@urruegg` is the sole maintainer on
   GitHub's public-cloud platform. The same person's
   enterprise-only account is not an eligible second collaborator for this
-  repository. Do not invite it or assign it ownership here. The repository
-  remains private; the platform name is not a visibility setting.
+  repository. Do not invite it or assign it ownership here. The intended
+  private classification is unchanged; the platform name is not a visibility
+  setting. On 25 November the controller reported read-only GitHub metadata
+  `private:false`. This conflicts with that policy and needs
+  [human reconciliation](release-evidence-adoption.md#classification-and-access),
+  not an agent visibility change or a claim of public clearance.
 - Git, Python 3.11+ and the GitHub CLI signed in as `urruegg`.
   Check `gh api user --jq .login` before repository operations; stop if another
   account is active. The maintainer switches/signs in privately, without
@@ -48,8 +52,11 @@ For a new repository, the script creates the import commit and repository (`--pr
 6. **Releases**: keep legacy `RELEASE_ENABLED` unset/false. The old tagged
    publisher depends on private-environment reviewers/native attestations
    unavailable on the current Pro profile. Do not revive it by rerunning an
-   old tag. [#55](https://github.com/urruegg/frontier-envisioning/issues/55)
-   proposes a person-adopted replacement, not an already active control.
+   old tag. The owner-dispatched replacement was adopted under
+   [#55](https://github.com/urruegg/frontier-envisioning/issues/55)/
+   [#57](https://github.com/urruegg/frontier-envisioning/issues/57);
+   its separate [#67 evidence-access binding](release-evidence-adoption.md#one-time-protected-workflow-handover)
+   still needs human application.
    Keep `SHOWCASE_ENABLED` unset/false; release work must not deploy Azure.
 
 ## 4. Sole-maintainer review and merge
@@ -98,17 +105,20 @@ model explicitly rather than assuming one exists now.
   were independently retrieved as `urruegg` and matched the verified handoff.
   That is not evidence that the legacy release workflow ran.
 
-## 6. Proposed upcoming-release procedure (#55)
+## 6. Owner-dispatched release procedure (#55/#57)
 
-The maintainer selected a single **Run workflow** action on `main`, rather
-than automatic publication on every version merge. The complete replacement
-for the protected [release workflow](../../.github/workflows/release.yml)
-must first be reviewed, applied and committed by a person. This is a narrow
-person-initiated release-policy adoption, not adoption of #48's App model.
-Until that happens, use the verified manual handoff; do not assume these
-instructions describe a deployed workflow.
+The maintainer adopted a single **Run workflow** action on `main` under
+[#55](https://github.com/urruegg/frontier-envisioning/issues/55)/
+[#57](https://github.com/urruegg/frontier-envisioning/issues/57), rather than
+automatic publication on every version merge. This is not adoption of #48's
+App model. The protected [release workflow](../../.github/workflows/release.yml)
+is unchanged by #70. Its existing **Gate L1** still needs the
+[one-time read-only token binding](release-evidence-adoption.md#one-time-protected-workflow-handover)
+for #67's fresh resolver. Normal CI already has that binding in the reviewed
+#69 source. Protected adoption and actual PR #71 CI remain pending; lack of
+access must fail, not make publication appear ready.
 
-After actual adoption:
+After that one-time handover:
 
 1. Merge the reviewed release/version changes with passing checks and actual
    source-qualified Cowork/manual acceptance. Do not reuse a released version.
@@ -124,16 +134,25 @@ After actual adoption:
    or the owner's interactive CLI account. No App, PAT, private approval
    environment, native attestation or Azure access is required.
 5. Exactly four files are uploaded: the plugin ZIP, `release-manifest.json`,
-   `sbom-spdx.zip` and `SHA256SUMS.txt`. Demo/identity/complete bundles are not
-   release downloads. Verify the actual published files and reader access.
+   `sbom-spdx.zip` and `SHA256SUMS.txt`. The checksum file lists only the other
+   three payloads. Demo/identity/catalogue reproduction outputs and complete
+   bundles are not release downloads. Automatic subsequent checks resolve
+   the exact version, never `latest`; no routine manual download, hashing,
+   copied manifest or retention PR is required.
 
 Changed `main`, conflicting tags/releases, failed checks or invalid inputs
 stop publication. A retry may reuse only the identical annotated tag; an
 existing release, including a partial draft, stops for honest maintainer
 recovery. Never move a tag, overwrite assets or delete failure evidence
-automatically. Protected release-record retention remains person-operated.
+automatically. Historical assets, tags, provenance and `releases/` records
+stay unchanged; explicit old manifests remain usable. New releases need no
+copy under `releases/`. Record #52's recurring retention requirement as
+superseded only after the replacement is verified and human adoption is
+recorded; do not invent a missing historical copy/merge.
 
 The Release itself is the announcement. **Watch > Custom > Releases** is
 opt-in; delivery to every contributor is not guaranteed. No cryptographic
 build attestation or SLSA level is claimed. Agents do not dispatch this
 workflow, tag, publish, merge or change settings under the current agreement.
+Checksums and cache validation show consistency, not a signature or independent
+approval. Protected routing/native controls under #8 remain separate.

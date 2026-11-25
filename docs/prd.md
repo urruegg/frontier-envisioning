@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.8 |
-| Date | 2026-11-24 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose) |
-| Status | Maintained requirements; 1.10.1 correction implemented, reviewed-head verification indexed in PR #65; human acceptance pending; published 1.10.0 baseline retained; no release approval implied |
-| Scope | Bounded unreleased 1.10.1 process correction and preserved 1.10.0/earlier requirements/history |
-| References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61) |
+| Version | 1.9 |
+| Date | 2026-11-25 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance) |
+| Status | Maintained requirements; #67 engineering slices reviewed, final gate/CI and protected adoption pending; prior 1.10.1 verification indexed in PR #65; published 1.10.0 retained; no release approval implied |
+| Scope | Release-evidence engineering requirements, bounded unreleased 1.10.1 correction and preserved 1.10.0/earlier requirements/history |
+| References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61), [Release evidence spec](specs/2026-11-24-release-evidence-simplification-design.md), [Human adoption handover](engineering/release-evidence-adoption.md) |
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Current source references are
 anonymised without changing attribution or private historical evidence. Plugin
@@ -23,6 +23,57 @@ The split preserves historical results and claims, including the original
 1.6.0 acceptance and release plan. It does not rerun or extend those claims,
 approve a release, change pricing or alter plugin behaviour. The 1.6.1 note
 below remains unreleased.
+
+## Release evidence engineering requirements
+
+**25 November 2026: engineering-only #67/#70 qualification.** Remove
+recurring manual download/hash/copy/retention PR work without removing
+automatic integrity/reproduction checks or human publication. The
+[approved spec](specs/2026-11-24-release-evidence-simplification-design.md),
+[plan](plans/2026-11-25-release-evidence-simplification-plan.md) and
+[SPRINT-012](sprints/SPRINT-012-release-evidence-simplification.md) govern
+[#67](https://github.com/urruegg/frontier-envisioning/issues/67) and
+[#70 guidance](https://github.com/urruegg/frontier-envisioning/issues/70).
+`@urruegg` is accountable. The
+[actual plan/execution receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155657072)
+does not grant protected-edit, dispatch, merge, label or publication authority.
+The [release evidence rationale](adr/0031-release-assets-as-evidence.md)
+remains Proposed.
+
+These are engineering requirements, not new plugin features or a product
+version change. Existing migration receipts, identifiers, historical
+requirements/results and published assets/tags/records/provenance remain
+unchanged. The dated #52 retention references below retain their earlier
+context; current disposition is conditional supersession after actual
+verified replacement/adoption, not a claim that an old copy/merge happened.
+
+| ID | Current requirement and acceptance |
+|---|---|
+| RE-01 | Normal future flow is maintainer review/merge, then human **Run release workflow** with `version`, `manual_checks`, `publish`; automation verifies and publishes. No routine manual download/hash/copy/retention PR. Manifest/checksums remain release assets and automated comparison remains. |
+| RE-02 | Resolve only the requested exact version and matching repository/annotated-tag/source, never `latest`. Reject conflicts and wrong-version evidence. Preserve historical formats/provenance and compare historical releases only with matching historical outputs. |
+| RE-03 | CI requires fresh authoritative access/lookup. Only confirmed absence of both exact published release and conflicting tag permits development; access/network errors, drafts, missing assets, malformed evidence and hash/artefact mismatch fail, never silently fall back. |
+| RE-04 | Local checks stay offline-capable: valid exact-version/source cache compares; a genuine miss reports `not-performed`, not a release pass or confirmed development. Reject tampered/stale/wrong-source cache; no cached absence claims or plugin networking. |
+| RE-05 | Preserve existing assets/tags/records, deterministic package comparison, generated-date handling, finite raster inputs and runtime behaviour. New releases need no copied record under `releases/`; explicit old manifests remain usable. |
+| RE-06 | Use deterministic local GitHub/download fixtures and real validation/cache code. Changed checker behaviour needs observed RED/GREEN; prose uses document validation, not fictional code tests or live-service unit tests. |
+| RE-07 | Guidance and gate summaries distinguish implementation, pending human adoption and publication. Hand off protected edits; keep review/merge/settings/labels human-only and legacy flags unset/false. #52 supersession requires verified replacement and actual adoption; #8 and #48 activation remain separate. |
+| RE-08 | Record actual targeted/full strict results, exact-version proof and CI status separately. No invented final hash/pass, release dispatch, publication or manual acceptance. |
+
+The [current engineering flow and evidence](solution-design.md#release-evidence-engineering-flow)
+qualify [B.9](solution-design.md#b9-quality-and-testing). Bounded #68 and #69
+each passed specification then correctness review with no findings
+outstanding; **full strict gate, actual PR #71 CI and protected evidence-access
+adoption remain pending**. The owner-dispatched workflow was already adopted
+under #55/#57; the additional
+[read-only L1 token binding](engineering/release-evidence-adoption.md#one-time-protected-workflow-handover)
+is one-time human work, not recurring ceremony or #48 App activation. No
+PAT/App/new authentication scheme, native attestation or manual draft step
+is introduced. Checksums/cache consistency are not signatures or independent
+approval.
+
+Intended private/internal classification is unchanged. Read-only GitHub
+metadata reported `private:false`; the
+[policy/setting discrepancy](engineering/release-evidence-adoption.md#classification-and-access)
+needs human reconciliation, not a public-clearance claim.
 
 ## 1.10.1 process grounding correction
 
@@ -815,6 +866,13 @@ delivery claim. Published 1.10.0 remains the baseline. The
 #52/#8 dependencies remain open. The separate future 1.11 systems/Dynamics 365 design is not
 implemented by this patch. No new release or release-workflow authority follows.
 
+**Release-evidence qualification, 25 November 2026.** The separate
+[#67 engineering requirements](#release-evidence-engineering-requirements)
+replace recurring manual retention only after verified implementation and
+actual human adoption. The #55/#57 owner-dispatched publication flow remains;
+its additional read-only evidence binding is pending. No new product release,
+old #52 copy/merge completion or final PR #71 CI pass is asserted.
+
 | Release | Content |
 |---|---|
 | 1.0 | Four skills, template, scripts, canon, examples, self-test, packages |
@@ -842,6 +900,14 @@ prerequisites alone do not select an unresolved path. Human #52 manifest
 retention/merge and #8 routing/native controls remain pending; #9 workflow
 cleanup and future systems/Dynamics 365 design remain separate. The original
 decision table is retained unchanged below.
+
+**Release-evidence qualification, 25 November 2026.** The actual #67 written
+spec/plan decisions are linked in the
+[engineering requirements](#release-evidence-engineering-requirements).
+Protected evidence-access adoption, #52's conditional supersession and the
+reported visibility-policy discrepancy still require the maintainer.
+Proposed rationale acceptance, human #8 routing/native controls and broader
+#48 activation remain separate. This does not change the original decisions.
 
 | ID | Decision | Owner |
 |---|---|---|

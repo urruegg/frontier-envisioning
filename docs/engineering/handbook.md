@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
-| Date | 2026-11-10 |
-| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Version | 0.3 |
+| Date | 2026-11-25 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance; AI assistant (AI-assisted #70 release evidence guidance) |
 | Status | Maintained; approval not inferred |
 | Scope | Engineering practice guide; document revision, not product version |
-| References | [Documentation](../README.md), [Working agreement](../../AGENTS.md), [Product requirements](../prd.md), [Solution design](../solution-design.md) |
+| References | [Documentation](../README.md), [Working agreement](../../AGENTS.md), [Product requirements](../prd.md), [Solution design](../solution-design.md), [Release evidence adoption](release-evidence-adoption.md), [Testing strategy](testing-strategy.md#release-evidence-modes) |
 
 How Frontier Envisioning is built, tested, versioned, released and deployed. The short version for people and agents is [AGENTS.md](../../AGENTS.md).
 
@@ -47,18 +47,28 @@ See AGENTS.md sections 3 and 4. Create an idea and draft sprint early; before re
 | L1 | every pull request and push to `main` | `python tools/dev.py ci` | L0, unit and pipeline tests, plugin self-test (34 checks for 1.6.0), package with install check, Caldova demo, release reproduction, DOM tests, scan of built archives, generated files committed | yes (required check) |
 | L2 | every pull request after L1; push to `main` | `python tools/dev.py package demo site` + `npx playwright test` | showcase built with the hosting headers; 14 views in Chromium, no CSP violation or script error, screenshots | yes after INT-04 |
 | L2 deploy | push to `main` (when enabled) | `azure-dev` workflow | provision and deploy the showcase to dev; smoke check | no (environment) |
-| L3 | tag `vX.Y.Z`, explicitly enabled | `release` workflow | tag equals the plugin version, strict L1 and L2 on the tag, bundle, release manifest, pinned SBOM (SPDX), provenance, draft release after `release-approval` | yes |
+| L3 | human **Run workflow** on `main` with `version`, `manual_checks`, `publish` | `release` workflow adopted under #55/#57 | strict L1/L2, independent plugin build, source-bound manifest, pinned SBOM (SPDX), checksums and verified publisher handover; automation tags and publishes | yes; one-time #67 read-access adoption pending |
 
 Copilot Cowork checks that cannot run in GitHub (skill structure and score, routing conflicts, security scan, package validation, behavioural prompts of solution design B.9) run in Cowork before a release; the release pull request records actual results.
 
 `python tools/dev.py docs --strict` checks eligible metadata, local links, catalogues and sprint traceability. It does not verify live issues, human approval or permissions. Code/checker changes use red/green tests; prose uses applicable document validation.
 
+Local `check` and standalone `verify-release` use offline evidence. A genuine
+cache miss reports `not-performed` and ends **LOCAL CHECKS COMPLETED;
+published-release verification NOT PERFORMED**, not an unqualified full pass.
+`ci` or `CI=true` requires fresh exact-version lookup. Local `--strict`
+requires installed tools but does not enable networking. Only verified
+reproduction or authoritative confirmed development can support the release
+step's CI pass; access/evidence/comparison errors fail. See
+[verification modes](testing-strategy.md#release-evidence-modes).
+
 ## 5. Versions and releases
 
 - **Semantic versioning of the plugin.** MAJOR: an incompatible change of the blueprint schema, a skill contract or the install format. MINOR: new capability (most releases). PATCH: fixes without new behaviour.
 - **Version carriers** (kept in step by `python tools/dev.py bump X.Y.Z`): `plugin/.claude-plugin/plugin.json`, `plugin/package/manifest.json` (Microsoft 365 app manifest: digits only), the `metadata.version` of the seven `SKILL.md`, `PLUGIN_VERSION` in `build_blueprint.py`, the plugin README, the archive date in `tools/build_package.py`, a CHANGELOG section.
-- **Immutability (ENG-D4, proposed).** A released version never changes. While the version is released, L1 rebuilds the release manifest's artefacts and fails on any difference; the first change to `plugin/` after a release bumps the version.
-- **Release steps.** Verify evidence and the `release-approval` environment/reviewer/tag policy, explicitly enable `RELEASE_ENABLED`, review and merge, tag the approved commit, run strict L1/L2, approve the draft release and record its manifest. These are human operations. Showcase `prod` is a separate boundary.
+- **Immutability (ENG-D4, proposed).** A released version never changes. CI resolves its exact release assets and compares rebuilt artefacts, failing on differences; local offline checks distinguish verified evidence from unavailable comparison. The first change to `plugin/` after a release bumps the version. Do not bump merely to evade a failing baseline.
+- **Release steps.** The maintainer reviews/merges with passing checks and actual manual evidence, then runs **Actions > release > Run workflow** on `main` with matching `version`, `manual_checks` and `publish`. Automation verifies and publishes. The adopted #55/#57 workflow needs the [one-time protected #67 read-access binding](release-evidence-adoption.md#one-time-protected-workflow-handover), still pending human application. No recurring manual download/hash/copy/retention PR is needed. Keep legacy `RELEASE_ENABLED` and `SHOWCASE_ENABLED` unset/false; no tag-first, `release-approval`, native attestation or manual draft step. Showcase `prod` and #48 App activation are separate.
+- **Evidence.** Exact-version release assets are canonical, never `latest`. Four downloads are plugin ZIP, manifest, SBOM ZIP and checksums; only three payloads have checksum rows. Four reproduction artefacts are a separate inventory. Preserve historical assets/tags/records/provenance and explicit old manifests; future releases need no copy under `releases/`. #52 supersession awaits verified replacement and actual adoption, not a fictional old retention/merge.
 - **Distribution.** The plugin package from the GitHub release goes to Cowork users: chat install ("Install the Frontier PlugIn") or the organisation catalogue (decision D-02).
 
 For current Microsoft-internal distribution, `package` and `bundle` validate their
@@ -66,10 +76,16 @@ ordered bytes before writing output: enterprise-suffix identifiers, personal
 profile paths, common credential patterns, classified Markdown and nested ZIP
 content/comments must pass the shared distribution guard. The complete bundle
 has an explicit document list and excludes repository analyses/intake records.
-Run `python tools/dev.py package demo bundle`, verify checksums and use the
-extracted plugin's install-preparation script for an offline integrity check.
-Building is not external/public content or IP approval; the repository stays
-private and original release records remain immutable.
+Optional local distribution inspection can use
+`python tools/dev.py package demo bundle` and the extracted plugin's
+install-preparation script for an offline integrity check. This is not an
+extra publication step; the release workflow generates/verifies checksums
+automatically.
+Building is not external/public content or IP approval; intended private/
+internal classification and original release records remain unchanged.
+Read-only metadata reporting `private:false` needs
+[human reconciliation](release-evidence-adoption.md#classification-and-access),
+not a visibility change or external clearance claim.
 
 ## 6. Environments
 
@@ -83,7 +99,7 @@ private and original release records remain immutable.
 - Secrets: none in the repository; Azure through OpenID Connect; environment secrets for the showcase sign-in. Secret scanning and push protection where the plan allows.
 - Dependencies: development only (pip, npm), pinned and updated weekly by Dependabot; plugin scripts use the standard library.
 - Code scanning: CodeQL for Python, JavaScript and workflows (needs GitHub Code Security on private repositories).
-- Releases: SBOM (Microsoft SBOM tool, SPDX) and build provenance attestations.
+- Releases: SBOM (Microsoft SBOM tool, SPDX) and source/run-bound provenance records; no native cryptographic attestation or SLSA level is claimed. Checksums/cache validation show consistency, not signatures or independent approval.
 - Agents: hooks deny human-only actions and edits to guardrails; see [Copilot and Superpowers](copilot-and-superpowers.md).
 - Licences: plugin MIT; Microsoft product icons under Microsoft's icon terms (architecture diagrams and documentation, unmodified); third-party skills keep their notices.
 

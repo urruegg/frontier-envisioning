@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
-| Date | 2026-11-10 |
-| Author | Original author not recorded; Copilot AI-assisted maintenance |
+| Version | 0.3 |
+| Date | 2026-11-25 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance; AI assistant (AI-assisted #70 release evidence guidance) |
 | Status | Maintained; approval not inferred |
 | Scope | Test levels and evidence guide; document revision, not product version |
-| References | [Documentation](../README.md), [Tests](../../tests/README.md), [Engineering handbook](handbook.md), [Product quality and testing](../solution-design.md#b9-quality-and-testing) |
+| References | [Documentation](../README.md), [Tests](../../tests/README.md), [Engineering handbook](handbook.md), [Product quality and testing](../solution-design.md#b9-quality-and-testing), [Release evidence adoption](release-evidence-adoption.md), [Approved #67 spec](../specs/2026-11-24-release-evidence-simplification-design.md) |
 
 ## Levels
 
@@ -16,7 +16,7 @@
 | Static | Python compile, `tools/check_repo.py`, ruff, ESLint, neutrality scan | `tools/` | sources compile; versions, skill frontmatter, licence, data files, Copilot files and workflow pins are consistent; no customer names, no secrets | L0 |
 | Unit and pipeline | `unittest` classes (run by pytest in CI) | `tests/unit/`, `tests/pipeline/` | tools, hooks, site builder and server, release tools, backlog, self-test wrapper and release reproduction behave as specified | L1 |
 | Plugin end to end | `tools/selftest.py` (34 checks for 1.6.0) | plugin scripts against the Caldova examples | discovery, blueprint/feedback-loop/workflow validation and merge, design scaffold, identity kit, value/FinOps, package and install check | L1 |
-| Release reproduction | `tools/verify_release.py` | `releases/<version>/manifest.json` | the sources still build the released artefacts byte for byte (while the version is released) | L1 |
+| Release reproduction | `tools/verify_release.py` | exact-version GitHub Release assets; validated ignored cache offline; explicit retained manifests for history | matching source outputs reproduce the published artefacts, with the existing generated-date normalisation only; absent offline evidence is not verification | L1; fresh lookup in CI |
 | DOM | `node:test` with happy-dom | `tests/dom/` | the 14 views render; Agent Factory, attendees, architecture, use cases, readiness, identity, value and FinOps behave; notes are saved | L1 |
 | Browser | Playwright, Chromium | `tests/e2e/` | the showcase works in a real browser under the hosting headers (CSP, sign-in routes off locally), screenshots of every view | L2 |
 | Infrastructure | `az bicep build` | `infra/` | the templates compile | CI `IaC validation` |
@@ -26,6 +26,63 @@
 ## Test data
 
 Only fictitious data: the Caldova examples in the plugin, synthetic transcripts and Office themes created inside the tests, stand-in terms (for example "Fabrikam Rail") for the neutrality tests. Never a real customer, person or engagement.
+
+## Release evidence modes
+
+The [approved #67 spec](../specs/2026-11-24-release-evidence-simplification-design.md)
+and [plan](../plans/2026-11-25-release-evidence-simplification-plan.md)
+govern the developer-side resolver. Plugin scripts remain offline,
+deterministic and standard-library-only; no feature/version change is involved.
+Normally build the package/demo before comparison.
+
+| Entry point | Network policy and outcome |
+|---|---|
+| `python tools/verify_release.py` | Offline by default. A valid matching cache is compared; a genuine miss reports `not-performed`, not development or verified publication. |
+| `python tools/verify_release.py --online` or standalone with `CI=true` | Fresh authoritative lookup of the exact current plugin version, never `latest`; no cached absence claim. |
+| `python tools/dev.py verify-release` or local `check` | Offline cache comparison. A miss remains visible in the step and final summary: `LOCAL CHECKS COMPLETED; published-release verification NOT PERFORMED`. Other local checks passing do not make that comparison pass. |
+| `python tools/dev.py ci` or task runner with `CI=true` | Fresh lookup. Only successful reproduction or confirmed absence of both exact published release and conflicting tag permits the release step to pass. Other gates must also pass for `ALL GATES PASSED`. |
+| Local `python tools/dev.py check --strict` | Requires installed development tools; does not itself enable networking. |
+| Explicit `--manifest` (optionally `--force`), `--write` or `--local-source` paths | Network-free historical/writer interfaces, even in CI. A missing explicit manifest or wrong version without `--force` is `ERROR`, exit 1, never an unreleased-version skip. `--force` permits a different manifest version only with matching historical source outputs, not new-source substitution. |
+
+The reviewed Python consumer is
+`check(root, version, online=False)` (`online` is keyword-only). It returns
+`status`, `version`, `source_commit`, `manifest` and `message`. Status is
+`verified`, `development` or `not-performed`; the latter two carry no manifest
+or source commit. Invalid evidence/comparison raises `ValueError`, including
+`EvidenceError`; the CLI/gate fails, never a success fallback. The underlying
+resolver's `published` state means validated evidence, not completed build
+comparison.
+
+An online lookup first establishes access to `github.com` repository
+`urruegg/frontier-envisioning`, completes bounded release enumeration and
+checks the exact tag. Authentication/404/network failures are not proof of
+absence. Drafts, tag-without-release, missing/duplicate/unexpected assets,
+wrong version/source/tag, malformed manifests, bad hashes/ZIPs and invalid
+cache all fail explicitly. Requests and raw downloads are bounded; only
+STORED/DEFLATED ZIP streams are accepted, with raw size/CRC/complete-stream
+checks matching the actual published assets.
+
+Validated evidence is cached only under ignored
+`build/release-evidence/<version>/<source-commit>/`. Offline reuse requires
+the exact local annotated tag and revalidates source/tag identity, all four
+raw assets, checksum rows, manifest and ZIP limits. CI always looks up
+authoritative evidence afresh. Cache consistency and SHA-256 are not signatures,
+independent approval or protection against replacement of all local evidence.
+
+The [asset inventories](release-evidence-adoption.md#two-distinct-inventories)
+distinguish four downloads from four reproduction artefacts. Preserve
+historical tags/assets/provenance/records and existing explicit-manifest use;
+compare 1.10.0 only with its matching historical outputs, not current 1.10.1.
+Future releases need no copied `releases/` manifest.
+
+Unit fixtures exercise the real validation/cache code with deterministic
+GitHub-boundary responses and temporary files, not a live service. Actual
+read-only integration proof is recorded separately in the
+[25 November verification checkpoint](../solution-design.md#release-evidence-verification-25-november-2026).
+Normal CI has step-level read-only token wiring in #69; the protected
+release workflow's equivalent remains a
+[one-time human handover](release-evidence-adoption.md#one-time-protected-workflow-handover).
+No final strict gate, PR #71 CI or protected adoption is claimed here.
 
 ## Accessibility: automation and human acceptance
 
@@ -110,7 +167,7 @@ L1 verification.
 - The 1.6.1 preview explicitly reuses unchanged identity inputs with 1.6.0 provenance only while its own release record is absent. An existing current record is always checked; other future versions remain unsupported. This does not create release hashes or claim a preview is published.
 - Layout acceptance includes scrolled geometric non-intersection, actual pointer hit-testing, correct legend activation without agent changes, responsive keyboard input and preserved agent switching. Screenshots supplement these assertions rather than replace them.
 - Browser tests use project-local Playwright downloads by default and do not prove Azure tenant authentication.
-- Tests are deterministic and offline; they write only to temporary folders or `build/`.
+- Unit tests are deterministic and offline; they write only to temporary folders or `build/`. CI's separate release-evidence lookup intentionally uses GitHub; access/network failures fail that gate rather than downgrade it.
 - A bug fix comes with a regression test that fails before the fix.
 - A flaky test is fixed or quarantined within a day; CI retries browser tests once at most.
 - Assertions name the behaviour, not the implementation; DOM selectors live in the test files and change with the renderer.
