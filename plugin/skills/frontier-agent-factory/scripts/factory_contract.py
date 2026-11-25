@@ -83,7 +83,7 @@ def request_shape(upstream):
               if key not in ("$defs", "$schema", "$id", "title", "description")}
     selection = _object({"solution_id": _ref("id"), "original_solution_id": _ref("text"),
                          "original_agent_ids": _array(_ref("text"), 64, 1, True),
-                         "rationale": _ref("text"), "dependency_gaps": _array(_ref("text"), 256)})
+                         "rationale": _ref("text"), "dependency_gaps": _array(_ref("id"), 256, unique=True)})
     packet = _object({
         "artifact_ids": _array(_ref("text"), 256, 1, True),
         "kind": {"enum": ["baseline", "reviewed-document"]},
@@ -140,6 +140,9 @@ def prevalidate_request(request, upstream):
     selected = {row["solution_id"] for row in request["intake"]["selected_solutions"]}
     selections = request["selection_evidence"]
     need({row["solution_id"] for row in selections} == selected and len(selections) == len(selected))
+    for selection in selections:
+        for gap_id in selection["dependency_gaps"]:
+            identity(gap_id)
     need(set(request["id_map"]["solutions"].values()) == selected)
     need(request["sharing_review"]["customer_scope"] == request["customer_scope"], "FACTORY_SHARING")
     history = request["history"]
@@ -201,9 +204,10 @@ def source_receipt(receipt, export_id, created_at, archive_bytes):
             continue
         need(row["tag_name"] is not None and row["published_at"] is not None, "FACTORY_DISCOVERY")
         tag = row["tag_name"]
-        need(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/-]*", tag) is not None
-             and not tag.startswith("refs/") and ".." not in tag
-             and all(part and not part.startswith(".") and not part.endswith((".", ".lock"))
+        # Check the qualified refs/tags/<tag> syntax, not a release naming policy.
+        need(re.search(r"[\x00-\x20\x7f~^:?*\[\\]", tag) is None
+             and ".." not in tag and "@{" not in tag and not tag.endswith(".")
+             and all(part and not part.startswith(".") and not part.endswith(".lock")
                      for part in tag.split("/")), "FACTORY_DISCOVERY")
         try:
             published = timestamp(row["published_at"])
@@ -349,7 +353,7 @@ def _artifact_paths(data):
             continue
         source, target = row["source"]["path"], row["baseline"]["path"]
         target_parts = parts(target)
-        need(target_parts[:5] == prefix and len(target_parts) == 6, "FACTORY_BASELINE_PATH")
+        need(target_parts[:5] == prefix and len(target_parts) >= 6, "FACTORY_BASELINE_PATH")
         for path in (source, target):
             need(Path(portable(path)).suffix.lower() in EXTENSIONS, "FACTORY_FORMAT")
         source_name = claim_path(sources, source, repeat=True)

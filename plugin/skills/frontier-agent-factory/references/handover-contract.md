@@ -23,7 +23,8 @@ The request has exactly these fields:
 - `blueprint`: `source_path` and `baseline_path`;
 - `id_map`: original-to-factory `solutions`, `agents` and `requirements` maps;
 - `selection_evidence`: selected solution, original solution and agents,
-  rationale and dependency gaps;
+  rationale and unique dependency-gap IDs (exact lowercase hyphenated IDs,
+  at most 80 characters; reference resolution belongs to projection);
 - `sharing_review`: matching customer scope, metadata approval and an
   artefact approval map keyed by `<intake-id>:<artifact-id>`;
 - `history`: up to 127 prior accepted record IDs;
@@ -68,6 +69,8 @@ Each release-enumeration row has exactly five fields: `id`, `tag_name`,
 `published_at`, `draft`, `prerelease`. Raw API bodies, authors, assets and
 historical resolved commits are not retained. Draft/prerelease tag and date
 may be null. Every stable candidate must have a usable tag and valid date.
+Tags follow Git ref syntax under `refs/tags/`, not an ASCII naming policy;
+build metadata such as `v1.0+build.1` and valid Unicode names are allowed.
 The uniquely latest published stable candidate must match `release` and
 the top-level commit; only that selected tag needs resolution.
 
@@ -101,7 +104,9 @@ gap or decision. Explicit invalid acceptance fails; it is never downgraded.
 Legitimate draft engineering gaps remain possible.
 
 Originals are relative to the explicit staging root. Baselines are ordinary
-files directly under `docs/intake/records/<intake-id>/artifacts/`. Allowed
+files under the exact `docs/intake/records/<intake-id>/artifacts/` prefix,
+including descendants such as `specs/prd.md`. Authored path spellings are
+preserved, not flattened or rewritten. Allowed
 extensions are `.md`, `.txt`, `.json`, `.pdf`, `.docx`, `.xlsx`, `.pptx`,
 `.csv`; archives and policy replacement paths are refused. No transformation
 requires identical hashes and null transformation approval. Redaction or

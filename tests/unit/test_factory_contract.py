@@ -264,6 +264,23 @@ class FactoryRequest(ContractCase):
             with self.subTest(case=case), self.assertRaises(c.FactoryError):
                 m.prevalidate_request(request, schema)
 
+    def test_dependency_gap_refs_are_unique_exact_ids_before_materialisation(self):
+        request = copy.deepcopy(self.f["request"])
+        request["selection_evidence"][0]["dependency_gaps"] = ["boundary-gap", "risk-2"]
+        # W1 validates references as IDs; W3 resolves them against declarations.
+        self.works(m.prevalidate_request, request, self.schema)
+        shape = m.request_shape(self.schema)
+        for gaps in (["not an id"], ["boundary-gap", "boundary-gap"], ["Boundary-gap"],
+                     ["-boundary"], ["a" * 81], [None], [True]):
+            request["selection_evidence"][0]["dependency_gaps"] = gaps
+            with self.subTest(gaps=gaps):
+                with self.assertRaises(c.FactoryError):
+                    m.prevalidate_request(request, self.schema)
+                self.assertFalse(c.conforms(shape, request), "request schema must reject invalid/duplicate gap IDs")
+        request["selection_evidence"][0]["dependency_gaps"] = ["boundary-gap\n"]
+        with self.assertRaises(c.FactoryError):
+            m.prevalidate_request(request, self.schema)
+
 
 class FactoryReceipt(ContractCase):
     def receipt(self, receipt=None, export_id="caldova-export", created_at=AT, archive=None):
@@ -349,11 +366,23 @@ class FactoryReceipt(ContractCase):
     def test_unusable_stable_tags_are_unknown_discovery_not_bootstrap(self):
         receipt = self.stable()
         self.works(self.receipt, receipt)
-        for tag in ("not a usable tag", "-option", "refs/heads/main", "v1..0", "v1@{0}", "v1.lock"):
+        for tag in ("not a usable tag", "v1..0", "v1@{0}", "v1.lock", ".hidden/v1",
+                    "release/.hidden", "release/v1.", "release/v1.lock/part", "release//v1",
+                    "release/../v1", "/v1", "v1/", r"release\v1", "v1[0]", "v1~0",
+                    "v1^0", "v1:0", "v1?0", "v1*0", "v1\x00", "v1\x1f", "v1\x7f", "v1\n"):
             changed = copy.deepcopy(receipt)
             changed["discovery"]["releases"][0]["tag_name"] = tag
             with self.subTest(tag=tag), self.assertRaisesRegex(c.FactoryError, "FACTORY_DISCOVERY"):
                 self.receipt(changed)
+
+    def test_selected_stable_tag_uses_git_ref_syntax_not_an_ascii_naming_policy(self):
+        for tag in ("v1.0+build.1", "版本-1.0", "release!candidate", "release./v1",
+                    "refs/heads/main", "-option", "@"):
+            receipt = self.stable()
+            receipt["discovery"]["releases"][1]["tag_name"] = tag
+            receipt["release"]["tag"] = tag
+            with self.subTest(tag=tag):
+                self.works(self.receipt, receipt)
 
     def test_commit_is_exact_lower_40_hex_not_regex_end_before_newline(self):
         receipt = self.stable()
@@ -392,11 +421,37 @@ class FactoryMaterialize(ContractCase):
                 self.assertEqual(row["source"]["sha256"], c.digest(originals[c.portable(row["source"]["path"])]))
                 self.assertEqual(row["baseline"]["sha256"], c.digest(baselines[c.portable(row["baseline"]["path"])]))
 
+    def test_nested_artifact_bytes_with_windows_paths_are_valid_without_flattening(self):
+        request = copy.deepcopy(self.f["request"]["intake"])
+        data, baselines, originals = m.materialize(request, self.f["baseline"], self.f["source"], c.read)
+        paths = {
+            "source": r"selected\specs\prd.md",
+            "baseline": r"docs\intake\records\caldova-intake\artifacts\specs\prd.md",
+        }
+        for field, files in (("source", originals), ("baseline", baselines)):
+            old_path = data["artifacts"][0][field]["path"]
+            raw = files.pop(c.portable(old_path))
+            path = self.f[field].joinpath(*c.parts(paths[field]))
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(raw)
+            files[c.portable(paths[field])] = path.read_bytes()
+            request["artifacts"][0][field]["path"] = paths[field]
+            data["artifacts"][0][field]["path"] = paths[field]
+        before = copy.deepcopy(request)
+        self.works(m.validate_intake, data, self.schema, baselines, originals)
+        result, actual_baselines, actual_originals = self.works(
+            m.materialize, request, self.f["baseline"], self.f["source"], c.read)
+        self.assertEqual(request, before)
+        self.assertEqual((result, actual_baselines, actual_originals), (data, baselines, originals))
+        self.assertEqual(result["artifacts"][0]["baseline"]["path"], paths["baseline"])
+        self.assertEqual(actual_baselines[c.portable(paths["baseline"])], self.f["originals"]["prd.md"])
+
     def test_collisions_rejected_before_io_but_exact_source_reuse_is_explicit(self):
         intake = self.f["request"]["intake"]
         result = self.works(m.materialize, intake, self.f["baseline"], self.f["source"], c.read)
         self.assertEqual(len(result), 3)
-        for change in ("slash", "case", "destination", "format", "subfolder"):
+        for change in ("slash", "case", "destination", "format", "prefix",
+                       "nested-traversal", "nested-format", "nested-alias"):
             data = copy.deepcopy(intake)
             row = copy.deepcopy(data["artifacts"][0])
             row["id"] = "another-prd"
@@ -409,8 +464,15 @@ class FactoryMaterialize(ContractCase):
                 row["baseline"]["path"] = data["artifacts"][0]["baseline"]["path"].upper()
             elif change == "format":
                 row["source"]["path"] = "archive.zip"
-            elif change == "subfolder":
-                row["baseline"]["path"] = "docs/intake/records/caldova-intake/artifacts/nested/a.md"
+            elif change == "prefix":
+                row["baseline"]["path"] = "docs/intake/records/unselected/artifacts/nested/a.md"
+            elif change == "nested-traversal":
+                row["baseline"]["path"] = "docs/intake/records/caldova-intake/artifacts/specs/../a.md"
+            elif change == "nested-format":
+                row["baseline"]["path"] = "docs/intake/records/caldova-intake/artifacts/specs/a.zip"
+            elif change == "nested-alias":
+                data["artifacts"][0]["baseline"]["path"] = "docs/intake/records/caldova-intake/artifacts/specs/prd.md"
+                row["baseline"]["path"] = r"docs\intake\records\caldova-intake\artifacts\SPECS\PRD.md"
             data["artifacts"].append(row)
             with self.subTest(change=change), self.assertRaises(c.FactoryError):
                 m.materialize(data, self.f["baseline"], self.f["source"],
