@@ -1,6 +1,6 @@
 # Frontier Envisioning — plugin for Copilot Cowork
 
-**Version 1.10.1 · Unreleased candidate · Microsoft Innovation Hub Switzerland · 24 November 2026**
+**Version 1.11.0 · Unreleased candidate · Microsoft Innovation Hub Switzerland · 24 November 2026**
 
 *Guide maintenance: Copilot AI-assisted; original authorship retained.*
 
@@ -54,7 +54,7 @@ product-icon terms. Confirm content/IP clearance before sharing externally.
 
 ## Install it in Copilot Cowork
 
-1. **Obtain the plugin ZIP** `frontier-envisioning-plugin-1.10.1.zip` from [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases) when published, or from the maintainer, [@urruegg](https://github.com/urruegg), for pre-publication testing. Keep it zipped and verify the release checksums.
+1. **Obtain the plugin ZIP** `frontier-envisioning-plugin-1.11.0.zip` from [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases) when published, or from the maintainer, [@urruegg](https://github.com/urruegg), for pre-publication testing. Keep it zipped and verify the release checksums.
 2. **Open Copilot Cowork** and start a new chat.
 3. **Attach the zip** to the chat and type:
 
@@ -265,7 +265,7 @@ provider imports, FinOps Agent factories and operating loops are not included.
 ## What is in the package
 
 ```
-frontier-envisioning-plugin-1.10.1.zip
+frontier-envisioning-plugin-1.11.0.zip
 ├── README.md                         this guide
 ├── MIT.md                            the licence (MIT)
 ├── THIRD-PARTY-NOTICES.md            Microsoft product icons and other material not covered by MIT

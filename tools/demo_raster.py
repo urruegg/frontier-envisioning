@@ -19,7 +19,7 @@ from fe_lib import ROOT
 
 PROFILE = ROOT / "tests" / "fixtures" / "caldova-raster-1.4.0"
 SUPPORTED_VERSIONS = {"1.4.0", "1.5.0", "1.6.0"}
-PREVIEW_VERSIONS = {"1.6.1", "1.7.1", "1.9.1", "1.9.2", "1.10.0", "1.10.1"}
+PREVIEW_VERSIONS = {"1.6.1", "1.7.1", "1.9.1", "1.9.2", "1.10.0", "1.10.1", "1.11.0"}
 BASE_PROFILE_SHA256 = "46d37eef1a55f8655c4d09447b6335e39ec3b356621186339404c813ecfa5d15"
 CURRENT_INPUT_PROFILE = "tests/fixtures/caldova-raster-1.6.1-inputs.json"
 CURRENT_INPUT_PROFILE_SHA256 = "27e0277754cecfa6239f4138e810aecd4908622ff6537da456dc2fc222108236"
@@ -33,6 +33,8 @@ BASELINE_INPUT_PROFILE = "tests/fixtures/caldova-raster-1.10.0-inputs.json"
 BASELINE_INPUT_PROFILE_SHA256 = "53b5e9bf545501306db18e9f8aa6f0289aae8f56a8b12a3a1c8b240e9742846e"
 PATCH_INPUT_PROFILE = "tests/fixtures/caldova-raster-1.10.1-inputs.json"
 PATCH_INPUT_PROFILE_SHA256 = "3a75f4ffe3d12cf20c137663df6daf1bc48b7a2033a8a9e03ddaa8a3152c8b4e"
+FACTORY_INPUT_PROFILE = "tests/fixtures/caldova-raster-1.11.0-inputs.json"
+FACTORY_INPUT_PROFILE_SHA256 = "1d121105e337321c1fca7f7ee912a8214eaeb07db121f2feb1019742492dff22"
 CURRENT_INPUT_PATHS = {"catalog.html", "scripts/identity_docs.py"}
 IDENTITY_ARCHIVE = "Caldova - agent identity package v1.0.zip"
 
@@ -84,6 +86,7 @@ def _current_inputs(inputs: dict, version: str) -> tuple[dict, dict]:
         "1.9.2": (CANDIDATE_INPUT_PROFILE, CANDIDATE_INPUT_PROFILE_SHA256),
         "1.10.0": (BASELINE_INPUT_PROFILE, BASELINE_INPUT_PROFILE_SHA256),
         "1.10.1": (PATCH_INPUT_PROFILE, PATCH_INPUT_PROFILE_SHA256),
+        "1.11.0": (FACTORY_INPUT_PROFILE, FACTORY_INPUT_PROFILE_SHA256),
     }
     if version not in profiles:
         raise RasterProfileError(f"current input profile is not approved for {version}")

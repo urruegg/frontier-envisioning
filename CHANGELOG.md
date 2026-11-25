@@ -2,6 +2,11 @@
 
 Releases of the Frontier Envisioning plugin. Engineering changes to the repository are recorded in the pull requests.
 
+## 1.11.0 — unreleased
+
+- Prepare the Agent Factory candidate with updated version metadata and a finite
+  1.11.0 demo raster profile (#74, #72). Factory export is not yet implemented.
+
 ## 1.10.1 — unreleased
 
 - **Current governance (#59, #60, #61, #62).** New process guidance uses
