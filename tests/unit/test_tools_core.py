@@ -12,6 +12,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from types import SimpleNamespace
 from unittest import mock
 
 from tests.unit._util import ROOT, load
@@ -211,12 +212,117 @@ class DemoReleaseDate(unittest.TestCase):
 
 
 class DevGateWiring(unittest.TestCase):
+    gate_commands = ("cmd_template_check", "cmd_lint", "cmd_docs", "cmd_scan", "cmd_test", "cmd_selftest",
+                     "cmd_package", "cmd_demo", "cmd_docs_demo_check", "cmd_dom")
+
+    def outcome(self, status):
+        return {
+            "status": status, "version": "1.10.0", "source_commit": "a" * 40 if status == "verified" else None,
+            "manifest": None, "message": {
+                "verified": "release 1.10.0: 4 of 4 artefacts reproduced",
+                "development": "No exact published release or conflicting tag for v1.10.0",
+                "not-performed": "Published-release comparison not performed: no offline evidence",
+            }[status],
+        }
+
+    @contextlib.contextmanager
+    def gate_fixture(self, dev, outcome=None, error=None):
+        calls = []
+        commands = {name: mock.Mock(side_effect=lambda *a, name=name, **kw: calls.append(name))
+                    for name in self.gate_commands}
+        check = mock.Mock(return_value=outcome, side_effect=error)
+        # main is only the old int-only boundary: keeping it offline lets RED
+        # show that check was never called, rather than touching GitHub.
+        verifier = SimpleNamespace(check=check, plugin_version=lambda: "1.10.0", main=lambda argv: 0)
+        check.side_effect = error or (lambda *a, **kw: (calls.append("release"), outcome)[1])
+        output = io.StringIO()
+        with mock.patch.multiple(dev, **commands), mock.patch.object(dev, "load_module", return_value=verifier), \
+                contextlib.redirect_stdout(output):
+            yield check, output, commands, calls
+
+    def test_release_policy_matrix_runs_actual_release_step_and_summary(self):
+        for argv, ci, online in ((["check"], "", False), (["check", "--strict"], "", False),
+                                 (["ci"], "", True), (["check"], "true", True)):
+            with self.subTest(argv=argv, ci=ci):
+                dev = load("tools/dev.py")
+                result = self.outcome("development" if online else "not-performed")
+                with mock.patch.dict(os.environ, {"CI": ci}), self.gate_fixture(dev, result) as (check, out, cmds, calls):
+                    self.assertEqual(dev.main(argv), 0)
+                check.assert_called_once_with(dev.ROOT, "1.10.0", online=online)
+                cmds["cmd_test"].assert_called_once_with(include_slow=True)
+                self.assertEqual(calls, [
+                    "cmd_template_check", "cmd_lint", "cmd_docs", "cmd_scan", "cmd_test", "cmd_selftest",
+                    "cmd_package", "cmd_demo", "cmd_docs_demo_check", "release", "cmd_dom", "cmd_scan",
+                ])
+                self.assertEqual(dev.RESULTS[0][:2], ("release reproduction", f"{result['status']}: {result['message']}"))
+                self.assertIn(result["status"], out.getvalue())
+                self.assertIn(result["message"], out.getvalue())
+                self.assertEqual("ALL GATES PASSED" in out.getvalue(), online)
+                if not online:
+                    self.assertIn("LOCAL CHECKS COMPLETED; published-release verification NOT PERFORMED", out.getvalue())
+                self.assertEqual(dev.STRICT, online or "--strict" in argv)
+
+    def test_verified_summary_includes_released_source_and_actual_outcome(self):
+        dev = load("tools/dev.py")
+        result = self.outcome("verified")
+        with mock.patch.dict(os.environ, {"CI": ""}), self.gate_fixture(dev, result) as (_, out, _, _):
+            self.assertEqual(dev.main(["check"]), 0)
+        self.assertIn(result["source_commit"], out.getvalue())
+        self.assertIn("verified: " + result["message"], out.getvalue())
+        self.assertIn("ALL GATES PASSED", out.getvalue())
+
+    def test_release_error_stops_before_dom_and_records_diagnostic(self):
+        dev = load("tools/dev.py")
+        with mock.patch.dict(os.environ, {"CI": ""}), \
+                self.gate_fixture(dev, error=ValueError("missing: dist/plugin.zip")) as (check, out, cmds, _):
+            self.assertEqual(dev.main(["check"]), 1)
+        check.assert_called_once_with(dev.ROOT, "1.10.0", online=False)
+        cmds["cmd_dom"].assert_not_called()
+        self.assertEqual(cmds["cmd_scan"].call_count, 1)
+        self.assertIn("missing: dist/plugin.zip", dev.RESULTS[0][1])
+        self.assertIn("GATE FAILED", out.getvalue())
+        self.assertNotIn("ALL GATES PASSED", out.getvalue())
+
+    def test_ci_authentication_error_fails_closed(self):
+        dev = load("tools/dev.py")
+        with mock.patch.dict(os.environ, {"CI": "true"}), \
+                self.gate_fixture(dev, error=ValueError("GitHub metadata request failed")) as (check, out, cmds, _):
+            self.assertEqual(dev.main(["check"]), 1)
+        check.assert_called_once_with(dev.ROOT, "1.10.0", online=True)
+        cmds["cmd_dom"].assert_not_called()
+        self.assertIn("GitHub metadata request failed", out.getvalue())
+        self.assertNotIn("ALL GATES PASSED", out.getvalue())
+
+    def test_ci_cannot_accept_an_unavailable_comparison(self):
+        dev = load("tools/dev.py")
+        with mock.patch.dict(os.environ, {"CI": ""}), \
+                self.gate_fixture(dev, self.outcome("not-performed")) as (_, out, cmds, _):
+            self.assertEqual(dev.main(["ci"]), 1)
+        cmds["cmd_dom"].assert_not_called()
+        self.assertNotIn("ALL GATES PASSED", out.getvalue())
+
+    def test_repeated_main_calls_reset_policy_and_results(self):
+        dev = load("tools/dev.py")
+        for argv, ci, online, status in (
+            (["ci"], "", True, "development"), (["check"], "", False, "not-performed"),
+            (["check"], "true", True, "development"), (["check", "--strict"], "", False, "not-performed"),
+            (["check"], "", False, "verified"),
+        ):
+            with self.subTest(argv=argv, ci=ci), mock.patch.dict(os.environ, {"CI": ci}), \
+                    self.gate_fixture(dev, self.outcome(status)) as (check, out, _, _):
+                self.assertEqual(dev.main(argv), 0)
+                check.assert_called_once_with(dev.ROOT, "1.10.0", online=online)
+                self.assertEqual(len(dev.RESULTS), 1)
+                self.assertEqual("ALL GATES PASSED" in out.getvalue(), status != "not-performed")
+                self.assertEqual(dev.STRICT, online or "--strict" in argv)
+
     def test_ci_includes_pipeline_tests(self):
         dev = load("tools/dev.py", "dev_gate_wiring")
         with mock.patch.multiple(
             dev,
             cmd_template_check=mock.DEFAULT,
             cmd_lint=mock.DEFAULT,
+            cmd_docs=mock.DEFAULT,
             cmd_scan=mock.DEFAULT,
             cmd_test=mock.DEFAULT,
             cmd_selftest=mock.DEFAULT,

@@ -35,6 +35,8 @@ jobs:
           python -m pip install -r requirements-dev.txt
           if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
       - name: Gate L1 (strict)
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: python tools/dev.py ci
       - name: Generated files are committed
         run: git diff --exit-code -- plugin/install/plugin-install.json plugin/skills/frontier-blueprint/templates/

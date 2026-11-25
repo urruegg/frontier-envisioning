@@ -11,12 +11,14 @@ repository must give the same bytes: the plugin package, the identity kit and th
 demo blueprint after normalising its build date ("generated"). Run tools/build_package.py and
 tools/build_demo.py first (python tools/dev.py check does both).
 
-By default the manifest of the current plugin version is used. When the plugin version has no manifest
-(work towards the next release), the check is skipped - unless --force names a manifest explicitly.
+By default validated cached published evidence for the current plugin version is used offline.
+Without that evidence, comparison is explicitly not performed. CI=true or --online resolves the
+exact published version automatically; only a healthy authoritative absence is development.
+Use --manifest for explicit retained historical evidence, with --force for another version's outputs.
 
   python tools/verify_release.py --write release-manifest.json
       write a manifest for the current version from the built artefacts (the release workflow attaches it;
-      the release manager commits it as releases/<version>/manifest.json after publishing)
+      automatic published-evidence verification needs no manual retained copy)
 
   python tools/verify_release.py --local-source <clean-tag-checkout> --tag vX.Y.Z
       --expected-commit <full-sha> --write <new-file-outside-source>
@@ -27,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -34,6 +37,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fe_lib import DEMO_HTML_NAME, ROOT, plugin_version, sha256_bytes  # noqa: E402
+import release_evidence  # noqa: E402
 
 GENERATED = re.compile(rb'"generated":"\d{4}-\d{2}-\d{2}"')
 REPOSITORY = "urruegg/frontier-envisioning"
@@ -105,6 +109,26 @@ def standard_artefacts(version: str) -> list[tuple[str, str, str | None]]:
     ]
 
 
+def check(root: Path, version: str, *, online=False) -> dict:
+    """Resolve validated evidence and compare builds; raise ValueError on failure.
+
+    The release source is the annotated tag's commit, not the developer HEAD
+    running this check. Non-published outcomes retain the resolver's contract.
+    """
+    result = release_evidence.resolve(root, version, standard_artefacts(version), online=online)
+    if result["status"] != "published":
+        return result
+    try:
+        problems = verify(result["manifest"], base=root)
+    except OSError as exc:
+        raise release_evidence.EvidenceError(f"Cannot read built release artefact: {exc}") from exc
+    if problems:
+        raise release_evidence.EvidenceError("\n".join(problems))
+    count = len(result["manifest"]["artefacts"])
+    return {**result, "status": "verified",
+            "message": f"release {version}: {count} of {count} artefacts reproduced"}
+
+
 def write_manifest(out: Path, version: str, base: Path | None = None, evidence: dict | None = None) -> int:
     import datetime as dt
     base = ROOT if base is None else base
@@ -144,8 +168,9 @@ def write_local_manifest(out: Path, source: Path, tag: str, expected: str) -> in
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--manifest", help="release manifest (default: releases/<plugin version>/manifest.json)")
+    ap.add_argument("--manifest", help="explicit retained manifest instead of automatic published evidence")
     ap.add_argument("--force", action="store_true", help="verify even when the manifest is for another version")
+    ap.add_argument("--online", action="store_true", help="automatically fetch exact-version published evidence (always on in CI)")
     ap.add_argument("--write", help="write a manifest for the current version from the built artefacts")
     ap.add_argument("--local-source", help="clean exact-tag checkout for a locally verified human release")
     ap.add_argument("--tag", help="annotated source tag for --local-source")
@@ -164,15 +189,29 @@ def main(argv=None) -> int:
     version = plugin_version()
     if a.write:
         return write_manifest(Path(a.write), version)
-    path = Path(a.manifest) if a.manifest else ROOT / "releases" / version / "manifest.json"
-    if not path.exists():
-        print(f"no release manifest for {version}: nothing to compare (work towards the next release)")
-        return 0
-    manifest = json.loads(path.read_text(encoding="utf-8"))
-    if manifest.get("version") != version and not a.force:
-        print(f"manifest is for {manifest.get('version')}, the plugin is {version}: skipped")
-        return 0
-    problems = verify(manifest)
+    try:
+        if not a.manifest:
+            result = check(ROOT, version, online=a.online or os.environ.get("CI", "").lower() == "true")
+            print(f"release {result['version']} status: {result['status']}; "
+                  f"source_commit: {result['source_commit'] or 'unavailable'}")
+            print(result["message"])
+            return 0
+        path = Path(a.manifest)
+        if not path.is_file():
+            raise ValueError(f"release manifest not found: {path}")
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(manifest, dict):
+            raise ValueError("release manifest must be an object")
+        rows = manifest.get("artefacts")
+        if not isinstance(rows, list) or not rows or not all(isinstance(row, dict) for row in rows):
+            raise ValueError("release manifest must name non-empty artefacts")
+        if manifest.get("version") != version and not a.force:
+            raise ValueError(f"manifest is for {manifest.get('version')}, the plugin is {version}; "
+                             "use --force only with matching historical source outputs")
+        problems = verify(manifest, base=ROOT)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(f"ERROR: release verification: {exc}", file=sys.stderr)
+        return 1
     for p in problems:
         print("ERROR " + p)
     if problems and manifest.get("version") == version:

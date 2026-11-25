@@ -18,7 +18,7 @@ class ReleaseReproduction(unittest.TestCase):
     def test_current_version_reproduces_its_manifest(self):
         manifest_path = ROOT / "releases" / fe_lib.plugin_version() / "manifest.json"
         if not manifest_path.exists():
-            self.skipTest("the current version is not released yet")
+            self.skipTest("offline retained release evidence unavailable; the online gate resolves publication status")
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)
