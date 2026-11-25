@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
+| Version | 0.4 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted design |
-| Status | Written spec `7f650c4` and W0 plan `c8cc5bb` actually approved; actual Cowork unavailable; host-gate amendment Proposed; no product implementation |
+| Status | Written spec/W0/host amendment actually approved; source/receiver W0 verified; offline Preview production planning next; no product implementation or Cowork-validated claim |
 | Scope | Planned 1.11.0 optional Agent Factory handover skill inside the existing plugin |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Written design](../specs/2026-11-25-agent-factory-handover-design.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Sprint](../sprints/SPRINT-013-agent-factory-handover.md), [Prior systems programme #58](https://github.com/urruegg/frontier-envisioning/issues/58), [Template](https://github.com/urruegg/frontier-agent-factory) |
 
@@ -38,6 +38,7 @@ Examples in this repository remain fictitious Caldova Industrial AG.
 | Actual written review | `approve-written-factory-spec`, `no changes` | Approved the presented committed spec `7f650c4`; [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), not later plan approval |
 | Actual W0 plan review | `approve-w0-and-start-receiver-verification`, `no changes` | Approved presented plan/sprint `c8cc5bb`; [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7165080818); bounded real #73, not unwritten downstream code plans |
 | Actual host availability | "we din't have it at all" | Human states Cowork unavailable; no host result or consent to change the design is inferred |
+| Actual written host amendment | `approve-offline-preview-defer-cowork-validation`, `no change please proceed` | Subsequently approved exact written section 11 at `f4b2609`; [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7166316613); allow offline Preview development with actual source/receiver proof, defer/disclose unavailable Cowork checks |
 
 The [#58 scope receipt](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922)
 records the explicit deferral rather than silently combining independent
@@ -68,8 +69,11 @@ The [written specification](../specs/2026-11-25-agent-factory-handover-design.md
 at `7f650c4` received actual review/approval. The [staged plan](../plans/2026-11-25-agent-factory-handover-plan.md)
 now has actual approval at `c8cc5bb` for W0, tracked in real #73, before
 separately approved exact production slices. The [full sprint](../sprints/SPRINT-013-agent-factory-handover.md)
-records actual Cowork unavailability. The proposed host-gate amendment needs
-actual review; no host/receiver pass or downstream readiness is inferred.
+records actual Cowork unavailability and the subsequently approved written
+host amendment at `f4b2609`. W0 source/reference and actual receiver evidence
+now pass the amended offline-development exit: 30 tests passed, one documented
+Windows symlink skip, four validator commands exited 0. Actual Cowork remains
+not performed; the next exact production plan still needs actual review.
 No plugin bump, registration, code or generated customer repository is
 produced by these planning records.
 

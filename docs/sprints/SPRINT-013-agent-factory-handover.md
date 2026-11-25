@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Written design `7f650c4` and W0 plan `c8cc5bb` approved; real #73 receiver verification bounded; actual Cowork unavailable; amendment Proposed; no product implementation |
+| Status | Design/W0/host amendment actually approved; #73 source/reference and receiver proof verified with one skip; actual Cowork deferred; exact production plan next, no product implementation |
 | Scope | Planned 1.11.0 optional Agent Factory handover only; systems/D365 deferred |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Design](../specs/2026-11-25-agent-factory-handover-design.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [#58 deferral](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922) |
 
@@ -19,8 +19,8 @@ No business runtime, remote repository, tenant provisioning or deployment.
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#72](https://github.com/urruegg/frontier-envisioning/issues/72) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Roadmap and W0](../plans/2026-11-25-agent-factory-handover-plan.md) | `@urruegg` accountable | Reviewed #73 evidence, real host or actual approved amendment, later exact approved slice plans | W0 approved; host unavailable; no implementation | [Written-spec receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [W0 receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7165080818) |
-| [#73](https://github.com/urruegg/frontier-envisioning/issues/73) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [Host/receiver boundary](../specs/2026-11-25-agent-factory-handover-design.md#4-template-discovery-acquisition-and-compatibility) | [W0 Tasks 1-4](../plans/2026-11-25-agent-factory-handover-plan.md#3-w0-task-1-baseline-and-exact-source) | `@urruegg` accountable and assigned; bounded receiver builder | Actual W0 approval; existing pinned dependencies; actual host evidence | Source/reference checks reported; receiver recovery requested; host unavailable | [Actual W0 approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7165080818); no protected ready/approval label inferred |
+| [#72](https://github.com/urruegg/frontier-envisioning/issues/72) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Roadmap and W0](../plans/2026-11-25-agent-factory-handover-plan.md) | `@urruegg` accountable | Exact reviewed production plan after actual #73 evidence | Offline W0 verified; no product implementation | [Written-spec receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [W0 receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7165080818), [Host-amendment receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7166316613) |
+| [#73](https://github.com/urruegg/frontier-envisioning/issues/73) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [Host/receiver boundary](../specs/2026-11-25-agent-factory-handover-design.md#4-template-discovery-acquisition-and-compatibility) | [W0 Tasks 1-4](../plans/2026-11-25-agent-factory-handover-plan.md#3-w0-task-1-baseline-and-exact-source) | `@urruegg` accountable and assigned; bounded receiver builder | Actual W0/host-amendment approval; pinned reference and isolated dependencies | Actual source/receiver exit verified: 30 pass, one privilege skip, four validators exit 0; Cowork deferred/not performed | Ordered parent specification then correctness review; attribution correction applied; no protected ready/approval label inferred |
 
 Create real bounded child issues only when their actual execution plans are
 approved, before delegation. Do not treat W0 evidence as approval for unwritten
@@ -50,24 +50,27 @@ The staged plan and full sprint at `c8cc5bb` were subsequently presented and
 actually approved with `approve-w0-and-start-receiver-verification`,
 `no changes`. A real bounded child #73 was then created and assigned before
 dispatching a fresh developer receiver worker. The actual Cowork-evidence
-request received **"we din't have it at all"**, not a host pass. A written
-host-gate change is Proposed in design section 11; no amendment approval is
-inferred from that capability statement.
+request received **"we din't have it at all"**, not a host pass. The written
+host-gate amendment at `f4b2609` was then separately presented and actually
+approved: `approve-offline-preview-defer-cowork-validation`,
+`no change please proceed`. The [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7166316613)
+approves offline Preview development with actual source/receiver proof;
+Cowork remains not performed and cannot be advertised as validated.
 
 ## Staged execution and blockers
 
 | Work package | Exit / acceptance | Current state |
 |---|---|---|
-| W0: verification spike | Real latest/no-release and exact source acquisition in actual Cowork; actual pinned receiver fixtures/negative checks with real prerequisites; precise evidence, no simulated host pass | W0 approved, real #73; reference/source checks reported, receiver dependency recovery requested; actual Cowork unavailable |
-| W1: local source/intake contract | Strict offline receipt/profile, ID/scope/role/evidence/review/history handling; real RED/GREEN and actual approved exact plan | Blocked by W0; not delegated or implementation-ready |
+| W0: verification spike | Genuine available-host source/reference acquisition and actual pinned receiver checks; actual Cowork explicitly deferred under approved amendment | Verified source/reference and receiver evidence, 30 tests passed/one skip and four validators exit 0; no simulated host pass |
+| W1: local source/intake contract | Strict offline receipt/profile, ID/scope/role/evidence/review/history handling; real RED/GREEN and actual approved exact plan | W0 source/receiver exit verified; exact production plan pending before implementation |
 | W2: archive | Bounded raw ZIP validation, safe paths/modes/inventory, threshold and good-output-preservation tests, shared-helper reuse without release regression | Blocked by reviewed W1 and exact W2 plan approval |
 | W3: projection/export | Approved authored bytes, scope/privacy/FinOps boundaries, deterministic full ZIP, separate truthful statuses | Blocked by reviewed W1/W2 and exact W3 plan approval |
-| W4: integration/acceptance | Ninth optional Preview skill, current metadata/docs/installer/self-test, independent package/receiver proof, actual Cowork candidate install/export and exact-head gates | Blocked by reviewed W3 and exact W4 plan approval |
+| W4: integration/acceptance | Ninth optional Preview skill, current metadata/docs/installer/self-test, independent package/receiver proof and exact-head gates; unavailable Cowork explicitly not performed | Blocked by reviewed W3 and actual production-plan approval |
 
 Actual Cowork exact-template archive retrieval is **not demonstrated** by this
-VS Code session. If the necessary authorised capability is absent, stop and
-escalate rather than add networking to the plugin or claim full support.
-W0's fixture tests, when run, validate only the reference receiver. They do
+VS Code session. The approved amendment permits offline work, not networking
+inside the plugin or a claim that the absent host is supported.
+W0's actual fixture tests validate only the reference receiver. They do
 not validate a producer that has not been built.
 
 The receiver's 64 MiB cumulative validation budget counts baseline bytes
@@ -103,6 +106,66 @@ During plan preparation, read-only API byte inspection confirmed reference
 No upstream code, new producer test, template acquisition in Cowork, full
 gate, customer ZIP, plugin bump or product change was performed by planning.
 Future evidence must be appended with real commands, outcomes and source IDs.
+
+## Actual W0 execution and ordered evidence review
+
+The bounded worker successfully queried the complete release/tag lists:
+both empty at its 25 November observation. It acquired an exact clean
+reference checkout at `0bb2b1b`, verified all 149 ordinary source blobs /
+726,850 bytes and both schema/validator fingerprints above. This does not
+select a customer bootstrap, authenticate an archive signature or prove
+continued latest-release absence.
+
+The initial Python 3.14 command failed before intake tests ran because an
+unrelated user-site `tools` package shadowed the pinned namespace. Process-only
+user-site isolation resolved that collision and exposed a real missing
+`jsonschema` dependency. The first official-PyPI restore failed TLS. The
+second/final attempt used normal existing package-manager configuration and
+restored the pinned `jsonschema==4.25.1` into the task's isolated receiver
+environment. No shared environment, pin, certificate, proxy, authentication
+or TLS-verification setting was changed; no feed/account details are retained.
+
+Actual final receiver context:
+
+```powershell
+$factory = 'C:\Users\urruegg\.copilot\session-state\abb9649a-dc0a-4b73-9a05-bdc993ea7335\files\factory111-reference-0bb2b1b'
+$python = 'C:\Users\urruegg\.copilot\session-state\abb9649a-dc0a-4b73-9a05-bdc993ea7335\files\factory111-receiver-env\Scripts\python.exe'
+$fixtures = Join-Path $factory 'tests\fixtures\intake'
+Remove-Item Env:PYTHONHOME -ErrorAction SilentlyContinue
+$env:PYTHONNOUSERSITE = '1'
+Set-Location -LiteralPath $factory
+```
+
+| Actual command after that context | Result |
+|---|---|
+| `& $python -m unittest discover -s tests -p test_intake.py -v` | Exit 0: 31 tests, 30 passed, one skipped, zero failures/errors; `test_symlink_is_not_followed` skipped for Windows privilege error 1314 |
+| `& $python -m tools.intake validate (Join-Path $fixtures 'accepted.json') --root (Join-Path $fixtures 'workspace') --source-root (Join-Path $fixtures 'source')` | Exit 0: baseline and source bytes; recorded human approval not authenticated |
+| `& $python -m tools.intake validate (Join-Path $fixtures 'needs-clarification.json') --root (Join-Path $fixtures 'workspace') --source-root (Join-Path $fixtures 'source')` | Exit 0: baseline and source bytes; recorded human approval not authenticated |
+| `& $python -m tools.intake validate (Join-Path $fixtures 'rejected.json') --root (Join-Path $fixtures 'workspace') --source-root (Join-Path $fixtures 'source')` | Exit 0: valid synthetic rejected disposition, no provided artefact bytes; not accepted scope or transfer permission |
+| `& $python -m tools.intake validate (Join-Path $fixtures 'accepted.json') --root (Join-Path $fixtures 'workspace')` | Exit 0: baseline bytes and recorded evidence only; originals explicitly not checked |
+
+These are real reference-receiver results, not tests of a future producer.
+All fixture identities and approvals remain synthetic. Node 24/full receiving
+toolchain certification and actual Cowork checks remain not performed.
+
+The parent reviewed specification compliance first, then correctness of the
+bounded evidence. A narrow attribution issue was corrected: the normal-source
+recovery instruction came from the controller, not an additional human
+approval or a newly supplied feed identity. The actual human W0 and host
+amendment receipts remain separate. No further receiver defect was inferred.
+
+Required new producer coverage remains explicit: restricted material,
+approved transfer with absent approval, junction/reparse safety, unexecuted
+symlink rejection, generic/equal-digest transformation errors, non-finite JSON
+and exact-at/one-byte-over limits including the shared source/baseline budget.
+Do not treat the reference's absent tests as passing coverage.
+
+The source checkout and restored receiver environment are task-owned and
+retained for directly dependent implementation planning and actual produced-
+package acceptance; no background helpers remain. No current/upstream
+repository source was edited by the receiver worker. Existing historical
+failures stay in the session evidence report rather than being rewritten as
+passes. No plugin bump, new exporter, customer ZIP or protected action occurred.
 
 ## Human boundaries
 

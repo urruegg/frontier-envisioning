@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | W0 plan `c8cc5bb` actually approved; real child #73 executing bounded receiver verification; actual Cowork unavailable; host-gate amendment Proposed |
+| Status | W0 plan `c8cc5bb` and written host amendment `f4b2609` approved; real #73 receiver proof passed with one skip; actual Cowork testing deferred, not passed |
 | Scope | SPRINT-013 roadmap and executable W0 verification slice; no downstream production implementation authorised by this record alone |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Design](../specs/2026-11-25-agent-factory-handover-design.md), [Sprint](../sprints/SPRINT-013-agent-factory-handover.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [Working agreement](../../AGENTS.md) |
 
@@ -30,17 +30,18 @@ Those are receiver prerequisites, not new plugin dependencies.
 
 ## 1. Why the first slice is a spike
 
-The approved design requires a real Cowork acquisition check before building
-around an assumed download capability. This VS Code session is not Copilot
-Cowork and cannot certify its tools by inspecting GitHub or simulating a
-download locally. There is also no published template release at the original
-inspection point. Recheck; do not infer continued absence from old evidence.
+The original design required an early real Cowork acquisition check. The
+human subsequently confirmed Cowork is unavailable and separately approved
+the written `f4b2609` amendment for offline Preview development. This VS Code
+session still cannot certify Cowork by inspecting GitHub or simulating it.
+No published template release existed at the live W0 inspection; recheck
+for every new handover rather than infer continued absence from old evidence.
 
-W0 therefore has two explicit exits: actual host acquisition evidence, and
-the actual pinned receiver's fixture/negative checks. It changes no product
-code. If either exit is unavailable or fails, stop and record the precise
-blocker. Do not spend the rest of the sprint implementing a fictional host
-adapter or insert networking into offline plugin scripts.
+The amended W0 exit requires genuine available-host source/reference evidence
+and actual pinned receiver checks; no product code changes. Actual Cowork
+acceptance remains deferred/not performed, not a fictional pass. Failed source
+or receiver checks still block the dependent work. Do not insert networking
+into offline plugin scripts or promise a host download capability not present.
 
 The roadmap below covers AF-01-AF-16, but W1-W4 are **not yet executable
 implementation plans**. Their exact code/tests are written against W0's
@@ -57,11 +58,14 @@ authorises bounded W0, now tracked in real [#73](https://github.com/urruegg/fron
 The fresh receiver worker does not own Cowork simulation or product changes.
 
 The human then stated **"we din't have it at all"** when asked for real Cowork
-acquisition evidence. The [written amendment proposal](../specs/2026-11-25-agent-factory-handover-design.md#11-proposed-host-gate-amendment-actual-cowork-unavailable)
-would permit offline exporter development with genuine available-host/local
+acquisition evidence. The [written host amendment](../specs/2026-11-25-agent-factory-handover-design.md#11-host-gate-amendment-actual-cowork-unavailable)
+permits offline exporter development with genuine available-host/local
 source provenance while clearly deferring actual Cowork verification.
-It is **not yet approved**. Until approval, both existing W0 exits still
-govern W1-W4; no unknown host result is silently converted to a pass.
+The exact written amendment at `f4b2609` subsequently received actual
+`approve-offline-preview-defer-cowork-validation`, `no change please proceed`;
+see the [approval receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7166316613).
+Actual receiver verification has also succeeded below. No unknown host result
+is converted to a pass; exact downstream code plans remain separately required.
 
 ## 2. File ownership and dependency map
 
@@ -71,7 +75,7 @@ changes.
 
 | Work package | Responsibility and expected files | Dependencies / stop |
 |---|---|---|
-| W0: host and receiver compatibility | Read-only pinned template checkout in the session workspace; actual Cowork transcript/receipt; real evidence appended to the sprint and #72 | Actual approval of this written plan; new bounded real issue before delegation. No code change or plugin bump |
+| W0: host and receiver compatibility | Read-only pinned template checkout in the session workspace; actual source/receiver evidence appended to sprint and #72/#73; Cowork checks explicitly deferred | Actual W0 and written host-amendment approvals recorded; source/receiver exit verified. No code change or plugin bump |
 | W1: local source/receipt and receiving contract | Proposed `plugin/skills/frontier-agent-factory/scripts/factory_contract.py`, `references/template-profile.json`, `references/handover-contract.md`, `examples/caldova-handover.json`; `tests/unit/test_factory_contract.py` and a small shared synthetic fixture helper | W0 both exits; separately written/approved exact W1 plan; bump 1.11.0 before first plugin edit |
 | W2: safe deterministic archive | Proposed `scripts/factory_archive.py`, pure shared ZIP helper; `tests/unit/test_factory_archive.py`; tightly coupled existing release-evidence regressions if extracting the shared helper | Reviewed W1 source/profile contract; separately written/approved exact W2 plan |
 | W3: projection and CLI | Proposed `scripts/export_factory.py`, `scripts/factory_projection.py`, `templates/START_HERE.md`, `templates/review.md`; `tests/unit/test_factory_export.py` | Reviewed W1/W2 contracts; separately written/approved exact W3 plan |
@@ -99,7 +103,7 @@ workspace and real verification evidence; no customer material.
   for this written W0 plan. Create its real child issue. A fresh bounded
   builder may execute developer verification; actual Cowork evidence needs
   the real host/operator, not a VS Code agent impersonating it.
-- [ ] **Step 2: recheck actual source availability.**
+- [x] **Step 2: recheck actual source availability.**
 
   ```powershell
   gh api repos/urruegg/frontier-agent-factory --jq '{default_branch, is_template, visibility}'
@@ -115,7 +119,7 @@ workspace and real verification evidence; no customer material.
   its real tag to an exact commit and compare its contract with the reference.
   An incompatible latest release blocks the supported-latest path; do not use
   the reference as an older customer fallback.
-- [ ] **Step 3: acquire the inspected compatibility reference, separately
+- [x] **Step 3: acquire the inspected compatibility reference, separately
   labelled as a developer test.** This does not select it for a customer.
 
   ```powershell
@@ -139,7 +143,7 @@ workspace and real verification evidence; no customer material.
 
   Expected: exact reference HEAD and clean checkout. Preserve normal hooks;
   no hook bypass, remote write or execution has occurred.
-- [ ] **Step 4: compare the actual contract fingerprints automatically.**
+- [x] **Step 4: compare the actual contract fingerprints automatically.**
 
   ```powershell
   $factory = 'C:\Users\urruegg\.copilot\session-state\abb9649a-dc0a-4b73-9a05-bdc993ea7335\files\factory111-reference-0bb2b1b'
@@ -166,7 +170,7 @@ workspace and real verification evidence; no customer material.
 fixtures. No producer script exists yet, so these checks prove the receiving
 reference only, not future exported-package compatibility.
 
-- [ ] **Step 1: establish the receiving interpreter and dependencies.**
+- [x] **Step 1: establish the receiving interpreter and dependencies.**
   Planning's actual read-only inventory found Python 3.14 at
   `C:\Python314\python.exe`, Python 3.11 at `C:\Python311\python.exe` and Node
   `v26.13.1`. Python 3.14 meets the receiver's stated minimum; this is not
@@ -184,7 +188,7 @@ reference only, not future exported-package compatibility.
   as evidence for `Path.is_junction` behaviour. If the named spike environment
   already exists before this task, inspect its ownership instead of reusing
   it silently.
-- [ ] **Step 2: run the existing focused receiver tests.**
+- [x] **Step 2: run the existing focused receiver tests.**
 
   ```powershell
   $factory = 'C:\Users\urruegg\.copilot\session-state\abb9649a-dc0a-4b73-9a05-bdc993ea7335\files\factory111-reference-0bb2b1b'
@@ -215,7 +219,7 @@ reference only, not future exported-package compatibility.
 
   Do not install dependencies into the plugin, downgrade pins, bypass TLS
   or change shared environments. A restore failure remains a blocker.
-- [ ] **Step 3: validate all three actual synthetic dispositions and originals.**
+- [x] **Step 3: validate all three actual synthetic dispositions and originals.**
 
   ```powershell
   $factory = 'C:\Users\urruegg\.copilot\session-state\abb9649a-dc0a-4b73-9a05-bdc993ea7335\files\factory111-reference-0bb2b1b'
@@ -239,13 +243,13 @@ reference only, not future exported-package compatibility.
   Fixture approvals remain synthetic, not genuine review/transfer evidence.
   The final baseline-only call must explicitly say originals were not checked. Do not
   rewrite that as full source verification or approval authentication.
-- [ ] **Step 4: confirm negative coverage from the actual test output/source.**
+- [x] **Step 4: confirm negative coverage from the actual test output/source.**
   Record which actual tests exercise absent design, missing approval,
   unresolved blockers, denied/restricted transfer, malformed paths,
   unsupported archives, transformations and digest mismatches. If one of
   these cases is absent, record a concrete W1 test requirement; do not claim
   an unrun probe passed or mutate upstream fixtures.
-- [ ] **Step 5: record the actual resource contract.** The 16 MiB per-file,
+- [x] **Step 5: record the actual resource contract.** The 16 MiB per-file,
   1 MiB manifest and 64 MiB total limits are byte limits. In `validate_data`,
   source verification decrements the same 64 MiB budget as baseline reads.
   W1 boundary cases must therefore cover exactly-at/one-byte-over limits
@@ -257,7 +261,11 @@ RED/GREEN cycle. W1-W4 require actual failing tests before implementation.
 For W0 a failing prerequisite or receiver check is preserved and resolved or
 reported as blocked, never relabelled as successful discovery.
 
-## 5. W0 Task 3: actual Cowork acquisition
+## 5. Deferred host acceptance: actual Cowork acquisition
+
+**Not performed; no longer an early offline-development gate under the
+actually approved `f4b2609` amendment.** The steps below remain the future
+real-host check, not completed W0 work or an allowed VS Code simulation.
 
 **Operator:** a person in actual Copilot Cowork, or an actually available,
 authorised connection to that host. VS Code GitHub CLI success is not this
@@ -303,8 +311,9 @@ acquisition check; do not sign in as another user or switch tenants silently.
   HTML/error page. Record how the host bound the acquisition to the commit.
   A digest alone establishes no remote provenance or signature.
 - [ ] **Step 4: stop or close the spike honestly.** Missing host access,
-  discovery or exact retrieval is a blocker for W1-W4. Report it to
-  `@urruegg`; a host/source-contract change needs actual design review.
+  discovery or exact retrieval blocks that actual host route. The written
+  host amendment already permits offline development with genuine source
+  provenance and actual receiver proof; do not silently broaden it.
   Do not present an attached snapshot as a newly discovered latest release.
   W0 passing still does not satisfy the later candidate install/export
   acceptance portion of AF-13.
@@ -315,12 +324,19 @@ acquisition check; do not sign in as another user or switch tenants silently.
 comments only. Evidence updates report actual outcomes; they are not product
 implementation.
 
-- [ ] Record exact source/version/commands, results, errors and skips.
+- [x] Record exact source/version/commands, results, errors and skips.
   Separate local receiver proof, real Cowork acquisition and anything not
   performed. Never replace a failed/unknown outcome with a Boolean success.
-- [ ] Obtain ordered advisory specification and correctness review for the
+- [x] Obtain ordered advisory specification and correctness review for the
   bounded evidence. Fix only concrete findings. This is not human approval.
-- [ ] If both W0 exits pass, write the actual W1 implementation plan using
+
+The [actual sprint evidence](../sprints/SPRINT-013-agent-factory-handover.md#actual-w0-execution-and-ordered-evidence-review)
+records the completed source/reference checks, real 31-test run (30 passed,
+one Windows privilege skip), four validator exits 0, initial prerequisite
+failures and bounded normal-source recovery. All source/fixture approvals
+stay synthetic; actual Cowork remains deferred/not performed. Reported
+controller-vs-human attribution was corrected before the evidence handoff.
+- [ ] Once the amended source/receiver W0 exit is reviewed, write the actual W1 implementation plan using
   the demonstrated acquisition record, strict intake fields and real
   fixture shapes. Include complete new tests, exact functions/data shapes,
   actual RED/GREEN commands and narrow commit boundaries.
@@ -351,7 +367,7 @@ not substitute implementation steps or fabricated completed tests.
 | W3 | No automatic cost operation or financial figures; actual current-scenario acknowledgement and financial review/permissions when requested; declined/absent/unavailable FinOps remains optional and truthful. Source checksums are automatic, not a manual customer ritual. Two builds from frozen inputs/metadata are byte-identical; final ZIP digest is outside the manifest inventory; independent statuses and actionable nonzero errors |
 | W4 | Ninth optional Preview skill routes explicit handover without hijacking design/core/cost work; current seven GA wrappers and FinOps boundaries preserved. `tools/fe_lib.py` currently hardcodes FinOps-only Preview; extend that exact helper and `tests/unit/test_skill_maturity.py`, not fake Factory as GA or grant FinOps consent. Factory Preview notice need not inherit the cost-only acknowledgement gate |
 | W4 | `tools/selftest.py`, `tests/unit/test_docs_contract.py`, `tests/unit/test_skill_maturity.py` contain current eight-skill assumptions. Update current product inventory/installer assertions to seven GA plus two optional Preview; preserve commit-qualified historical eight-skill evidence. Packaged/extracted CLI works offline without repository imports; ordinary core also works with Factory and FinOps absent |
-| W4 | Run the actual pinned receiver against actual produced synthetic review and legitimately synthetic accepted packages, including original-byte mode; verify ZIP inventory and foundation integrity independently; actual candidate manual Cowork installation/discovery/retrieval/export. Missing host/tools is not success. No synthetic evidence is carried into real customer intake |
+| W4 | Run the actual pinned receiver against actual produced synthetic review and legitimately synthetic accepted packages, including original-byte mode; verify ZIP inventory/foundation integrity independently; explicitly defer unavailable Cowork installation/discovery/retrieval/export without claiming success. No synthetic evidence is carried into real customer intake |
 
 ### Coverage and release exit
 
@@ -364,7 +380,7 @@ not substitute implementation steps or fabricated completed tests.
 | AF-08-AF-09 | W3 privacy/financial/format sentinels and explicit transfer evidence |
 | AF-10-AF-11 | W2 raw archive/threshold/atomic tests and W3 two-build deterministic ZIP proof |
 | AF-12 | W0 reference evidence plus W4 actual producer-to-receiver validation; W0 alone is insufficient |
-| AF-13 | W0 actual host acquisition plus W4 actual candidate manual installation/export; editor tests are insufficient |
+| AF-13 | W4 exact packaged offline execution; actual Cowork acquisition/install/export explicitly deferred/not performed until that runtime can be tested; no editor result substituted |
 | AF-14-AF-15 | W3 optional financial and no-live-write tests; W4 guidance/manual claims review |
 | AF-16 | Every production slice real RED/GREEN; W4 full exact-head gates, generated/package proof and PR/CI evidence |
 

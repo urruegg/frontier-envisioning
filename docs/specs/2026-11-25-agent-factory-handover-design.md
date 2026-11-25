@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
+| Version | 0.4 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted design |
-| Status | Written spec `7f650c4` and W0 plan `c8cc5bb` approved; actual Cowork unavailable; section 11 is a Proposed host-gate amendment, not operative approval |
+| Status | Written spec `7f650c4`, W0 plan `c8cc5bb` and written host amendment `f4b2609` actually approved; offline Preview boundary; actual Cowork unverified |
 | Scope | Planned 1.11.0 optional Preview `frontier-agent-factory` skill; no implementation or publication |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea and actual decisions](../ideas/2026-11-25-agent-factory-handover.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Sprint](../sprints/SPRINT-013-agent-factory-handover.md), [PRD](../prd.md), [Solution design](../solution-design.md), [Template](https://github.com/urruegg/frontier-agent-factory), [Template intake](https://github.com/urruegg/frontier-agent-factory/blob/0bb2b1ba13cff77ee0bc3f271baddd3f89f9165d/docs/intake/README.md) |
 
@@ -106,10 +106,14 @@ An attached snapshot is not silently described as latest; its source selection
 and acquisition evidence must satisfy the chosen mode. Pointers, rendered
 pages and generated summaries do not replace original files.
 
-**Required verification item:** actual exact-template retrieval in Copilot
-Cowork was not demonstrated by this VS Code repository inspection. The plan
-must test that host capability early and stop/escalate if unavailable, rather
-than implement an unauthorised networking fallback or claim end-to-end support.
+**Actual host limitation and approved boundary:** exact-template retrieval
+in Copilot Cowork is not demonstrated and the human states that runtime is
+unavailable. The separately approved [host amendment](#11-host-gate-amendment-actual-cowork-unavailable)
+permits offline Preview development using genuine available-host/local-input
+source provenance and actual receiver checks. Actual Cowork discovery/
+installation/acquisition/export remains not performed; do not claim that path
+works. Missing capabilities block that host route, not approved offline work;
+never add an unauthorised networking fallback.
 
 ### Supported template profile
 
@@ -300,13 +304,13 @@ Never describe a validator or host path as passed without actually running it.
 | AF-10 | Unsafe/malformed/oversized/colliding/linked archives and input failures reject before good-output replacement; exact receiving/resource thresholds tested |
 | AF-11 | Two builds from the same frozen inputs/metadata produce byte-identical ZIPs; normal hashing/provenance requires no manual digest ceremony |
 | AF-12 | Actual pinned factory-validator compatibility is exercised on synthetic Caldova packages; missing tools/untested checks are reported, not invented passes |
-| AF-13 | Actual Cowork discovery/exact retrieval/export/manual install acceptance is recorded before claiming that host path works; no SDK/editor result is substituted |
+| AF-13 | Exercise the exact packaged offline exporter and actual pinned receiver; record unavailable Cowork discovery/install/acquisition/export as not performed, never substituted by an editor result or claimed Cowork-validated |
 | AF-14 | FinOps remains optional and acknowledgement/privacy/financial-handover rules are preserved; unrequested/declined/unavailable paths do not import money silently |
 | AF-15 | Customer-tenant/repository settings, deployment and real ownership remain human/governed operations; no live writes, auth switching or auto-accepted consent |
 | AF-16 | Test-first focused RED/GREEN, generated registration/package checks and full existing plugin gates pass against the actual candidate, preserving 1.10.x evidence |
 
-Use only fictitious Caldova fixtures. The plan must prioritise the Cowork
-acquisition/receiver compatibility spike, then split template adaptation,
+Use only fictitious Caldova fixtures. The plan must prioritise actual
+available-host source acquisition and receiver compatibility, then split template adaptation,
 offline packaging/projection, routing/registration and verification into bounded
 real work items. Record a Proposed architecture rationale without treating
 conversational agreement as formal ADR acceptance.
@@ -326,21 +330,28 @@ plan and full SPRINT-013 at `c8cc5bb` subsequently received actual
 `approve-w0-and-start-receiver-verification`, `no changes`;
 the [W0 receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7165080818)
 records that distinct approval. Real bounded [#73](https://github.com/urruegg/frontier-envisioning/issues/73)
-now owns W0. W0 proves host/receiver
-capability before exact downstream production plans are written and approved.
+now owns W0. Its source/reference and actual receiver evidence precede exact
+downstream production plans; the subsequently approved host amendment below
+defers unavailable Cowork testing without pretending it passed.
 The observed shared byte budget and permitted draft engineering gaps are
 clarified above without changing the product scope or fabricating evidence.
 No slice is ready merely because this document or a catalogue says so.
 Protected release/guard/settings actions and #8 remain human-only.
 
-## 11. Proposed host-gate amendment: actual Cowork unavailable
+## 11. Host-gate amendment: actual Cowork unavailable
 
-**Proposed, not approved or operative.** After approving W0 execution at
+**Actually approved after written review.** After approving W0 execution at
 `c8cc5bb`, the human answered the request for actual Cowork acquisition evidence
 with **"we din't have it at all"**. No actual Cowork test can be inferred from
 that answer, a developer GitHub lookup or a locally valid ZIP.
 
-Recommended bounded change:
+The actual written amendment at `f4b2609f9cdc1c24b7e31fad0b08d55f11162453`
+was then presented and received
+`host_amendment=approve-offline-preview-defer-cowork-validation`,
+`changes=no change please proceed`. The [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7166316613)
+records that distinct approval.
+
+Approved bounded change:
 
 1. Retain the current product name, optional Preview status, full starter ZIP,
    latest stable/explicit immutable bootstrap rules, privacy/transfer controls,
@@ -364,8 +375,8 @@ Recommended bounded change:
    This is not a migration of the existing plugin to another runtime or
    approval to change protected release/manual-review requirements.
 
-Approval of this exact written amendment would relax the early Cowork
-development stop in sections 4/9 and the staged plan; it would not approve
-unwritten W1-W4 code plans, fabricate a receiver pass or grant release/
-deployment authority. Until actual amendment approval, the existing W0
-both-exits gate remains in force.
+This actual approval replaces only the early Cowork development stop in
+sections 4/9 and the staged plan. It does not approve unwritten W1-W4 code
+plans, fabricate a receiver pass or grant release/deployment authority.
+The operative boundary is demonstrated source/receiver evidence for offline
+Preview development, with actual Cowork host validation explicitly deferred.
