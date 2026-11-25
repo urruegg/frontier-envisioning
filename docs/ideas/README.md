@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.7 |
-| Date | 2026-11-17 |
+| Version | 1.8 |
+| Date | 2026-11-24 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Ideas for Frontier Envisioning work packages in the canonical plural folder |
@@ -11,6 +11,7 @@
 
 | Idea | State | Governing work |
 |---|---|---|
+| [Release evidence without manual retention](2026-11-24-release-evidence-simplification.md) | Flow approved; written-spec review and real plan/readiness pending | [#67](https://github.com/urruegg/frontier-envisioning/issues/67), [design draft](../specs/2026-11-24-release-evidence-simplification-design.md), [early sprint row](../sprints/README.md); subagent mode selected, no delegated implementation yet |
 | [Optional systems extensions](2026-11-17-optional-systems-extensions.md) | Programme/spec approved; correction plan/readiness at `35ad763` selected subagent execution | [#58](https://github.com/urruegg/frontier-envisioning/issues/58), [#59](https://github.com/urruegg/frontier-envisioning/issues/59), [correction design](../specs/2026-11-17-process-governance-sap-grounding-design.md), [plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](../sprints/SPRINT-011-process-grounding-and-optional-systems.md); runtime [#60](https://github.com/urruegg/frontier-envisioning/issues/60), not all-pack implementation approval |
 | [PR-gated operating model](2026-11-14-pr-gated-operating-model.md) | Spec `8de16ca`, subagent plan/readiness `e8ea6bd`; #49 contracts and #50 bootstrap/full local gates verified | [#48](https://github.com/urruegg/frontier-envisioning/issues/48), [specification](../specs/2026-11-14-pr-gated-operating-model-design.md), [plan](../plans/2026-11-14-pr-gated-operating-model-plan.md), [SPRINT-010](../sprints/SPRINT-010-pr-gated-operating-model.md); adoption not performed |
 | [Caldova gallery extension](2026-11-13-caldova-gallery-extension.md) | Written spec approved at `4ef63d1`; inline plan/readiness at `8be6aa8`; ten captures and full local gate verified | [#41](https://github.com/urruegg/frontier-envisioning/issues/41), [design](../specs/2026-11-13-caldova-gallery-extension-design.md), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md); PR/CI separate |
