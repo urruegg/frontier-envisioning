@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
+| Version | 0.4 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Design/W0/host amendment actually approved; #73 source/reference and receiver proof verified with one skip; actual Cowork deferred; exact production plan next, no product implementation |
+| Status | Design/W0/host amendment actually approved; #73 source/receiver proof verified; combined exact production plan in review; actual Cowork deferred, no product implementation |
 | Scope | Planned 1.11.0 optional Agent Factory handover only; systems/D365 deferred |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Design](../specs/2026-11-25-agent-factory-handover-design.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [#58 deferral](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922) |
 
@@ -62,10 +62,16 @@ Cowork remains not performed and cannot be advertised as validated.
 | Work package | Exit / acceptance | Current state |
 |---|---|---|
 | W0: verification spike | Genuine available-host source/reference acquisition and actual pinned receiver checks; actual Cowork explicitly deferred under approved amendment | Verified source/reference and receiver evidence, 30 tests passed/one skip and four validators exit 0; no simulated host pass |
-| W1: local source/intake contract | Strict offline receipt/profile, ID/scope/role/evidence/review/history handling; real RED/GREEN and actual approved exact plan | W0 source/receiver exit verified; exact production plan pending before implementation |
+| W1: local source/intake contract | Strict offline receipt/profile, ID/scope/role/evidence/review/history handling; real RED/GREEN and actual approved exact plan | W0 source/receiver exit verified; [combined W1-W4 plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) in review before implementation |
 | W2: archive | Bounded raw ZIP validation, safe paths/modes/inventory, threshold and good-output-preservation tests, shared-helper reuse without release regression | Blocked by reviewed W1 and exact W2 plan approval |
 | W3: projection/export | Approved authored bytes, scope/privacy/FinOps boundaries, deterministic full ZIP, separate truthful statuses | Blocked by reviewed W1/W2 and exact W3 plan approval |
 | W4: integration/acceptance | Ninth optional Preview skill, current metadata/docs/installer/self-test, independent package/receiver proof and exact-head gates; unavailable Cowork explicitly not performed | Blocked by reviewed W3 and actual production-plan approval |
+
+The [combined production plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md)
+provides the real W1-W4 tasks under one written review/readiness decision.
+After actual approval, execute its tasks with bounded fresh workers and ordered
+technical review, not repeated human check-ins between already-approved tasks.
+No new producer RED/GREEN or implementation result is implied by that plan.
 
 Actual Cowork exact-template archive retrieval is **not demonstrated** by this
 VS Code session. The approved amendment permits offline work, not networking
@@ -166,6 +172,23 @@ package acceptance; no background helpers remain. No current/upstream
 repository source was edited by the receiver worker. Existing historical
 failures stay in the session evidence report rather than being rewritten as
 passes. No plugin bump, new exporter, customer ZIP or protected action occurred.
+
+## Combined production plan: written, not implemented
+
+The [actual W1-W4 plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md)
+has been written and corrected after direct review. It now includes minimal
+complete-release metadata, unknown-stable failure cases, selection from the
+customer-safe tree, strict input prevalidation, legacy financial detection and
+byte-preserved accepted history with portable path/collision checks.
+One actual approval of that complete written plan can govern all its tasks;
+technical review is not an extra human approval loop between approved tasks.
+
+Actual planning validation passed: `python tools\dev.py docs --strict`
+reported zero errors and its own `ALL GATES PASSED`; whitespace passed.
+All 33 Python, three JSON and nine PowerShell code blocks passed syntax
+parsing **without execution**. These checks do not claim new producer
+RED/GREEN, package compatibility, a product full gate or Cowork support.
+The new plan still needs its actual written plan/readiness approval.
 
 ## Human boundaries
 

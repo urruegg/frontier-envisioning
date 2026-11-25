@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.10 |
+| Version | 1.11 |
 | Date | 2026-11-25 |
 | Author | Original catalogue author not recorded; Copilot SDK in VS Code, AI-assisted consolidation |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
@@ -11,6 +11,7 @@
 
 | Plan | Owner during execution | Tracking and delivery evidence |
 |---|---|---|
+| [Agent Factory offline production](2026-11-25-agent-factory-offline-implementation-plan.md) | `@urruegg` accountable; one actual written W1-W4 plan/readiness approval required | [#72](https://github.com/urruegg/frontier-envisioning/issues/72), verified [W0 #73](https://github.com/urruegg/frontier-envisioning/issues/73), [idea](../ideas/2026-11-25-agent-factory-handover.md), [approved spec](../specs/2026-11-25-agent-factory-handover-design.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md); combined concrete production plan in review, no implementation authority or completed producer tests |
 | [Agent Factory W0 and roadmap](2026-11-25-agent-factory-handover-plan.md) | `@urruegg` accountable; actual approvals/evidence in the linked sprint | [#72](https://github.com/urruegg/frontier-envisioning/issues/72), bounded [#73](https://github.com/urruegg/frontier-envisioning/issues/73), [idea](../ideas/2026-11-25-agent-factory-handover.md), [spec](../specs/2026-11-25-agent-factory-handover-design.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md); offline source/receiver reference verified; actual Cowork deferred/not performed; exact production plan remains separate |
 | [Release evidence simplification](2026-11-25-release-evidence-simplification-plan.md) | `@urruegg` accountable; written spec at `67dc9a5` and subsequent actual plan/execution at `22f512f` approved | [#67](https://github.com/urruegg/frontier-envisioning/issues/67), [idea](../ideas/2026-11-24-release-evidence-simplification.md), [spec](../specs/2026-11-24-release-evidence-simplification-design.md), [SPRINT-012](../sprints/SPRINT-012-release-evidence-simplification.md); bounded #68/#69/#70 implementation, results pending |
 | [Process governance and SAP grounding](2026-11-17-process-governance-sap-grounding-plan.md) | `@urruegg` accountable; written spec and subagent-driven plan/readiness at `35ad763` approved | [#59](https://github.com/urruegg/frontier-envisioning/issues/59), [parent #58](https://github.com/urruegg/frontier-envisioning/issues/58), [SPRINT-011](../sprints/SPRINT-011-process-grounding-and-optional-systems.md); bounded runtime #60 handoff, no implementation or full-gate result yet |
