@@ -396,6 +396,21 @@ class ReleaseEvidence(unittest.TestCase):
         except Exception as exc:
             self.fail(f"Invalid compressed bytes must raise EvidenceError, not {type(exc).__name__}: {exc}")
 
+    def test_lzma_failure_is_an_evidence_error_not_a_raw_exception(self):
+        data = bytearray(tiny_zip(compression=zipfile.ZIP_LZMA))
+        properties = 30 + len("synthetic.txt") + 4
+        data[properties] = 255
+        self.assets[PLUGIN] = bytes(data)
+        self.manifest["artefacts"][0].update(bytes=len(data), sha256=digest(data))
+        self.refresh()
+        try:
+            self.assert_rejected()
+        except evidence.EvidenceError:
+            raise
+        except Exception as exc:
+            self.fail(f"Invalid LZMA properties must raise EvidenceError, not {type(exc).__name__}: {exc}")
+        self.assertFalse(self.version_cache.exists())
+
     def test_malformed_nonexact_tag_response_cannot_prove_development(self):
         self.routes[BASE + "/releases?per_page=100&page=1"] = []
         for ref in ({"ref": "refs/tags/" + TAG + "1", "object": {}},

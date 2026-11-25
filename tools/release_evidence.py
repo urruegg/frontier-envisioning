@@ -12,6 +12,7 @@ import datetime as dt
 import hashlib
 import io
 import json
+import lzma
 import os
 from pathlib import Path
 import re
@@ -261,7 +262,7 @@ def _zip(data):
                 expanded += entry.file_size
                 _require(expanded <= TOTAL_LIMIT, "ZIP expanded content exceeds 64 MiB")
             _require(archive.testzip() is None, "ZIP integrity check failed")
-    except (zipfile.BadZipFile, zlib.error, RuntimeError, NotImplementedError, OSError, EOFError) as exc:
+    except (zipfile.BadZipFile, zlib.error, lzma.LZMAError, RuntimeError, NotImplementedError, OSError, EOFError) as exc:
         raise EvidenceError("Invalid release ZIP") from exc
 
 
