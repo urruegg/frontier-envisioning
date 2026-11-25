@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import datetime as dt
 import hashlib
+import importlib.util
 import io
 import json
 import os
@@ -26,7 +27,13 @@ import zlib
 if __package__:
     from .zip_stream import raw_member
 else:
-    from zip_stream import raw_member
+    _zip_spec = importlib.util.spec_from_file_location(
+        "_release_zip_stream", Path(__file__).with_name("zip_stream.py"))
+    if _zip_spec is None or _zip_spec.loader is None:
+        raise ImportError("Cannot load sibling ZIP stream validator")
+    _zip_module = importlib.util.module_from_spec(_zip_spec)
+    _zip_spec.loader.exec_module(_zip_module)
+    raw_member = _zip_module.raw_member
 
 REPOSITORY = "urruegg/frontier-envisioning"
 BASE = "repos/" + REPOSITORY

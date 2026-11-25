@@ -81,6 +81,59 @@ class SharedZip(unittest.TestCase):
             cwd=ROOT, capture_output=True, text=True, check=False)
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_release_direct_file_load_isolated_from_paths_and_cached_modules(self):
+        program = """
+import importlib.util as u
+import io
+import sys
+import types
+import zipfile
+
+original_path = list(sys.path)
+if sys.argv[2] == "cached":
+    unrelated = types.ModuleType("zip_stream")
+    def wrong_member(*args, **kwargs):
+        raise AssertionError("An unrelated cached module must not be trusted")
+    unrelated.raw_member = wrong_member
+    sys.modules["zip_stream"] = unrelated
+spec = u.spec_from_file_location("r", sys.argv[1])
+assert spec is not None and spec.loader is not None
+module = u.module_from_spec(spec)
+spec.loader.exec_module(module)
+assert sys.path == original_path
+if sys.argv[2] == "cached":
+    assert sys.modules["zip_stream"] is unrelated
+for method in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED):
+    out = io.BytesIO()
+    with zipfile.ZipFile(out, "w", compression=method) as archive:
+        archive.writestr("member.txt", b"A" * 100)
+    raw = out.getvalue()
+    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+        entry = archive.infolist()[0]
+        assert module._zip_member(raw, entry, 100) == 100
+        try:
+            module._zip_member(raw, entry, 99)
+        except module.EvidenceError as error:
+            assert str(error) == "ZIP expanded content exceeds allowed size (100 > 99)"
+        else:
+            raise AssertionError("The actual decoded-byte guard must remain active")
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            for cache in ("absent", "cached"):
+                with self.subTest(cache=cache):
+                    result = subprocess.run(
+                        [sys.executable, "-I", "-c", program,
+                         str((ROOT / "tools/release_evidence.py").resolve()), cache],
+                        cwd=directory, capture_output=True, text=True, check=False)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_release_script_launch_without_search_path_setup(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = subprocess.run(
+                [sys.executable, "-I", str((ROOT / "tools/release_evidence.py").resolve())],
+                cwd=directory, capture_output=True, text=True, check=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_pure_copy_runs_without_repository_imports(self):
         module = self.module()
         with tempfile.TemporaryDirectory() as directory:
