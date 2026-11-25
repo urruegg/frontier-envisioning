@@ -99,6 +99,8 @@ jobs:
           python -m pip install -r requirements-dev.txt
           npm ci --no-audit --no-fund
       - name: Gate L1
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: python tools/dev.py check --strict
       - name: Gate L2
         run: |
