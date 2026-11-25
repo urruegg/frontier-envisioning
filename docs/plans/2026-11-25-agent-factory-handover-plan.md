@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
+| Version | 0.5 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
 | Status | W0 plan `c8cc5bb` and written host amendment `f4b2609` approved; real #73 receiver proof passed with one skip; actual Cowork testing deferred, not passed |
@@ -341,8 +341,9 @@ controller-vs-human attribution was corrected before the evidence handoff.
   fixture shapes. Include complete new tests, exact functions/data shapes,
   actual RED/GREEN commands and narrow commit boundaries.
   The [combined W1-W4 production plan](2026-11-25-agent-factory-offline-implementation-plan.md)
-  now exists for one actual written plan/readiness review; its commands and
-  reference code have not been implemented or executed.
+  was written for one actual plan/readiness review; at that handoff its commands
+  and reference code had not been implemented or executed. Actual subsequent
+  approval/execution is recorded in [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md).
 - [ ] Present that written W1 plan for actual review/readiness before a
   fresh builder begins. No hidden handoff or assumption that W0 approval
   authorises unpublished W1-W4 code.

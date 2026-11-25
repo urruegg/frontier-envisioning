@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
+| Version | 0.5 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted design |
-| Status | Written spec `7f650c4`, W0 plan `c8cc5bb` and written host amendment `f4b2609` actually approved; offline Preview boundary; actual Cowork unverified |
+| Status | Written spec, W0, host amendment and complete production plan `5dbfc8a` actually approved; offline Preview execution in progress; actual Cowork unverified |
 | Scope | Planned 1.11.0 optional Preview `frontier-agent-factory` skill; no implementation or publication |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea and actual decisions](../ideas/2026-11-25-agent-factory-handover.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Sprint](../sprints/SPRINT-013-agent-factory-handover.md), [PRD](../prd.md), [Solution design](../solution-design.md), [Template](https://github.com/urruegg/frontier-agent-factory), [Template intake](https://github.com/urruegg/frontier-agent-factory/blob/0bb2b1ba13cff77ee0bc3f271baddd3f89f9165d/docs/intake/README.md) |
 
@@ -337,6 +337,14 @@ The observed shared byte budget and permitted draft engineering gaps are
 clarified above without changing the product scope or fabricating evidence.
 No slice is ready merely because this document or a catalogue says so.
 Protected release/guard/settings actions and #8 remain human-only.
+
+The [complete W1-W4 production plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md)
+at `5dbfc8a` was then actually reviewed and approved with
+`approve-complete-plan-and-implement`, with no revision requested;
+the [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7167852054)
+is distinct from W0 and the host amendment. Execution and real test results
+belong to [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md), not an
+assumption that approval means the feature is already implemented or verified.
 
 ## 11. Host-gate amendment: actual Cowork unavailable
 

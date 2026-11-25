@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.4 |
+| Version | 0.5 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Design/W0/host amendment actually approved; #73 source/receiver proof verified; combined exact production plan in review; actual Cowork deferred, no product implementation |
+| Status | Full plan/readiness `5dbfc8a` actually approved; #74 version/raster slice verified locally, #75 contract in progress; final Factory integration/gates pending; Cowork deferred |
 | Scope | Planned 1.11.0 optional Agent Factory handover only; systems/D365 deferred |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Design](../specs/2026-11-25-agent-factory-handover-design.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [#58 deferral](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922) |
 
@@ -19,8 +19,14 @@ No business runtime, remote repository, tenant provisioning or deployment.
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#72](https://github.com/urruegg/frontier-envisioning/issues/72) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Roadmap and W0](../plans/2026-11-25-agent-factory-handover-plan.md) | `@urruegg` accountable | Exact reviewed production plan after actual #73 evidence | Offline W0 verified; no product implementation | [Written-spec receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [W0 receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7165080818), [Host-amendment receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7166316613) |
+| [#72](https://github.com/urruegg/frontier-envisioning/issues/72) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Approved combined production plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) | `@urruegg` accountable | Reviewed bounded #74-#79 slices and final actual candidate gates | Full plan approved; execution in progress, not complete | [Actual full-plan receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7167852054); earlier spec/W0/host receipts below |
 | [#73](https://github.com/urruegg/frontier-envisioning/issues/73) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [Host/receiver boundary](../specs/2026-11-25-agent-factory-handover-design.md#4-template-discovery-acquisition-and-compatibility) | [W0 Tasks 1-4](../plans/2026-11-25-agent-factory-handover-plan.md#3-w0-task-1-baseline-and-exact-source) | `@urruegg` accountable and assigned; bounded receiver builder | Actual W0/host-amendment approval; pinned reference and isolated dependencies | Actual source/receiver exit verified: 30 pass, one privilege skip, four validators exit 0; Cowork deferred/not performed | Ordered parent specification then correctness review; attribution correction applied; no protected ready/approval label inferred |
+| [#74](https://github.com/urruegg/frontier-envisioning/issues/74) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Task 1](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#3-task-1--baseline-then-bump-then-finite-raster-profile) | `@urruegg` accountable and assigned; bounded builder | Actual full plan/readiness `5dbfc8a` | Local `c51c6e9` version/raster slice verified; not final Factory candidate | [Bounded review/evidence](https://github.com/urruegg/frontier-envisioning/issues/74#issuecomment-7169371390) |
+| [#75](https://github.com/urruegg/frontier-envisioning/issues/75) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-02-AF-08/10](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 2-4](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#4-task-2--w1-strict-data-safe-local-reads-and-fixed-schema-subset) | `@urruegg` accountable and assigned; fresh bounded builder | Reviewed #74 | Strict source/intake implementation in progress | No producer completion or final-gate claim |
+| [#76](https://github.com/urruegg/frontier-envisioning/issues/76) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-04/10/11](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 5-6](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#7-task-5--w2-extract-the-proven-raw-zip-mechanism-without-release-drift) | `@urruegg` accountable and assigned | Reviewed #75 | Pending; not delegated | No archive implementation evidence yet |
+| [#77](https://github.com/urruegg/frontier-envisioning/issues/77) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-05-AF-11/14/15](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 7-10](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#9-task-7--w3-passive-authored-byte-projection-and-explicit-selection) | `@urruegg` accountable and assigned | Reviewed #75/#76 | Pending; not delegated | No exporter/financial/CLI evidence yet |
+| [#79](https://github.com/urruegg/frontier-envisioning/issues/79) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01/12/13/16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 11-13](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#13-task-11--w4-ninth-skill-maturity-installer-and-registration) | `@urruegg` accountable and assigned | Reviewed #77; disjoint prose #78 before final gates | Pending; not delegated | No ninth-skill/package/receiver candidate result yet |
+| [#78](https://github.com/urruegg/frontier-envisioning/issues/78) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16 documentation](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Task 14](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#16-task-14--w4-productengineering-prose-not-historical-rewriting) | `@urruegg` accountable and assigned; eligible docs route | Reviewed #77; coordinates disjoint #79 code | Pending; not delegated | No fictional product/release verification |
 
 Create real bounded child issues only when their actual execution plans are
 approved, before delegation. Do not treat W0 evidence as approval for unwritten
@@ -62,15 +68,16 @@ Cowork remains not performed and cannot be advertised as validated.
 | Work package | Exit / acceptance | Current state |
 |---|---|---|
 | W0: verification spike | Genuine available-host source/reference acquisition and actual pinned receiver checks; actual Cowork explicitly deferred under approved amendment | Verified source/reference and receiver evidence, 30 tests passed/one skip and four validators exit 0; no simulated host pass |
-| W1: local source/intake contract | Strict offline receipt/profile, ID/scope/role/evidence/review/history handling; real RED/GREEN and actual approved exact plan | W0 source/receiver exit verified; [combined W1-W4 plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) in review before implementation |
+| W1: local source/intake contract | Strict offline receipt/profile, ID/scope/role/evidence/review/history handling; real RED/GREEN and actual approved exact plan | Full plan approved; reviewed #74 complete, #75 implementation in progress |
 | W2: archive | Bounded raw ZIP validation, safe paths/modes/inventory, threshold and good-output-preservation tests, shared-helper reuse without release regression | Blocked by reviewed W1 and exact W2 plan approval |
 | W3: projection/export | Approved authored bytes, scope/privacy/FinOps boundaries, deterministic full ZIP, separate truthful statuses | Blocked by reviewed W1/W2 and exact W3 plan approval |
 | W4: integration/acceptance | Ninth optional Preview skill, current metadata/docs/installer/self-test, independent package/receiver proof and exact-head gates; unavailable Cowork explicitly not performed | Blocked by reviewed W3 and actual production-plan approval |
 
 The [combined production plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md)
-provides the real W1-W4 tasks under one written review/readiness decision.
-After actual approval, execute its tasks with bounded fresh workers and ordered
-technical review, not repeated human check-ins between already-approved tasks.
+at `5dbfc8a` actually received `approve-complete-plan-and-implement`, with
+no revision requested. Its [real approval receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7167852054)
+governs the W1-W4 tasks with bounded fresh workers and ordered technical review,
+not repeated human check-ins between already-approved tasks.
 No new producer RED/GREEN or implementation result is implied by that plan.
 
 Actual Cowork exact-template archive retrieval is **not demonstrated** by this
@@ -188,7 +195,54 @@ reported zero errors and its own `ALL GATES PASSED`; whitespace passed.
 All 33 Python, three JSON and nine PowerShell code blocks passed syntax
 parsing **without execution**. These checks do not claim new producer
 RED/GREEN, package compatibility, a product full gate or Cowork support.
-The new plan still needs its actual written plan/readiness approval.
+The actual full-plan/readiness approval subsequently received is recorded
+above. It is not a product test result or human-only permission.
+
+## Task 1: actual baseline and named 1.11.0 profile
+
+The existing isolated worktree moved from approved planning `5dbfc8a` to
+`feat/72-agent-factory`; no second worktree or primary-checkout change.
+All six real bounded #74-#79 issues were created and assigned before their
+workers, using the existing non-protected labels only. No protected
+ready/approval label, milestone or formal GitHub approval is inferred.
+The parent/work-package links are real body/plan cross-references; no native
+GitHub sub-issue relationship is asserted.
+
+Before any plugin edit, the unchanged **1.10.1** baseline at `5dbfc8a` ran
+focused evidence/raster tests (51 run, 50 passed, one Windows privilege skip),
+package/demo (205 non-raster inputs, 223 pinned PNGs; tracked sources unchanged),
+and `python tools\verify_release.py --online`. That authoritative exact-version
+lookup returned **development**, no exact published release/conflicting tag;
+it was not a comparison of published 1.10.1 or current output with 1.10.0.
+
+The same fresh process-local `$env:CI='true'; python tools\dev.py check --strict`
+completed before bumping, ending **ALL GATES PASSED**: **924 passed,
+eight skipped, 3,108 subtests**, self-test passed and **201/201 DOM tests**.
+The known skips and pre-existing ESLint warnings remain in the actual evidence,
+not rewritten as new-code successes. This is a local CI-context baseline, not
+an actual server CI result for the final feature.
+
+The first plugin change was sanctioned `python tools\dev.py bump 1.11.0`.
+The new profile then observed real RED: 12 tests, 15 assertion failures,
+zero errors, including named 1.11.0 replay being rejected. Minimal finite
+support and its actually measured profile pin made the module GREEN:
+12 passed; all 49 raster-family tests passed. Seven historical profile/base
+records remained byte-identical. The source change adds only named 1.11.0,
+not broad future-version support or relaxed release/archive authority.
+
+Four extra exact-set assertion call sites required adding literal 1.11.0;
+the [controller clarification](https://github.com/urruegg/frontier-envisioning/issues/74#issuecomment-7168719768)
+records this coupled correction, not another human approval or a changed
+product boundary. Candidate package/demo again passed 205/223 with the identity
+ZIP rebuilt, not golden-copied; generated inventory came only from package.
+
+Local commit `c51c6e92abdc8aa4625fe1e4413185d01e368b76` contains the 22 owned
+version/profile/test/inventory paths. The parent completed specification review
+then correctness review, and independently reran all 49 raster-family tests
+(12.307 s, zero skips), strict repository rules (1.11.0, 668 files, zero errors)
+and whitespace at that clean head. The [actual bounded evidence](https://github.com/urruegg/frontier-envisioning/issues/74#issuecomment-7169371390)
+does not claim the new Factory skill is implemented, a final integrated full
+gate passed, server CI passed or Cowork was tested.
 
 ## Human boundaries
 

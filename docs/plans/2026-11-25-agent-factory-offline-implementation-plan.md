@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-25 |
 | Author | AI assistant; AI-assisted implementation planning |
-| Status | Written for one human W1–W4 plan/readiness approval; not implementation authority or completed verification |
+| Status | Actual full W1-W4 plan/readiness approval at `5dbfc8a` recorded; execution evidence belongs to SPRINT-013; no human-only authority or completed-product claim |
 | Scope | Complete optional Preview offline Agent Factory producer, registration and verification for 1.11.0; actual Cowork validation deferred |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [W0 #73](https://github.com/urruegg/frontier-envisioning/issues/73), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Approved design](../specs/2026-11-25-agent-factory-handover-design.md), [W0 plan](2026-11-25-agent-factory-handover-plan.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md), [AGENTS](../../AGENTS.md), [Requirements](../prd.md), [Architecture and verification](../solution-design.md), [Engineering rationale](../adr/README.md) |
 
@@ -60,6 +60,15 @@ Actual written approvals, not inferred permissions:
 3. Written section 11 at `f4b2609`: [7166316613](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7166316613),
    `approve-offline-preview-defer-cowork-validation`, no change. The working
    spec 0.4 activates that decision. This is not new product scope.
+4. This complete production plan at
+   `5dbfc8a46454456ff90874b7343a200ff53c3f15` was subsequently presented and
+   actually approved: `production_plan=approve-complete-plan-and-implement`;
+   the changes field was empty, with no revision requested. The
+   [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7167852054)
+   governs all its W1-W4 tasks, not protected operations or a product pass.
+   The reviewed plan's automatic SHA256 was
+   `46f83f1e9156689ef3b31a8c12db28da3d60c1af66786d4e57a1faf351f7919b`.
+   This metadata-only approval record does not change the approved code contract.
 
 The real #72/#73 bodies and #72 amendment receipt were read during planning.
 Their older early-Cowork wording is historical and qualified by the later
@@ -3717,8 +3726,8 @@ python tools\dev.py check
 - History/version: bump follows baseline and precedes plugin edits; named
   finite raster profile only; immutable old hashes/records/accepted input
   bytes; source documents are never regenerated.
-- Readiness: this complete plan still needs its **one actual human approval**
-  and recorded linked readiness before fresh implementation workers. No
+- Readiness: the complete plan's **actual human approval/readiness at `5dbfc8a`**
+  is recorded in section 1 before fresh implementation workers. No
   repeated human micro-approvals between already approved tasks. A meaningful
   new boundary question returns NEEDS_CONTEXT.
 - Planning-only scope: no production/test/tool/package/version edit, dependency
