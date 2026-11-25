@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted design |
-| Status | Written spec `7f650c4` approved; observed cumulative source-check budget clarified below; staged plan/W0 and subsequent production slice readiness pending |
+| Status | Written spec `7f650c4` and W0 plan `c8cc5bb` approved; actual Cowork unavailable; section 11 is a Proposed host-gate amendment, not operative approval |
 | Scope | Planned 1.11.0 optional Preview `frontier-agent-factory` skill; no implementation or publication |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea and actual decisions](../ideas/2026-11-25-agent-factory-handover.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Sprint](../sprints/SPRINT-013-agent-factory-handover.md), [PRD](../prd.md), [Solution design](../solution-design.md), [Template](https://github.com/urruegg/frontier-agent-factory), [Template intake](https://github.com/urruegg/frontier-agent-factory/blob/0bb2b1ba13cff77ee0bc3f271baddd3f89f9165d/docs/intake/README.md) |
 
@@ -322,9 +322,50 @@ It makes no plugin/code/version/template-source or customer-repository change.
 The human approved the presented boundary, artefact and validation sections,
 then requested subagent-driven implementation. The actual written spec at
 `7f650c4` subsequently received separate approval with no changes. The staged
-plan and full SPRINT-013 now exist for actual review; W0 proves host/receiver
+plan and full SPRINT-013 at `c8cc5bb` subsequently received actual
+`approve-w0-and-start-receiver-verification`, `no changes`;
+the [W0 receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7165080818)
+records that distinct approval. Real bounded [#73](https://github.com/urruegg/frontier-envisioning/issues/73)
+now owns W0. W0 proves host/receiver
 capability before exact downstream production plans are written and approved.
 The observed shared byte budget and permitted draft engineering gaps are
 clarified above without changing the product scope or fabricating evidence.
 No slice is ready merely because this document or a catalogue says so.
 Protected release/guard/settings actions and #8 remain human-only.
+
+## 11. Proposed host-gate amendment: actual Cowork unavailable
+
+**Proposed, not approved or operative.** After approving W0 execution at
+`c8cc5bb`, the human answered the request for actual Cowork acquisition evidence
+with **"we din't have it at all"**. No actual Cowork test can be inferred from
+that answer, a developer GitHub lookup or a locally valid ZIP.
+
+Recommended bounded change:
+
+1. Retain the current product name, optional Preview status, full starter ZIP,
+   latest stable/explicit immutable bootstrap rules, privacy/transfer controls,
+   offline standard-library scripts and no-live-write boundary.
+2. Do not make unavailable Cowork acquisition a prerequisite to developing
+   and verifying the **offline exporter**. Use an actually authorised available
+   host to discover/pin/acquire source, or explicit local source inputs with
+   their actual acquisition/provenance record. A supplied file is not
+   automatically latest; unresolved discovery/access/provenance still fails.
+3. Keep actual pinned receiver compatibility a development prerequisite.
+   The exporter itself still performs no networking and executes no downloaded
+   code. Do not assume GitHub CLI or any specific download tool exists in Cowork.
+4. Amend AF-13 for this Preview slice: exercise the exact packaged offline
+   exporter and its real receiving validator, and record Cowork host discovery,
+   installation and end-to-end acquisition/export as **not performed** while
+   that runtime is unavailable. No Cowork-validated/end-to-end-support claim
+   is allowed until those real host checks occur.
+5. In W0 and subsequent exact slice plans, distinguish the demonstrated
+   offline route from the deferred host route. Missing host capabilities at
+   actual use return an actionable error, not an automatic network fallback.
+   This is not a migration of the existing plugin to another runtime or
+   approval to change protected release/manual-review requirements.
+
+Approval of this exact written amendment would relax the early Cowork
+development stop in sections 4/9 and the staged plan; it would not approve
+unwritten W1-W4 code plans, fabricate a receiver pass or grant release/
+deployment authority. Until actual amendment approval, the existing W0
+both-exits gate remains in force.

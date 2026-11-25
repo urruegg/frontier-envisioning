@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Written spec approved at `7f650c4`; this staged plan and verification-slice execution approval pending |
+| Status | W0 plan `c8cc5bb` actually approved; real child #73 executing bounded receiver verification; actual Cowork unavailable; host-gate amendment Proposed |
 | Scope | SPRINT-013 roadmap and executable W0 verification slice; no downstream production implementation authorised by this record alone |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Design](../specs/2026-11-25-agent-factory-handover-design.md), [Sprint](../sprints/SPRINT-013-agent-factory-handover.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [Working agreement](../../AGENTS.md) |
 
@@ -48,6 +48,21 @@ demonstrated acquisition receipt and receiver contract, then actually reviewed
 before delegation. This deliberately does not pretend that listing a future
 work package supplies its missing code or approval.
 
+### Actual W0 approval and changed host evidence
+
+After review of this plan at `c8cc5bb`, the human answered
+`approve-w0-and-start-receiver-verification`, `no changes`.
+The [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7165080818)
+authorises bounded W0, now tracked in real [#73](https://github.com/urruegg/frontier-envisioning/issues/73).
+The fresh receiver worker does not own Cowork simulation or product changes.
+
+The human then stated **"we din't have it at all"** when asked for real Cowork
+acquisition evidence. The [written amendment proposal](../specs/2026-11-25-agent-factory-handover-design.md#11-proposed-host-gate-amendment-actual-cowork-unavailable)
+would permit offline exporter development with genuine available-host/local
+source provenance while clearly deferring actual Cowork verification.
+It is **not yet approved**. Until approval, both existing W0 exits still
+govern W1-W4; no unknown host result is silently converted to a pass.
+
 ## 2. File ownership and dependency map
 
 No W0 step modifies plugin files, upstream source, protected records or policy.
@@ -80,7 +95,7 @@ Do not invent child numbers, milestones, assignees or protected labels.
 **Writes:** only a new, explicitly named checkout beneath the session
 workspace and real verification evidence; no customer material.
 
-- [ ] **Step 1: approve and link the bounded work.** Obtain actual approval
+- [x] **Step 1: approve and link the bounded work.** Obtain actual approval
   for this written W0 plan. Create its real child issue. A fresh bounded
   builder may execute developer verification; actual Cowork evidence needs
   the real host/operator, not a VS Code agent impersonating it.

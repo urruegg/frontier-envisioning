@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Written design approved at `7f650c4`; staged plan/W0 approval pending; no product implementation or host-proof claim |
+| Status | Written design `7f650c4` and W0 plan `c8cc5bb` approved; real #73 receiver verification bounded; actual Cowork unavailable; amendment Proposed; no product implementation |
 | Scope | Planned 1.11.0 optional Agent Factory handover only; systems/D365 deferred |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Design](../specs/2026-11-25-agent-factory-handover-design.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [#58 deferral](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922) |
 
@@ -19,7 +19,8 @@ No business runtime, remote repository, tenant provisioning or deployment.
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#72](https://github.com/urruegg/frontier-envisioning/issues/72) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Roadmap and W0](../plans/2026-11-25-agent-factory-handover-plan.md) | `@urruegg` accountable | Written plan approval, real Cowork acquisition, pinned receiver proof, later exact approved slice plans | Not ready; W0 execution not yet approved; no implementation | [Written-spec approval receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078) |
+| [#72](https://github.com/urruegg/frontier-envisioning/issues/72) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Roadmap and W0](../plans/2026-11-25-agent-factory-handover-plan.md) | `@urruegg` accountable | Reviewed #73 evidence, real host or actual approved amendment, later exact approved slice plans | W0 approved; host unavailable; no implementation | [Written-spec receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [W0 receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7165080818) |
+| [#73](https://github.com/urruegg/frontier-envisioning/issues/73) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [Host/receiver boundary](../specs/2026-11-25-agent-factory-handover-design.md#4-template-discovery-acquisition-and-compatibility) | [W0 Tasks 1-4](../plans/2026-11-25-agent-factory-handover-plan.md#3-w0-task-1-baseline-and-exact-source) | `@urruegg` accountable and assigned; bounded receiver builder | Actual W0 approval; existing pinned dependencies; actual host evidence | Source/reference checks reported; receiver recovery requested; host unavailable | [Actual W0 approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7165080818); no protected ready/approval label inferred |
 
 Create real bounded child issues only when their actual execution plans are
 approved, before delegation. Do not treat W0 evidence as approval for unwritten
@@ -45,11 +46,19 @@ The independent systems/D365 programme #58 moves to a later unspecified
 release. Its old 1.11 target is historical; this sprint does not absorb its
 scope or invent a new deadline.
 
+The staged plan and full sprint at `c8cc5bb` were subsequently presented and
+actually approved with `approve-w0-and-start-receiver-verification`,
+`no changes`. A real bounded child #73 was then created and assigned before
+dispatching a fresh developer receiver worker. The actual Cowork-evidence
+request received **"we din't have it at all"**, not a host pass. A written
+host-gate change is Proposed in design section 11; no amendment approval is
+inferred from that capability statement.
+
 ## Staged execution and blockers
 
 | Work package | Exit / acceptance | Current state |
 |---|---|---|
-| W0: verification spike | Real latest/no-release and exact source acquisition in actual Cowork; actual pinned receiver fixtures/negative checks with real prerequisites; precise evidence, no simulated host pass | Plan written; actual approval and both exits pending |
+| W0: verification spike | Real latest/no-release and exact source acquisition in actual Cowork; actual pinned receiver fixtures/negative checks with real prerequisites; precise evidence, no simulated host pass | W0 approved, real #73; reference/source checks reported, receiver dependency recovery requested; actual Cowork unavailable |
 | W1: local source/intake contract | Strict offline receipt/profile, ID/scope/role/evidence/review/history handling; real RED/GREEN and actual approved exact plan | Blocked by W0; not delegated or implementation-ready |
 | W2: archive | Bounded raw ZIP validation, safe paths/modes/inventory, threshold and good-output-preservation tests, shared-helper reuse without release regression | Blocked by reviewed W1 and exact W2 plan approval |
 | W3: projection/export | Approved authored bytes, scope/privacy/FinOps boundaries, deterministic full ZIP, separate truthful statuses | Blocked by reviewed W1/W2 and exact W3 plan approval |
