@@ -107,6 +107,17 @@ def timestamp(value):
         raise FactoryError("FACTORY_DATE") from None
 
 
+def timestamp_key(value):
+    """Return exact (UTC whole-second ordinal, fractional digits) for RFC3339 ordering."""
+    parsed = timestamp(value)
+    offset = parsed.utcoffset()
+    need(offset is not None, "FACTORY_DATE")
+    seconds = (parsed.toordinal() * 86400 + parsed.hour * 3600 + parsed.minute * 60 + parsed.second
+               - offset.days * 86400 - offset.seconds)
+    fraction = re.search(r"\.(\d+)", value)
+    return seconds, fraction.group(1).rstrip("0") if fraction is not None else ""
+
+
 def approval(value):
     keys(value, ("by", "at", "reference"))
     text(value["by"])
@@ -134,7 +145,10 @@ def path_key(value):
 
 
 def claim_path(spellings, value, *, repeat=False):
+    """Reserve a FILE path; directory entries need separate handling."""
     key = path_key(value)
+    need(not any(key.startswith(existing + "/") or existing.startswith(key + "/")
+                 for existing in spellings), "FACTORY_PATH_COLLISION")
     if key in spellings:
         need(repeat and spellings[key] == value, "FACTORY_PATH_COLLISION")
     else:

@@ -101,6 +101,22 @@ class FactoryCommon(Behaviour):
             with self.assertRaises(c.FactoryError):
                 c.plain_path("bad\x00path", missing=True)
 
+    def test_file_claims_reject_ancestor_conflicts_in_both_orders_not_string_prefixes(self):
+        ancestor = r"docs\intake\records\caldova-intake\artifacts\specs.md"
+        descendant = "docs/intake/records/caldova-intake/artifacts/SPECS.md/design.md"
+        for first, second in ((ancestor, descendant), (descendant, ancestor)):
+            spellings = {}
+            self.works(c.claim_path, spellings, first)
+            before = dict(spellings)
+            with self.subTest(first=first), self.assertRaisesRegex(c.FactoryError, "FACTORY_PATH_COLLISION"):
+                c.claim_path(spellings, second, repeat=True)
+            self.assertEqual(spellings, before, "a refused FILE claim must not mutate existing claims")
+        for paths in (("specs.md", "SPECS.md2/design.md"), ("SPECS.md2/design.md", "specs.md")):
+            spellings = {}
+            for path in paths:
+                self.works(c.claim_path, spellings, path)
+            self.assertEqual(len(spellings), 2)
+
     @unittest.skipUnless(os.name == "nt", "Windows junction behaviour")
     def test_junction_ancestry_is_rejected_before_resolve(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -171,6 +187,40 @@ class ContractCase(Behaviour):
         self.addCleanup(self.temp.cleanup)
         self.f = prepare(Path(self.temp.name), accepted=True)
         self.schema = c.decode((F / "references/intake.schema.json").read_bytes())
+
+
+class FactoryFileClaims(ContractCase):
+    def test_file_ancestors_refused_by_prevalidation_materialisation_and_intake_before_reads(self):
+        good, baseline, originals = m.materialize(self.f["request"]["intake"],
+                                                 self.f["baseline"], self.f["source"], c.read)
+        prefix = "docs/intake/records/caldova-intake/artifacts/"
+        for field in ("source", "baseline"):
+            for reverse in (False, True):
+                request = copy.deepcopy(self.f["request"])
+                data = copy.deepcopy(good)
+                baselines, sources = dict(baseline), dict(originals)
+                names = ["specs.md", r"SPECS.md\design.md"]
+                if field == "baseline":
+                    names = [prefix + name for name in names]
+                if reverse:
+                    names.reverse()
+                files = baselines if field == "baseline" else sources
+                for row, name in zip(data["artifacts"][:2], names):
+                    raw = files.pop(c.portable(row[field]["path"]))
+                    row[field]["path"] = name
+                    files[c.portable(name)] = raw
+                for row, name in zip(request["intake"]["artifacts"][:2], names):
+                    row[field]["path"] = name
+                for boundary in ("prevalidate", "materialize", "validate"):
+                    with self.subTest(field=field, reverse=reverse, boundary=boundary):
+                        with self.assertRaisesRegex(c.FactoryError, "FACTORY_PATH_COLLISION"):
+                            if boundary == "prevalidate":
+                                m.prevalidate_request(request, self.schema)
+                            elif boundary == "materialize":
+                                m.materialize(request["intake"], self.f["baseline"], self.f["source"],
+                                              lambda *args: self.fail("FILE conflict reached artifact read callback"))
+                            else:
+                                m.validate_intake(data, self.schema, baselines, sources)
 
 
 class FactoryRequest(ContractCase):
@@ -280,6 +330,16 @@ class FactoryRequest(ContractCase):
         request["selection_evidence"][0]["dependency_gaps"] = ["boundary-gap\n"]
         with self.assertRaises(c.FactoryError):
             m.prevalidate_request(request, self.schema)
+
+    def test_every_history_id_is_exact_before_materialisation_or_io(self):
+        request = copy.deepcopy(self.f["request"])
+        request["history"] = ["prior-intake"]
+        self.works(m.prevalidate_request, request, self.schema)
+        for prior in ("prior\n", "Prior", "not an id", "-prior", "a" * 81, "", None):
+            request["history"] = [prior]
+            with self.subTest(prior=prior), self.assertRaises(c.FactoryError):
+                m.prevalidate_request(request, self.schema)
+                self.fail("invalid history ID reached the materialisation/IO boundary")
 
 
 class FactoryReceipt(ContractCase):
@@ -391,6 +451,60 @@ class FactoryReceipt(ContractCase):
         receipt["release"]["commit"] += "\n"
         with self.assertRaisesRegex(c.FactoryError, "FACTORY_DISCOVERY"):
             self.receipt(receipt)
+
+    def test_submicrosecond_reversed_receipt_chronology_is_rejected(self):
+        earlier = "2026-11-25T11:00:00.0000001Z"
+        later = "2026-11-25T11:00:00.0000002Z"
+        for case in ("observation-after-acquisition", "acquisition-after-creation", "publication-after-observation"):
+            receipt = self.stable()
+            created = AT
+            if case == "observation-after-acquisition":
+                receipt["discovery"]["observed_at"] = later
+                receipt["acquisition"]["at"] = earlier
+                receipt["discovery"]["releases"][1]["published_at"] = earlier
+                receipt["release"]["published_at"] = earlier
+            elif case == "acquisition-after-creation":
+                receipt["discovery"]["observed_at"] = earlier
+                receipt["acquisition"]["at"] = later
+                receipt["discovery"]["releases"][1]["published_at"] = earlier
+                receipt["release"]["published_at"] = earlier
+                created = earlier
+            else:
+                receipt["discovery"]["observed_at"] = earlier
+                receipt["discovery"]["releases"][1]["published_at"] = later
+                receipt["release"]["published_at"] = later
+            with self.subTest(case=case), self.assertRaisesRegex(c.FactoryError, "FACTORY_DISCOVERY"):
+                self.receipt(receipt, created_at=created)
+
+    def test_latest_stable_uses_all_fraction_digits_without_false_ties(self):
+        for zeroes in (6, 100):
+            receipt = self.stable()
+            receipt["discovery"]["releases"][0]["published_at"] = "2026-11-25T11:00:00." + "0" * zeroes + "1Z"
+            receipt["discovery"]["releases"][1]["published_at"] = "2026-11-25T11:00:00." + "0" * zeroes + "2Z"
+            receipt["release"]["published_at"] = receipt["discovery"]["releases"][1]["published_at"]
+            with self.subTest(fraction_digits=zeroes + 1):
+                self.works(self.receipt, receipt)
+                older = copy.deepcopy(receipt)
+                older["release"].update(id=1, tag="historical-unresolved",
+                                        published_at=receipt["discovery"]["releases"][0]["published_at"])
+                with self.assertRaisesRegex(c.FactoryError, "FACTORY_DISCOVERY"):
+                    self.receipt(older)
+
+    def test_equivalent_offsets_and_fraction_spellings_compare_as_exact_instants(self):
+        receipt = self.stable()
+        receipt["discovery"]["releases"][1]["published_at"] = "2026-11-25T11:00:00.000000200Z"
+        receipt["release"]["published_at"] = "2026-11-25T12:30:00.0000002+01:30"
+        receipt["discovery"]["observed_at"] = "2026-11-25T13:00:00.000000200+02:00"
+        receipt["acquisition"]["at"] = "2026-11-25T11:00:00.0000002Z"
+        self.works(self.receipt, receipt, created_at="2026-11-25T10:00:00.0000002000-01:00")
+        # A second stable release at exactly the same instant is still an ambiguous tie.
+        receipt["discovery"]["releases"][0]["published_at"] = receipt["release"]["published_at"]
+        with self.assertRaisesRegex(c.FactoryError, "FACTORY_DISCOVERY"):
+            self.receipt(receipt)
+        bootstrap = copy.deepcopy(self.f["request"]["template"])
+        bootstrap["discovery"]["observed_at"] = "2026-11-25T00:00:00.0000002+01:00"
+        bootstrap["acquisition"]["at"] = "2026-11-24T23:00:00.000000200Z"
+        self.works(self.receipt, bootstrap, created_at="2026-11-24T23:00:00.0000002Z")
 
 
 class FactoryMaterialize(ContractCase):

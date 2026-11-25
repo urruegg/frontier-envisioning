@@ -9,7 +9,7 @@ import re
 
 from factory_common import (
     FactoryError, MIB, ROLES, EXTENSIONS, need, digest, encoded, decode,
-    text, identity, timestamp, approval, parts, portable, claim_path, read, conforms,
+    text, identity, timestamp_key, approval, parts, portable, claim_path, read, conforms,
 )
 
 _SCHEMA_SHA = "04d8e85767c03e7cc101b85e67bcd9377fa5f069842c0e01ce92f9acf12c923f"
@@ -115,10 +115,7 @@ def _intake_input(data, schema):
     need(len(encoded(data)) <= MIB, "FACTORY_LIMIT")
     need(conforms(_input_intake(schema), data), "FACTORY_REQUEST_SHAPE")
     _record_ids(data)
-    for row in data["artifacts"]:
-        if row["status"] == "provided":
-            parts(row["source"]["path"])
-            parts(row["baseline"]["path"])
+    _artifact_paths(data)
 
 
 def prevalidate_request(request, upstream):
@@ -146,6 +143,8 @@ def prevalidate_request(request, upstream):
     need(set(request["id_map"]["solutions"].values()) == selected)
     need(request["sharing_review"]["customer_scope"] == request["customer_scope"], "FACTORY_SHARING")
     history = request["history"]
+    for record_id in history:
+        identity(record_id)
     need(request["intake"]["intake_id"] not in history, "FACTORY_HISTORY")
     allowed_records = {request["intake"]["intake_id"], *history}
     current_files = {row["id"] for row in request["intake"]["artifacts"] if row["status"] == "provided"}
@@ -186,10 +185,11 @@ def source_receipt(receipt, export_id, created_at, archive_bytes):
     need(conforms(shape, receipt), "FACTORY_DISCOVERY")
     need(re.fullmatch(r"[0-9a-f]{40}", receipt["commit"]) is not None, "FACTORY_DISCOVERY")
     identity(export_id)
-    created = timestamp(created_at)
+    created = timestamp_key(created_at)
     discovery, acquisition = receipt["discovery"], receipt["acquisition"]
     need(discovery["export_id"] == export_id, "FACTORY_DISCOVERY")
-    need(timestamp(discovery["observed_at"]) <= timestamp(acquisition["at"]) <= created,
+    observed = timestamp_key(discovery["observed_at"])
+    need(observed <= timestamp_key(acquisition["at"]) <= created,
          "FACTORY_DISCOVERY")
     need(isinstance(archive_bytes, bytes)
          and digest(archive_bytes) == acquisition["archive_sha256"], "FACTORY_SOURCE_HASH")
@@ -210,10 +210,10 @@ def source_receipt(receipt, export_id, created_at, archive_bytes):
              and all(part and not part.startswith(".") and not part.endswith(".lock")
                      for part in tag.split("/")), "FACTORY_DISCOVERY")
         try:
-            published = timestamp(row["published_at"])
+            published = timestamp_key(row["published_at"])
         except FactoryError:
             raise FactoryError("FACTORY_DISCOVERY") from None
-        need(published <= timestamp(discovery["observed_at"]), "FACTORY_DISCOVERY")
+        need(published <= observed, "FACTORY_DISCOVERY")
         stable.append((published, row))
     if stable:
         need(receipt["selection"] == "stable-release" and receipt["bootstrap_approval"] is None
@@ -224,7 +224,7 @@ def source_receipt(receipt, export_id, created_at, archive_bytes):
         chosen = candidates[0]
         release = receipt["release"]
         need(release["id"] == chosen["id"] and release["tag"] == chosen["tag_name"]
-             and release["published_at"] == chosen["published_at"]
+             and timestamp_key(release["published_at"]) == latest
              and release["commit"] == receipt["commit"], "FACTORY_DISCOVERY")
     else:
         need(receipt["selection"] == "unreleased-bootstrap" and receipt["release"] is None

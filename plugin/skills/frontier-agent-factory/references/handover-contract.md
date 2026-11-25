@@ -48,10 +48,19 @@ Materialisation alone is not semantic acceptance.
 `validate_intake(data, schema, baseline, originals=None, history=None)`
 returns `None` or raises `FactoryError`. Byte-map keys are portable paths;
 case or delimiter aliases are refused before any dictionary overwrite.
-History is an ID-to-decoded-record map. Keep each historical JSON file's
+Every requested history ID passes the exact lowercase, hyphenated, maximum
+80-character identity check before materialisation. History is an
+ID-to-decoded-record map. Keep each historical JSON file's
 original raw bytes separately for publication; never re-encode it to change
 path style. Without `originals`, validation checks baseline bytes and recorded
 source hashes only. It must not be reported as original-byte verification.
+
+`claim_path` reserves **FILE** paths. It refuses canonical ancestor/descendant
+conflicts in either order, including case and delimiter aliases, before
+artefact reads. Component boundaries matter: `specs.md` does not conflict
+with `specs.md2/design.md`. Only explicitly requested exact source-file reuse
+is allowed. Future ZIP handling must treat directory entries separately:
+a valid directory and its child are not conflicting FILE claims.
 
 ## Source receipt
 
@@ -64,6 +73,12 @@ lowercase 40-hex IDs. Discovery must be successful, completely paginated and
 bound to this export ID. Its observation is no later than acquisition, which
 is no later than creation. A new export needs its own discovery evidence.
 Reproduction reuses the frozen receipt and bytes, not a fictional fresh lookup.
+Receipt chronology, latest selection and time equality retain every fractional
+digit and normalise timezone offsets. `timestamp_key(value)` returns an exact
+`(UTC_whole_second_ordinal, fractional_digits_without_trailing_zeroes)` tuple
+for comparisons; a zero fraction is the empty string. No float, decimal context
+or six-digit precision cap is used. `timestamp(value)` still returns an aware
+`datetime` for calendar/ZIP use, with that type's microsecond resolution.
 
 Each release-enumeration row has exactly five fields: `id`, `tag_name`,
 `published_at`, `draft`, `prerelease`. Raw API bodies, authors, assets and
