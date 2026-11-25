@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
-| Date | 2026-11-24 |
+| Version | 0.2 |
+| Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Flow approved; written design review and subsequent plan/readiness approval pending |
+| Status | Written spec approved at 67dc9a5; concrete plan/readiness approval pending |
 | Scope | Remove recurring manual release-evidence handling, retain automated verification and human publication |
-| References | [Catalogue](README.md), [Issue #67](https://github.com/urruegg/frontier-envisioning/issues/67), [Design](../specs/2026-11-24-release-evidence-simplification-design.md), [Early sprint row](../sprints/README.md), [Retention #52](https://github.com/urruegg/frontier-envisioning/issues/52), [Guidance #9](https://github.com/urruegg/frontier-envisioning/issues/9) |
+| References | [Catalogue](README.md), [Issue #67](https://github.com/urruegg/frontier-envisioning/issues/67), [Design](../specs/2026-11-24-release-evidence-simplification-design.md), [Plan](../plans/2026-11-25-release-evidence-simplification-plan.md), [SPRINT-012](../sprints/SPRINT-012-release-evidence-simplification.md), [Retention #52](https://github.com/urruegg/frontier-envisioning/issues/52), [Guidance #9](https://github.com/urruegg/frontier-envisioning/issues/9) |
 
 ## Outcome
 
@@ -32,9 +32,12 @@ The maintainer then selected `approve-flow` and requested
 "no plesse proceed sub agent driven impplementation". This approves the
 presented flow and selects the intended execution mode. It is not approval of
 an unwritten specification/plan or permission to edit protected controls.
-Additional complete-design confirmation was not obtained; the written
-specification remains a review draft. A subsequent real plan needs its own
-approval before delegated implementation.
+Additional complete-design confirmation was not obtained at that checkpoint.
+On 25 November the maintainer approved the actual written specification with
+**"spec is approved and you can implement"**; the
+[receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155486060)
+binds that decision to `67dc9a5` and its reviewed digest. The subsequent
+real written plan needs its own approval before delegated implementation.
 
 Accountable owner: `@urruegg`. No issue assignment, milestone, `status:ready`
 or `approved:*` label is inferred from those choices.
@@ -60,6 +63,6 @@ guard, release-record or repository controls remain human-applied.
 The [policy catalogue](../../.github/agent-policy/README.md) remains Proposed;
 protected routing/native-controls work under #8 remains separate.
 
-Review the written design, then write the test-first implementation plan and
-create the fully linked sprint record. The early sprint catalogue row is
-explicitly not ready; no placeholder plan file or invented approval is used.
+The written design is approved. The real test-first implementation plan and
+fully linked sprint record now exist; obtain actual plan/readiness approval
+before delegation. No placeholder plan file or invented approval is used.

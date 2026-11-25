@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
-| Date | 2026-11-24 |
+| Version | 0.2 |
+| Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Written review draft; flow approved, implementation plan/readiness not yet approved |
+| Status | Written spec approved at 67dc9a5; subsequent concrete plan/readiness approval pending |
 | Scope | Exact-version published evidence, offline local checks and strict CI without manual manifest retention |
-| References | [Catalogue](README.md), [Issue #67](https://github.com/urruegg/frontier-envisioning/issues/67), [Idea and actual choices](../ideas/2026-11-24-release-evidence-simplification.md), [Early sprint row](../sprints/README.md), [PRD](../prd.md), [Solution design](../solution-design.md), [Retention #52](https://github.com/urruegg/frontier-envisioning/issues/52) |
+| References | [Catalogue](README.md), [Issue #67](https://github.com/urruegg/frontier-envisioning/issues/67), [Idea and actual choices](../ideas/2026-11-24-release-evidence-simplification.md), [SPRINT-012](../sprints/SPRINT-012-release-evidence-simplification.md), [Written plan](../plans/2026-11-25-release-evidence-simplification-plan.md), [PRD](../prd.md), [Solution design](../solution-design.md), [Retention #52](https://github.com/urruegg/frontier-envisioning/issues/52) |
 
 ## 1. Outcome and authority
 
@@ -18,9 +18,16 @@ and the maintainer's final release/publication decision.
 The human selected `remove-manual-ceremony`, `release-assets-record`,
 `offline-local-strict-ci` and `approve-flow`, then requested subagent-driven
 implementation. The [idea](../ideas/2026-11-24-release-evidence-simplification.md#actual-human-choices)
-records those actual choices and their limits. The additional complete-design
-confirmation was not obtained. This written draft has not been reviewed by the
-maintainer; there is no approved implementation plan yet.
+records those actual choices and their limits. The initial additional
+complete-design confirmation was not obtained when the draft was written.
+On 25 November the maintainer subsequently said **"spec is approved and you
+can implement"**, referring to the actual written draft at
+`67dc9a542d734ea7af91a2b40dda3ad823550375`, SHA-256
+`584b85e05780b1c276a637b48553191ebfd33c6ede0dc45ecf7c862f971d3926`.
+The [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/67#issuecomment-7155486060)
+records that distinct written-spec decision. This revision adds the receipt
+and real later plan/sprint links, not changed acceptance criteria. The
+subsequently written implementation plan still needs separate approval.
 
 Owner: `@urruegg`. A later plan must link real bounded implementation work and
 separately obtain plan/readiness approval. No protected label, formal review,
@@ -135,7 +142,9 @@ reproduction safeguard or silently accept unknown evidence.
 This planning-only draft starts from merged main
 `b9e41e85bea84990f14cd17566042cb9e93ecb31`.
 Existing documentation validation passed before the draft was written.
-Written-spec review is the next actual gate; a plan is written afterwards.
-Subagent-driven implementation is the selected mode once that real plan is
-approved. No code, tests, protected record, workflow or runtime changes are
-made by creating this specification.
+Written-spec review has now occurred, with the actual receipt above. The
+[concrete implementation plan](../plans/2026-11-25-release-evidence-simplification-plan.md)
+was written afterwards and awaits its own approval. Subagent-driven
+implementation remains the selected mode once that real plan is approved.
+No code, tests, protected record, workflow or runtime changes are made by
+creating these planning records.

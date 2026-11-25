@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.8 |
-| Date | 2026-11-24 |
+| Version | 1.9 |
+| Date | 2026-11-25 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Agreed behaviour, acceptance and constraints for new work packages |
@@ -11,7 +11,7 @@
 
 | Spec | Design state | Execution state |
 |---|---|---|
-| [Release evidence simplification](2026-11-24-release-evidence-simplification-design.md) | [#67](https://github.com/urruegg/frontier-envisioning/issues/67): flow approved; written draft awaits review | [Idea](../ideas/2026-11-24-release-evidence-simplification.md), [early sprint row](../sprints/README.md); implementation plan/readiness not yet approved; protected adoption stays human-only |
+| [Release evidence simplification](2026-11-24-release-evidence-simplification-design.md) | [#67](https://github.com/urruegg/frontier-envisioning/issues/67): written spec at `67dc9a5` approved on 25 November | [Idea](../ideas/2026-11-24-release-evidence-simplification.md), [plan](../plans/2026-11-25-release-evidence-simplification-plan.md), [SPRINT-012](../sprints/SPRINT-012-release-evidence-simplification.md); actual plan/readiness approval pending; protected adoption stays human-only |
 | [Process governance and SAP grounding](2026-11-17-process-governance-sap-grounding-design.md) | [#59](https://github.com/urruegg/frontier-envisioning/issues/59) written spec approved at reviewed digest 8ab93d95 | [Idea](../ideas/2026-11-17-optional-systems-extensions.md), [plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](../sprints/SPRINT-011-process-grounding-and-optional-systems.md); plan/readiness at `35ad763` approved, runtime #60 handoff; no release approval |
 | [PR-gated operating model](2026-11-14-pr-gated-operating-model-design.md) | Written proposal approved at `8de16ca` on [#48](https://github.com/urruegg/frontier-envisioning/issues/48) | [Plan](../plans/2026-11-14-pr-gated-operating-model-plan.md), [SPRINT-010](../sprints/SPRINT-010-pr-gated-operating-model.md), [ADR-0030](../adr/0030-pr-gated-engineering-automation.md); subagent plan/readiness `e8ea6bd`, contracts/bootstrap verified; adoption pending |
 | [Caldova gallery extension](2026-11-13-caldova-gallery-extension-design.md) | Written spec approved at `4ef63d1` on [#41](https://github.com/urruegg/frontier-envisioning/issues/41) | [Plan](../plans/2026-11-13-caldova-gallery-extension-plan.md) and [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md); inline plan/readiness at `8be6aa8`, local capture/full-gate proof verified; PR/CI separate |
