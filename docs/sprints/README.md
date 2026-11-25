@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.15 |
+| Version | 1.16 |
 | Date | 2026-11-25 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
@@ -11,7 +11,7 @@
 
 | Sprint | Goal | State |
 |---|---|---|
-| SPRINT-013 (early design row) | Add the optional Agent Factory full starter-repository handover skill for 1.11.0 | [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [idea](../ideas/2026-11-25-agent-factory-handover.md), [design](../specs/2026-11-25-agent-factory-handover-design.md); `@urruegg` accountable. Design sections approved; written review, actual plan and readiness pending. Factory only; systems/D365 deferred. Not ready; no placeholder or borrowed plan. |
+| [SPRINT-013](SPRINT-013-agent-factory-handover.md) | Add the optional Agent Factory full starter-repository handover skill for 1.11.0 | [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [idea](../ideas/2026-11-25-agent-factory-handover.md), [written spec](../specs/2026-11-25-agent-factory-handover-design.md), [staged plan/W0](../plans/2026-11-25-agent-factory-handover-plan.md); `@urruegg` accountable. Actual written spec `7f650c4` approved; W0 approval/host+receiver proof pending before exact downstream plans. Factory only; systems/D365 deferred. Not ready; no production implementation. |
 | [SPRINT-012](SPRINT-012-release-evidence-simplification.md) | Remove manual release-evidence retention without removing automated verification | [#67](https://github.com/urruegg/frontier-envisioning/issues/67), [idea](../ideas/2026-11-24-release-evidence-simplification.md), [approved spec](../specs/2026-11-24-release-evidence-simplification-design.md), [real plan](../plans/2026-11-25-release-evidence-simplification-plan.md); `@urruegg` accountable; spec `67dc9a5` and subsequent actual plan/execution `22f512f` approved. Bounded #68/#69/#70 implementation; protected adoption separate. |
 | [SPRINT-011](SPRINT-011-process-grounding-and-optional-systems.md) | Correct current process grounding before optional systems foundation and Dynamics 365 | [#58](https://github.com/urruegg/frontier-envisioning/issues/58), [#59](https://github.com/urruegg/frontier-envisioning/issues/59), [idea](../ideas/2026-11-17-optional-systems-extensions.md), [correction spec](../specs/2026-11-17-process-governance-sap-grounding-design.md), [plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md); `@urruegg` accountable, original plan/readiness at `35ad763` and separate [#66](https://github.com/urruegg/frontier-envisioning/issues/66) amendment approved; implementation/reviews, local L2 and exact-package proof complete; final head/gate/server evidence in [PR #65](https://github.com/urruegg/frontier-envisioning/pull/65); human #52/#8 remain |
 | [SPRINT-010](SPRINT-010-pr-gated-operating-model.md) | Make genuine human PR approval the routine engineering/release gate | [#48](https://github.com/urruegg/frontier-envisioning/issues/48), [idea](../ideas/2026-11-14-pr-gated-operating-model.md), [specification](../specs/2026-11-14-pr-gated-operating-model-design.md), [plan](../plans/2026-11-14-pr-gated-operating-model-plan.md), [ADR-0030](../adr/0030-pr-gated-engineering-automation.md); owner `@urruegg`; spec `8de16ca`, subagent plan/readiness `e8ea6bd`, #49 contracts and #50 bootstrap/full local gates verified; live adoption pending |

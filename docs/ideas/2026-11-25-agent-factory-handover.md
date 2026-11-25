@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted design |
-| Status | Three conversational design sections approved; written-spec review and later plan/readiness pending |
+| Status | Written spec `7f650c4` actually approved; staged plan/W0 and later production slice readiness pending |
 | Scope | Planned 1.11.0 optional Agent Factory handover skill inside the existing plugin |
-| References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Written design](../specs/2026-11-25-agent-factory-handover-design.md), [Early sprint row](../sprints/README.md), [Prior systems programme #58](https://github.com/urruegg/frontier-envisioning/issues/58), [Template](https://github.com/urruegg/frontier-agent-factory) |
+| References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Written design](../specs/2026-11-25-agent-factory-handover-design.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Sprint](../sprints/SPRINT-013-agent-factory-handover.md), [Prior systems programme #58](https://github.com/urruegg/frontier-envisioning/issues/58), [Template](https://github.com/urruegg/frontier-agent-factory) |
 
 ## Outcome
 
@@ -35,6 +35,7 @@ Examples in this repository remain fictitious Caldova Industrial AG.
 | Artefact contract | `approve-artifact-contract`, no changes | Exact ordinary-file intake/provenance; supported JSON/Markdown forms instead of unsupported HTML/ZIP/Turtle imports |
 | Validation | `approve-validation-design`, no changes | Passive inputs, preserved controls/licences, bounded deterministic ZIP, accurate separate validation/readiness statuses |
 | Intended execution | Requested subagent-driven implementation | Selected mode after actual written-spec and subsequently written plan approvals; not approval of unwritten records |
+| Actual written review | `approve-written-factory-spec`, `no changes` | Approved the presented committed spec `7f650c4`; [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), not later plan approval |
 
 The [#58 scope receipt](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922)
 records the explicit deferral rather than silently combining independent
@@ -62,11 +63,12 @@ approval to use it for an actual customer handover. No template code was run.
 ## Next gate and limits
 
 The [written specification](../specs/2026-11-25-agent-factory-handover-design.md)
-now needs actual review. The later test-first plan must prioritise proving
-actual Cowork template acquisition and receiver compatibility, then create
-real bounded implementation work. The early sprint row is not ready and uses
-no placeholder plan. No plugin bump, registration, code or generated customer
-repository is produced by these planning records.
+at `7f650c4` received actual review/approval. The [staged plan](../plans/2026-11-25-agent-factory-handover-plan.md)
+now prioritises actual Cowork acquisition and receiver compatibility as W0,
+then separately approved exact production slices. The [full sprint](../sprints/SPRINT-013-agent-factory-handover.md)
+remains not ready; W0 approval/results and downstream plans are not inferred.
+No plugin bump, registration, code or generated customer repository is
+produced by these planning records.
 
 Protected release/guard/settings work remains human-only. Public repository
 visibility does not permit transferring customer/internal material.

@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-25 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted design |
-| Status | Conversational design approved; actual written-spec review and subsequent plan/readiness approval pending |
+| Status | Written spec `7f650c4` approved; observed cumulative source-check budget clarified below; staged plan/W0 and subsequent production slice readiness pending |
 | Scope | Planned 1.11.0 optional Preview `frontier-agent-factory` skill; no implementation or publication |
-| References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea and actual decisions](../ideas/2026-11-25-agent-factory-handover.md), [Early sprint row](../sprints/README.md), [PRD](../prd.md), [Solution design](../solution-design.md), [Template](https://github.com/urruegg/frontier-agent-factory), [Template intake](https://github.com/urruegg/frontier-agent-factory/blob/0bb2b1ba13cff77ee0bc3f271baddd3f89f9165d/docs/intake/README.md) |
+| References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea and actual decisions](../ideas/2026-11-25-agent-factory-handover.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Sprint](../sprints/SPRINT-013-agent-factory-handover.md), [PRD](../prd.md), [Solution design](../solution-design.md), [Template](https://github.com/urruegg/frontier-agent-factory), [Template intake](https://github.com/urruegg/frontier-agent-factory/blob/0bb2b1ba13cff77ee0bc3f271baddd3f89f9165d/docs/intake/README.md) |
 
 ## 1. Outcome and authority
 
@@ -19,9 +19,11 @@ not approve implementation, authenticate reviewers or provision a tenant.
 The owner is `@urruegg`. The [decision register](../ideas/2026-11-25-agent-factory-handover.md#actual-human-choices)
 records actual structured answers, including separate approval of three design
 sections with no changes and the requested subagent-driven execution mode.
-Those answers preceded this written document: written-spec review is still
-required, followed by a real test-first plan and its actual approval before
-delegated implementation. No status, file or label is substituted for approval.
+Those answers preceded this written document. The actual written spec at
+`7f650c4` subsequently received `approve-written-factory-spec`, `no changes`;
+the [receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078)
+records that distinct review. Actual plan/readiness approval remains required
+before delegated implementation. No status, file or label substitutes for it.
 
 The human selected factory-only 1.11.0. The independent systems/D365 programme
 under #58 moves to a later unspecified release; its earlier choices remain
@@ -228,9 +230,11 @@ automated claim to have semantically redacted or DLP-certified their contents.
 The default disposition is a review starter with explicit engineering gaps.
 Do not mark accepted from a status flag, template fixture or schema pass.
 The review starter must itself satisfy the receiver's required fields for
-`needs-clarification`. Missing mandatory scope/owner/requirement/acquisition or
-transfer information is an actionable input error, not permission to insert
-fictional values or ship an invalid record labelled draft.
+`needs-clarification`. Missing mandatory structural fields, including actual
+scope/owner/acquisition or required transfer information, is an actionable
+input error, not permission to insert fictional values or ship an invalid
+record labelled draft. Missing engineering material/requirements can remain
+explicit gaps where the needs-clarification contract allows them.
 Use accepted status only with genuine matching review evidence, applicable
 material and resolved blockers satisfying the upstream contract. An explicit
 accepted-handover request fails instead of silently downgrading to draft.
@@ -259,8 +263,11 @@ duplicate or case-colliding destinations, forbidden state and malformed input.
 Check actual bounded archive streams, not only declared ZIP sizes or superficial
 header/CRC checks. Preserve prior outputs on any error.
 
-Receiving limits are 16 MiB per artefact, 64 MiB total baseline and 1 MiB intake
-manifest. For the initial profile, additionally cap a template input ZIP at
+Receiving limits are 16 MiB per artefact, 64 MiB cumulative validation and
+1 MiB intake manifest. Actual receiver inspection during planning clarified
+that `--source-root` charges both baseline and original-source reads to the
+same 64 MiB budget; full original-byte validation must fit that traversal too.
+For the initial profile, additionally cap a template input ZIP at
 32 MiB compressed / 64 MiB expanded and 4,096 members. Cap the final repository
 at 128 MiB expanded and 4,096 members, counting generated files; exceeding an
 overall limit is an error even if individual sublimits pass. The inspected
@@ -313,8 +320,11 @@ It makes no plugin/code/version/template-source or customer-repository change.
 1.10.x publication evidence; do not bump merely to bypass a failing baseline.
 
 The human approved the presented boundary, artefact and validation sections,
-then requested subagent-driven implementation. This actual written spec now
-needs review. Only afterwards write the concrete test-first plan, fully link
-SPRINT-013 and obtain actual plan/readiness approval before delegation.
-The early catalogue row is not ready and borrows no unrelated plan.
+then requested subagent-driven implementation. The actual written spec at
+`7f650c4` subsequently received separate approval with no changes. The staged
+plan and full SPRINT-013 now exist for actual review; W0 proves host/receiver
+capability before exact downstream production plans are written and approved.
+The observed shared byte budget and permitted draft engineering gaps are
+clarified above without changing the product scope or fabricating evidence.
+No slice is ready merely because this document or a catalogue says so.
 Protected release/guard/settings actions and #8 remain human-only.
