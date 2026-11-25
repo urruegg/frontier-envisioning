@@ -1,0 +1,235 @@
+{
+  "schema": "frontier-agent-factory-request/1.0",
+  "export_id": "caldova-export",
+  "created_at": "2026-11-25T12:00:00Z",
+  "customer_scope": "Caldova synthetic service",
+  "evidence_kind": "synthetic-compatibility",
+  "template": {
+    "repository": "urruegg/frontier-agent-factory",
+    "selection": "unreleased-bootstrap",
+    "commit": "0bb2b1ba13cff77ee0bc3f271baddd3f89f9165d",
+    "release": null,
+    "discovery": {
+      "status": "succeeded",
+      "complete": true,
+      "export_id": "caldova-export",
+      "observed_at": "2026-11-25T12:00:00Z",
+      "evidence": "Synthetic healthy empty enumeration.",
+      "releases": []
+    },
+    "bootstrap_approval": {
+      "by": "Caldova synthetic reviewer",
+      "at": "2026-11-25T12:00:00Z",
+      "reference": "synthetic-bootstrap-0bb2b1ba13cff77ee0bc3f271baddd3f89f9165d"
+    },
+    "acquisition": {
+      "status": "succeeded",
+      "method": "explicit-local-source",
+      "by": "Caldova synthetic fixture author",
+      "at": "2026-11-25T12:00:00Z",
+      "evidence": "Synthetic acquisition, not current live discovery.",
+      "archive_sha256": "b3265d6419a9d7add2f11898d9dd74f224afd0267bb030777aec31bf014a6c17"
+    },
+    "root_prefix": ""
+  },
+  "intake": {
+    "schema_version": "1.0",
+    "intake_id": "caldova-intake",
+    "supersedes": null,
+    "selected_solutions": [
+      {
+        "solution_id": "caldova-service",
+        "agent_ids": ["service-agent"],
+        "scope": "Caldova synthetic status review only.",
+        "owners": ["Caldova synthetic product owner"]
+      }
+    ],
+    "source": {
+      "kind": "exported-package",
+      "references": ["synthetic-selected-source"],
+      "plugin_version": "unknown",
+      "blueprint_version": "unknown"
+    },
+    "acquisition": {
+      "status": "succeeded",
+      "method": "exported-files",
+      "verified_by": "Caldova synthetic fixture author",
+      "verified_at": "2026-11-25T12:00:00Z",
+      "evidence": "Actual local synthetic bytes; no tenant access."
+    },
+    "transfer": {
+      "classification": "public",
+      "destination": "Caldova synthetic review",
+      "permission": "approved",
+      "approval": {
+        "by": "Caldova synthetic reviewer",
+        "at": "2026-11-25T12:00:00Z",
+        "reference": "synthetic-review-not-authentication"
+      }
+    },
+    "artifacts": [
+      {
+        "id": "prd",
+        "solution_ids": ["caldova-service"],
+        "role": "prd",
+        "status": "provided",
+        "rationale": "Reviewed synthetic evidence.",
+        "source": {
+          "path": "prd.md",
+          "reference": "synthetic-selected-source",
+          "version": "synthetic-v1",
+          "modified_at": "unknown"
+        },
+        "baseline": {"path": "docs/intake/records/caldova-intake/artifacts/prd.md"},
+        "transformation": {"kind": "none", "rationale": "Exact reviewed synthetic bytes.", "approval": null}
+      },
+      {
+        "id": "solution-design",
+        "solution_ids": ["caldova-service"],
+        "role": "solution-design",
+        "status": "provided",
+        "rationale": "Reviewed synthetic evidence.",
+        "source": {
+          "path": "design.md",
+          "reference": "synthetic-selected-source",
+          "version": "synthetic-v1",
+          "modified_at": "unknown"
+        },
+        "baseline": {"path": "docs/intake/records/caldova-intake/artifacts/design.md"},
+        "transformation": {"kind": "none", "rationale": "Exact reviewed synthetic bytes.", "approval": null}
+      },
+      {
+        "id": "decisions",
+        "solution_ids": ["caldova-service"],
+        "role": "decisions",
+        "status": "not-applicable",
+        "rationale": "No architecture alternatives in this local status view.",
+        "source": null, "baseline": null, "transformation": null
+      },
+      {
+        "id": "it-readiness",
+        "solution_ids": ["caldova-service"],
+        "role": "it-readiness",
+        "status": "not-applicable",
+        "rationale": "No tenant or service connection.",
+        "source": null, "baseline": null, "transformation": null
+      },
+      {
+        "id": "identity",
+        "solution_ids": ["caldova-service"],
+        "role": "identity",
+        "status": "not-applicable",
+        "rationale": "No deployed identity.",
+        "source": null, "baseline": null, "transformation": null
+      },
+      {
+        "id": "blueprint",
+        "solution_ids": ["caldova-service"],
+        "role": "blueprint",
+        "status": "provided",
+        "rationale": "Reviewed synthetic evidence.",
+        "source": {
+          "path": "blueprint.json",
+          "reference": "synthetic-selected-source",
+          "version": "synthetic-v1",
+          "modified_at": "unknown"
+        },
+        "baseline": {"path": "docs/intake/records/caldova-intake/artifacts/blueprint.json"},
+        "transformation": {
+          "kind": "redaction",
+          "rationale": "Customer privacy projection reviewed synthetically.",
+          "approval": {
+            "by": "Caldova synthetic reviewer",
+            "at": "2026-11-25T12:00:00Z",
+            "reference": "synthetic-review-not-authentication"
+          }
+        }
+      },
+      {
+        "id": "value",
+        "solution_ids": ["caldova-service"],
+        "role": "value",
+        "status": "not-applicable",
+        "rationale": "No benefit claim.",
+        "source": null, "baseline": null, "transformation": null
+      },
+      {
+        "id": "finops",
+        "solution_ids": ["caldova-service"],
+        "role": "finops",
+        "status": "not-applicable",
+        "rationale": "No cost operation requested.",
+        "source": null, "baseline": null, "transformation": null
+      }
+    ],
+    "requirements": [
+      {
+        "id": "fr-001",
+        "solution_id": "caldova-service",
+        "description": "Show the reviewed status.",
+        "acceptance_criteria": ["The selected status is visible."]
+      }
+    ],
+    "gaps": [
+      {
+        "id": "implementation-gap",
+        "solution_id": "caldova-service",
+        "description": "Review implementation boundaries before acceptance.",
+        "blocking": true,
+        "status": "open",
+        "resolution": null
+      }
+    ],
+    "decisions": [],
+    "review": {
+      "status": "needs-clarification",
+      "rationale": "Synthetic receiver compatibility, not real approval.",
+      "approval": null
+    }
+  },
+  "blueprint": {
+    "source_path": "blueprint.json",
+    "baseline_path": "docs/intake/records/caldova-intake/artifacts/blueprint.json"
+  },
+  "id_map": {
+    "solutions": {"D1": "caldova-service"},
+    "agents": {"D1-A01": "service-agent"},
+    "requirements": {"FR-001": "fr-001"}
+  },
+  "selection_evidence": [
+    {
+      "solution_id": "caldova-service",
+      "original_solution_id": "D1",
+      "original_agent_ids": ["D1-A01"],
+      "rationale": "Explicit synthetic scope, not keyword selection.",
+      "dependency_gaps": []
+    }
+  ],
+  "sharing_review": {
+    "customer_scope": "Caldova synthetic service",
+    "metadata": {
+      "by": "Caldova synthetic reviewer",
+      "at": "2026-11-25T12:00:00Z",
+      "reference": "synthetic-review-not-authentication"
+    },
+    "artifacts": {
+      "caldova-intake:prd": {
+        "by": "Caldova synthetic reviewer",
+        "at": "2026-11-25T12:00:00Z",
+        "reference": "synthetic-review-not-authentication"
+      },
+      "caldova-intake:solution-design": {
+        "by": "Caldova synthetic reviewer",
+        "at": "2026-11-25T12:00:00Z",
+        "reference": "synthetic-review-not-authentication"
+      },
+      "caldova-intake:blueprint": {
+        "by": "Caldova synthetic reviewer",
+        "at": "2026-11-25T12:00:00Z",
+        "reference": "synthetic-review-not-authentication"
+      }
+    }
+  },
+  "history": [],
+  "financial": {"requested": false, "as_of": null, "claim": "review", "packets": []}
+}
