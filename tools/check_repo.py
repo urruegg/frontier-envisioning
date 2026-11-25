@@ -100,6 +100,10 @@ def check_skills(r: Report):
             r.err("skills", error)
     if (SKILLS / "frontier-finops/scripts/fv_expr.py").read_bytes() != (SKILLS / "frontier-value-case/scripts/fv_expr.py").read_bytes():
         r.err("skills", "fv_expr.py differs between frontier-finops and frontier-value-case (keep one shared copy)")
+    if (ROOT / "tools/zip_stream.py").read_bytes() != (
+        SKILLS / "frontier-agent-factory/scripts/zip_stream.py"
+    ).read_bytes():
+        r.err("skills", "zip_stream.py differs between tools and frontier-agent-factory")
 
 
 def _skill_frontmatter(r: Report, d: Path, limit_units: int):
