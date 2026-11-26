@@ -2,7 +2,7 @@
   "schema": "frontier-docs-demo/1.0",
   "profile": "core",
   "plugin_version": "1.11.0",
-  "source_sha256": "a79d586765c2ee11c44efd5f71966f626f22405b3559f57bcca093d93a3e7ab8",
+  "source_sha256": "7bf11fc3f88ca025a5ee2ee35c932552d18a5593651c4f68075f295dad7700c7",
   "html": {
     "file": "caldova-blueprint.html",
     "sha256": "e499b26656e066766c1d1e9b7157658473599060fdc78085d691d371939db538",
