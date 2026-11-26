@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.13 |
-| Date | 2026-11-25 |
+| Version | 1.14 |
+| Date | 2026-11-26 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Agreed behaviour, acceptance and constraints for new work packages |
@@ -11,6 +11,7 @@
 
 | Spec | Design state | Execution state |
 |---|---|---|
+| [1.11 Cowork health and FinOps exclusion](2026-11-26-plugin-health-and-finops-exclusion-design.md) | [Bug #81](https://github.com/urruegg/frontier-envisioning/issues/81): conversational design approved; this written specification awaits review | [Idea](../ideas/2026-11-26-plugin-health-and-finops-exclusion.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md), [PR #80](https://github.com/urruegg/frontier-envisioning/pull/80); new plan/implementation not approved or performed |
 | [Agent Factory handover skill](2026-11-25-agent-factory-handover-design.md) | [#72](https://github.com/urruegg/frontier-envisioning/issues/72): written spec/W0/host amendment approved; offline Preview boundary, actual evidence in linked records | [Idea](../ideas/2026-11-25-agent-factory-handover.md), [W0 plan](../plans/2026-11-25-agent-factory-handover-plan.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md), bounded [#73](https://github.com/urruegg/frontier-envisioning/issues/73); source/receiver reference verified, actual Cowork deferred/not performed |
 | [Release evidence simplification](2026-11-24-release-evidence-simplification-design.md) | [#67](https://github.com/urruegg/frontier-envisioning/issues/67): written spec at `67dc9a5` approved on 25 November | [Idea](../ideas/2026-11-24-release-evidence-simplification.md), [plan](../plans/2026-11-25-release-evidence-simplification-plan.md), [SPRINT-012](../sprints/SPRINT-012-release-evidence-simplification.md); subsequent real plan/execution approved at `22f512f`; bounded implementation, human-only adoption |
 | [Process governance and SAP grounding](2026-11-17-process-governance-sap-grounding-design.md) | [#59](https://github.com/urruegg/frontier-envisioning/issues/59) written spec approved at reviewed digest 8ab93d95 | [Idea](../ideas/2026-11-17-optional-systems-extensions.md), [plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](../sprints/SPRINT-011-process-grounding-and-optional-systems.md); plan/readiness at `35ad763` approved, runtime #60 handoff; no release approval |
