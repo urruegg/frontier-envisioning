@@ -2,9 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.7 |
-| Date | 2026-11-25 |
-| Author | Original author not recorded; Copilot AI-assisted maintenance; AI assistant (AI-assisted #70 release evidence rationale) |
+| Version | 0.8 |
+| Date | 2026-11-26 |
+| Author | Original author not recorded; Copilot AI-assisted maintenance; AI assistant (AI-assisted #70 release evidence rationale); Copilot (AI-assisted #78 Factory rationale) |
 | Status | Maintained catalogue; decision approval not inferred |
 | Scope | Architecture decision routing; document revision, not product version |
 | References | [Documentation](../README.md), [Product requirements](../prd.md), [Technical decision records](../solution-design.md#b12-architecture-decisions) |
@@ -27,6 +27,7 @@ Product and plugin decisions ADR-0001 to ADR-0016 are recorded in the [solution 
 | [0028](0028-versioned-agent-finops-baselines.md) | Offline versioned FinOps baselines, explicit legacy compatibility and strict financial build-handover evidence | Proposed; architecture choice recorded on #35/#36, written/PR acceptance separate |
 | [0030](0030-pr-gated-engineering-automation.md) | Human native PR approval with isolated App authorship, trusted execution and engineering/release automation | Proposed; written proposal approved at `8de16ca` for planning on #48, PR acceptance pending |
 | [0031](0031-release-assets-as-evidence.md) | Exact-version release assets, validated offline cache and strict CI without recurring manual retention | Proposed; #67 spec/plan approved, protected evidence-access adoption pending |
+| [0032](0032-offline-agent-factory-handover.md) | Optional Preview offline full-foundation Factory handover, strict intake and separate host/review authority | Proposed; #72 spec/full plan approved, ninth-skill integration and final candidate verification pending |
 
 Template: Context, Decision, Consequences, Alternatives considered, Status.
 

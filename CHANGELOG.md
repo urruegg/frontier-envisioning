@@ -4,8 +4,34 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
 
 ## 1.11.0 — unreleased
 
-- Prepare the Agent Factory candidate with updated version metadata and a finite
-  1.11.0 demo raster profile (#74, #72). Factory export is not yet implemented.
+- **Envisioning Agent Factory Preview (#72, #75, #76, #77, #78).** Implement
+  the offline producer for an explicitly requested full starter-repository ZIP,
+  preserving the pinned compatible foundation, authored documents/IDs and
+  reviewed ordinary-file intake. The target ninth skill, `frontier-agent-factory`,
+  is in the same plugin: seven non-FinOps GA wrappers and optional Preview
+  FinOps/Factory. Registration/maturity/installer/self-test integration under
+  #79 is still pending; ordinary core/value/identity/Blueprint/design/process
+  requires neither optional extension.
+- **Controlled local handover.** Host-acquired latest stable source, or explicit
+  immutable unreleased bootstrap after healthy complete no-stable discovery,
+  is frozen for deterministic bounded ZIP output with automatic hashes and
+  atomic replacement. No Python networking, dependency setup or downloaded-code
+  execution. Preserve strict receiver intake 1.0, actual source/transfer/review
+  evidence, customer privacy and existing optional FinOps authority checks.
+  Selected HTML/ZIP/Turtle needs reviewed JSON/Markdown equivalents. Blueprint
+  originals with derived `agent_finops` are explicitly unsupported, not stripped.
+- **Development candidate, not publication.** The offline producer has local
+  component evidence, not final 1.11 full-L1, exact package/installer/generated-
+  receiver, server CI or CodeQL acceptance. Actual Cowork discovery, install,
+  acquisition and export are unavailable/not performed under the approved
+  offline amendment. No runtime, SDK, tenant loader, remote repository,
+  deployment or native ADO/GHES support is delivered. See
+  [candidate architecture and B.9 evidence](docs/solution-design.md#1110-agent-factory-offline-preview).
+- **Finite version/profile preparation (#74).** Bump first to 1.11.0 and add
+  only its named finite raster profile. Historical 1.10.x source, release
+  evidence, profiles, 205 non-raster identity inputs and 223 PNGs are unchanged.
+  Systems/Dynamics 365 #58 is deferred to a later unspecified release, outside
+  factory-only 1.11.0.
 
 ## 1.10.1 — unreleased
 

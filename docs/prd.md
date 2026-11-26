@@ -2,12 +2,90 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.9 |
-| Date | 2026-11-25 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance) |
-| Status | Maintained requirements; #67 engineering slices reviewed, final gate/CI and protected adoption pending; prior 1.10.1 verification indexed in PR #65; published 1.10.0 retained; no release approval implied |
-| Scope | Release-evidence engineering requirements, bounded unreleased 1.10.1 correction and preserved 1.10.0/earlier requirements/history |
+| Version | 1.10 |
+| Date | 2026-11-26 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance); Copilot (AI-assisted #78 Factory candidate prose) |
+| Status | Maintained requirements; unreleased 1.11.0 offline producer reviewed, registration/final candidate gates pending; historical evidence retained; no release approval implied |
+| Scope | Factory-only 1.11.0 candidate requirements and acceptance, with earlier engineering/product requirements and history preserved |
 | References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61), [Release evidence spec](specs/2026-11-24-release-evidence-simplification-design.md), [Human adoption handover](engineering/release-evidence-adoption.md) |
+
+## 1.11.0 Agent Factory offline Preview
+
+**26 November 2026: unreleased development candidate, not product acceptance.**
+Add **Envisioning Agent Factory**, registered name `frontier-agent-factory`,
+as the optional Preview ninth skill in the existing plugin. The target is seven
+non-FinOps GA wrappers, optional Preview FinOps and optional Preview Factory.
+The offline producer is implemented and reviewed through `ee5d690`; registration,
+maturity/installer/self-test integration and final candidate proof under
+[#79](https://github.com/urruegg/frontier-envisioning/issues/79) remain pending.
+Ordinary core, value, identity, Blueprint, design and process work requires
+neither extension. Factory starts only on an explicit starter-repository,
+ZIP or handover request, never automatically after a PRD or as automatic FinOps.
+It is not a new business runtime, SDK, application or tenant loader.
+
+Accountable owner: `@urruegg`. The [idea and actual choices](ideas/2026-11-25-agent-factory-handover.md),
+[approved design](specs/2026-11-25-agent-factory-handover-design.md),
+[complete approved plan](plans/2026-11-25-agent-factory-offline-implementation-plan.md)
+and [SPRINT-013](sprints/SPRINT-013-agent-factory-handover.md) govern
+[#72](https://github.com/urruegg/frontier-envisioning/issues/72) and
+[#78 Task 14](https://github.com/urruegg/frontier-envisioning/issues/78).
+The [full-plan receipt at 5dbfc8a](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7167852054)
+approves the written tasks, not completed verification or human-only operations.
+[ADR-0032](adr/0032-offline-agent-factory-handover.md) is **Proposed**, not Accepted.
+
+### Factory requirements and acceptance
+
+These AF identifiers map directly to the
+[approved AF-01–16 criteria](specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint)
+and [plan acceptance map](plans/2026-11-25-agent-factory-offline-implementation-plan.md#17-acceptance-map-and-final-execution-order).
+They add no historical FR/AC IDs. Proof targets below are requirements, not
+passed results; actual source-qualified evidence is in
+[B.9](solution-design.md#agent-factory-candidate-verification-26-november-2026).
+
+| ID | Requirement | Acceptance / proof target |
+|---|---|---|
+| AF-01 | Optional Preview ninth skill in the same plugin, explicitly requested and independent of core/FinOps. | Registration, routing, maturity and installed core-without-extension checks; current registration is still eight. |
+| AF-02 | Each new handover uses actual authorised available-host latest-stable discovery, then pins release/tag/commit/bytes once. Retain only `id`, `tag_name`, `published_at`, `draft`, `prerelease` for all enumerated releases. | Complete pagination; valid time/tag for every stable candidate; resolve only the uniquely selected stable tag. Unknown metadata, ties, access/network/selected-tag errors or incompatibility fail without main/older fallback. No raw API bodies, authors, assets or protected URLs enter producer/export data. |
+| AF-03 | Only healthy complete no-stable discovery permits explicit approval of an immutable **unreleased bootstrap**. Local input is not proof of latest. | Real export-bound discovery/acquisition/approval receipt and automatically checked source bytes; frozen reproduction does not claim another lookup. Draft/prerelease null fields need no invented tag/commit/time. |
+| AF-04 | Preserve the full compatible foundation, policies, workflows, locks, licences and modes, not a keyword-pruned overlay. Exclude `.git`, account/cache/staging/dependency state. | Passive byte/mode preservation and source/profile checks; no downloaded-code execution, Python networking or dependency setup. Foundation MIT/third-party notices grant no rights over customer files or transfer clearance. |
+| AF-05 | Preserve final reviewed PRD/design/ADRs and applicable readiness, identity, Blueprint, value, process and financial material. Keep authored bytes/IDs and explicit original-to-factory maps for selected MVP/shared dependencies. | Select only customer-safe entities; no competing generator, renumbering or keyword-MVP inference. Source/review/transfer evidence is real; out-of-scope dependencies remain named gaps, not new work. |
+| AF-06 | Emit unextended receiver intake 1.0 at `docs/intake/records/<id>/intake.json`, with eight roles per selected solution and separate producer 1.0 sidecar. | PRD/design never N/A; other N/A reasons may be short and specific. Actual hashes/transformation approvals, applicability, scope/owners/acquisition/transfer and required fields satisfy the receiver. No demo approval or substitute evidence. |
+| AF-07 | Default to valid `needs-clarification` review-starter intake with explicit engineering gaps. Explicit invalid accepted requests fail, never downgrade. | Genuine recorded acceptance meets every condition. Preserve raw prior accepted JSON, Windows path spellings, CRLF and provided bytes; new ID/`supersedes` for change. Unavailable historical originals remain not verified. Neither disposition generates application/runtime/source/test/evaluation/IaC units or remote issues. |
+| AF-08 | Every provided current/history file and exported metadata needs actual customer-scope classification, transfer and sharing review, even in drafts. Use whole-original-ancestry and schema-owned privacy projection. | Guard structured content, metadata, filenames, references, known internal notes, private keys/arrays and withheld names/counts. Reject restricted baselines, raw mail/transcripts, private sources, secrets, account state and protected links. Office/PDF review is opaque human evidence, not semantic DLP, authenticated review or IP clearance. |
+| AF-09 | Accept only ordinary `.md`, `.txt`, `.json`, `.pdf`, `.docx`, `.xlsx`, `.pptx`, `.csv`. The full output ZIP is distribution, not an intake input archive. | Selected HTML/ZIP/Turtle fails with a need for actual reviewed JSON/Markdown equivalents, never rename/drop/bypass. Include `START_HERE.md`, `handover/manifest.json` and the intake record, review and artefacts. |
+| AF-10 | Bounded STORE/DEFLATE source ZIP: 32 MiB compressed, 64 MiB decoded, 4,096 members including directories. Receiver: 16 MiB per file, 1 MiB intake JSON, one shared 64 MiB baseline-plus-source validation budget. Final: 128 MiB expanded/4,096 members including generated files. | Actual at/over limits and known corruption, path/link/reparse/file-parent/case/slash/state hazards fail before bounded atomic replacement; inputs and prior good output survive failures. |
+| AF-11 | Frozen source, inputs and metadata reproduce identical ZIP bytes; hashes and inventory are automatic, not a manual customer ceremony. | Byte comparison; inventory excludes the manifest's own hash and final ZIP SHA256 is stdout. Current original hashes and historical-original unavailability are reported separately. |
+| AF-12 | Exercise the actual pinned receiver, separately from export validation and recorded review. | Synthetic Caldova packages with actual baseline/source reads where available; missing tools, original bytes and Node 24 LTS checks remain explicit, never simulated. |
+| AF-13 | Verify the exact packaged offline producer outside this repository with trusted bundled siblings. Python producer is stdlib 3.11+; receiver is Python 3.12+/Node 24 LTS. | Installed exporter/installer and actual generated-intake receiver proof; absent requested helpers fail explicitly. Cowork discovery/install/acquisition/export is unavailable and **not performed** under the approved offline amendment, not a runtime cutover or host-support claim. Node 26 is not Node 24 certification. |
+| AF-14 | FinOps remains optional; actual current/history financial schema/role/nested-result markers require current acknowledgement, owner review and authoritative packets regardless of role/schema/wrapper. Reuse existing owner validators/formulas/rates. | No automatic figures, zero budgets, false N/A, cached/demo/install consent or duplicate calculator. Legacy standalone reviewed documents are review-only. Derivatives cannot bypass source checks. Explicit `build-handover` with `requested:false` is refused; with `requested:true`, actual stricter financial handover readiness is required. Internal model/review staging is not auto-exported. |
+| AF-15 | Separate export validation, intake disposition, unauthenticated recorded review, receiver/Cowork not-performed, tenant not-assessed and financial review/readiness from permission. | GitHub.com/GitHub Enterprise Cloud, including cloud hostnames, is the first receiving-repository/host profile; no native ADO/GHES certification. The authoritative template source remains `urruegg/frontier-agent-factory` on GitHub.com. No remote creation, Work IQ auth switching, tenant consent/provision/deploy. M365 read/public visibility is not transfer/IP/Entra permission; settings, secrets and real ownership remain human work. |
+| AF-16 | Preserve 1.10.x release/source/provenance/receipts and historical raster/identity evidence. Complete focused RED/GREEN and final candidate registration/package/receiver/full gates. | First bump and finite 1.11 profile are evidenced separately; no blanket version/count rewrite. Local CI-context 1.10.1 baseline is not 1.11 full-L1/server CI/CodeQL/Cowork proof. Final gates remain pending. |
+
+### Current producer constraints
+
+The actual CLI is:
+
+```powershell
+python <installed-skill>\scripts\export_factory.py --request request.json --template template.zip --source-root originals --baseline-root approved --out Caldova-factory.zip
+```
+
+Only optional `--acknowledge-finops-preview` applies to actual requested
+current-scenario financial operation. No execute/network/force-accept,
+skip-profile/drop/unsafe/arbitrary-profile flag exists. Acquisition uses
+actually available host capabilities, not assumed universal tools or Cowork
+downloads. Inputs, including source policies, are data, not instructions;
+sourced facts, assessment and open facts stay separate.
+
+A Blueprint with derived `agent_finops` is currently refused as
+`FACTORY_BLUEPRINT_FINANCIAL_CONTEXT`. It is never silently stripped/trusted.
+Supply a compatible authoritative original Blueprint and separately approved
+customer projection with genuine upstream review/transformation; verify
+standalone financial reports through actual packets. The cached source-context
+port does not work automatically and reviewed inputs are not rewritten.
+Permitted private authority inputs are not a privacy-clearance claim.
+A review starter with financial gaps is not financially ready or tenant-authorised.
+Identity-kit branding remains distinct from Entra provisioning; HubWorks is
+not an assumed runtime loader.
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Current source references are
 anonymised without changing attribution or private historical evidence. Plugin
@@ -873,6 +951,20 @@ actual human adoption. The #55/#57 owner-dispatched publication flow remains;
 its additional read-only evidence binding is pending. No new product release,
 old #52 copy/merge completion or final PR #71 CI pass is asserted.
 
+**Active 1.11.0 qualification, 26 November 2026.** The current target is
+**factory-only**, as actually selected in
+[#72](https://github.com/urruegg/frontier-envisioning/issues/72) and the
+[#58 deferral receipt](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922).
+The [offline Preview requirements](#1110-agent-factory-offline-preview) cover
+the candidate ninth skill in the same plugin. Producer review is complete
+through `ee5d690`; registration, exact package/installer/generated-receiver and
+final L1 gates remain pending. Systems/Dynamics 365 #58 moves to a **later
+unspecified release**, with no new deadline. Historical choices/roadmap below
+remain evidence, not current promises. The #74 lookup at `5dbfc8a` returned
+`development` for then-current 1.10.1 after authoritative absence of an exact
+published release/conflicting tag; it was not published-1.10.1 reproduction
+or a statement of latest publication now. No publication work is resumed.
+
 | Release | Content |
 |---|---|
 | 1.0 | Four skills, template, scripts, canon, examples, self-test, packages |
@@ -908,6 +1000,23 @@ Protected evidence-access adoption, #52's conditional supersession and the
 reported visibility-policy discrepancy still require the maintainer.
 Proposed rationale acceptance, human #8 routing/native controls and broader
 #48 activation remain separate. This does not change the original decisions.
+
+**Factory decisions, 26 November 2026.** The
+[actual choice register](ideas/2026-11-25-agent-factory-handover.md#actual-human-choices)
+records full-starter-repository, review-starter-with-explicit-gaps, GitHub
+Cloud first, latest stable per new export and explicit immutable bootstrap
+only after healthy complete no-stable discovery. Factory-only 1.11.0 defers
+systems/D365 #58; earlier choices are not erased.
+
+- Written spec `7f650c4`: [actual approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078).
+- W0 plan/sprint `c8cc5bb`: [actual bounded execution approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7165080818).
+- Host amendment `f4b2609`: [actual `approve-offline-preview-defer-cowork-validation`](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7166316613); Cowork unavailable, no host validation or runtime cutover inferred.
+- Complete plan/readiness `5dbfc8a`: [actual `approve-complete-plan-and-implement`](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7167852054), with no revision requested; covers written W1–W4 tasks, not completed tests or human-only actions.
+
+These decisions do not apply native GitHub approval/labels, accept Proposed
+ADRs or grant merge, publication, transfer, financial or tenant permission.
+Actual Cowork, final candidate gates, human #8 legacy routing and actual
+ownership/settings/secrets remain distinct pending matters.
 
 | ID | Decision | Owner |
 |---|---|---|

@@ -4,7 +4,7 @@ This file is for every coding agent working in this repository (GitHub Copilot i
 
 ## 1. What this repository is
 
-**Frontier Envisioning** is a Copilot Cowork plugin (MIT) used by Microsoft Innovation Hub solution engineers for Frontier solution envisioning and architecture design. Eight registered skills: seven non-FinOps GA product wrappers and bundled optional Preview FinOps:
+**Frontier Envisioning** is a Copilot Cowork plugin (MIT) used by Microsoft Innovation Hub solution engineers for Frontier solution envisioning and architecture design. The unreleased 1.11.0 development candidate targets nine skills in the same plugin: seven non-FinOps GA wrappers, optional Preview FinOps and optional Preview Envisioning Agent Factory. Current registration remains eight; ninth-skill registration, maturity/installer integration and final candidate gates are pending in [#79](https://github.com/urruegg/frontier-envisioning/issues/79).
 
 | Skill | Purpose |
 |---|---|
@@ -16,9 +16,16 @@ This file is for every coding agent working in this repository (GitHub Copilot i
 | `frontier-value-case` | Business value case in CHF: value tree, assumption register, NPV, ROI |
 | `frontier-process` | Optional process/ontology design when requested: proposed CDM mappings, data products and local Fabric handover files |
 | `frontier-finops` | Optional Preview costs: explicit current-scenario awareness required before any cost operation or figure |
+| `frontier-agent-factory` | Optional Preview candidate, registration pending: Envisioning Agent Factory, an explicitly requested offline full starter-repository ZIP handover |
 
-Core engagement/value/identity/blueprint/design/process work does not require
-FinOps. GA is the maintainer's product designation, not result confidence,
+Core engagement/value/identity/blueprint/design/process work requires neither
+Factory nor FinOps. Factory is not automatic after a PRD and starts no cost
+operation. Its reviewed offline producer is not a new business runtime, SDK,
+application or tenant loader. Actual Cowork discovery/install/acquisition/export
+is unavailable and not performed; offline Preview development was explicitly
+approved, not a runtime cutover. See the [candidate guide](plugin/README.md#optional-agent-factory-preview--offline-candidate)
+and [current architecture](docs/solution-design.md#1110-agent-factory-offline-preview).
+GA is the maintainer's product designation, not result confidence,
 provider GA, release/deployment or external/IP clearance. Fabric ontology/agent/
 operations Preview, unverified mappings and MOS3 manifest `devPreview` remain
 separate. Installation does not acknowledge FinOps use.

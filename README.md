@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.9 |
-| Date | 2026-11-13 |
+| Version | 0.10 |
+| Date | 2026-11-26 |
 | Author | Urs Rüegg; Copilot AI-assisted maintenance |
 | Status | Maintained internal reader guide; not release approval |
 | Scope | Using and evaluating the plugin; document revision, not product version |
@@ -16,9 +16,13 @@ solution engineers. It helps frame opportunities across business journeys,
 for example Sales and Services, test hypotheses with people and prepare a
 validated MVP for design handover.
 
-**Release build 1.10.0.** Check [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
-for the actual publication status and available downloads; a build is not
-publication evidence.
+**1.11.0 is an unreleased development candidate.** It adds the offline
+Envisioning Agent Factory producer for an explicitly requested starter-repository
+handover. Ninth-skill registration, installation and final candidate checks
+remain pending; this is not a ready-to-install or Cowork-validated claim.
+Historical release build **1.10.0** and its evidence are unchanged. Check
+[GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
+for actual publication and downloads; candidate metadata is not publication.
 This repository is private; internal sharing does not grant public visibility,
 customer redistribution or IP clearance. Maintainer: [@urruegg](https://github.com/urruegg).
 
@@ -48,6 +52,25 @@ Agent identity, Target architecture, requested Ontology and workshop views.*
 | Agent identity proposal | Names, colours, icons and identity cards; branding, not Entra identity provisioning |
 | Value and design handover | Ordinary value evidence and assumptions; PRD, solution design, ADRs and IT readiness once MVP scope is validated, or clearly labelled drafts |
 | Optional Agent FinOps baseline | After Preview awareness: versioned twelve-month scenarios, unit economics and projected JSON/Markdown reports; recorded external review is not budget approval |
+| Optional Envisioning Agent Factory Preview | Candidate offline producer: full pinned starter-repository ZIP with reviewed ordinary files, preserved IDs and explicit intake gaps; registration and final integration pending |
+
+### Candidate skill inventory
+
+The 1.11.0 target is **nine skills in the same plugin**: seven non-FinOps
+GA wrappers and two optional Preview skills. Current registration remains
+eight until [#79](https://github.com/urruegg/frontier-envisioning/issues/79).
+
+| Skill | Availability and purpose |
+|---|---|
+| `frontier-envisioning` | GA — engagement orchestration |
+| `frontier-context-discovery` | GA — scoped context and evidence |
+| `frontier-blueprint` | GA — interactive blueprint and workshops |
+| `frontier-solution-design` | GA — PRD, design, ADRs and readiness |
+| `frontier-agent-identity` | GA — proposed branding and identity kit |
+| `frontier-value-case` | GA — ordinary value evidence and assumptions |
+| `frontier-process` | GA — optional process/ontology proposals |
+| `frontier-finops` | Optional Preview — awareness-first financial work |
+| `frontier-agent-factory` | Optional Preview candidate — Envisioning Agent Factory; registration pending |
 
 ```mermaid
 flowchart LR
@@ -55,6 +78,7 @@ flowchart LR
     H --> B[Blueprint and workshop]
     B --> F[Feedback and scope decision]
     F --> D[Validated MVP design handover]
+    D -->|Explicit starter-repository request only| R[Optional offline Factory Preview handover]
     F --> H
     H -->|On request| O[Process and ontology proposal]
     O --> B
@@ -68,9 +92,11 @@ flowchart LR
 
 ## Install the plugin
 
-Obtain `frontier-envisioning-plugin-1.10.0.zip` from
-[GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases) when
-published, or from the maintainer for pre-publication testing. Keep it zipped.
+For a published build, obtain its exact versioned ZIP from
+[GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases).
+The prospective `frontier-envisioning-plugin-1.11.0.zip` is a development
+candidate; use only a maintainer-provided candidate after its integration and
+package checks are recorded. Those checks are currently pending. Keep the ZIP zipped.
 In a new Copilot Cowork chat, attach it and type
 **Install the Frontier PlugIn**. Review the installation approval prompts.
 Start a new chat after sync. See the [packaged guide](plugin/README.md) for
@@ -79,9 +105,15 @@ These instructions are not evidence of an actual Cowork installation.
 
 ## Know the boundaries
 
-- **Eight skills:** seven non-FinOps GA product wrappers, including optional
-  process/ontology when requested, plus bundled optional Preview FinOps.
-  Core work does not require FinOps.
+- **Independent optional extensions:** ordinary core, value, identity,
+  blueprint, design and process work needs neither Factory nor FinOps.
+  Factory is only for an explicit starter-repository/ZIP/handover request,
+  not a new default after a PRD or an automatic cost operation.
+- **Factory is source handover, not a business runtime.** The offline producer
+  preserves a compatible full foundation and reviewed inputs; it creates no
+  SDK, application, tenant loader, remote repository or deployed resource.
+  Read the [candidate procedure and input limitation](plugin/README.md#optional-agent-factory-preview--offline-candidate).
+  Actual Cowork discovery, installation, acquisition and export are not performed.
 - **FinOps is off by default.** Cost operations or figures require the
   [full Preview notice and actual current-scenario acknowledgement](plugin/README.md#optional-finops-preview--awareness-first).
   Installation and previous runs are not consent. Declining continues core
