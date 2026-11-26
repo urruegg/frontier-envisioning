@@ -70,10 +70,39 @@ def validation_input(code):
         raise FactoryError(code) from None
 
 
-def _objects(value, field):
+def _objects(value, field, code="FACTORY_BLUEPRINT"):
     if field in value:
         need(isinstance(value[field], list) and all(isinstance(row, dict) for row in value[field]),
-             "FACTORY_BLUEPRINT")
+             code)
+
+
+def _ontology_shape(onto, blueprint, process, code):
+    """Guard known owner inputs before normalisation/ancestry can hash them."""
+    need(isinstance(onto, dict), code)
+    scalar_refs = {
+        "namespaces": ("journey",), "entity_types": ("namespace", "source", "base"),
+        "relationship_types": ("from", "to"), "sources": (),
+        "data_agents": ("journey",), "operations_agents": (), "data_products": ("journey",),
+        "metrics": ("entity", "journey"), "rules": (), "risks": ("entity", "source", "namespace", "journey"),
+        "readiness": ("journey",), "decisions": ("journey",),
+        "semantic_models": ("namespace", "journey"), "domains": ("namespace", "journey"),
+    }
+    for collection, fields in scalar_refs.items():
+        _objects(onto, collection, code)
+        for row in onto.get(collection, []):
+            for field in fields:
+                need(row.get(field) is None or isinstance(row[field], str), code)
+            nested_refs = {"data_agents": (("consumers", "kind"),),
+                           "data_products": (("uses", "use"),)}.get(collection, ())
+            for field, enum in nested_refs:
+                if field in row:
+                    need(all((field == "consumers" and isinstance(item, str))
+                             or (isinstance(item, dict) and isinstance(item.get(enum), str))
+                             for item in process.as_list(row[field])), code)
+    # This pure owner API validates identity types, duplicates, namespaces and
+    # reference collections with ValueError before any privacy/helper rewrite.
+    with validation_input(code):
+        process.strict_reference_graph(onto, blueprint)
 
 
 def blueprint_shape(document):
@@ -97,10 +126,8 @@ def blueprint_shape(document):
             text(domain["orchestrator"].get("id"))
     onto = document.get("ontology")
     if onto is not None:
-        for field in ("entity_types", "relationship_types", "sources", "namespaces", "data_agents",
-                      "operations_agents", "data_products", "metrics", "rules", "risks", "readiness",
-                      "decisions", "semantic_models", "domains"):
-            _objects(onto, field)
+        with sibling("frontier-process", "ontology_lib") as process:
+            _ontology_shape(onto, document, process, "FACTORY_BLUEPRINT")
     if "groups" in document.get("it_readiness", {}):
         _objects(document["it_readiness"], "groups")
     _flag_shapes(document)
@@ -288,11 +315,27 @@ def check_sharing(request, records, baseline, original_blueprint):
         if isinstance(context.get("ontology"), dict):
             process.inherit_privacy(context["ontology"], context)
         private_strings = set()
+        # Structural keys are not authored private identities. Derive overlap
+        # from the real customer projection and the installed protocol schema,
+        # never from candidate export metadata (which could contain the leak).
+        with sibling("frontier-blueprint", "build_blueprint") as bp:
+            report = bp.Report()
+            with validation_input("FACTORY_SHARING"):
+                customer = bp.customer_version(copy.deepcopy(context), report)
+            need(not report.errors, "FACTORY_SHARING")
+        public_keys = {key.casefold() for node in _nodes(customer) for key in node}
+        schema = decode(read(Path(__file__).parent.parent, "references/intake.schema.json", MIB))
+        public_keys.update(key.casefold() for node in _nodes(schema) for key in node.get("properties", {}))
+        public_keys.update({"schema", "internal", "visibility", "sharingclassification", "customer_scope", "note",
+                            "src", "content_src", "content_origins", "internal_notes", "internal_terms",
+                            "ancestry_status"})
 
         def private_tokens(value, inherited=False, private_field=False):
             if isinstance(value, dict):
                 restricted = inherited or process.private_content(value, context)
                 for key, child in value.items():
+                    if (restricted or private_field) and key.casefold() not in public_keys and key.strip():
+                        private_strings.add(key.casefold())
                     child_private_field = private_field or key == "internal_notes"
                     if not child_private_field and isinstance(child, str) and key in {
                             "visibility", "sharingClassification", "customer_scope", "status", "schema"}:
@@ -332,16 +375,21 @@ def check_sharing(request, records, baseline, original_blueprint):
             structured.insert(0, export_metadata(request, records[0], bp.PLUGIN_VERSION, "pending-verification"))
             for document in structured:
                 _flag_shapes(document)
+                process_citations = set()
                 for node in _nodes(document):
                     onto = node if node.get("schema") == process.SCHEMA else node.get("ontology")
                     if isinstance(onto, dict):
+                        _ontology_shape(onto, context, process, "FACTORY_SHARING")
                         with validation_input("FACTORY_SHARING"):
-                            process.strict_reference_graph(onto, context)
                             report = process.Rep()
                             valid = (process.validate_route_assessments(onto, report)
                                      and process.validate_reserved_citations(onto, report))
                         need(valid and not report.errors, "FACTORY_SHARING")
-                local_public = public_ids | {
+                        process_citations.update(
+                            row["id"] for row in process.as_list(onto.get("sources_doc"))
+                            if isinstance(row, dict) and isinstance(row.get("id"), str)
+                            and not process.private_content(row, context))
+                local_public = public_ids | process_citations | {
                     row.get("id") for node in _nodes(document)
                     for row in (node["evidence"] if isinstance(node.get("evidence"), list) else [])
                     if isinstance(row, dict) and isinstance(row.get("id"), str)
@@ -370,6 +418,86 @@ def _financial_schema(document):
     return any(isinstance(node.get("schema"), str)
                    and node["schema"].startswith(("frontier-finops-", "frontier-agent-finops-"))
                    for node in _nodes(document))
+
+
+def _reviewed_financial(document, preview):
+    """Validate actual owner payloads, not wrappers or native lineage descriptors.
+
+    Descriptor recognition is local to this invocation and follows successful
+    owner receipt validation. It never exempts a subtree from inspection.
+    """
+    descriptors, verified_metadata = set(), []
+
+    def lineage(metadata, kinds):
+        maps = [metadata["provenance"]["inputs"]]
+        maps.extend(metadata["calculations"][kind]["inputs"] for kind in kinds)
+        for inputs in maps:
+            with validation_input("FACTORY_FINANCIAL"):
+                projected = preview.preview_metadata(
+                    True, operation="verify-handover-lineage",
+                    inherited={"provenance": {"inputs": inputs}})
+            allowed = projected["provenance"]["inputs"]
+            for name, descriptor in inputs.items():
+                # The owner projects native descriptor fields/slots. Unknown
+                # fields must not turn a financial payload into a descriptor.
+                if name in allowed and descriptor == allowed[name]:
+                    descriptors.add(id(descriptor))
+
+    with sibling("frontier-value-case", "value_calc") as value:
+        def visit(node):
+            if isinstance(node, list):
+                for child in node:
+                    visit(child)
+                return
+            if not isinstance(node, dict):
+                return
+            schema, kind = node.get("schema"), None
+            if id(node) not in descriptors:
+                if isinstance(schema, str) and schema.startswith("frontier-finops/"):
+                    agents = node.get("agents", [])
+                    need(isinstance(agents, list)
+                         and all(isinstance(row, dict) and isinstance(row.get("id"), str)
+                                 for row in agents), "FACTORY_FINANCIAL_SHAPE")
+                    result = node.get("results")
+                    if isinstance(result, dict):
+                        for field, identifier in (("agents", "id"), ("missing", "agent")):
+                            if isinstance(result.get(field), list):
+                                need(all(isinstance(row, dict) and isinstance(row.get(identifier), str)
+                                         for row in result[field]), "FACTORY_FINANCIAL_SHAPE")
+                    with validation_input("FACTORY_FINANCIAL"):
+                        preview.validate_finops_results(node, acknowledge_finops_preview=True)
+                    kind = "finops"
+                elif isinstance(schema, str) and schema.startswith("frontier-value/"):
+                    if value.has_finops_dependency(node) or "fingerprint" in node:
+                        with validation_input("FACTORY_FINANCIAL"):
+                            proof = value.preview_for(node, operation="apply-value",
+                                                      acknowledge_finops_preview=True)
+                        need(proof is not None, "FACTORY_FINANCIAL")
+                        kind = "value"
+                elif "results" in node and value.has_finops_dependency({
+                        key: node[key] for key in
+                        ("finops_preview", "finops", "agents_costed", "cost_modelled", "scope")
+                        if key in node}):
+                    with validation_input("FACTORY_FINANCIAL"):
+                        value.preview_for(node, operation="apply-value", acknowledge_finops_preview=True)
+                    kind = "value"
+            if kind is not None:
+                metadata = node["results"]["finops_preview"]
+                kinds = ("finops",) if kind == "finops" else ("finops", "value")
+                verified_metadata.append((metadata, kinds))
+                lineage(metadata, kinds)
+            for key, child in node.items():
+                if key == "finops_preview":
+                    with validation_input("FACTORY_FINANCIAL"):
+                        preview.preview_metadata(True, operation="verify-handover", inherited=child)
+                    # Native CLIs and value use-case rows can repeat the exact
+                    # validated metadata after a JSON round trip.
+                    for metadata, kinds in verified_metadata:
+                        if child == metadata:
+                            lineage(child, kinds)
+                            break
+                visit(child)
+        visit(document)
 
 
 def financial_check(request, records, baseline, source_root, acknowledged):
@@ -435,14 +563,7 @@ def financial_check(request, records, baseline, source_root, acknowledged):
                         if document is None:
                             continue
                         need(not _financial_schema(document), "FACTORY_FINANCIAL_AUTHORITY")
-                        for node in _nodes(document):
-                            if str(node.get("schema", "")).startswith("frontier-finops/"):
-                                with validation_input("FACTORY_FINANCIAL"):
-                                    preview.validate_finops_results(node, acknowledge_finops_preview=True)
-                        with sibling("frontier-value-case", "value_calc") as value:
-                            with validation_input("FACTORY_FINANCIAL"):
-                                value.preview_for(document, acknowledge_finops_preview=True,
-                                                  operation="apply-value" if "results" in document else "consume-value")
+                        _reviewed_financial(document, preview)
                     reviewed_documents = True
                     ready.append(False)
                     continue

@@ -73,6 +73,24 @@ def financial_packet(p, fixture, *, planning=False):
     return frozen, reviewed, report
 
 
+def legacy_documents(p):
+    """Actual bundled examples and native receipts, including JSON round trips."""
+    fin = json.loads((F.parent / "frontier-finops/examples/caldova-finops.json").read_bytes())
+    value = json.loads((F.parent / "frontier-value-case/examples/caldova-value.json").read_bytes())
+    rates = json.loads((F.parent / "frontier-finops/rates/rates-2026-11.json").read_bytes())
+    with p.sibling("frontier-finops", "finops_calc") as calculator:
+        fin["results"] = calculator.run(fin, value, rates, acknowledge_finops_preview=True)
+    fin = json.loads(encode(fin))
+    with p.sibling("frontier-finops", "finops_preview") as owner:
+        owner.validate_finops_results(fin, value=value, rates=rates, acknowledge_finops_preview=True)
+    with p.sibling("frontier-value-case", "value_calc") as owner:
+        value["results"] = owner.run(value, fin, acknowledge_finops_preview=True)
+    value = json.loads(encode(value))
+    with p.sibling("frontier-value-case", "value_calc") as owner:
+        owner.preview_for(value, operation="apply-value", acknowledge_finops_preview=True)
+    return fin, value
+
+
 class Financial(unittest.TestCase):
     def setUp(self):
         self.p = projection(self)
@@ -87,6 +105,119 @@ class Financial(unittest.TestCase):
         intake, files, _ = self.m.contract.materialize(self.f["request"]["intake"], self.f["baseline"],
                                                       self.f["source"], self.m.common.read)
         return self.p.financial_check(self.f["request"], [intake], files, self.f["source"], acknowledged)
+
+    def reviewed_document(self, document, *, role="finops"):
+        # Native examples cite E05/E06 from the bundled authored Blueprint.
+        # Supply those actual customer-visible records, not invented clearance
+        # or a production exception for unresolved references.
+        path = self.f["source"] / "blueprint.json"
+        blueprint = json.loads(path.read_bytes())
+        native = json.loads((F.parent / "frontier-blueprint/examples/caldova-blueprint.json").read_bytes())
+        known = {row["id"] for row in blueprint["evidence"]}
+        for row in native["evidence"]:
+            if row["id"] in {"E05", "E06"} and row["id"] not in known:
+                self.assertEqual(row["visibility"], "customer")
+                blueprint["evidence"].append(copy.deepcopy(row))
+        with self.p.sibling("frontier-blueprint", "build_blueprint") as owner:
+            report = owner.Report()
+            customer = owner.customer_version(blueprint, report)
+            self.assertEqual(report.errors, [])
+        path.write_bytes(encode(blueprint))
+        (self.f["baseline"] / self.f["request"]["blueprint"]["baseline_path"]).write_bytes(encode(customer))
+        raw = encode(document)
+        qualified = provide(self.f, "reviewed.json", raw, role=role, artifact_id="reviewed-financial")
+        self.f["request"]["financial"] = {
+            "requested": True, "as_of": DAY.isoformat(), "claim": "review",
+            "packets": [{"artifact_ids": [qualified], "kind": "reviewed-document",
+                         "model_path": None, "review_paths": [], "owner_review": approved()}],
+        }
+        save(self.f)
+        return raw
+
+    def financial_refusal(self):
+        self.f["out"].write_bytes(b"old-good")
+        run = invoke(self.f, "--acknowledge-finops-preview")
+        self.assertEqual(run.returncode, 1, (run.stdout, run.stderr))
+        self.assertTrue(run.stdout.strip(), "Expected a safe financial error JSON, not an empty traceback failure")
+        self.assertTrue(json.loads(run.stdout)["error"].startswith("FACTORY_FINANCIAL"))
+        self.assertEqual(run.stderr, "")
+        self.assertNotIn("12345", run.stdout)
+        self.assertEqual(self.f["out"].read_bytes(), b"old-good")
+        self.assertEqual(list(self.f["out"].parent.glob(".factory-*.tmp")), [])
+
+    def test_nested_value_payload_requires_its_own_receipt(self):
+        malformed = {"schema": "frontier-value/1.0", "agents_costed": ["D1-A01"],
+                     "results": {"totals": {"cost": 12345}}}
+        for nested in (False, True):
+            with self.subTest(nested=nested):
+                self.reviewed_document({"nested": malformed} if nested else malformed, role="value")
+                self.financial_refusal()
+
+    def test_native_legacy_finops_roundtrip_exports_review_only(self):
+        import zipfile
+        fin, _ = legacy_documents(self.p)
+        raw = self.reviewed_document(fin)
+        run = invoke(self.f, "--acknowledge-finops-preview")
+        self.assertEqual(run.returncode, 0, (run.stdout, run.stderr))
+        self.assertEqual(json.loads(run.stdout)["financial_status"], "reviewed-documents-not-financially-ready")
+        with zipfile.ZipFile(self.f["out"]) as archive:
+            self.assertEqual(archive.read("docs/intake/records/caldova-intake/artifacts/reviewed.json"), raw)
+        self.f["request"]["financial"]["claim"] = "build-handover"
+        save(self.f)
+        self.financial_refusal()
+
+    def test_native_nested_value_payload_uses_value_owner(self):
+        fin, value = legacy_documents(self.p)
+        # Native model-level metadata may repeat its already validated result receipt.
+        fin["finops_preview"] = copy.deepcopy(fin["results"]["finops_preview"])
+        self.reviewed_document({"cost_source": fin, "nested": [value]}, role="value")
+        run = invoke(self.f, "--acknowledge-finops-preview")
+        self.assertEqual(run.returncode, 0, (run.stdout, run.stderr))
+        self.assertEqual(json.loads(run.stdout)["financial_status"], "reviewed-documents-not-financially-ready")
+
+    def test_native_provenance_descriptors_cannot_hide_financial_payloads(self):
+        fin, value = legacy_documents(self.p)
+        descriptor = fin["results"]["finops_preview"]["provenance"]["inputs"]["finops"]
+        value_descriptor = value["results"]["finops_preview"]["provenance"]["inputs"]["value"]
+        for document in (descriptor, {"nested": descriptor},
+                         value_descriptor, {"nested": value_descriptor},
+                         {"finops_preview": {"provenance": {"inputs": {"finops": descriptor}}}},
+                         {"schema": "frontier-agent-finops-report/1.0"}):
+            with self.subTest(context=list(document)):
+                self.reviewed_document(document)
+                self.financial_refusal()
+        for location in ("extra-key", "native-agents-slot"):
+            altered = copy.deepcopy(fin)
+            metadata = altered["results"]["finops_preview"]
+            payload = {"schema": "frontier-value/1.0", "agents_costed": ["D1-A01"],
+                       "results": {"totals": {"cost": 12345}}}
+            target = metadata["provenance"]["inputs"]["finops"]
+            if location == "extra-key":
+                target["unowned_payload"] = payload
+            else:
+                target.setdefault("agents", []).append(payload)
+            metadata["calculations"]["finops"]["inputs"]["finops"] = copy.deepcopy(target)
+            # The owner validates its projected lineage. Extra nested payloads
+            # still need their own owner validation; the outer receipt is not proof.
+            with self.p.sibling("frontier-finops", "finops_preview") as owner:
+                owner.validate_finops_results(altered, acknowledge_finops_preview=True)
+            with self.subTest(location=location):
+                self.reviewed_document(altered)
+                self.financial_refusal()
+
+    def test_malformed_native_finops_identities_are_safe_input_errors(self):
+        fin, _ = legacy_documents(self.p)
+        for location in ("model-agent", "result-agent", "missing-agent"):
+            altered = copy.deepcopy(fin)
+            if location == "model-agent":
+                altered["agents"][0]["id"] = ["malformed"]
+            elif location == "result-agent":
+                altered["results"]["agents"][0]["id"] = ["malformed"]
+            else:
+                altered["results"]["missing"] = [{"agent": ["malformed"], "assumptions": ["declared"]}]
+            with self.subTest(location=location):
+                self.reviewed_document(altered)
+                self.financial_refusal()
 
     def test_core_does_not_import_or_run_finops_even_if_acknowledged(self):
         original = self.p.sibling

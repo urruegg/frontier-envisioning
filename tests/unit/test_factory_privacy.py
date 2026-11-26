@@ -243,6 +243,10 @@ class Privacy(unittest.TestCase):
                     original["evidence"][0]["references"] = [{"documents": [[token]]}]
                 elif private_field == "internal-notes":
                     original["meta"]["internal_notes"] = token
+                elif private_field == "private-key":
+                    original["meta"]["internal_notes"] = {token: True}
+                elif private_field == "inherited-key":
+                    original["evidence"][0]["documents"] = {token: True}
                 else:
                     # These are arbitrary private notes, not protocol fields.
                     original["meta"]["internal_notes"] = {"drafts": [{"status": token}]}
@@ -305,6 +309,29 @@ class Privacy(unittest.TestCase):
         self._assert_private_original_copy_refused("internal-notes")
         self._assert_private_original_copy_refused("internal-notes-container")
 
+    def test_cli_private_authored_keys_cannot_be_copied_into_exports(self):
+        self._assert_private_original_copy_refused("private-key")
+        self._assert_private_original_copy_refused("inherited-key")
+
+    def test_private_keys_retain_actual_safe_blueprint_and_known_protocol_overlap(self):
+        from tests.factory_fixture import save
+        from tests.unit.test_factory_export import invoke
+        original_path = self.f["source"] / "blueprint.json"
+        original = json.loads(original_path.read_bytes())
+        public_key = "caldova-public-annotation"
+        original["domains"][0][public_key] = True
+        original["meta"]["internal_notes"] = {
+            public_key: True, "references": True, "source": True, "status": True}
+        original_path.write_bytes(encode(original))
+        with self.p.sibling("frontier-blueprint", "build_blueprint") as bp:
+            report = bp.Report()
+            customer = bp.customer_version(original, report)
+            self.assertEqual(report.errors, [])
+        (self.f["baseline"] / self.r["blueprint"]["baseline_path"]).write_bytes(encode(customer))
+        save(self.f)
+        run = invoke(self.f)
+        self.assertEqual(run.returncode, 0, (run.stdout, run.stderr))
+
     def test_private_protocol_values_do_not_reclassify_public_metadata(self):
         from tests.factory_fixture import save
         from tests.unit.test_factory_export import invoke
@@ -317,6 +344,86 @@ class Privacy(unittest.TestCase):
         save(self.f)
         run = invoke(self.f)
         self.assertEqual(run.returncode, 0, (run.stdout, run.stderr))
+
+    def test_cli_malformed_known_ontology_shapes_return_safe_json(self):
+        from tests.factory_fixture import save
+        from tests.unit.test_factory_export import invoke
+        cases = [
+            {"namespaces": [{"id": ["caldova-ns"]}]},
+            {"sources": [{"id": {"malformed": True}}]},
+            {"entity_types": [{"id": ["Case"]}]},
+            {"namespaces": {"id": "caldova_ns"}},
+            {"sources": [{"id": "S1"}], "entity_types": [{"id": "Case", "source": ["S1"]}]},
+            {"entity_types": [{"id": "Case", "journeys": [{"id": "D1"}]}]},
+            {"data_agents": [{"id": "DA-01"}],
+             "data_products": [{"id": "DP-01", "uses": [{"use": ["grounding"], "via": ["DA-01"]}]}]},
+        ]
+        for index, ontology in enumerate(cases):
+            with self.subTest(case=index), tempfile.TemporaryDirectory() as folder:
+                fixture = prepare(folder)
+                path = fixture["source"] / "blueprint.json"
+                original = json.loads(path.read_bytes())
+                original["ontology"] = ontology
+                path.write_bytes(encode(original))
+                save(fixture)
+                fixture["out"].write_bytes(b"old-good")
+                run = invoke(fixture)
+                self.assertEqual(run.returncode, 1)
+                self.assertEqual(run.stderr, "", "Malformed user data must not expose a helper traceback")
+                self.assertEqual(json.loads(run.stdout)["error"], "FACTORY_BLUEPRINT")
+                self.assertEqual(len(run.stdout.splitlines()), 1)
+                self.assertEqual(fixture["out"].read_bytes(), b"old-good")
+                self.assertEqual(list(fixture["out"].parent.glob(".factory-*.tmp")), [])
+
+    def test_cli_valid_current_history_ontology_and_generic_id_lists_remain_valid(self):
+        from tests.factory_fixture import save
+        from tests.unit.test_factory_export import add_history, exporter, invoke
+        module = exporter(self)
+        path = self.f["source"] / "blueprint.json"
+        original = json.loads(path.read_bytes())
+        original["ontology"] = {
+            "schema": "frontier-ontology/1.0",
+            "namespaces": [{"id": "caldova_ns", "journey": "D1", "uses": ["passive-data"]}],
+            "entity_types": [{"id": "Case", "namespace": "caldova_ns", "journeys": ["D1"],
+                              "properties": [{"name": "CaseId", "type": "string"}], "key": ["CaseId"]}],
+        }
+        with self.p.sibling("frontier-blueprint", "build_blueprint") as bp:
+            report = bp.Report()
+            customer = bp.customer_version(original, report)
+            self.assertEqual(report.errors, [])
+        path.write_bytes(encode(original))
+        (self.f["baseline"] / self.r["blueprint"]["baseline_path"]).write_bytes(encode(customer))
+        row = next(row for row in self.r["intake"]["artifacts"] if row["id"] == "prd")
+        row["source"]["path"] = "prd.json"
+        row["baseline"]["path"] = row["baseline"]["path"][:-3] + ".json"
+        raw = encode({"id": ["arbitrary", "data"], "namespaces": [{"id": ["not-ontology"]}]})
+        (self.f["source"] / row["source"]["path"]).write_bytes(raw)
+        (self.f["baseline"] / row["baseline"]["path"]).write_bytes(raw)
+        add_history(self.f, module.contract, module.common)
+        save(self.f)
+        run = invoke(self.f)
+        self.assertEqual(run.returncode, 0, (run.stdout, run.stderr))
+
+    def test_cli_malformed_historical_ontology_is_safe_input_failure(self):
+        from tests.factory_fixture import save
+        from tests.unit.test_factory_export import add_history, exporter, invoke
+        module = exporter(self)
+        record, _ = add_history(self.f, module.contract, module.common)
+        row = next(row for row in record["artifacts"] if row["role"] == "blueprint")
+        path = self.f["baseline"] / row["baseline"]["path"]
+        document = json.loads(path.read_bytes())
+        document["ontology"] = {"namespaces": [{"id": ["malformed"]}]}
+        raw = encode(document)
+        path.write_bytes(raw)
+        row["baseline"]["sha256"] = module.common.digest(raw)
+        (self.f["baseline"] / "docs/intake/records/previous-intake/intake.json").write_bytes(encode(record))
+        save(self.f)
+        self.f["out"].write_bytes(b"old-good")
+        run = invoke(self.f)
+        self.assertEqual(run.returncode, 1)
+        self.assertEqual(run.stderr, "")
+        self.assertEqual(json.loads(run.stdout)["error"], "FACTORY_SHARING")
+        self.assertEqual(self.f["out"].read_bytes(), b"old-good")
 
     def test_internal_financial_paths_are_not_export_metadata(self):
         original, _ = self.blueprint()
