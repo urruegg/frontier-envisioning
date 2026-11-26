@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-26 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Proposed implementation plan; actual written-spec approval recorded; plan/execution approval still required; no release approval implied |
+| Status | Plan/execution at `b3174a1` approved for task-by-task subagent implementation; actual results still required; no release approval implied |
 | Scope | Bug #81 only; no source retirement, financial formulas, Studio metadata, tenant or protected-workflow changes |
 | References | [Bug #81](https://github.com/urruegg/frontier-envisioning/issues/81), [approved spec](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md), [actual written approval](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7193888412), [idea](../ideas/2026-11-26-plugin-health-and-finops-exclusion.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md), [draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80) |
 
@@ -24,7 +24,11 @@
 The human approved written spec `c26991eefd6a03be1f0d41fc65af669b5f35eb79`
 with `written_spec_review=approve-written-health-amendment`.
 The separate choices were release-only exclusion, retained source/tests and
-Cowork ZIP installation. This plan has not yet been approved.
+Cowork ZIP installation. The plan at `b3174a1` subsequently received:
+**"approved the plan and the implementation, please implement it sub agent
+drive end to end"**. The [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7194451667)
+authorises all four tasks with fresh bounded workers and ordered review,
+not repeated human stage approvals inside the agreed scope.
 `@urruegg` remains accountable. No protected label, merge or publication is
 authorised by these records.
 
@@ -619,7 +623,8 @@ behaviour and source-only versus installed test labels. Fix concrete
 inconsistencies before presenting the plan. No production code is executed
 while writing or reviewing this document.
 
-After human plan approval, choose inline execution with executing-plans or
-fresh bounded implementation workers with subagent-driven-development.
+The human selected fresh bounded implementation workers with
+subagent-driven-development. Execute the approved tasks without repeated
+stage approval requests, escalating only actual blockers or scope decisions.
 Keep ordered specification then correctness review proportional to the
 evidence; do not infer human GitHub approval from an agent review.

@@ -5,7 +5,7 @@
 | Version | 0.2 |
 | Date | 2026-11-26 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted intake |
-| Status | Written specification `c26991e` approved; proposed implementation plan awaits approval; no fix or release approval claimed |
+| Status | Written spec `c26991e` and implementation plan `b3174a1` approved; subagent execution authorised; no fix or release approval claimed |
 | Scope | Cowork ZIP routing correction; release-only FinOps exclusion, with Value Case and Agent Factory retained |
 | References | [Bug #81](https://github.com/urruegg/frontier-envisioning/issues/81), [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [Design](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md), [Proposed plan](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7193888412), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md) |
 
@@ -46,7 +46,9 @@ The [written design](../specs/2026-11-26-plugin-health-and-finops-exclusion-desi
 at `c26991e` actually received `approve-written-health-amendment`;
 the [receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7193888412)
 records it separately from the earlier conversational design.
-The new implementation plan is proposed and still needs approval.
+The implementation plan at `b3174a1` subsequently received actual approval
+for end-to-end subagent execution, recorded in the
+[plan receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7194451667).
 The previous Factory plan and passing checks are baseline evidence, not
 approval or verification of this amendment. No release/tag was found at intake;
 recheck before editing product bytes. Human merge/publication and #8 routing
