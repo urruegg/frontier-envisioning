@@ -40,7 +40,7 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from check_repo import FORBIDDEN_FILES, SECRET_PATTERNS
-from fe_lib import frontmatter as read_frontmatter, is_text, maturity_errors, maturity_fields
+from fe_lib import frontmatter as read_frontmatter, is_text, maturity_errors, maturity_fields, skill_inventory_errors
 
 ROOT = Path(__file__).resolve().parent.parent
 PLUGIN = ROOT / "plugin"
@@ -51,7 +51,6 @@ START_PROMPTS = [
     "Build the Frontier blueprint demo for Caldova",
     "Build the identity kit demo for Caldova",
     "Build the value case for <customer>",
-    "What will the <customer> agents cost per month?",
     "Gather the customer context for <customer>",
     "Prepare the IT readiness and architecture design workshop for <customer>",
 ]
@@ -151,7 +150,7 @@ def main(argv=None) -> int:
         errors.append(f"version mismatch: manifest {version} vs plugin.json {plugin.get('version')}")
     folders = [e.get("folder") for e in manifest.get("agentSkills", [])]
     on_disk = sorted(f"skills/{p.name}" for p in (PLUGIN / "skills").iterdir() if p.is_dir())
-    for f in folders:
+    for f in on_disk:
         smd = PLUGIN / f / "SKILL.md"
         if not smd.is_file():
             errors.append(f"{f}: SKILL.md missing")
@@ -162,9 +161,7 @@ def main(argv=None) -> int:
         if fm.get("version") != version:
             errors.append(f"{f}: metadata version {fm.get('version')!r} is not the release version {version}")
         errors.extend(maturity_errors(Path(f).name, fm))
-    for f in on_disk:
-        if f not in folders:
-            errors.append(f"{f} exists but is not listed in manifest agentSkills")
+    errors.extend(skill_inventory_errors(version, folders, on_disk, source_tree=True))
     for need in ("package/color.png", "package/outline.png", "README.md", "MIT.md", "THIRD-PARTY-NOTICES.md", "install/prepare_install.py"):
         if not (PLUGIN / need).is_file():
             errors.append(f"{need} missing")

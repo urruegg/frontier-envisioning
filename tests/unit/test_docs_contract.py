@@ -236,7 +236,28 @@ class ProductDocumentSplit(unittest.TestCase):
                 self.assertIn("document revision", text.lower())
 
     def test_original_identifiers_and_section_headings_are_retained(self) -> None:
-        joined = "\n".join(self.documents.values())
+        # The approved Factory addition is optional and exactly bounded. Do not
+        # union its ADR into historical membership: an old-section insertion of
+        # that same identifier must still fail.
+        marker = "## 1.11.0 Agent Factory offline Preview"
+        factory = tuple(self.headings(text).count(marker) for text in self.documents.values())
+        self.assertIn(factory, ((0, 0), (1, 1)), "Factory additions need one explicit boundary in each document")
+        scoped = dict(self.documents)
+        if factory == (1, 1):
+            for name, end in (("prd.md", "## Release evidence engineering requirements"),
+                              ("solution-design.md", "## Release evidence engineering flow")):
+                text = scoped[name]
+                self.assertEqual(self.headings(text)[1], marker, "Factory section must be the top addition")
+                prefix, rest = text.split(marker, 1)
+                self.assertEqual(rest.count(end), 1)
+                addition, suffix = rest.split(end, 1)
+                self.assertEqual(set(re.findall(r"\b(?:FR|NFR|AC|D|TD|ADR)-\d+\b", addition)),
+                                 {"ADR-0032"}, "Only ADR-0032 belongs to the new Factory scope")
+                scoped[name] = prefix + marker + addition.replace("ADR-0032", "") + end + suffix
+            factory_ids = re.findall(r"(?m)^\| (AF-\d+) \|", self.documents["prd.md"].split(marker, 1)[1]
+                                     .split("## Release evidence engineering requirements", 1)[0])
+            self.assertEqual(factory_ids, [f"AF-{i:02d}" for i in range(1, 17)])
+        joined = "\n".join(scoped.values())
         ids = sorted(set(re.findall(r"\b(?:FR|NFR|AC|D|TD|ADR)-\d+\b", joined)))
         additions = {f"FR-{i:04d}" for i in range(119, 128)} | {f"AC-{i:03d}" for i in range(26, 31)} | {"ADR-0025"}
         boundaries = tuple(self.headings(text).count("## 1.9.1 development intake") for text in self.documents.values())
@@ -449,8 +470,11 @@ class PreviewMaturityDocumentation(unittest.TestCase):
     def test_working_agreement_catalogue_names_all_eight_registered_skills(self) -> None:
         text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
         names = set(re.findall(r"(?m)^\| `?(frontier-[a-z-]+)`? \|", text))
-        expected = {path.parent.name for path in (ROOT / "plugin" / "skills").glob("*/SKILL.md")}
+        manifest = json.loads((ROOT / "plugin/package/manifest.json").read_text(encoding="utf-8"))
+        expected = {Path(row["folder"]).name for row in manifest["agentSkills"]}
         self.assertEqual(len(expected), 8)
+        source_names = {path.parent.name for path in (ROOT / "plugin/skills").glob("*/SKILL.md")}
+        self.assertEqual(expected, source_names - {"frontier-finops"})
         self.assertEqual(names, expected)
         self.assertNotRegex(text, r"(?i)\bseven\s+skills\b")
 
@@ -461,6 +485,38 @@ class ProductDocumentPreservationRegressions(unittest.TestCase):
     def setUp(self) -> None:
         self.contract = ProductDocumentSplit()
         self.contract.setUp()
+
+    def test_factory_scope_allows_only_0032_and_keeps_historical_mutations_visible(self) -> None:
+        verify = self.contract.test_original_identifiers_and_section_headings_are_retained
+        verify()
+        original = dict(self.contract.documents)
+        marker = "## 1.11.0 Agent Factory offline Preview"
+        for document, text in original.items():
+            for replacement in ("", "## 1.12.0 Agent Factory offline Preview", marker + "\n\n" + marker):
+                with self.subTest(document=document, marker=replacement):
+                    self.contract.documents = {**original, document: text.replace(marker, replacement, 1)}
+                    with self.assertRaises(AssertionError):
+                        verify()
+        for document, needle, replacement in (
+            ("prd.md", "| NFR-0013 |", "| NFR-9999 |"),
+            ("prd.md", "| FR-0001 |", "| REMOVED |"),
+            ("prd.md", marker, marker + "\n\nFR-9999"),
+            ("solution-design.md", marker, marker + "\n\nADR-0033"),
+            ("prd.md", "## A.1 Problem", "## A.1 Renamed problem"),
+            ("prd.md", "## Release evidence engineering requirements",
+             "## Release evidence engineering requirements\n\nADR-0032"),
+        ):
+            with self.subTest(document=document, mutation=replacement):
+                self.assertIn(needle, original[document])
+                self.contract.documents = {**original, document: original[document].replace(needle, replacement, 1)}
+                with self.assertRaises(AssertionError):
+                    # The identifier may also occur in another preserved table;
+                    # original content hashes still catch deletion of its row.
+                    if replacement == "| REMOVED |":
+                        self.contract.test_substantive_original_section_content_is_unchanged()
+                    else:
+                        verify()
+        self.contract.documents = original
 
     def test_approved_191_identifiers_are_bounded_without_rewriting_history(self) -> None:
         original = {}

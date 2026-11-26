@@ -194,6 +194,17 @@ class ReleaseDocuments(unittest.TestCase):
                 self.assertEqual(sums.read_bytes(), b"previous checksums")
 
     def test_complete_bundle_contains_both_authoritative_documents(self):
+        start = self.complete_bundle("1.6.1")
+        self.assertIn("optional Preview FinOps", start)
+
+    def test_111_bundle_guide_describes_the_finops_free_distribution(self):
+        start = " ".join(self.complete_bundle("1.11.0").split())
+        self.assertIn("Business Value Case", start)
+        self.assertIn("optional Preview Envisioning Agent Factory", start)
+        self.assertIn("FinOps is not included", start)
+        self.assertNotIn("optional Preview FinOps", start)
+
+    def complete_bundle(self, version):
         bundle = load("tools/build_release.py")
         packager = load("tools/build_package.py")
         with tempfile.TemporaryDirectory() as tmp:
@@ -215,10 +226,10 @@ class ReleaseDocuments(unittest.TestCase):
             with zipfile.ZipFile(archive_bytes, "w") as archive:
                 archive.writestr("README.md", b"synthetic archive")
             nested_zip = archive_bytes.getvalue()
-            core_html = core_demo_html(meta={"generated": "2026-11-12", "plugin_version": "1.6.1",
+            core_html = core_demo_html(meta={"generated": "2026-11-12", "plugin_version": version,
                                             "customer": "Caldova Industrial AG"})
             files = {
-                dist / "frontier-envisioning-plugin-1.6.1.zip": nested_zip,
+                dist / f"frontier-envisioning-plugin-{version}.zip": nested_zip,
                 demo / bundle.DEMO_HTML_NAME: core_html,
                 demo / "identity" / "caldova-agent-identity" / "catalog.html": b"catalogue",
                 demo / "identity" / "caldova-agent-identity.zip": nested_zip,
@@ -243,12 +254,12 @@ class ReleaseDocuments(unittest.TestCase):
             with mock.patch.object(bundle, "ROOT", root), \
                     mock.patch.object(bundle, "PLUGIN", plugin), \
                     mock.patch.object(bundle, "DEMO_DIR", demo), \
-                    mock.patch.object(bundle, "plugin_version", return_value="1.6.1"), \
+                    mock.patch.object(bundle, "plugin_version", return_value=version), \
                     mock.patch.object(bundle, "load_module", return_value=packager), \
                     contextlib.redirect_stdout(io.StringIO()):
                 self.assertEqual(bundle.main(["--dist", str(dist)]), 0)
             expected = {
-                "install/frontier-envisioning-plugin-1.6.1.zip": nested_zip,
+                f"install/frontier-envisioning-plugin-{version}.zip": nested_zip,
                 "README.md": b"guide",
                 "MIT.md": b"licence",
                 "THIRD-PARTY-NOTICES.md": b"notices",
@@ -259,8 +270,8 @@ class ReleaseDocuments(unittest.TestCase):
                 **{f"demo/ontology/{name}": data for name, data in ontology.items()},
                 **documents,
             }
-            with zipfile.ZipFile(dist / "frontier-envisioning-1.6.1-complete.zip") as archive:
-                prefix = "frontier-envisioning-1.6.1/"
+            with zipfile.ZipFile(dist / f"frontier-envisioning-{version}-complete.zip") as archive:
+                prefix = f"frontier-envisioning-{version}/"
                 for name, data in expected.items():
                     with self.subTest(path=name):
                         self.assertIn(prefix + name, archive.namelist())
@@ -275,7 +286,6 @@ class ReleaseDocuments(unittest.TestCase):
                     self.assertIn(name if not name.startswith("docs/analysis/") else "docs/analysis/", start)
                 self.assertNotIn("prd-and-solution-design.md", start)
                 self.assertNotIn("docs/analysis/", start)
-                self.assertIn("optional Preview FinOps", start)
                 self.assertIn("demo/ontology/", start)
                 for entry in archive.infolist():
                     self.assertEqual(entry.date_time, packager.FIXED_DATE)
@@ -289,6 +299,7 @@ class ReleaseDocuments(unittest.TestCase):
                     for path in sorted(dist.glob("*.zip"))
                 ).encode("utf-8"),
             )
+            return start
 
 
 def release_workflow():

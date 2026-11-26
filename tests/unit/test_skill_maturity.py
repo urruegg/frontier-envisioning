@@ -6,6 +6,7 @@ import json
 import shutil
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 from unittest import mock
 
@@ -13,6 +14,56 @@ from tests.unit._util import ROOT, load
 
 
 class SkillMaturity(unittest.TestCase):
+    def test_111_distribution_keeps_value_case_without_finops(self):
+        package = load("tools/build_package.py")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            plugin = root / "plugin"
+            shutil.copytree(ROOT / "plugin", plugin)
+            path = plugin / "package/manifest.json"
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+            manifest["agentSkills"] = [
+                row for row in manifest["agentSkills"]
+                if row["folder"] != "skills/frontier-finops"
+            ]
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            output = io.StringIO()
+            with mock.patch.object(package, "PLUGIN", plugin), contextlib.redirect_stdout(output):
+                code = package.main(["--dist", str(root / "dist")])
+            self.assertEqual(code, 0, output.getvalue())
+            self.assertTrue((plugin / "skills/frontier-finops/SKILL.md").is_file())
+            with zipfile.ZipFile(root / "dist/frontier-envisioning-plugin-1.11.0.zip") as archive:
+                names = archive.namelist()
+                self.assertFalse(any(name.startswith("skills/frontier-finops/") for name in names))
+                self.assertIn("skills/frontier-value-case/SKILL.md", names)
+                self.assertIn("skills/frontier-agent-factory/SKILL.md", names)
+                install = json.loads(archive.read("install/plugin-install.json"))
+                self.assertEqual(len(install["skills"]), 8)
+                self.assertEqual(
+                    {row["folder"] for row in install["skills"]},
+                    {row["folder"] for row in manifest["agentSkills"]},
+                )
+
+    def test_111_does_not_allow_an_additional_omitted_skill(self):
+        package = load("tools/build_package.py")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            plugin = root / "plugin"
+            shutil.copytree(ROOT / "plugin", plugin)
+            path = plugin / "package/manifest.json"
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+            manifest["agentSkills"] = [
+                row for row in manifest["agentSkills"]
+                if row["folder"] != "skills/frontier-value-case"
+            ]
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            output = io.StringIO()
+            with mock.patch.object(package, "PLUGIN", plugin), contextlib.redirect_stdout(output):
+                code = package.main(["--dist", str(root / "dist")])
+            self.assertEqual(code, 1)
+            self.assertIn("frontier-value-case", output.getvalue())
+            self.assertFalse((root / "dist").exists())
+
     def test_packager_reads_maturity_and_optional_fields(self):
         package = load("tools/build_package.py")
         with tempfile.TemporaryDirectory() as directory:
@@ -28,14 +79,45 @@ class SkillMaturity(unittest.TestCase):
             self.assertIs(fields["optional"], True)
             self.assertIs(fields["requires_preview_ack"], True)
 
-    def test_eight_skill_product_maturity_is_explicit(self):
+    def test_nine_skill_product_maturity_is_explicit(self):
         read = load("tools/fe_lib.py").frontmatter
         skills = sorted((ROOT / "plugin/skills").glob("*/SKILL.md"))
-        self.assertEqual(len(skills), 8)
+        manifest = json.loads((ROOT / "plugin/package/manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(skills), 9)
+        registered = {Path(row["folder"]).name for row in manifest["agentSkills"]}
+        self.assertEqual(len(registered), 8)
+        self.assertEqual({p.parent.name for p in skills} - {"frontier-finops"}, registered)
         for path in skills:
             fields = read(path.read_text(encoding="utf-8"))
-            expected = "preview" if path.parent.name == "frontier-finops" else "ga"
+            expected = "preview" if path.parent.name in {"frontier-finops", "frontier-agent-factory"} else "ga"
             self.assertEqual(fields.get("metadata.maturity"), expected, path.parent.name)
+
+    def test_factory_is_optional_preview_without_a_cost_ack_gate(self):
+        lib = load("tools/fe_lib.py")
+        expected = {"maturity": "preview", "optional": True, "requires_preview_ack": False}
+        self.assertEqual(lib.maturity_errors("frontier-agent-factory", expected), [])
+        for field, value in (("maturity", "ga"), ("optional", False),
+                             ("requires_preview_ack", True), ("optional", 1),
+                             ("requires_preview_ack", 0)):
+            with self.subTest(field=field, value=value):
+                self.assertTrue(lib.maturity_errors("frontier-agent-factory", dict(expected, **{field: value})))
+        self.assertTrue(lib.maturity_errors("frontier-blueprint", expected))
+        self.assertTrue(lib.maturity_errors("frontier-finops", expected))
+
+    def test_factory_installer_matrix_and_reinstall_never_grants_consent(self):
+        self.install_probe("preview", True, requires_ack=False, name="frontier-agent-factory")
+        for version in ("1.7.1", "1.9.1"):
+            self.install_probe("preview", True, requires_ack=False,
+                               name="frontier-agent-factory", installed_version=version)
+        for field, value in (("maturity", "ga"), ("optional", False),
+                             ("requires_preview_ack", True), ("requires_preview_ack", 0),
+                             ("optional", 1)):
+            with self.subTest(field=field, value=value):
+                self.install_probe("preview", False, requires_ack=False,
+                                   name="frontier-agent-factory", override={field: value})
+
+    def test_installer_does_not_allow_a_ga_wrapper_to_be_relabelled_preview(self):
+        self.install_probe("preview", False, requires_ack=False, name="frontier-blueprint")
 
     def test_installer_reports_preview_but_does_not_acknowledge_it(self):
         self.install_probe("preview", True)
@@ -66,34 +148,37 @@ class SkillMaturity(unittest.TestCase):
             self.assertTrue("frontier-finops" in output.getvalue(), "missing explicit maturity error")
             self.assertFalse((root / "dist").exists())
 
-    def install_probe(self, maturity, valid, requires_ack=True, installed_version=None):
+    def install_probe(self, maturity, valid, requires_ack=True, installed_version=None,
+                      name="frontier-finops", override=None):
         installer = load("plugin/install/prepare_install.py")
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             text = (
-                '---\nname: frontier-finops\nmetadata:\n  version: "1.9.1"\n'
-                '  maturity: preview\n  optional: true\n  requires_preview_ack: true\n---\n'
+                f'---\nname: {name}\nmetadata:\n  version: "1.9.1"\n'
+                '  maturity: preview\n  optional: true\n'
+                f'  requires_preview_ack: {str(name == "frontier-finops").lower()}\n---\n'
             )
-            skill = root / "skills/frontier-finops/SKILL.md"
+            skill = root / f"skills/{name}/SKILL.md"
             skill.parent.mkdir(parents=True)
             skill.write_text(text, encoding="utf-8")
             spec = {
                 "plugin": "frontier-envisioning", "version": "1.9.1",
                 "skills": [{
-                    "name": "frontier-finops", "folder": "skills/frontier-finops",
+                    "name": name, "folder": f"skills/{name}",
                     "files": {"SKILL.md": hashlib.sha256(skill.read_bytes()).hexdigest()},
                     "maturity": maturity, "optional": True, "requires_preview_ack": requires_ack,
                 }],
             }
+            spec["skills"][0].update(override or {})
             plan = root / "install/plugin-install.json"
             plan.parent.mkdir()
             plan.write_text(json.dumps(spec), encoding="utf-8")
             installed = root / "installed"
-            previous = installed / "frontier-finops" / "SKILL.md"
+            previous = installed / name / "SKILL.md"
             if installed_version:
                 previous.parent.mkdir(parents=True)
                 previous.write_text(
-                    f'---\nname: frontier-finops\nmetadata:\n  version: "{installed_version}"\n'
+                    f'---\nname: {name}\nmetadata:\n  version: "{installed_version}"\n'
                     '  maturity: ga\n  preview_acknowledged: true\n---\n',
                     encoding="utf-8",
                 )
@@ -106,8 +191,10 @@ class SkillMaturity(unittest.TestCase):
             self.assertEqual(result["verified"], valid)
             if valid:
                 self.assertEqual(result["skills"][0]["maturity"], "preview")
-                self.assertIs(result["skills"][0]["requires_preview_ack"], True)
-                self.assertIn("not GA", result["preview_notice"])
+                self.assertIs(result["skills"][0]["requires_preview_ack"], requires_ack)
+                self.assertIn("not GA" if name == "frontier-finops" else "no source-transfer",
+                              result["preview_notice"])
+                self.assertIn("Preview", result["preview_notice"])
                 self.assertNotIn("preview_acknowledged", result)
                 self.assertNotIn("--acknowledge-finops-preview", "".join(result["copy_calls"]))
                 if installed_version:

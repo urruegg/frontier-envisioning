@@ -16,7 +16,7 @@ class IntegratedRasterPreview(unittest.TestCase):
     def test_only_named_integrated_preview_is_added(self):
         module = load("tools/demo_raster.py")
         self.assertEqual(module.SUPPORTED_VERSIONS, {"1.4.0", "1.5.0", "1.6.0"})
-        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1", "1.7.1", "1.9.1", "1.9.2", "1.10.0", "1.10.1"})
+        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1", "1.7.1", "1.9.1", "1.9.2", "1.10.0", "1.10.1", "1.11.0"})
 
     def test_integrated_record_is_byte_pinned_and_retains_exact_a6_inputs(self):
         module = load("tools/demo_raster.py")

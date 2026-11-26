@@ -1,19 +1,18 @@
 ---
 name: frontier-process
 description: |
-  Optional GA product wrapper for process ontology design: business objects, proposed CDM
-  mappings, OneLake layers, data products and agent grounding. Writes local Turtle and design
-  files plus the blueprint Ontology page; Fabric ontology/agent/operations remain Preview.
-  Use for "build the process ontology for <customer>", "map the ontology to the Common Data
-  Model", "define the data products" or "add the ontology to the blueprint".
-  Do NOT use for Power BI data questions (powerbi or Fabric IQ plugin), blueprint HTML alone
-  (frontier-blueprint), PRD/design documents (frontier-solution-design), or cost modelling
-  (frontier-finops, optional Preview with confirmation first).
+  Designs process ontologies, business objects, proposed CDM mappings, OneLake layers,
+  data products and agent grounding. Writes local Turtle and design files for the blueprint
+  Ontology page; Fabric ontology/agent/operations remain Preview. Use for "build the process
+  ontology for <customer>", "map to the Common Data Model" or "define the data products".
+  Do NOT use for business value, ROI, NPV or payback (use frontier-value-case), Power BI
+  questions (powerbi or Fabric IQ plugin), blueprint HTML alone (frontier-blueprint), or
+  PRD/design documents (frontier-solution-design). FinOps is not included in this release.
 license: MIT
 metadata:
   category: productivity
   icon: DataUsage
-  version: "1.10.1"
+  version: "1.11.0"
   plugin: frontier-envisioning
   maturity: ga
   optional: true
@@ -23,6 +22,8 @@ metadata:
 # Frontier process ontology (Fabric IQ)
 
 *Procedure maintenance: Copilot AI-assisted, 24 November 2026; original authorship retained.*
+
+*1.11.0 distribution/routing maintenance: Copilot AI-assisted, 26 November 2026.*
 
 The optional data-design capability of the Frontier method. It proposes business
 objects, Microsoft standard-entity mappings, medallion bindings, data products
@@ -39,12 +40,12 @@ this procedure does not claim a new source fetch. Re-check dated Microsoft
 sources and known issues before a workshop. Proposed standard mappings are in
 `templates/cdm-map.json`; Dynamics 365/Dataverse origins do not verify every table.
 
-Process work does not require FinOps. Continue without it when absent or declined,
-stating any real cost/budget gap. For requested costs, first show the full notice
-and obtain actual current-scenario confirmation via
-[frontier-finops](../frontier-finops/SKILL.md); no cost operation or figure before
-that gate. Do not reuse embedded legacy Preview costs as GA. Use clean core inputs
-on decline, preserving original/provenance; missing requested FinOps is an error.
+For 1.11.0, follow the [FinOps distribution boundary](../frontier-envisioning/references/method.md#finops-not-included-in-1110).
+FinOps is not bundled. Continue ordinary non-FinOps work with explicit budget
+gaps; do not invoke an absent skill or reuse derived financial figures.
+Use clean core inputs and preserve original financial ancestry. Retained
+legacy Preview cost discussion is source-compatibility reference, not runnable
+1.11.0 instructions or GA evidence; an unavailable FinOps request is an error.
 
 ## Quick Start
 
@@ -72,7 +73,8 @@ User: "Build the process ontology for the Caldova blueprint"
 - Asking questions about a Power BI report or semantic model: use the powerbi skill or the Fabric IQ plugin in Cowork
 - Building or updating the blueprint itself: use frontier-blueprint instead (this skill adds one page to it)
 - PRD, solution design and ADRs: use frontier-solution-design instead
-- Business value: frontier-value-case; requested costs: frontier-finops for its full Preview notice and confirmation first
+- Business value, ROI, NPV or payback: use frontier-value-case instead; this skill owns process ontology, proposed CDM mappings and data products
+- FinOps cost modelling or Copilot Credits: unavailable in this release; state the error and any budget gap
 - Agent names, colours and icons: use frontier-agent-identity instead
 - Customer context from meetings, mail, chats and transcripts: use frontier-context-discovery instead
 - Running the whole engagement: use frontier-envisioning instead (it calls this skill as an optional step)

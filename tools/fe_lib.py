@@ -67,6 +67,13 @@ def load_module(path: Path, name: str | None = None):
     return mod
 
 
+def skill_inventory_errors(
+    version: str, registered: list[str], disk: list[str], *, source_tree: bool
+) -> list[str]:
+    installer = load_module(PLUGIN / "install" / "prepare_install.py", "fe_install_inventory")
+    return installer.skill_inventory_errors(version, registered, disk, source_tree=source_tree)
+
+
 def call_main(mod, argv) -> tuple[int, str]:
     """Call mod.main(argv) and capture what it prints."""
     buf = io.StringIO()
@@ -165,7 +172,7 @@ def maturity_fields(fields: dict) -> dict:
 
 def maturity_errors(name: str, fields: dict) -> list[str]:
     errors = []
-    expected = "preview" if name == "frontier-finops" else "ga"
+    expected = "preview" if name in {"frontier-finops", "frontier-agent-factory"} else "ga"
     if fields.get("maturity") != expected:
         errors.append(f"{name}: product maturity must be {expected}")
     for key in ("optional", "requires_preview_ack"):
@@ -174,6 +181,9 @@ def maturity_errors(name: str, fields: dict) -> list[str]:
     if name == "frontier-finops":
         if fields.get("optional") is not True or fields.get("requires_preview_ack") is not True:
             errors.append(f"{name}: FinOps must be optional Preview with acknowledgement required")
+    elif name == "frontier-agent-factory":
+        if fields.get("optional") is not True or fields.get("requires_preview_ack") is not False:
+            errors.append(f"{name}: Factory must be optional Preview without a cost acknowledgement gate")
     elif fields.get("requires_preview_ack") is not False:
         errors.append(f"{name}: GA core must not require FinOps Preview acknowledgement")
     return errors

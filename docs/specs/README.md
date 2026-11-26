@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.9 |
-| Date | 2026-11-25 |
+| Version | 1.14 |
+| Date | 2026-11-26 |
 | Author | Copilot SDK in VS Code; AI-assisted maintenance |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Agreed behaviour, acceptance and constraints for new work packages |
@@ -11,6 +11,8 @@
 
 | Spec | Design state | Execution state |
 |---|---|---|
+| [1.11 Cowork health and FinOps exclusion](2026-11-26-plugin-health-and-finops-exclusion-design.md) | [Bug #81](https://github.com/urruegg/frontier-envisioning/issues/81): written spec `c26991e` approved; [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7193888412) | [Idea](../ideas/2026-11-26-plugin-health-and-finops-exclusion.md), [approved plan `b3174a1`](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md), [PR #80](https://github.com/urruegg/frontier-envisioning/pull/80); [actual execution approval](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7194451667), results pending |
+| [Agent Factory handover skill](2026-11-25-agent-factory-handover-design.md) | [#72](https://github.com/urruegg/frontier-envisioning/issues/72): written spec/W0/host amendment approved; offline Preview boundary, actual evidence in linked records | [Idea](../ideas/2026-11-25-agent-factory-handover.md), [W0 plan](../plans/2026-11-25-agent-factory-handover-plan.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md), bounded [#73](https://github.com/urruegg/frontier-envisioning/issues/73); source/receiver reference verified, actual Cowork deferred/not performed |
 | [Release evidence simplification](2026-11-24-release-evidence-simplification-design.md) | [#67](https://github.com/urruegg/frontier-envisioning/issues/67): written spec at `67dc9a5` approved on 25 November | [Idea](../ideas/2026-11-24-release-evidence-simplification.md), [plan](../plans/2026-11-25-release-evidence-simplification-plan.md), [SPRINT-012](../sprints/SPRINT-012-release-evidence-simplification.md); subsequent real plan/execution approved at `22f512f`; bounded implementation, human-only adoption |
 | [Process governance and SAP grounding](2026-11-17-process-governance-sap-grounding-design.md) | [#59](https://github.com/urruegg/frontier-envisioning/issues/59) written spec approved at reviewed digest 8ab93d95 | [Idea](../ideas/2026-11-17-optional-systems-extensions.md), [plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](../sprints/SPRINT-011-process-grounding-and-optional-systems.md); plan/readiness at `35ad763` approved, runtime #60 handoff; no release approval |
 | [PR-gated operating model](2026-11-14-pr-gated-operating-model-design.md) | Written proposal approved at `8de16ca` on [#48](https://github.com/urruegg/frontier-envisioning/issues/48) | [Plan](../plans/2026-11-14-pr-gated-operating-model-plan.md), [SPRINT-010](../sprints/SPRINT-010-pr-gated-operating-model.md), [ADR-0030](../adr/0030-pr-gated-engineering-automation.md); subagent plan/readiness `e8ea6bd`, contracts/bootstrap verified; adoption pending |

@@ -2,12 +2,261 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.9 |
-| Date | 2026-11-25 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance) |
-| Status | Maintained design; #67 engineering slices reviewed, final gate/CI and protected adoption pending; prior 1.10.1 gates indexed in PR #65; published 1.10.0 retained; no release approval implied |
-| Scope | Release-evidence engineering flow/verification, bounded unreleased 1.10.1 correction and preserved historical design, evidence and inventory |
+| Version | 1.13 |
+| Date | 2026-11-26 |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance); Copilot (AI-assisted #78 Factory candidate prose); Copilot (AI-assisted #81 distribution/routing prose) |
+| Status | Local handoff: amended eight-skill package/receiver/L1/L2 verified at `c416f5e` with outputs `0d03344`; live CI/host-health status is on #80/#81; prior evidence retained; no release approval implied |
+| Scope | 1.11.0 Factory and approved Cowork distribution/routing flow, with historical architecture, engineering evidence and inventory preserved |
 | References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61), [Release evidence spec](specs/2026-11-24-release-evidence-simplification-design.md), [Human adoption handover](engineering/release-evidence-adoption.md) |
+
+## 1.11.0 Agent Factory offline Preview
+
+**26 November 2026: unreleased development candidate.** The offline producer
+is implemented and reviewed through `52d6c0e31c48ea3955d4b5f346da396474215222`.
+It prepares a full controlled Agent Factory foundation plus reviewed intake
+documents, not a business-agent runtime, SDK, application or tenant loader.
+**Envisioning Agent Factory** (`frontier-agent-factory`) is the optional
+Preview skill registered in the same plugin. The current Cowork distribution
+has eight skills: seven existing GA wrappers, including Business Value Case,
+plus Preview Factory. Nine source folders remain, including source-only
+FinOps, which is not registered, copied or installed in this ZIP.
+The prior nine-skill procedure, registration and maturity/installer metadata
+were implemented. That prior candidate's exact package/receiver and full local
+L1 checks passed under
+[#79](https://github.com/urruegg/frontier-envisioning/issues/79).
+Server L1, all 76 browser tests, IaC and CodeQL subsequently passed at
+`4aa1ddb`; current-head status is on
+[draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80).
+These results and the prior `ab9b10b` head remain historical nine-skill
+evidence, not amended eight-skill verification.
+The isolated local timeout reruns are still not a complete local suite pass,
+and no human acceptance or publication is implied.
+The amended eight-skill candidate subsequently passed its own exact-package,
+required receiver and full local L1/L2 checks at source `c416f5e`, with
+generated outputs `0d03344`. The source-qualified results below are separate
+from the earlier candidate; current-head CI and host-health status remain
+on #80/#81, not inferred from those earlier checks.
+
+The [PRD AF-01–16 requirements](prd.md#factory-requirements-and-acceptance),
+[approved design](specs/2026-11-25-agent-factory-handover-design.md),
+[complete approved plan](plans/2026-11-25-agent-factory-offline-implementation-plan.md)
+and [SPRINT-013](sprints/SPRINT-013-agent-factory-handover.md) govern
+[#72](https://github.com/urruegg/frontier-envisioning/issues/72) and
+[#78 prose](https://github.com/urruegg/frontier-envisioning/issues/78).
+`@urruegg` is accountable. [ADR-0032](adr/0032-offline-agent-factory-handover.md)
+records rationale as **Proposed**, not engineering-policy activation.
+The [approved host amendment](specs/2026-11-25-agent-factory-handover-design.md#11-host-gate-amendment-actual-cowork-unavailable)
+permits offline Preview development because actual Cowork is unavailable;
+it neither changes the product runtime nor validates a host route.
+
+### H111 Cowork distribution and routing amendment
+
+The [approved #81 specification `c26991e`](specs/2026-11-26-plugin-health-and-finops-exclusion-design.md),
+[approved plan `b3174a1`](plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md)
+and [actual execution receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7194451667)
+govern the [current H111 requirements](prd.md#h111-cowork-distribution-and-routing-amendment).
+`@urruegg` is accountable. The original Factory specification and all
+commit-qualified nine-skill evidence remain unchanged.
+
+The version-scoped installer inventory separates nine retained source folders
+from eight shipped skills. It excludes only FinOps for 1.11.0 and rejects
+unknown exclusions or accidental omissions; source maturity/version and shared
+financial-copy checks remain. No automatic FinOps installation is a fallback.
+The [canonical installed notice](../plugin/skills/frontier-envisioning/references/method.md#finops-not-included-in-1110)
+is the link target for shipped procedures and the five affected references.
+It lives inside the copied `frontier-envisioning` skill: the installer copies
+the eight skill folders, not the package-root README. The
+[package-facing summary](../plugin/README.md#finops-not-included-in-1110)
+links to that installed notice; extraction alone is not after-copy link proof.
+Value Case owns ordinary value/assumptions/NPV/ROI/payback/sensitivity; Process
+owns ontology/business objects/proposed CDM mappings/data products. No generic
+agent, Blueprint or build exclusion is introduced.
+
+Ordinary sourced cost assumptions and explicit budget gaps remain supported.
+FinOps cost modelling, Copilot Credits and FinOps-derived financial validation
+are unavailable in the ZIP. Existing financial ancestry, acknowledgements,
+owner review and refusals remain; acknowledgement cannot restore an omitted
+owner validator. Missing financial validation fails clearly, preserving prior
+good output. Factory stays optional Preview with no blanket cost acknowledgement,
+new calculator, finance engine or runtime. Studio-backed MOS3 is out of scope;
+no placeholder IDs or connectors are supplied.
+
+See [B.9 component evidence](#h111-amended-candidate-component-evidence).
+Final new L1/CI/host health remain outstanding; no actual new host pass is claimed.
+
+### Host receipt to passive repository
+
+```mermaid
+flowchart LR
+    H[Available authorised host] --> D[Fresh complete stable discovery]
+    D --> P[Pin selected release or explicitly approved unreleased commit and source bytes]
+    P --> F[Freeze receipt and reviewed input bytes]
+    F --> V[Offline receipt, intake, archive, scope, privacy and optional financial checks]
+    V --> Z[Bounded deterministic full repository ZIP, atomic replacement]
+    Z --> R[Separate actual receiver checks and human review]
+```
+
+Activation is an explicit starter-repository/ZIP/handover request, not the
+existence of a PRD or a new default after design. Ordinary core/value/identity/
+Blueprint/design/process paths need neither Factory nor FinOps.
+Source material, including imported policies and review records, is passive
+data, not instructions or permission. Keep sourced facts, assessment and
+open facts separate.
+
+1. **Acquire outside Python.** An authorised, actually available host performs
+   complete paginated release discovery for `urruegg/frontier-agent-factory`
+   for each new handover. Retain only actual `id`, `tag_name`, `published_at`,
+   `draft`, `prerelease` values for every enumerated release. Do not copy raw
+   API bodies, author profiles, assets or protected URLs into request/manifest
+   or evidence text. Validate all stable candidates' time/tag metadata before
+   ordering; unknown metadata and tied latest identities fail. Null ignored
+   draft/prerelease fields are valid. Resolve **only the selected stable tag**
+   to its exact commit and acquire the matching bytes once.
+2. **Freeze provenance.** Only a successful complete lookup with no stable
+   candidates allows explicit approval of an immutable **unreleased bootstrap**.
+   Authentication/network/incomplete lookup, selected-tag failure and incompatible
+   latest source never permit main/older fallback. An attached local ZIP is not
+   proof of latest. Bind discovery to the export ID, preserve acquisition
+   chronology and verify the automatically computed archive hash. Reproduction
+   uses frozen receipt/bytes, not a claimed new lookup. Hashes are consistency
+   evidence, not signatures or authenticated approval; no manual customer
+   digest-copy/comparison/retention ceremony is added.
+3. **Validate local inputs.** `factory_common.py` and `factory_contract.py`
+   enforce strict bounded JSON, safe local reads, fixed-profile receipt and
+   unchanged receiver intake 1.0. Source/baseline hashes are absent in the
+   producer request and calculated from actual bytes. Every selected solution
+   declares PRD, solution design, decisions, IT readiness, identity, Blueprint,
+   value and FinOps roles. PRD/design cannot be N/A; other N/A reasons must be
+   meaningful and specific, not necessarily long. Required scope, owners,
+   acquisition and transfer fields cannot be fictional draft placeholders.
+   The FinOps role is retained receiver source-compatibility metadata, not a
+   bundled skill, runnable financial operation or false N/A for missing evidence.
+4. **Preserve scope and authorship.** Keep final reviewed PRD/design/ADRs and
+   applicable readiness/identity/Blueprint/value/process/financial inputs,
+   original IDs/bytes, explicit original-to-factory maps and selection evidence.
+   Select MVP/shared dependencies from customer-safe entities; no keyword-MVP
+   inference, competing generator or renumbering. An out-of-scope dependency is
+   a named gap, not new implementation scope. Refinement stays upstream.
+   Historical accepted records keep raw JSON, Windows path spellings, CRLF
+   and supplied file bytes. A new ID/`supersedes` records change; unavailable
+   historical originals are explicitly not verified.
+5. **Check privacy and actual finance.** `factory_projection.py` uses trusted
+   installed sibling owner helpers for original-ancestry/schema-owned customer
+   projection, scope, sharing and optional financial verification as described
+   below. No imported foundation code is executed.
+6. **Preserve and publish.** `factory_archive.py` uses the shared raw ZIP
+   mechanism (`zip_stream.py`, also used by release evidence) to validate actual
+   STORE/DEFLATE streams and preserve the complete compatible foundation,
+   modes, policies/workflows, locks and licences. It does not keyword-prune.
+   Exclude `.git`, account/cache/staging/dependency state; reject prepopulated
+   real intake and generated-path collisions. Validate the complete bounded
+   entry set before atomic replacement; failures leave inputs and the prior
+   good ZIP unchanged. Fixed inputs/metadata produce identical ZIP bytes.
+
+The foundation gains `START_HERE.md`, producer sidecar `handover/manifest.json`
+(`frontier-agent-factory-handover/1.0`) and
+`docs/intake/records/<id>/{intake.json,review.md,artifacts/...}`.
+Producer provenance/inventory does not extend receiver intake 1.0.
+Inventory excludes its manifest's own hash; final ZIP SHA256 is stdout.
+The outer ZIP distributes repository source, not a receiver input archive.
+Both review-starter and accepted exports generate no solution runtime,
+source/test/evaluation/IaC/application units or remote issues.
+Preserved MIT/third-party notices do not relicense customer files, settle IP
+ownership or grant transfer permission.
+
+### Projection, financial authority and current input limitation
+
+Whole original ancestry remains available to the schema-owned customer
+projection. Guards inspect all current/history structured content and the
+actual prospective export metadata, including filenames, refs, known internal
+notes, private keys/arrays and withheld names/counts. Every provided file and
+exported metadata requires genuine matching-customer-scope sharing/transfer
+review, including draft intake. Restricted baselines fail. Raw mail/transcripts,
+private sources, secrets, account state and protected links are not export
+material. PDF/Office files remain opaque human-reviewed files; checks are not
+complete semantic DLP or reviewer authentication.
+
+Only ordinary `.md`, `.txt`, `.json`, `.pdf`, `.docx`, `.xlsx`, `.pptx`
+and `.csv` are supported. Selected HTML/ZIP/Turtle needs an actual reviewed
+JSON/Markdown equivalent; no rename, silent drop or bypass folder.
+Authored originals and approved baselines remain distinct; genuine byte-changing
+transformations require matching review evidence, not a generic assertion.
+
+**Actual limitation:** `check_blueprint` refuses a Blueprint original containing
+derived `agent_finops` with `FACTORY_BLUEPRINT_FINANCIAL_CONTEXT`. It never
+strips or trusts the cache. Supply a compatible authoritative original Blueprint
+and separately approved customer projection through genuine upstream
+review/transformation; standalone financial reports require actual source
+packets. This cached source-context port is not supported and no automatic
+rewrite of reviewed inputs is claimed.
+
+Financial detection traverses provided current/history JSON and roles for
+financial schemas, legacy markers and nested results, including changed or
+missing schema labels. Changing a role, packet or wrapper cannot exempt a
+derivative. **Source-compatibility reference — not runnable 1.11.0 FinOps
+validation:** an actual financial operation requires current CLI acknowledgement,
+actual matching owner review and authoritative model/review receipts. No
+installation, demo approval or cache supplies consent. Existing FinOps/value
+owner validators, projection, formulas, rates and stricter handover rules
+remain authoritative; Factory calculates no new estimate and inserts no zero
+budget or false N/A. Internal-only authoritative models/review staging are
+validation inputs, not auto-exported files or claims of privacy clearance.
+Genuine standalone legacy reviewed documents remain review-only, not budget-ready.
+Explicit `build-handover` with `financial.requested` set to `false` is refused.
+With `financial.requested` set to `true`, the claim must meet the documented
+actual stricter financial handover-ready gate. A review starter with a financial
+gap does not gain financial readiness or tenant permission.
+
+### Public CLI, resource bounds and independent statuses
+
+The actual [exporter](../plugin/skills/frontier-agent-factory/scripts/export_factory.py)
+and [reference contract](../plugin/skills/frontier-agent-factory/references/handover-contract.md)
+define the local interface:
+
+```powershell
+python <installed-skill>\scripts\export_factory.py --request request.json --template template.zip --source-root originals --baseline-root approved --out Caldova-factory.zip
+```
+
+The retained optional `--acknowledge-finops-preview` is source-compatibility
+reference, not runnable 1.11.0 financial validation. Ordinary non-financial
+export needs no cost acknowledgement; an omitted financial owner validator
+is an explicit error even with the flag. There is no network, execute,
+force-accept, skip-profile, drop, unsafe or arbitrary-profile switch.
+The stdlib Python 3.11+ producer performs no acquisition, dependency setup
+or downloaded-code execution. Trusted bundled sibling helpers allow local
+execution outside this repository; a missing requested component is an explicit
+error, not a repository-only import. No universal host tool name, GitHub CLI
+or Cowork download capability is assumed.
+
+| Boundary | Fixed limit / behaviour |
+|---|---|
+| Source ZIP | STORE/DEFLATE only; 32 MiB compressed, 64 MiB decoded, 4,096 members including directories |
+| Receiver validation | 16 MiB per file, 1 MiB intake JSON, **one shared 64 MiB baseline-plus-original-source read budget**, not per root |
+| Final repository | 128 MiB expanded, 4,096 members including generated files |
+| Safety | Known corruption, unsafe paths, link/reparse, file-parent, case/slash alias and forbidden-state hazards fail before bounded atomic replacement |
+| Receiver prerequisites | Python 3.12+ and Node 24 LTS; observed Node 26 does not certify that profile |
+
+| Reported dimension | Meaning, not authority |
+|---|---|
+| Export validation | Local producer checks passed only after actual successful publication of the ZIP |
+| Intake disposition | Valid `needs-clarification` by default with real required fields and explicit engineering gaps; explicit invalid acceptance fails without downgrade |
+| Recorded review | An assertion against supplied evidence, not authenticated identity or permission |
+| Original-source validation | Current hashes from local bytes; historical originals unavailable/not verified |
+| Receiver / Cowork validation during export | `not-performed`; later actual checks remain separate evidence |
+| Tenant readiness | `not-assessed`; no Entra, deployment or build permission |
+| Financial status | Not requested, reviewed documents, gaps or planning-ready as actually verified; never financial permission |
+
+GitHub.com and GitHub Enterprise Cloud, including cloud hostnames, are the
+first receiving-repository/host profile, not native Azure DevOps/GHES certification.
+The authoritative template source remains `urruegg/frontier-agent-factory`
+on GitHub.com.
+There is no remote repository creation, Work IQ authentication switch, tenant
+consent, provisioning or deployment. Settings, secrets and actual ownership
+remain future human work. M365 read access/public visibility grants no
+transfer/IP/Entra rights. Identity-kit branding is not Entra provisioning;
+HubWorks remains controlled integration, not an assumed runtime loader.
+Metadata does not activate a harness. Final candidate evidence is separated
+in [B.9](#agent-factory-candidate-verification-26-november-2026).
 
 **Unreleased 1.6.1 distribution hygiene (#20).** Both builders reuse the package
 module's bounded, recursive byte/ZIP validator before writing inventory,
@@ -1056,6 +1305,65 @@ Focused review/integration proof is not the final strict gate, actual PR #71
 CI or protected human adoption; those remain pending. #52 supersession awaits
 verified replacement/adoption, not a claim of old retention/merge completion.
 The original release table below is unchanged.
+
+### Agent Factory candidate verification (26 November 2026)
+
+This table preserves the prior nine-skill candidate's evidence at its named
+heads, including `52d6c0e`/`4aa1ddb` and the later `ab9b10b` baseline.
+It is not proof of the amended eight-skill distribution; new component
+evidence follows separately below.
+
+The following is returned local evidence supplied by the parent for
+[#72](https://github.com/urruegg/frontier-envisioning/issues/72), not commands
+executed by the #78 documentation worker. Runs are separate, not additive
+global totals. [AF-01–16](prd.md#factory-requirements-and-acceptance),
+the [approved full plan](plans/2026-11-25-agent-factory-offline-implementation-plan.md)
+and [SPRINT-013](sprints/SPRINT-013-agent-factory-handover.md) provide traceability.
+
+| Checkpoint / source | Returned evidence and limits |
+|---|---|
+| W0 pinned reference `0bb2b1ba13cff77ee0bc3f271baddd3f89f9165d` | 149 files / 726,850 bytes. Actual receiver suite: 31 run, 30 passed, one Windows privilege 1314 skip; four validator commands exited 0. Synthetic evidence authenticates nobody; not a new producer/receiver integration pass. |
+| Unchanged plugin 1.10.1 at `5dbfc8a` | Local fresh CI-context strict full baseline ended **ALL GATES PASSED**: 924 passed, eight skipped, 3,108 subtests; 201 DOM tests passed. Exact-version online lookup returned **development** after no exact published release/conflicting tag, not published-1.10.1 reproduction, current latest-publication evidence, server CI or Factory proof. |
+| #74 version/profile `c51c6e9` | First bump to 1.11.0 and named finite profile had actual RED/GREEN; parent 49 raster tests passed and strict repository check reported 668 files, zero errors. Historical profiles, 205 non-raster inputs and 223 PNGs remained unchanged. Not final candidate acceptance. |
+| #75 W1 `bf54731` | Both ordered specification/quality reviews clear; 37 focused tests passed. Contract helpers, not whole-product proof. |
+| #76 W2 `d1c0b3f` | Both ordered reviews clear. Parent 120 run, 118 passed, two genuine Windows privilege 1314 skips; native junction coverage and Ruff passed. Actual at/over 32/64/128 MiB and 4,096-member coverage plus 149-blob source smoke; not whole producer/receiver integration. |
+| #77 W3 reviews | Stage 1 **SPEC_COMPLIANT** at `35d5b950`; Stage 2 **QUALITY_CLEAR** through residual `ee5d690acfe28a3dad2924cf50c59ff27a9de62e`, after actual privacy/private-key/nested-value/native-legacy/ontology/schema-less result-receipt corrections. Owner APIs/public CLI unchanged. |
+| #77 prior broad checkpoint `5d63359` | 125 run, 124 passed, one archive privilege skip, 3,161 seconds. This is the earlier checkpoint, not a fresh final-product run. |
+| #77 targeted current `ee5d690` | Parent eight targeted financial/core controls passed in 28.801 seconds, plus supplied Ruff/whitespace pass. |
+| #77 fresh complete W3 component suite `ee5d690acfe28a3dad2924cf50c59ff27a9de62e` | Parent `python -m unittest tests.unit.test_factory_export tests.unit.test_factory_privacy tests.unit.test_factory_finops -q`: **63 run, 63 passed, zero skipped**, 158.827 seconds. Five owned Python paths passed Ruff; whitespace passed. Parent supplied shell timestamp `2026-11-26T08:05:59+01:00`. Local W3 component proof only. |
+| #78/#79 integration | Prose reviewed at `fca506f`; registration/maturity/installer/self-test and package integration at `9fb2435` passed specification review. Parent 52 focused tests passed with 334 subtests; strict docs and integrated docs-contract checks passed. These commands were run by the parent, not the prose worker. |
+| Final financial review `52d6c0e31c48ea3955d4b5f346da396474215222` | Installed current/history legacy financial schemas under `vars` now require acknowledgement; nonrepresentable financial numeric input returns safe fixed JSON. Both findings fixed test-first and re-reviewed **QUALITY_CLEAR**. Parent 13 targeted installed/financial/core tests passed, zero skips, 77.616 seconds. Owner calculator semantics unchanged. |
+| Exact package/actual receiver at `52d6c0e` | Two independent plugin builds byte-identical: SHA256 `678361b50bfe355be98e4e4a418dbd364a2929e36f739df938657de8dfd9a5ca`. Required `python -m unittest tests.pipeline.test_factory_receiver -v`: six passed, zero skips, 117.545 seconds. Actual 149-blob foundation, default/synthetic accepted full-source/baseline checks, history/junction and shared 64 MiB/+1 tests passed. Synthetic acceptance authenticates nobody. |
+| Full local 1.11.0 L1 at `52d6c0e` | `$env:CI='true'; python tools\dev.py check --strict`: **ALL GATES PASSED**, 1,089 passed, 14 skipped, 3,620 subtests; 201 DOM tests passed; self-test/package/demo/docs-demo/lint/docs/neutrality passed. Six pre-existing ESLint warnings remain. Fresh authoritative exact-version status **development**, not published-release reproduction. [Actual parent receipt](https://github.com/urruegg/frontier-envisioning/issues/79#issuecomment-7188976751). Subsequent evidence-only prose does not change product bytes. |
+| Local full browser result | Correct isolated Preview-enabled site, one worker, zero retries: **73 passed, three timeouts**, 53.6 minutes. Those same three cases passed unchanged in a separate targeted run, 3.5 minutes; this is **not** a full-suite pass. Earlier harness/temporary-output failures are retained in [SPRINT-013](sprints/SPRINT-013-agent-factory-handover.md#w4-reviewed-integrated-candidate-and-final-local-evidence), not waived or relabelled by the later server pass. |
+| Automatic server CI `4aa1ddb7ad6c137c5560d39aa7e4fade1482bc70` | [Run 45807997484](https://github.com/urruegg/frontier-envisioning/actions/runs/45807997484) passed L1 (1,092 passed, 11 skipped, one warning, 3,617 subtests; `ALL GATES PASSED`, release status development), full L2 (**76 passed**, two workers, 6.1-minute browser execution; `ALL GATES PASSED`) and IaC. [CodeQL 45807997496](https://github.com/urruegg/frontier-envisioning/actions/runs/45807997496) passed all three analyses. Later evidence-only prose does not change product bytes; current-head checks and human handoff remain on [PR #80](https://github.com/urruegg/frontier-envisioning/pull/80). |
+| Host/toolchain/authority | Actual Cowork discovery/install/acquisition/export **NOT PERFORMED** under the separately approved `f4b2609` amendment. Node 24 LTS/full receiver toolchain certification not performed; Node 26 is not a substitute. Tenant readiness **NOT ASSESSED**; recorded review is not authentication. Human #8 legacy routing remains pending. |
+
+These observations preserve historical release/source/provenance and do not
+authorise merge, protected adoption, release/publication or customer transfer.
+
+#### H111 amended-candidate component evidence
+
+The parent supplied the following #81 results on 26 November; the Task 3 prose
+worker did not execute these commands. Runs are separate, not additive totals.
+They map to the [approved H111 criteria](specs/2026-11-26-plugin-health-and-finops-exclusion-design.md#6-acceptance-and-verification)
+and [current requirements](prd.md#h111-cowork-distribution-and-routing-amendment).
+
+| Source | Returned evidence and limits |
+|---|---|
+| Reviewed Task 1 `b2421f1` | Exact 1.11.0 release-eight/source-nine inventory policy; all retained-source FinOps metadata and shared-copy checks preserved. Parent 22 tests plus edge probes passed. Component proof, not final ZIP/installer acceptance. |
+| Reviewed Task 2 `25a4d1de84bebffedc4475f158ca99543a56af3a` | Strict standalone installer/checks and genuine extracted eight-skill Value Case, Factory and core work without FinOps. Parent ten critical installed/legacy/current-history financial controls passed, zero skips, 42.650 seconds. Worker reported 35 package/financial tests, six legacy tests and 84 self-test checks passed. Financial owner absent even with acknowledgement returns `FACTORY_HELPER`; previous good output preserved. No owner-calculator semantics changed. |
+| Reviewed Task 3 `768f046` | Current eight-skill catalogues, mutual Process/Value Case routing and release guidance passed ordered specification/correctness review. Parent 53 combined targeted tests passed without skips. Review corrected the complete-bundle guide and 33 extraction-only links; the canonical notice now survives skill-only copying. A deliberately reintroduced root-README target fails the regression; legacy guide bytes remain unchanged. Prose worker did not run commands; these are parent/reviewer results. |
+| Coupled full-gate corrections `c416f5e` | Earlier full L1 stopped on missing still-supported feature descriptions and a test deleting correctly absent FinOps. Both were reproduced and fixed without weakening the existing assertions; parent 17 covering tests passed. A later genuine docs-demo fingerprint drift was regenerated through the sanctioned tool. Failed runs remain recorded, not waived. |
+| Exact package and required receiver `c416f5e` / generated `0d03344` | Two independent package builds byte-identical, SHA256 `a95afcdffb981dbada807ddc54f8d74e65eb21ffd7c8275def2d3854534a2148`. Exact eight skills, seven GA/Preview Factory, no FinOps members/copy calls. Required actual receiver: six passed, zero skips; all 149 source blobs/726,850 bytes and modes, history/junction and real shared-budget checks. Parent independently checked the stored ZIP and all 33 notice links after skill-only copying. |
+| Fresh full local L1/L2 at `c416f5e` | `CI=true; python tools\dev.py check`: **ALL GATES PASSED**, 1,095 passed, 14 documented skips, 3,640 subtests; 84 self-tests and 201 DOM tests passed. Six pre-existing ESLint warnings. Fresh exact-version status **development**, not published-release reproduction. Subsequent serial `python tools\dev.py site e2e --strict`: **76 passed**, zero skips/retries, `ALL GATES PASSED`. No assertion/timeout or historical hash was relaxed. |
+| Supplied host report, not this candidate | Generated 2026-11-26 12:36 UTC; SHA256 `20902064efa12cfa4a0a4079c9b346f104ef6afd947e4295d24501ec57f5592a`. Eight scanned skills include FinOps, omit Factory; Value Case 100/100, all eight meet the publish bar. FinOps/Process and Process/Value Case conflicts remain findings of that report. Input version/ZIP digest unknown; not amended-package proof or a broken Value Case installation. |
+| Outstanding host / current-head handoff | Local engineering checks above passed; current-head automatic CI and subsequent human handoff are recorded on [PR #80](https://github.com/urruegg/frontier-envisioning/pull/80). The original host checker is not exposed to this assistant and no agent builder is on PATH. No new Cowork health pass exists; #81 stays open for the actual rebuilt-package report. Actual Cowork discovery/install/acquisition/export and tenant readiness are not claimed. |
+
+Studio-backed MOS3, dummy IDs/connectors, systems/D365 and human publication
+are outside this amendment. No release approval, visibility change or
+customer-transfer clearance is implied. The table that follows is still the
+original release record.
 
 | Check | Tool | Result at release |
 |---|---|---|

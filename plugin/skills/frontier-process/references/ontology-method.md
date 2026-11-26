@@ -1,5 +1,7 @@
 # Process ontology method (Fabric IQ)
 
+*1.11.0 distribution-boundary maintenance: Copilot AI-assisted, 26 November 2026; original authorship retained.*
+
 *Method maintenance: Copilot AI-assisted, 24 November 2026; original authorship not recorded.*
 
 Use the [process skill](../SKILL.md) when process/data design is requested.
@@ -240,8 +242,12 @@ also qualifies saved risk mitigations; it does not erase their historical text.
 Grouping, privacy, feedback targets and Turtle/import contracts are unchanged.
 Public guidance cannot declassify restricted prerequisite notes or ancestry.
 
-Process does not require FinOps. For requested costs, follow the full
-[FinOps notice and actual current-scenario confirmation](../../frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure)
-before any cost operation/recommendation/figure. On decline, preserve old
-Preview originals/provenance and use clean core/ordinary non-FinOps inputs;
-state the budget gap, not zero costs or passed readiness.
+Process does not require FinOps. For 1.11.0, follow the
+[FinOps distribution boundary](../../frontier-envisioning/references/method.md#finops-not-included-in-1110):
+FinOps cost operations and validation are unavailable. Continue process design
+with explicit budget gaps; an unavailable financial request must fail clearly.
+Retained financial protocols are source-compatibility reference, not runnable
+1.11.0 instructions. Preserve old Preview originals/provenance and use clean
+core/ordinary non-FinOps inputs; state the budget gap, not zero costs or passed
+readiness. Actual current-scenario acknowledgement remains required in the
+source protocol and does not restore an omitted owner validator.

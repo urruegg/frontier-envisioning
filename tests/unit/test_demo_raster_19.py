@@ -14,7 +14,7 @@ class ProcessRasterPreview(unittest.TestCase):
     def test_only_named_process_preview_is_added(self):
         module = load("tools/demo_raster.py")
         self.assertEqual(module.SUPPORTED_VERSIONS, {"1.4.0", "1.5.0", "1.6.0"})
-        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1", "1.7.1", "1.9.1", "1.9.2", "1.10.0", "1.10.1"})
+        self.assertEqual(module.PREVIEW_VERSIONS, {"1.6.1", "1.7.1", "1.9.1", "1.9.2", "1.10.0", "1.10.1", "1.11.0"})
 
     def test_process_profile_preserves_the_exact_reviewed_a6_inputs(self):
         module = load("tools/demo_raster.py")

@@ -24,6 +24,22 @@ from fe_lib import DEMO_DIR, DEMO_HTML_NAME, DIST, PLUGIN, ROOT, load_module, pl
 
 ONTOLOGY_DOCUMENTS = ("ontology.ttl", "ontology.md", "data-agents.md", "data-products.md")
 
+LEGACY_SKILL_NOTICE = """The eight-skill plugin contains seven GA product skills and optional Preview FinOps.
+Installation does not acknowledge FinOps use. Its grounding and cost model are not GA and
+need refinement; each cost invocation requires explicit acknowledgement. The included demo
+uses the core profile without FinOps. Process proposals retain their Fabric Preview and
+mapping-verification limitations; GA product labels do not imply deployment or validated results."""
+
+SKILL_NOTICE_1110 = """The eight-skill plugin contains seven GA product wrappers, including Business Value Case,
+and optional Preview Envisioning Agent Factory. FinOps is not included in 1.11.0;
+its source and tests are retained for later work. Ordinary value cases and sourced cost
+assumptions remain supported; unavailable financial validation is not zero costs or permission.
+Factory prepares a reviewed starter-repository ZIP, not a runtime or tenant deployment.
+The included demo uses the core profile. Process proposals retain their Fabric Preview and
+mapping-verification limitations; GA product labels do not imply validated results.
+This release targets Cowork ZIP installation; Studio-backed catalogue publication has
+separate genuine publisher-metadata requirements."""
+
 START = """# Frontier Envisioning {v} - start here
 
 Microsoft Innovation Hub · complete package
@@ -36,11 +52,7 @@ Private repository analyses and intake records are not included. The current dis
 Microsoft-internal use; a successful technical build is not external publication or IP clearance.
 Retain all licences and product-icon notices.
 
-The eight-skill plugin contains seven GA product skills and optional Preview FinOps.
-Installation does not acknowledge FinOps use. Its grounding and cost model are not GA and
-need refinement; each cost invocation requires explicit acknowledgement. The included demo
-uses the core profile without FinOps. Process proposals retain their Fabric Preview and
-mapping-verification limitations; GA product labels do not imply deployment or validated results.
+{skill_notice}
 
 ## Install the plugin (two minutes)
 
@@ -102,7 +114,8 @@ def main(argv=None) -> int:
         print(f"ERROR: the complete bundle requires core-only demo HTML: {exc}")
         return 1
     entries = [
-        (START.format(v=v).encode("utf-8"), "START-HERE.md"),
+        (START.format(v=v, skill_notice=SKILL_NOTICE_1110 if v == "1.11.0" else LEGACY_SKILL_NOTICE).encode("utf-8"),
+         "START-HERE.md"),
         (pkg.read_bytes(), f"install/{pkg.name}"),
         ((PLUGIN / "README.md").read_bytes(), "README.md"),
         ((PLUGIN / "MIT.md").read_bytes(), "MIT.md"),

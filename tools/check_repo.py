@@ -27,7 +27,10 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from fe_lib import PLUGIN, ROOT, SKILLS, frontmatter, maturity_errors, maturity_fields, tracked_files, utf16_units  # noqa: E402
+from fe_lib import (  # noqa: E402
+    PLUGIN, ROOT, SKILLS, frontmatter, maturity_errors, maturity_fields,
+    skill_inventory_errors, tracked_files, utf16_units,
+)
 
 HOOK_EVENTS = {"sessionStart", "sessionEnd", "userPromptSubmitted", "preToolUse", "postToolUse", "postToolUseFailure",
                "agentStop", "subagentStart", "subagentStop", "errorOccurred", "preCompact", "permissionRequest",
@@ -87,12 +90,10 @@ def check_skills(r: Report):
     manifest = json.loads((PLUGIN / "package" / "manifest.json").read_text(encoding="utf-8-sig"))
     listed = [e.get("folder") for e in manifest.get("agentSkills", [])]
     on_disk = sorted(f"skills/{p.name}" for p in SKILLS.iterdir() if p.is_dir())
-    for f in on_disk:
-        if f not in listed:
-            r.err("skills", f"{f} is not listed in manifest agentSkills")
-    for f in listed:
-        if f not in on_disk:
-            r.err("skills", f"manifest lists {f}, which does not exist")
+    for error in skill_inventory_errors(
+        manifest.get("version", ""), listed, on_disk, source_tree=True
+    ):
+        r.err("skills", error)
     for d in sorted(p for p in SKILLS.iterdir() if p.is_dir()):
         _skill_frontmatter(r, d, limit_units=900)
         fields = frontmatter((d / "SKILL.md").read_text(encoding="utf-8"))
@@ -100,6 +101,10 @@ def check_skills(r: Report):
             r.err("skills", error)
     if (SKILLS / "frontier-finops/scripts/fv_expr.py").read_bytes() != (SKILLS / "frontier-value-case/scripts/fv_expr.py").read_bytes():
         r.err("skills", "fv_expr.py differs between frontier-finops and frontier-value-case (keep one shared copy)")
+    if (ROOT / "tools/zip_stream.py").read_bytes() != (
+        SKILLS / "frontier-agent-factory/scripts/zip_stream.py"
+    ).read_bytes():
+        r.err("skills", "zip_stream.py differs between tools and frontier-agent-factory")
 
 
 def _skill_frontmatter(r: Report, d: Path, limit_units: int):

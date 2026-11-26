@@ -1,5 +1,7 @@
 # Value method (frontier-value/1.0)
 
+*1.11.0 distribution-boundary maintenance: Copilot AI-assisted, 26 November 2026; original authorship retained.*
+
 The value case answers one question in CHF: what is the MVP worth, how sure are we, and which assumptions must the customer confirm? It follows Microsoft's guidance on measuring the value of AI agents (four value drivers), the Cloud Adoption Framework business plan for AI agents (scoring, KPI gates, ROI and NPV) and the Innovation Hub's value discipline.
 
 ## Discipline (house rules)
@@ -37,9 +39,15 @@ assumptions, with ranges and accountable owners; if costs are missing, report
 the budget gap and withhold unsupported ROI/payback, even if a formula emits
 a number. Missing evidence is not zero or budget/readiness approval.
 
-For requested Preview costs or Preview-derived value, first show the full
-[FinOps notice](../../frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure)
-and obtain actual current-scenario confirmation. Each operational value calc/
+For 1.11.0, follow the [FinOps distribution boundary](../../frontier-envisioning/references/method.md#finops-not-included-in-1110).
+FinOps is not bundled. Continue ordinary value with explicit budget gaps;
+do not load an absent skill or reuse derived financial figures.
+An unavailable financial operation must fail clearly.
+
+### Source-compatibility reference — not runnable in 1.11.0
+
+The retained financial protocol requires the full Preview notice and actual
+current-scenario confirmation for Preview costs/derived value. Each operational value calc/
 apply/feedback invocation needs `--acknowledge-finops-preview` for these inputs;
 ordinary value-only use does not. Renew for new invocation/scope/model/rates/
 grounding; wrapper forwarding is one chain only. Old JSON/notes/installation/
@@ -57,6 +65,8 @@ localStorage consent; the warning persists. Gate flat/nested results and linked
 assumptions while retaining ordinary own value. Private components/rankings/
 outcomes are withheld, not zero; never recover `internal_notes`. Viewer
 acknowledgement is not encryption or access control.
+
+### Ordinary value calculation
 
 - Monthly simulation over the horizon (default 3 years); adoption ramp per quarter (`adoption_ramp`, last value repeats). Variable costs (credits, Azure) follow the ramp; licences and people are fixed.
 - **Budget view** = cash + revenue. **Economic view** = budget + realised capacity. **Risk** = separate.
@@ -78,9 +88,9 @@ Before: the customer version shows ranges and the top ten assumptions with the r
 
 ## Documents
 
-**Business value assessment** (docx skill): 1 Executive summary (supported ranges, NPV/payback, budget view, gaps) · 2 Scope and baseline · 3 Value tree · 4 Assumptions with owners/status · 5 Ordinary costs, or explicitly acknowledged Preview costs with full notice/provenance · 6 Scenarios and sensitivity · 7 Risks and measurement · 8 Decisions and next steps · Sources.
+**Business value assessment** (docx skill): 1 Executive summary (supported ranges, NPV/payback, budget view, gaps) · 2 Scope and baseline · 3 Value tree · 4 Assumptions with owners/status · 5 Ordinary sourced costs and explicit gaps · 6 Scenarios and sensitivity · 7 Risks and measurement · 8 Decisions and next steps · Sources.
 
-**Excel model** (xlsx skill, live formulas, inputs colour-coded): Inputs · Assumptions · Value · Cost (ordinary inputs by default; Preview warning/provenance if used) · Scenarios · Sensitivity · Summary. Independently verify purchase prices, terms and assumptions; comparisons are not commitment advice.
+**Excel model** (xlsx skill, live formulas, inputs colour-coded): Inputs · Assumptions · Value · Cost (ordinary sourced inputs and gaps) · Scenarios · Sensitivity · Summary. Independently verify purchase prices, terms and assumptions; comparisons are not commitment advice. Retained Preview-derived documents are source-compatibility reference only: preserve the full warning/provenance, do not treat them as new 1.11.0 financial validation.
 
 ## Data contract (abridged)
 

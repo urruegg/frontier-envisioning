@@ -32,6 +32,17 @@ from pathlib import Path
 
 PLUGIN = "frontier-envisioning"
 DEFAULT_INSTALLED = "/mnt/user-config/skills"
+RELEASE_SKILLS_1110 = frozenset("skills/" + name for name in (
+    "frontier-envisioning",
+    "frontier-context-discovery",
+    "frontier-blueprint",
+    "frontier-solution-design",
+    "frontier-agent-identity",
+    "frontier-value-case",
+    "frontier-process",
+    "frontier-agent-factory",
+))
+RETAINED_SOURCE_1110 = frozenset({"skills/frontier-finops"})
 
 
 def sha256(p: Path) -> str:
@@ -72,6 +83,33 @@ def workspace_relative(root: Path, given: str) -> str:
     return g[idx + 1:] if idx >= 0 else g
 
 
+def skill_inventory_errors(
+    version: str, registered: list[str], disk: list[str], *, source_tree: bool
+) -> list[str]:
+    if not all(isinstance(value, str) for value in [*registered, *disk]):
+        return ["skill inventory folders must be strings"]
+    listed, present = set(registered), set(disk)
+    if version != "1.11.0":
+        if not source_tree:
+            return []
+        expected, expected_disk = present, present
+    else:
+        expected = RELEASE_SKILLS_1110
+        expected_disk = expected | RETAINED_SOURCE_1110 if source_tree else expected
+    problems = []
+    if len(registered) != len(listed):
+        problems.append("duplicate registered skill folder")
+    for folder in sorted(expected - listed):
+        problems.append(f"{folder} is not listed in manifest agentSkills")
+    for folder in sorted(listed - expected):
+        problems.append(f"{folder} is not a distributed skill for {version}")
+    for folder in sorted(expected_disk - present):
+        problems.append(f"{folder} is missing from the expected skill tree")
+    for folder in sorted(present - expected_disk):
+        problems.append(f"{folder} is unexpected in the skill tree")
+    return problems
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", required=True, help="folder the package was extracted to, e.g. working/frontier-plugin")
@@ -98,6 +136,40 @@ def main(argv=None) -> int:
     problems: list[str] = []
     if spec.get("plugin") != PLUGIN:
         problems.append(f"this installer is for {PLUGIN}, the package says {spec.get('plugin')!r}")
+    if spec.get("version") == "1.11.0":
+        skill_root = root / "skills"
+        disk = [
+            "skills/" + path.name for path in skill_root.iterdir() if path.is_dir()
+        ] if skill_root.is_dir() else []
+        rows = spec.get("skills")
+        if not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows):
+            problems.append("installer skills must be a list of objects")
+        else:
+            problems.extend(skill_inventory_errors(
+                "1.11.0", [row.get("folder") for row in rows], disk, source_tree=False
+            ))
+        try:
+            manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            problems.append("release manifest is missing or invalid JSON")
+        else:
+            if not isinstance(manifest, dict) or manifest.get("version") != spec["version"]:
+                problems.append("release manifest version differs from the installer")
+            else:
+                entries = manifest.get("agentSkills")
+                if not isinstance(entries, list) or not all(isinstance(row, dict) for row in entries):
+                    problems.append("manifest agentSkills must be a list of objects")
+                else:
+                    problems.extend(skill_inventory_errors(
+                        "1.11.0", [row.get("folder") for row in entries], disk, source_tree=False
+                    ))
+        if problems:
+            print(json.dumps({
+                "plugin": spec.get("plugin"), "version": spec.get("version"),
+                "verified": False, "problems": problems, "skills": [], "copy_calls": [],
+                "preview_notice": "", "after_install": "Do not install: use the original release ZIP.",
+            }, indent=1))
+            return 1
     rel_root = workspace_relative(root, given)
     installed_dir = Path(a.installed)
     skills_out = []
@@ -135,6 +207,18 @@ def main(argv=None) -> int:
             "maturity": "preview", "optional": True, "requires_preview_ack": True,
         }:
             problems.append(f"{folder}: current FinOps must be optional Preview with acknowledgement required")
+        if name == "frontier-agent-factory" and (
+            maturity.get("maturity") != "preview"
+            or maturity.get("optional") is not True
+            or maturity.get("requires_preview_ack") is not False
+        ):
+            problems.append(f"{folder}: current Factory must be optional Preview without a cost acknowledgement gate")
+        if name not in {"frontier-finops", "frontier-agent-factory"} and (
+            maturity.get("maturity") != "ga"
+            or type(maturity.get("optional")) is not bool
+            or maturity.get("requires_preview_ack") is not False
+        ):
+            problems.append(f"{folder}: GA core must have explicit maturity and no Preview acknowledgement gate")
         status, inst_ver = "new", None
         inst = installed_dir / name / "SKILL.md"
         try:
@@ -149,14 +233,22 @@ def main(argv=None) -> int:
     verified = not problems and bool(skills_out)
     calls = [f'CopyArtifact(surface="user", source="{s["source"]}", destination="{s["destination"]}", recursive=true, overwrite=true)  # expect copied={s["files"]}'
              for s in skills_out]
+    notices = []
+    if any(s.get("requires_preview_ack") is True for s in skills_out):
+        notices.append(
+            "Frontier FinOps is Preview; its grounding and model are not GA and need refinement. "
+            "Installation is not acknowledgement of use; explicit acknowledgement is required before cost operations."
+        )
+    if any(s.get("name") == "frontier-agent-factory" for s in skills_out):
+        notices.append(
+            "Envisioning Agent Factory is optional Preview, not GA. Installation grants no source-transfer, "
+            "review, repository, tenant or deployment permission. Actual Cowork validation is not performed."
+        )
     result = {
         "plugin": spec.get("plugin"), "display_name": spec.get("display_name"), "version": spec.get("version"),
         "verified": verified, "problems": problems, "skills": skills_out,
         "copy_calls": calls if verified else [],
-        "preview_notice": (
-            "Frontier FinOps is Preview; its grounding and model are not GA and need refinement. "
-            "Installation is not acknowledgement of use; explicit acknowledgement is required before cost operations."
-        ) if any(s.get("requires_preview_ack") is True for s in skills_out) else "",
+        "preview_notice": " ".join(notices),
         "after_install": ("Installed. Start a new Cowork chat (after OneDrive has synced) and try: "
                           + " | ".join(spec.get("start_prompts", []))) if verified else
                          "Do not install: re-download the original zip and upload it again without unpacking or repacking it.",

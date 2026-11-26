@@ -1,0 +1,13 @@
+{
+  "schema": "frontier-agent-factory-template-profile/1.0",
+  "intake_schema_sha256": "04d8e85767c03e7cc101b85e67bcd9377fa5f069842c0e01ce92f9acf12c923f",
+  "intake_validator_sha256": "4592262543f4bc42ce1c12c47f25e2a5be88b91b669f4513b3f019ebc1553370",
+  "required": [
+    "LICENSE",
+    ".agents/skills/LICENSE.superpowers",
+    ".agents/superpowers.lock.json",
+    "docs/intake/intake.schema.json",
+    "tools/intake.py",
+    "AGENTS.md"
+  ]
+}

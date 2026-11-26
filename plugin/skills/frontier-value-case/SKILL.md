@@ -1,21 +1,18 @@
 ---
 name: frontier-value-case
 description: |
-  Builds and refines the business value case in CHF for a customer's Frontier agents: a value
-  tree per use case (efficiency, quality, revenue, strategic; cash, capacity or risk), an
-  assumption register with owners and evidence, NPV, ROI, payback, break-even, sensitivity and
-  the assumptions to clarify in the workshop, shown in the blueprint's use cases and matrix.
-  Use when asked to "build the value case for <customer>", "ROI in CHF for the MVP agents",
-  "what is the MVP worth",
-  "which assumptions should we clarify in the workshop" or "update the value case with the
-  workshop feedback". Do NOT use for agent costs or Copilot Credits (use frontier-finops), for
-  the blueprint itself (use frontier-blueprint) or for a CRM sales-deal business case (use the
-  sales skills).
+  Builds a business value case in CHF for Frontier use cases: evidence-backed value trees,
+  owned assumptions, NPV, ROI, payback, break-even and sensitivity. Use for "build the value
+  case for <customer>", "ROI in CHF for the MVP", "what is the MVP worth" or "update value
+  assumptions from workshop feedback". Do NOT use for process ontology, CDM mappings or
+  data products (use frontier-process), the blueprint itself (frontier-blueprint), PRD and
+  solution design (frontier-solution-design), or CRM sales-deal cases (sales skills).
+  FinOps cost modelling and Copilot Credits are not included in this release.
 license: MIT
 metadata:
   category: productivity
   icon: DataTrending
-  version: "1.10.1"
+  version: "1.11.0"
   plugin: frontier-envisioning
   maturity: ga
   optional: false
@@ -24,11 +21,17 @@ metadata:
 
 # Business value case
 
+*1.11.0 distribution/routing maintenance: Copilot AI-assisted, 26 November 2026; original authorship retained.*
+
 Turns the blueprint's use cases into a CFO-credible value case in CHF. Every number is either evidence (a customer statement, a measurement) or a labelled assumption with an owner, a range and a question for the workshop. A deterministic script calculates; the blueprint shows the value in the use cases and the matrix, and lets the workshop confirm, adjust or reject each assumption live. The verdicts come back as a feedback file and are merged into the next version.
 
 This is a GA product wrapper, not a claim that results are validated or that
 providers are GA. Value-only work uses ordinary evidence and assumptions without
 FinOps; missing costs are an open budget gap, not zero or validated ROI.
+
+For 1.11.0, follow the [FinOps distribution boundary](../frontier-envisioning/references/method.md#finops-not-included-in-1110).
+FinOps is not bundled. Continue ordinary non-FinOps work with explicit budget
+gaps; do not invoke an absent skill or reuse derived financial figures.
 
 ## Quick Start
 
@@ -55,7 +58,8 @@ Demo: "Build the Frontier blueprint demo for Caldova" (frontier-blueprint) uses 
 
 - Running the whole engagement end to end: use frontier-envisioning instead.
 - Agent names, colours and icons: use frontier-agent-identity instead.
-- Costs, credits, licences, purchase options or guardrails: frontier-finops, with its full Preview notice and confirmation first.
+- Process ontology, CDM mappings or data products: use frontier-process instead.
+- FinOps cost modelling, Copilot Credits or FinOps financial guardrails: unavailable in this release; report the operation explicitly, without blocking ordinary sourced cost assumptions.
 - The blueprint HTML, journeys and agents: use frontier-blueprint instead.
 - Gathering context or analysing transcripts: use frontier-context-discovery instead.
 - A business case for a CRM sales deal: use the sales business case skill instead.
@@ -72,14 +76,13 @@ Look for numbers before assuming them: volumes, handling times, loaded rates, er
 ### Step 3: Write the value tree and the assumption register
 Seed with `seed_value.py` (volume and minutes stay empty until evidence or the customer provides them), then write each lever: driver (efficiency, quality, revenue, strategic), category (cash, capacity, risk, revenue) and formula over named variables. Each assumption has a statement, unit, low, base, high, source type, confidence, owner, question and status. Rules: [references/value-method.md](references/value-method.md). Show the levers and the assumptions to the user before calculating.
 
-### Step 4: Ordinary costs; optional Preview FinOps
+### Step 4: Ordinary costs and explicit gaps
 Use the customer's ordinary, sourced cost assumptions where available and name
 the missing evidence and real budget owner. FinOps is not a prerequisite.
-Only for requested FinOps work, load [frontier-finops](../frontier-finops/SKILL.md),
-show its full exact Preview notice and obtain actual current-scenario
-confirmation before seed/calc/apply, cost recommendations or figures.
-Decline skips the optional subflow; an absent unrequested module does not block
-core value work. A requested-but-missing module is an explicit error.
+For requested FinOps work, follow the
+[distribution boundary](../frontier-envisioning/references/method.md#finops-not-included-in-1110):
+return a clear unavailable-operation error. Do not load an absent skill,
+automatically install it or turn missing budget evidence into zero.
 
 ### Step 5: Calculate (gate V1)
 `build_with_identity.py --data blueprint.json --value value.json --out-dir working/frontier/<slug>` calculates/applies ordinary value on copies without
@@ -87,7 +90,8 @@ FinOps. Gate V1: every MVP use case has a value tree, every number has a source
 or assumption label, sensitivity done. Check `inputs_needed`; do not present
 missing cost evidence as a passed budget/readiness gate.
 
-After actual Preview confirmation, the optional wrapper form adds
+**Source-compatibility reference — not runnable in 1.11.0.**
+The retained financial protocol's optional wrapper form adds
 `--finops finops.json --acknowledge-finops-preview`. Direct `value_calc.py`,
 `apply_value.py` and `merge_value_feedback.py` also need
 `--acknowledge-finops-preview` when consuming FinOps or Preview-derived value;
@@ -108,9 +112,11 @@ Plan readiness is not validation of value or permission to build.
 
 ### Step 7: Merge the workshop (gate V2)
 `python scripts/merge_value_feedback.py --value value.json --feedback <customer>-workshop-feedback.json --date <YYYY-MM-DD>` applies ordinary value verdicts.
-For a confirmed Preview operation only, add
-`--finops finops.json --acknowledge-finops-preview`. It writes a changelog and
-bumps the version; rebuild to recalculate. V2 requires the five most sensitive
+It writes a changelog and bumps the version; rebuild to recalculate.
+**Source-compatibility reference — not runnable in 1.11.0:** the retained
+financial form adds `--finops finops.json --acknowledge-finops-preview`
+only after actual confirmation; this does not enable an absent validator.
+V2 requires the five most sensitive
 assumptions confirmed/adjusted by owners. A value status never validates
 Preview pricing or grants budget approval.
 
@@ -132,7 +138,8 @@ A business value assessment document (docx skill, structure in the method refere
 - Never measure value per employee; aggregate per process, team or agent.
 - Always show the value tree and the assumptions to the user before calculating, and the customer version before sharing.
 - No ROI claims beyond the data: present ranges and the budget view next to the economic view.
-- Carry the Preview notice, non-GA grounding/model limitations, assumptions and
+- Source-compatibility reference, not runnable 1.11.0 financial instructions:
+  carry the Preview notice, non-GA grounding/model limitations, assumptions and
   scenario/model/rate/source provenance into every FinOps-derived ROI/NPV,
   comparison, unit cost, PRD/design, reply and export. Legacy/imported FinOps is
   always Preview. Technical acknowledgement metadata is not human approval.
@@ -151,7 +158,7 @@ A business value assessment document (docx skill, structure in the method refere
 - If the feedback file belongs to another blueprint or names unknown ids: report them and ask which version was shown.
 - If cost evidence is missing: keep the budget gap with its real owner and
   withhold unsupported ROI/payback, even if a formula emits zero cost. Continue
-  ordinary value work without FinOps; offer Preview only after its awareness gate.
+  ordinary value work without FinOps; explicitly refuse unavailable FinOps work.
 - If the sponsor asks for a single number: give the base case with its range and the two assumptions it depends on most.
 
 ## Files
@@ -159,7 +166,7 @@ A business value assessment document (docx skill, structure in the method refere
 - `scripts/seed_value.py` — value case seed from the blueprint (MVP use cases)
 - `scripts/value_calc.py` — calculation: views, NPV, ROI, payback, break-even, sensitivity, ranges, questions
 - `scripts/apply_value.py` — business value and assumption register into the blueprint JSON
-- `scripts/merge_value_feedback.py` — workshop verdicts into value.json and finops.json
-- `scripts/fv_expr.py` — safe formulas (shared with frontier-finops)
+- `scripts/merge_value_feedback.py` — ordinary workshop verdicts into value.json; retained financial input protocol is source-compatibility reference only
+- `scripts/fv_expr.py` — safe formulas (shared with retained-source FinOps)
 - `references/value-method.md` — discipline, formulas, defaults, ranges, gates, documents
 - `examples/caldova-value.json` — Caldova MVP value case (fictitious); `examples/reference-hr-assistant.value.json` — the method's worked example

@@ -13,7 +13,7 @@ license: MIT
 metadata:
   category: research
   icon: DocumentSearch
-  version: "1.10.1"
+  version: "1.11.0"
   plugin: frontier-envisioning
   maturity: ga
   optional: false
@@ -22,16 +22,21 @@ metadata:
 
 # Frontier context discovery
 
+*1.11.0 distribution/routing maintenance: Copilot AI-assisted, 26 November 2026; original authorship retained.*
+
 Turns everything the account team and the Innovation Hub already know about a customer into one **context pack** (`customer-context.json`) and a readable **evidence log**. Every fact carries a citation to a source (meeting transcript with timestamp, email, chat, document or public page) and a visibility flag, so the blueprint built from it can separate the customer's own words from Microsoft hypotheses and from Microsoft-internal material.
 
 This is a GA product wrapper, not a confidence or provider-availability label,
 release or external/IP clearance. Discovery does not require FinOps. Collect
 ordinary cost facts with their source; do not calculate or repeat legacy Preview
-figures as GA. For requested cost modelling, load
-[frontier-finops](../frontier-finops/SKILL.md) to show its full Preview notice and
-obtain actual current-scenario confirmation before operations or figures.
-Decline/absent unrequested FinOps leaves an honest gap and discovery continues;
-a requested missing module is an explicit error.
+figures as GA.
+
+For 1.11.0, follow the [FinOps distribution boundary](../frontier-envisioning/references/method.md#finops-not-included-in-1110).
+FinOps is not bundled. Continue ordinary non-FinOps work with explicit budget
+gaps; do not invoke an absent skill or reuse derived financial figures.
+Retained legacy Preview figures are source-compatibility reference, not
+runnable 1.11.0 instructions. Preserve their provenance, not a relabelled GA
+claim; requested unavailable cost modelling is an explicit error.
 
 ## Quick Start
 
@@ -52,7 +57,7 @@ User: "Gather the customer context for Caldova, workshop on 12 November"
 
 ## When NOT to Use
 
-- Calculating what the agents cost: frontier-finops, after its Preview awareness gate (this skill only collects ordinary cost facts).
+- FinOps cost modelling: unavailable in this release (this skill only collects ordinary sourced cost facts); report the error and budget gap.
 - Calculating the value case: use frontier-value-case instead (this skill only collects the value inputs).
 - Building or updating the blueprint HTML: use **frontier-blueprint** (it reads this context pack)
 - Writing the PRD, solution design or ADRs: use **frontier-solution-design**

@@ -1,6 +1,6 @@
 # Frontier Envisioning — plugin for Copilot Cowork
 
-**Version 1.10.1 · Unreleased candidate · Microsoft Innovation Hub Switzerland · 24 November 2026**
+**Version 1.11.0 · Unreleased development candidate · Microsoft Innovation Hub Switzerland · 26 November 2026**
 
 *Guide maintenance: Copilot AI-assisted; original authorship retained.*
 
@@ -18,13 +18,49 @@ alone is not evidence of publication.
 The installation procedure below is not evidence of actual Cowork installation,
 organisation catalogue publication or tenant deployment.
 
-The package registers **eight skills: seven non-FinOps GA product wrappers and
-bundled optional Preview FinOps**. Process/ontology is optional when requested.
-Core engagement, value, identity, blueprint, design and process do not require
-FinOps. GA is the maintainer's designation, not result confidence, provider GA,
+The candidate registers **eight skills in this same plugin: seven existing GA
+wrappers, including Business Value Case, and optional Preview Envisioning Agent Factory**.
+The offline Factory producer, skill procedure and maturity/installer metadata
+are implemented. Final candidate package/receiver checks remain pending.
+This guide does not certify Cowork installation.
+Process/ontology is optional when requested. Core engagement, value, identity,
+blueprint, design and process require neither Factory nor FinOps.
+GA is the maintainer's designation, not result confidence, provider GA,
 release/deployment or public/IP clearance. Fabric ontology/agent/operations
 Preview, unverified mappings and dated sources remain explicit. Microsoft MOS3
 manifest `devPreview` is a separate, unchanged development packaging protocol.
+
+| Skill | Candidate inventory |
+|---|---|
+| `frontier-envisioning` | GA — engagement orchestration |
+| `frontier-context-discovery` | GA — scoped context and evidence |
+| `frontier-blueprint` | GA — Blueprint and workshops |
+| `frontier-solution-design` | GA — PRD, design, ADRs and readiness |
+| `frontier-agent-identity` | GA — proposed branding and identity kit |
+| `frontier-value-case` | GA — ordinary value evidence |
+| `frontier-process` | GA — optional process/ontology proposals |
+| `frontier-agent-factory` | Registered optional Preview — Envisioning Agent Factory; offline producer implemented |
+
+## FinOps not included in 1.11.0
+
+This Cowork ZIP contains eight skills: the seven existing GA wrappers,
+including Business Value Case, plus optional Preview Envisioning Agent Factory.
+The FinOps skill is not registered, copied or installed by this release.
+Its source and regression tests remain in the repository for later work.
+
+Ordinary business value and sourced cost assumptions remain supported.
+FinOps cost modelling, Copilot Credits and FinOps-derived financial validation
+are unavailable in this distribution. Name missing budget evidence; do not
+invent zero costs, strip provenance or accept unverified financial figures.
+An explicit unavailable financial operation must fail with a clear error.
+
+The [canonical installed notice](skills/frontier-envisioning/references/method.md#finops-not-included-in-1110)
+is inside the copied `frontier-envisioning` skill. This package-facing summary
+remains in the ZIP; the skill-copy procedure does not install this root README.
+
+The repository retains nine source skill folders; only the eight listed above
+belong to this distribution. Factory remains optional Preview, not GA, and
+requires no blanket cost acknowledgement for ordinary non-financial work.
 
 ---
 
@@ -54,13 +90,18 @@ product-icon terms. Confirm content/IP clearance before sharing externally.
 
 ## Install it in Copilot Cowork
 
-1. **Obtain the plugin ZIP** `frontier-envisioning-plugin-1.10.1.zip` from [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases) when published, or from the maintainer, [@urruegg](https://github.com/urruegg), for pre-publication testing. Keep it zipped and verify the release checksums.
+**Candidate integration is not complete.** The steps below describe the
+installation procedure, not a verified 1.11.0 package. Obtain a candidate only
+after its exact package and installer results are recorded. Actual Cowork is
+unavailable; discovery, installation, acquisition and export are not performed.
+
+1. **Obtain the plugin ZIP** `frontier-envisioning-plugin-1.11.0.zip` from [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases) when published, or from the maintainer, [@urruegg](https://github.com/urruegg), for pre-publication testing. Keep it zipped and verify the release checksums.
 2. **Open Copilot Cowork** and start a new chat.
 3. **Attach the zip** to the chat and type:
 
    > **Install the Frontier PlugIn**
 
-4. **Review and approve** the skill-copy prompts for your OneDrive (`Documents/Cowork/skills`). Check all eight skill copy counts against the verified plan: seven GA and one optional Preview. If the required tool is unavailable or the copy fails, report it rather than claiming success. Installation updates old FinOps instructions but does not acknowledge or run cost work.
+4. **Review and approve** the skill-copy prompts for your OneDrive (`Documents/Cowork/skills`). Check every copy count against the verified plan. The registered 1.11.0 plan contains eight skills: seven GA and optional Preview Factory, without FinOps. Factory does not require financial acknowledgement merely to load or perform non-financial handover. Registration is not proof of Cowork installation. If the required tool is unavailable or the copy fails, report it rather than claiming success. Installation acknowledges neither Factory transfer nor financial use and runs no cost work. Do not copy retained-source FinOps separately as part of this procedure.
 5. **After successful copying and sync, start a new chat** and try one of these:
 
    > Build the Frontier blueprint demo for Caldova
@@ -69,13 +110,13 @@ product-icon terms. Confirm content/IP clearance before sharing externally.
    >
    > Prepare the Frontier envisioning for *your customer*, workshop on *date*
 
-New chats pick up the skills after OneDrive sync. The optional FinOps awareness
-gate below is separate from installation approval.
+New chats pick up the skills after OneDrive sync. Installation approval does
+not make the [unavailable FinOps operations](skills/frontier-envisioning/references/method.md#finops-not-included-in-1110) available.
 
 | To… | Do this |
 |---|---|
 | Update to a newer version | Same steps with the newer zip: attach it and say **Install the Frontier PlugIn** |
-| Remove the plugin | Say **Delete the frontier skills**, or delete the eight `frontier-…` folders in OneDrive `Documents/Cowork/skills` |
+| Remove the plugin | Say **Delete the frontier skills**, or remove the `frontier-…` folders listed in the actual installed plan from OneDrive `Documents/Cowork/skills` |
 | Request organisation roll-out | Ask your Microsoft 365 admin to validate the package and obtain catalogue publication approval; package structure alone does not authorise roll-out (see below) |
 
 ---
@@ -92,12 +133,11 @@ gate below is separate from installation approval.
 | "Update the blueprint with the workshop feedback" (attach the exported feedback file) | The next blueprint version with the workshop's verdicts and answers |
 | "Make the customer-ready version" | The blueprint without internal sources or internal-derived attendee, risk and PRD content; review and sharing clearance are still required |
 | "Write the PRD and solution design for the *customer* MVP" | PRD, solution design and architecture decision records for validated MVP scope, or clearly labelled drafts |
+| "Prepare a full Agent Factory starter-repository ZIP for Caldova Industrial AG" | Registered optional offline Factory Preview candidate: preserve reviewed documents in a pinned full foundation with valid intake and explicit gaps; host validation remains pending |
 | "Create the agent identity kit for *customer*" | `<Customer> - agent identity package v1.0.zip`: naming convention with DEV/TEST names, one colour per journey from the customer's brand, icons per agent and environment, identity cards, catalogue, and the scripts and pipeline templates for the customer's repository |
 | "Build the identity kit demo for Caldova" | The demo identity kit for Caldova's 33 agents, the Agent Factory included (fictitious brand) |
 | "Build the value case for *customer*" | Ordinary non-FinOps value evidence and assumptions, with supported ranges/NPV/ROI only and missing cost/budget evidence stated |
 | "Build the process ontology for *customer*" | Optional local ontology/Turtle, proposed CDM mappings, data-agent and product documents plus the Ontology page; tenant import remains manual |
-| "What will the *customer* agents cost per month?" | The full FinOps Preview notice and a request for actual current-scenario confirmation first; only then provisional costs/comparisons and guardrails |
-| "Prepare a versioned Agent FinOps baseline for D3-A05" | The Preview notice and current confirmation first; then an offline twelve-month draft, evidence gaps, unit economics and projected JSON/Markdown reports, with frozen-target external review recorded separately |
 | "Update the value case with the workshop feedback" (attach the exported feedback file) | The workshop's verdicts on the assumptions applied, recalculated, with a change log |
 | "Show the agent identity in the blueprint" | The Agent identity page: naming rule, journey colours, DEV/TEST bands, agent family, MVP identity sheet and all names per environment |
 | "Prepare the IT readiness and architecture design workshop for *customer*" | The IT readiness page and `it-readiness.md`: preparation items with owners, readiness checks, builder workstation, questions and decisions for IT; the landing zone and the ADRs to decide |
@@ -115,13 +155,14 @@ OneDrive previews do not execute it. The view set follows requested optional dat
 
 - **Part 1 Vision:** Overview with the **digital feedback loop** through Microsoft IQ (Work IQ, Fabric IQ, Foundry IQ, Web IQ) · Org model · Blueprint · Journeys, including the **Agent Factory** · Use cases (problem, business value, feasibility) · **PRD**
 - **Part 2 Design:** Agents (canvas, workflow, seven declarations, role profile) · Agent identity · Target architecture (landing zone, layers, flows, ADRs) · **IT readiness** · optional **Ontology**
-- **Part 3 Build:** Roadmap · **Plan** (journey lanes, seven factory stages, four phases, WIP limits, owner/readiness/next step) · optional **FinOps (Preview)**
+- **Part 3 Build:** Roadmap · **Plan** (journey lanes, seven factory stages, four phases, WIP limits, owner/readiness/next step); the retained FinOps view is source-compatibility reference, not a 1.11.0 operation
 - **Part 4 Workshops:** **Attendees** (sessions, focus and source-backed contributions with transcript times) · Discovery · **Risks** · Evidence
 
 Agent identity icons and Microsoft product icons make each part easy to read. Notes and verdicts stay in your browser until you export them from Discovery; give the exported file back to Cowork to merge.
 
 The core example with explicitly requested Ontology has seventeen route
-identities and no FinOps; the explicit legacy Preview profile has eighteen.
+identities and no FinOps; the retained legacy Preview source profile has
+eighteen, not a runnable 1.11.0 ZIP example.
 The process canon retains its overall source check dated 11 November 2026;
 the governance/SAP correction adds sources checked by the parent on
 17 November 2026, not a fresh 24 November fetch, independent tenant availability
@@ -177,12 +218,181 @@ this correction. [Draft PR #65](https://github.com/urruegg/frontier-envisioning/
 records reviewed-source quality/browser results and exact-package evidence,
 including any remaining gaps. No release or actual Cowork/Fabric acceptance
 is claimed. The separate
-future 1.11 systems/Dynamics 365 design is not a current capability or ninth
-skill. Core/process/ordinary value still work without optional Preview FinOps.
+systems/Dynamics 365 programme is deferred to a later unspecified release, not
+part of factory-only 1.11.0 or a current capability. Core/process/ordinary value
+still work without optional Preview FinOps or Factory.
 
-## Optional FinOps Preview — awareness first
+## Optional Agent Factory Preview — offline candidate
 
-Loading FinOps to explain limitations is allowed. Before any cost seed,
+**Envisioning Agent Factory**, registered name `frontier-agent-factory`, is
+the optional eighth shipped skill, not the existing Blueprint's Agent Factory journey.
+Use it only for an explicit starter-repository, ZIP or handover request.
+It is not the next automatic step after a PRD and does not invoke FinOps.
+It adds no business-agent runtime, SDK, application or tenant loader.
+The offline producer, skill procedure and registration are implemented;
+final exact installed-package proof remains pending. See the
+[request and intake contract](skills/frontier-agent-factory/references/handover-contract.md).
+
+### Acquire once, then freeze
+
+For each new handover, an actually available authorised host discovers the
+latest published stable release of
+[the Agent Factory foundation](https://github.com/urruegg/frontier-agent-factory).
+Only a healthy, complete, fully paginated lookup with no stable release permits
+an explicitly approved immutable commit labelled **unreleased bootstrap**.
+Authentication, network, incomplete/unknown metadata or incompatible source
+fails; never fall back to main or an older release. A local ZIP is not proof
+that it is latest.
+
+Retain only the actual five release fields `id`, `tag_name`, `published_at`,
+`draft`, `prerelease` for every enumerated release, not raw API bodies,
+authors, assets or protected URLs. Validate every stable candidate's time/tag;
+unknown metadata or tied latest identities fails. Draft/prerelease null fields
+are allowed. Resolve only the selected stable tag to its exact commit.
+Pin source identity, actual archive bytes and the acquisition receipt once.
+Frozen inputs reproduce the same handover without another claimed lookup.
+Hashes are automatic; there is no manual customer digest-copy, comparison or
+retention ceremony.
+
+Acquisition belongs to the available host/harness, with no universal tool name,
+GitHub CLI or Cowork download assumption. The Python producer uses the standard
+library on Python 3.11+, performs no network or dependency setup and executes
+no downloaded code. It can run outside this repository with its required
+trusted bundled sibling helpers. A missing requested component is an error,
+not a repository-only import or a silently omitted file.
+
+### Reviewed inputs and passive output
+
+Supply final reviewed PRD, solution design, ADRs and applicable readiness,
+identity, Blueprint, value, process and financial material. Preserve authored
+bytes and IDs, with explicit original-to-factory maps, selected MVP scope and
+declared shared dependencies. An out-of-scope dependency is a named gap,
+not extra work. Existing PRD/design/ADRs are never regenerated or renumbered.
+Source, review, acquisition, transfer and any transformation evidence must be
+real; synthetic Caldova compatibility fixtures establish no real approval.
+
+The unchanged receiver intake 1.0 declares eight roles per selected solution:
+`prd`, `solution-design`, `decisions`, `it-readiness`, `identity`, `blueprint`,
+`value`, `finops`. PRD/design cannot be N/A. A genuine short, specific N/A is
+allowed elsewhere, not a false substitute for missing evidence.
+The retained `finops` role is receiver source-compatibility metadata, not an
+installed skill or runnable 1.11.0 operation; absence is not false N/A.
+The default is valid `needs-clarification` review-starter intake with actual
+required scope, owners, acquisition and transfer fields and explicit engineering
+gaps. An explicit accepted request fails if conditions are missing; it never
+silently downgrades.
+
+**Current input limitation:** a Blueprint containing derived `agent_finops`
+is refused with `FACTORY_BLUEPRINT_FINANCIAL_CONTEXT`, never stripped or trusted.
+Supply a compatible authoritative original Blueprint and its separately
+approved customer projection through genuine upstream review/transformation.
+Standalone financial reports need their actual source packets. This producer
+does not port that cached source context or automatically rewrite reviewed input.
+
+The full pinned repository foundation, policies, workflows, locks, licences
+and modes remain intact. It adds `START_HERE.md`,
+`handover/manifest.json` (producer `frontier-agent-factory-handover/1.0`) and
+`docs/intake/records/<id>/{intake.json,review.md,artifacts/...}`.
+The outer ZIP distributes repository source; it is not an intake input archive.
+No `.git`, account state, caches, staging or installed dependencies are included.
+Neither review-starter nor accepted export generates solution runtime,
+source/test/evaluation/IaC/application trees or remote issues.
+
+Only ordinary `.md`, `.txt`, `.json`, `.pdf`, `.docx`, `.xlsx`, `.pptx`
+and `.csv` files are supported. Selected HTML, ZIP kits or Turtle need an
+actual reviewed JSON/Markdown equivalent; do not rename, silently drop or put
+them in a bypass folder. Prior accepted JSON, valid Windows path spellings,
+CRLF and provided bytes are preserved. Changes use a new ID and `supersedes`,
+not edits to accepted history. Unavailable historical originals are explicitly
+not verified.
+
+### Privacy, financial evidence and authority
+
+Selection uses customer-safe entities after whole-original-ancestry and
+schema-owned privacy projection. Guards cover current/history structured
+content, exported metadata, filenames, references, known internal notes,
+private keys and arrays. Every provided file and exported metadata needs
+actual matching-scope sharing/transfer review, even in a draft.
+Restricted baseline material fails. Do not export raw mail/transcripts,
+private-source content, secrets, account state, protected links or withheld
+names/counts. Office/PDF files are opaque human-reviewed inputs, not semantic
+DLP certification. Foundation MIT/third-party notices do not relicense
+customer files or provide IP/transfer clearance. M365 read access or public
+repository visibility grants neither transfer nor tenant permission.
+
+FinOps is not bundled in 1.11.0. No automatic figures, zero budgets or false N/A fills
+the role. Current/history financial schemas, roles and nested result markers
+are detected even under changed/missing schemas or wrappers. Actual financial
+content needs current-invocation acknowledgement, matching owner review and
+authoritative source/model receipts; install consent or cached/demo approval
+does not qualify. Existing FinOps/value validators, rates and formulas remain
+authoritative in retained source; Factory adds no calculator. Missing financial
+owner validation must fail explicitly, even with acknowledgement, without
+replacing a previous good ZIP. Genuine standalone legacy FinOps
+reviewed documents are review-only, not budget-ready; changing role, packet,
+schema or wrapper does not exempt derivatives from source checks.
+Internal-only model/review staging is not automatically exported and permitted
+private validation inputs are not a privacy-clearance claim.
+
+An explicit `build-handover` claim with `financial.requested` set to `false`
+is refused. With `financial.requested` set to `true`, it must satisfy the
+documented stricter actual financial handover-ready gate.
+A customer review starter with a financial gap is not financially ready.
+Recorded financial review or planning readiness is never budget, purchase,
+build, deployment or tenant permission.
+
+### Local command and limits
+
+```powershell
+python <installed-skill>\scripts\export_factory.py --request request.json --template template.zip --source-root originals --baseline-root approved --out Caldova-factory.zip
+```
+
+The retained optional flag `--acknowledge-finops-preview` is source-compatibility
+reference, not a way to enable unavailable 1.11.0 FinOps validation.
+Ordinary non-financial export needs no cost acknowledgement.
+There is no execute, network, force-accept, skip-profile, drop, unsafe or
+arbitrary-profile flag.
+
+Source ZIPs support STORE/DEFLATE only: 32 MiB compressed, 64 MiB decoded,
+4,096 members including directories. Receiver limits are 16 MiB per file,
+1 MiB intake JSON and **one shared 64 MiB baseline-plus-original-source
+validation budget**, not 64 MiB per root. The final repository is capped at
+128 MiB expanded and 4,096 members including generated files. Known corruption,
+unsafe paths, links/reparse points, file-parent/case/slash collisions and local
+state hazards fail before bounded atomic replacement; inputs and the previous
+good ZIP remain unchanged on failure. Frozen inputs/metadata produce identical
+ZIP bytes. Inventory hashes exclude the manifest's own hash; the final ZIP hash
+is reported on stdout.
+
+Export validation, intake disposition and recorded review are independent.
+Recorded review is not authenticated. Receiver validation during export and
+actual Cowork checks are **not performed**; tenant readiness is **not assessed**.
+Receiver tooling requires Python 3.12+ and Node 24 LTS; a Node 26 observation
+does not certify it. GitHub.com and GitHub Enterprise Cloud, including cloud
+hostnames, are the first receiving-repository/host profile, not native Azure
+DevOps or GHES certification. The authoritative template source remains
+`urruegg/frontier-agent-factory` on GitHub.com.
+No remote repository creation, Work IQ authentication
+switch, tenant consent, provisioning or deployment is performed. Settings,
+secrets and real ownership remain future human work. Use
+[#72](https://github.com/urruegg/frontier-envisioning/issues/72) for candidate
+evidence and pending final gates before merge. The repository's
+[B.9 candidate evidence](https://github.com/urruegg/frontier-envisioning/blob/main/docs/solution-design.md#agent-factory-candidate-verification-26-november-2026)
+and [SPRINT-013](https://github.com/urruegg/frontier-envisioning/blob/main/docs/sprints/SPRINT-013-agent-factory-handover.md)
+links use stable main paths; these candidate updates are available there only
+after merge.
+
+## Source-compatibility reference — not runnable in 1.11.0
+
+The following retained financial protocol records source compatibility and
+historical safeguards only. It is not an installation, loading or execution
+procedure for this ZIP. Follow the [distribution boundary](skills/frontier-envisioning/references/method.md#finops-not-included-in-1110);
+acknowledgement cannot restore an absent financial owner validator.
+
+### Retained FinOps Preview awareness protocol
+
+In the retained source protocol, loading to explain limitations is not cost
+work. Before any cost seed,
 migration, calculation, freeze, review recording, apply, export,
 recommendation or figure, show this exact notice and obtain actual
 confirmation for the current scenario:
@@ -216,14 +426,14 @@ consent and the warning persists. Flat/nested results and linked assumptions
 are gated, while ordinary own non-FinOps value stays available. Private
 components/rankings/outcomes are withheld, not zero; never recover
 `internal_notes`. Viewer acknowledgement is not encryption or access control.
-See the [FinOps skill](skills/frontier-finops/SKILL.md) for exact CLI examples.
+See the [1.11.0 distribution boundary](skills/frontier-envisioning/references/method.md#finops-not-included-in-1110);
+the source CLI is not bundled.
 
 ### Versioned offline baselines
 
-For requested new work, use the
-[baseline lifecycle](skills/frontier-finops/SKILL.md#quick-start--requested-versioned-baseline)
-inside the existing FinOps skill. No additional skill or cloud connection is
-needed. Prepare each agent's owners, outcome, scope, measurement and guardrails;
+The retained [baseline lifecycle boundary](skills/frontier-envisioning/references/method.md#finops-not-included-in-1110)
+does not provide an installed FinOps skill. The source protocol requires
+each agent's owners, outcome, scope, measurement and guardrails;
 twelve monthly demand values for low/expected/high scenarios; another meaningful
 cost or outcome driver; and dated, applicable prices and sharing evidence.
 Amounts use decimal strings, typed units and an explicit reporting currency
@@ -256,8 +466,8 @@ Use projected records; never reconstruct withheld costs or fall back to legacy
 amounts. Unconsumed baseline data does not make independent ordinary value
 Preview. Legacy `frontier-finops/1.0` work remains separate; migration is explicit
 and preserves originals without inherited approval or implicit FX.
-See the [complete offline contract](skills/frontier-finops/references/agent-finops-baseline.md)
-for exact inputs, commands, review fields and sharing limits. Live billing,
+The [distribution boundary](skills/frontier-envisioning/references/method.md#finops-not-included-in-1110) applies to these
+retained input, command, review and sharing contracts. Live billing,
 provider imports, FinOps Agent factories and operating loops are not included.
 
 ---
@@ -265,7 +475,7 @@ provider imports, FinOps Agent factories and operating loops are not included.
 ## What is in the package
 
 ```
-frontier-envisioning-plugin-1.10.1.zip
+frontier-envisioning-plugin-1.11.0.zip
 ├── README.md                         this guide
 ├── MIT.md                            the licence (MIT)
 ├── THIRD-PARTY-NOTICES.md            Microsoft product icons and other material not covered by MIT
@@ -281,7 +491,7 @@ frontier-envisioning-plugin-1.10.1.zip
     ├── frontier-agent-identity/      agent names, colours and icons: identity kit, renderer, validate and stamp scripts
     ├── frontier-value-case/          business value in CHF: value tree, assumption register, NPV, ROI, workshop merge
     ├── frontier-process/             optional process ontology, proposed CDM mappings and local data-product/agent kit
-    └── frontier-finops/              optional Preview costs; actual awareness before operations or figures
+    └── frontier-agent-factory/       registered candidate offline producer; final integration proof pending
 ```
 
 ---
@@ -293,15 +503,17 @@ Follow these steps when a user uploads this zip and asks to install it ("Install
 1. **Extract** the uploaded zip from `input/` into `working/frontier-plugin/`, keeping the folder structure (Python `zipfile`; do not repack it).
 2. **Check** the package and get the plan:
    `python working/frontier-plugin/install/prepare_install.py --root working/frontier-plugin`
-   It verifies every file against `install/plugin-install.json` and prints JSON with `verified`, `problems` and, per skill, `source`, `destination`, `files`, `status` (new, update or reinstall) and owned `maturity`, `optional`, `requires_preview_ack` metadata. Require eight entries: seven GA, one optional acknowledgement-required Preview. These are repository install fields, not invented Microsoft manifest fields. If `verified` is false, stop and request the original zip again.
+   It verifies every file against `install/plugin-install.json` and prints JSON with `verified`, `problems` and, per skill, `source`, `destination`, `files`, `status` (new, update or reinstall) and owned `maturity`, `optional`, `requires_preview_ack` metadata. The registered 1.11.0 candidate has exactly eight entries: seven GA and optional Preview Factory without blanket financial acknowledgement. FinOps must not appear in the registration, file list or copy plan. Registration alone is not final integration proof. These are repository install fields, not invented Microsoft manifest fields. If `verified` is false, stop and request the original zip again.
 3. **Install** each skill in the plan into the user's skills folder, one call per skill:
    `CopyArtifact(surface="user", source="working/frontier-plugin/skills/<name>", destination="skills/<name>", recursive=true, overwrite=true)`
    The first call shows the user an approval card. If the user declines, stop and say that nothing was installed.
    If this tool is unavailable in the harness, stop and report that limitation;
    provide a manual handoff without claiming installation or inventing a tool call.
 4. **Confirm the copy**: each result's `copied` count must equal the plan's `files` for that skill. "source folder not visible yet" means the extracted files are still uploading: wait a few seconds and repeat the same call. A short count means the publish is incomplete: repeat the same call (it is idempotent with `overwrite=true`).
-5. **Report** the plugin/version, all eight skills' new/update/reinstall status,
-   seven GA/one optional Preview availability, and that installation is not
+5. **Report** the actual plugin/version and each planned skill's new/update/reinstall
+   status. Only actual successful copying of the verified 1.11.0 plan can
+   report eight installed skills, seven GA/one optional Preview.
+   Installation is not sharing clearance,
    FinOps acknowledgement or cost execution. New chats pick them up after
    OneDrive sync. Offer the three core prompts above; FinOps is not automatic.
 
@@ -309,8 +521,10 @@ Follow these steps when a user uploads this zip and asks to install it ("Install
 
 ## Organisation roll-out
 
-The same zip has the Microsoft 365 app-package structure (eight registered
-agent skills, colour and outline icons). MOS3 `devPreview` remains unchanged.
+The ZIP uses the Microsoft 365 app-package structure with colour and outline
+icons. Current registration is eight, without FinOps; final amended-candidate
+verification remains pending.
+MOS3 `devPreview` remains unchanged.
 Organisation catalogue publication is an admin operation requiring tenant
 validation and approval; this release build does not certify it. Tenant-specific
 builder metadata, if required, is the admin's responsibility, not a field to
@@ -359,7 +573,10 @@ python tools/dev.py package
 ```
 
 Default `python tools/dev.py demo` uses core value/identity and the curated
-process example without FinOps. Explicit developer Preview testing uses:
+process example without FinOps.
+
+**Source-compatibility reference — not runnable from the 1.11.0 ZIP.**
+The retained repository-only developer Preview test command is:
 
 ```text
 python tools/build_demo.py --out build/demo-finops-preview --with-finops-preview --acknowledge-finops-preview

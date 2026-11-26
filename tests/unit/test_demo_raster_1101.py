@@ -42,7 +42,7 @@ class Patch1101Raster(unittest.TestCase):
         module = load("tools/demo_raster.py")
         self.assertEqual(module.SUPPORTED_VERSIONS, {"1.4.0", "1.5.0", "1.6.0"})
         self.assertEqual(module.PREVIEW_VERSIONS,
-                         {"1.6.1", "1.7.1", "1.9.1", "1.9.2", "1.10.0", "1.10.1"})
+                         {"1.6.1", "1.7.1", "1.9.1", "1.9.2", "1.10.0", "1.10.1", "1.11.0"})
         data = (ROOT / module.PATCH_INPUT_PROFILE).read_bytes()
         self.assertNotIn(b"\r", data)
         self.assertEqual(hashlib.sha256(data).hexdigest(), module.PATCH_INPUT_PROFILE_SHA256)
@@ -139,7 +139,7 @@ class Patch1101Raster(unittest.TestCase):
                 module.verify_release_identity(final, report)
 
     def test_unnamed_versions_cannot_inherit_replay_or_skip_archive_authority(self):
-        for version in ("1.10.2", "1.11.0", "1.9.3"):
+        for version in ("1.10.2", "1.11.1", "1.9.3"):
             with self.subTest(version=version), self.fixture() as (module, _, root, kit, profile, _):
                 with self.assertRaisesRegex(module.RasterProfileError, "not approved"):
                     module.replay(kit, profile, version=version)

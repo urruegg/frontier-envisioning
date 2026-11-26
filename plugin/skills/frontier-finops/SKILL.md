@@ -13,7 +13,7 @@ license: MIT
 metadata:
   category: productivity
   icon: Money
-  version: "1.10.1"
+  version: "1.11.0"
   plugin: frontier-envisioning
   maturity: preview
   optional: true
@@ -29,8 +29,9 @@ Optional Preview planning costs:
 credits, licences, models, tools, infrastructure, people and one-time build.
 For a requested new baseline, use `frontier-finops-baseline/1.0` below.
 The legacy CHF model remains available only as an explicit separate path.
-Comparisons are provisional, not commitment advice. There are still eight
-skills; the seven non-FinOps GA wrappers work without FinOps.
+Comparisons are provisional, not commitment advice. There are nine registered
+skills: seven non-FinOps GA wrappers and optional Preview FinOps and Agent
+Factory. Core work needs neither extension.
 
 ## Awareness gate — before any cost operation or figure
 
