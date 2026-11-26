@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.7 |
-| Date | 2026-11-25 |
+| Version | 0.9 |
+| Date | 2026-11-26 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Full plan/readiness `5dbfc8a` approved; #74/#75/#76 locally verified and reviewed; #77 projection/export CLI in progress; final integration/gates pending, Cowork deferred |
+| Status | Approved W1-W4 implemented and reviewed through `52d6c0e`; exact package/receiver and full local L1 passed; full browser/server acceptance pending; Cowork deferred |
 | Scope | Planned 1.11.0 optional Agent Factory handover only; systems/D365 deferred |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Design](../specs/2026-11-25-agent-factory-handover-design.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [#58 deferral](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922) |
 
@@ -24,9 +24,9 @@ No business runtime, remote repository, tenant provisioning or deployment.
 | [#74](https://github.com/urruegg/frontier-envisioning/issues/74) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Task 1](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#3-task-1--baseline-then-bump-then-finite-raster-profile) | `@urruegg` accountable and assigned; bounded builder | Actual full plan/readiness `5dbfc8a` | Local `c51c6e9` version/raster slice verified; not final Factory candidate | [Bounded review/evidence](https://github.com/urruegg/frontier-envisioning/issues/74#issuecomment-7169371390) |
 | [#75](https://github.com/urruegg/frontier-envisioning/issues/75) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-02-AF-08/10](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 2-4](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#4-task-2--w1-strict-data-safe-local-reads-and-fixed-schema-subset) | `@urruegg` accountable and assigned; bounded builder | Reviewed #74 | Local `bf54731` cleared both ordered reviews; 37 focused tests passed | [W1 handoff/evidence](https://github.com/urruegg/frontier-envisioning/issues/75#issuecomment-7170756785); no whole-exporter/final-gate claim |
 | [#76](https://github.com/urruegg/frontier-envisioning/issues/76) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-04/10/11](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 5-6](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#7-task-5--w2-extract-the-proven-raw-zip-mechanism-without-release-drift) | `@urruegg` accountable and assigned; bounded builder | Reviewed #75 | Local `d1c0b3f` cleared both ordered reviews; archive/release focused proof below | [W2 handoff/evidence](https://github.com/urruegg/frontier-envisioning/issues/76#issuecomment-7171760018); no full Factory candidate claim |
-| [#77](https://github.com/urruegg/frontier-envisioning/issues/77) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-05-AF-11/14/15](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 7-10](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#9-task-7--w3-passive-authored-byte-projection-and-explicit-selection) | `@urruegg` accountable and assigned; fresh bounded builder | Reviewed #75/#76 | Projection, privacy/financial boundaries and CLI implementation in progress | No completed exporter or final-gate proof yet |
-| [#79](https://github.com/urruegg/frontier-envisioning/issues/79) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01/12/13/16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 11-13](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#13-task-11--w4-ninth-skill-maturity-installer-and-registration) | `@urruegg` accountable and assigned | Reviewed #77; disjoint prose #78 before final gates | Pending; not delegated | No ninth-skill/package/receiver candidate result yet |
-| [#78](https://github.com/urruegg/frontier-envisioning/issues/78) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16 documentation](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Task 14](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#16-task-14--w4-productengineering-prose-not-historical-rewriting) | `@urruegg` accountable and assigned; eligible docs route | Reviewed #77; coordinates disjoint #79 code | Pending; not delegated | No fictional product/release verification |
+| [#77](https://github.com/urruegg/frontier-envisioning/issues/77) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-05-AF-11/14/15](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 7-10](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#9-task-7--w3-passive-authored-byte-projection-and-explicit-selection) | `@urruegg` accountable and assigned; bounded builder | Reviewed #75/#76 | Both ordered reviews clear; final integrated financial corrections at `52d6c0e` also QUALITY_CLEAR | [W3 evidence](https://github.com/urruegg/frontier-envisioning/issues/77#issuecomment-7185095256), [final parent proof](https://github.com/urruegg/frontier-envisioning/issues/79#issuecomment-7188976751) |
+| [#79](https://github.com/urruegg/frontier-envisioning/issues/79) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01/12/13/16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 11-13](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#13-task-11--w4-ninth-skill-maturity-installer-and-registration) | `@urruegg` accountable and assigned; bounded builder | Reviewed #77; serial prose #78 before integration | `9fb2435` integration and `52d6c0e` fixes reviewed; six required receiver tests and full local L1 passed; full browser/server acceptance pending | [Actual source-qualified evidence](https://github.com/urruegg/frontier-envisioning/issues/79#issuecomment-7188976751); no Cowork or publication claim |
+| [#78](https://github.com/urruegg/frontier-envisioning/issues/78) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16 documentation](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Task 14](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#16-task-14--w4-productengineering-prose-not-historical-rewriting) | `@urruegg` accountable and assigned; docs agent and parent evidence maintenance | Reviewed #77; serial prose before #79 code | Prose reviewed at `fca506f`; parent strict docs and integrated docs-contract tests passed | Current candidate proof below; no historical requirement or release record rewritten |
 
 Create real bounded child issues only when their actual execution plans are
 approved, before delegation. Do not treat W0 evidence as approval for unwritten
@@ -70,8 +70,8 @@ Cowork remains not performed and cannot be advertised as validated.
 | W0: verification spike | Genuine available-host source/reference acquisition and actual pinned receiver checks; actual Cowork explicitly deferred under approved amendment | Verified source/reference and receiver evidence, 30 tests passed/one skip and four validators exit 0; no simulated host pass |
 | W1: local source/intake contract | Strict offline receipt/profile, ID/scope/role/evidence/review/history handling; real RED/GREEN and actual approved exact plan | #75 locally verified at `bf54731`; both ordered reviews clear, 37 focused tests passed |
 | W2: archive | Bounded raw ZIP validation, safe paths/modes/inventory, threshold and good-output-preservation tests, shared-helper reuse without release regression | #76 locally verified at `d1c0b3f`, both ordered reviews clear |
-| W3: projection/export | Approved authored bytes, scope/privacy/FinOps boundaries, deterministic full ZIP, separate truthful statuses | Approved plan and reviewed W1/W2; #77 implementation in progress |
-| W4: integration/acceptance | Ninth optional Preview skill, current metadata/docs/installer/self-test, independent package/receiver proof and exact-head gates; unavailable Cowork explicitly not performed | Blocked by reviewed W3 and actual production-plan approval |
+| W3: projection/export | Approved authored bytes, scope/privacy/FinOps boundaries, deterministic full ZIP, separate truthful statuses | #77 reviewed through `52d6c0e`; original 63-test component proof and final 13 financial/installed controls passed |
+| W4: integration/acceptance | Ninth optional Preview skill, current metadata/docs/installer/self-test, independent package/receiver proof and exact-head gates; unavailable Cowork explicitly not performed | Implemented and reviewed; six required receiver tests and full local L1 passed; full browser/server acceptance remains pending |
 
 The [combined production plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md)
 at `5dbfc8a` actually received `approve-complete-plan-and-implement`, with
@@ -332,6 +332,129 @@ W3 only started after both W2 reviews cleared; full CLI/privacy/financial,
 exact installed package, actual generated-intake receiver and final
 authoritative candidate gates remain pending. No new human approval,
 protected action, release or Cowork support claim was introduced.
+
+## W3: actual passive exporter, privacy and financial corrections
+
+The bounded #77 worker implemented only the five projection/CLI/test paths,
+starting at `98c2bdb`. The CLI preserves authored PRD/design/ADR bytes and IDs,
+valid raw Windows/CRLF accepted history, shared-file scope, complete foundation,
+fixed deterministic archives and safe old-output preservation. Actual source
+and baseline hashes are computed automatically; the producer never runs
+downloaded template code, creates a remote repository or provisions a tenant.
+
+Stage 1 reproduced two actual gaps, fixed test-first at `35d5b950`:
+inherited-private array/container strings and stripped `internal_notes`
+could leak through exported sharing metadata; an unrequested financial path
+could return before enforcing an explicit build-handover claim. The reviewer
+reran twelve targeted regressions/positive controls and cleared the fixes.
+
+Stage 2 then reproduced four correctness issues: private authored dictionary
+keys, nested cost-derived value validation, genuine native legacy FinOps
+dispatch/provenance handling, and malformed ontology shapes escaping as a
+traceback. Their test-first corrections at `5d63359` preserve the shared
+exported-metadata/privacy projection, call actual financial owner validators,
+and validate known ontology shapes before helper use without a blanket
+programming-exception catch.
+
+A remaining result-local schema-removal variant of the value receipt gap
+was then reproduced, fixed test-first at
+`ee5d690acfe28a3dad2924cf50c59ff27a9de62e`, and re-reviewed. Eight targeted
+tests/positive controls passed with zero skips, covering root/wrapped and
+missing/changed schema refusals, legitimate nested value/native FinOps
+receipts, descriptor boundaries and FinOps-free ordinary core.
+Stage 2 returned **QUALITY_CLEAR** within that scope; earlier findings remained
+cleared. No human/formal GitHub approval or whole-feature readiness is implied.
+
+The parent independently reran those eight controls (28.801 s), then on
+26 November ran the **complete W3 component suite**:
+
+```powershell
+python -m unittest tests.unit.test_factory_export tests.unit.test_factory_privacy tests.unit.test_factory_finops -q
+```
+
+Result at `ee5d690`: **63 tests passed, zero skips** (158.827 s).
+Owned Python lint and whitespace passed. Prior broader 125-test results at
+`5d63359` are retained as that earlier head's evidence, not relabelled as a
+fresh full gate for the later fix. Final whole-repository verification remains
+after W4 registration.
+
+Derived `agent_finops` Blueprint cache contexts are explicitly refused, not
+silently stripped or accepted as authority. Compatible authoritative original
+Blueprint/customer projections and independently supplied authoritative
+financial packets are required. Legacy standalone financial reports are
+supported with real source/review checks; planning-ready is not financial
+permission. Historical originals are explicitly unavailable/not checked,
+while provided history baseline bytes and raw records are preserved/validated.
+Opaque Office/PDF sharing review is not semantic DLP.
+
+W4 subsequently completed the approved serial prose and integration work,
+with the source-qualified evidence below. Earlier component observations
+remain evidence for their named heads, not substituted final results.
+
+## W4: reviewed integrated candidate and final local evidence
+
+The #78 prose at `fca506f` passed parent review and strict document checks.
+The #79 registration, exact maturity/installer metadata, self-test and installed
+package/receiver integration were committed at `9fb2435`. Ordered review
+returned **SPEC_COMPLIANT**. Final correctness review then found two reachable
+financial edge cases: legacy slash-form financial schemas under `vars` could
+bypass acknowledgement, and a nonrepresentable numeric input could escape
+the safe error contract.
+
+The same #77 builder fixed both test-first at
+`52d6c0e31c48ea3955d4b5f346da396474215222`. The same reviewer returned
+**QUALITY_CLEAR**, including independent installed overflow probes.
+Owner calculator semantics and public CLI/schema remain unchanged.
+The parent independently reran 13 targeted installed-current/history and
+financial/core controls: **13 passed, zero skips** (77.616 seconds).
+
+At that product head, the required retained-reference command
+`python -m unittest tests.pipeline.test_factory_receiver -v` passed:
+**six tests, zero skips** (117.545 seconds), with all three required reference/
+receiver environment variables explicitly set. It checked the actual 149
+foundation blobs, 726,850 bytes and modes, default and synthetic accepted
+intakes with baseline-only/full-source validation, immutable Windows history,
+native junction refusal and actual shared 64 MiB/+1 boundaries. Synthetic
+acceptance does not authenticate a person or authorise customer transfer.
+
+Two independent plugin builds reproduced SHA256
+`678361b50bfe355be98e4e4a418dbd364a2929e36f739df938657de8dfd9a5ca`.
+Two frozen review-starter exports reproduced
+`166ce1ecdb8fe308390847a4160fb9b5f6c1d34734bc17579d1921ee405cf1b6`;
+the synthetic accepted starter reproduced
+`585ec375789d0d609d81c3794cd788f6927034bbff422284a0ce2d3fd214ed1a`.
+These are developer compatibility fixtures, not a real customer handover or
+fresh latest-template discovery.
+
+The parent ran `$env:CI='true'; python tools\dev.py check --strict` alone:
+**ALL GATES PASSED**, **1,089 passed, 14 skipped, 3,620 subtests**;
+**201/201 DOM tests**, self-test, package, demo, docs-demo drift, lint,
+document and neutrality checks passed. Six pre-existing ESLint warnings
+remain. The online exact-version lookup returned **development**, with no
+exact published `v1.11.0` release or conflicting tag. This is not a published
+release comparison or server CI result. The separate required receiver pass
+above is not replaced by optional integration skips in the general suite.
+The [actual parent receipt](https://github.com/urruegg/frontier-envisioning/issues/79#issuecomment-7188976751)
+preserves these results.
+
+Failed runs are not relabelled: the first integrated L1 exposed an old GA
+fixture assumption, corrected without weakening production maturity rules.
+A concurrent browser-output scan then encountered a disappearing trace;
+the complete successful L1 ran after browser work stopped. An incorrectly
+configured direct browser run served core-only pages and failed on missing
+Preview fixtures. The corrected full browser invocation selected
+`FRONTIER_SITE_DIR=build/site-e2e`, with one worker and zero retries:
+**73 passed, three timed out** (53.6 minutes).
+The same three cases then passed in isolation, unchanged, with one worker
+and zero retries: **three passed** (3.5 minutes). These separate runs are
+**not** an all-76 full-suite pass. Full browser/server acceptance remains
+pending; no timeout, assertion or renderer code was relaxed.
+
+The generated documentation demo was refreshed only through
+`python tools\dev.py docs-demo`; HTML and manifest changed for 1.11.0,
+while all ten generated screenshots remained byte-identical.
+Actual Cowork, Node 24/full receiver toolchain certification, tenant readiness,
+human sign-off, merge and publication remain separate and unclaimed.
 
 ## Human boundaries
 
