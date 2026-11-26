@@ -268,6 +268,58 @@ class Financial(unittest.TestCase):
                 self.reviewed_document(altered)
                 self.financial_refusal()
 
+    def test_cli_nonrepresentable_finops_numbers_are_safe_input_errors(self):
+        fin, _ = legacy_documents(self.p)
+        for wrapped in (False, True):
+            altered = copy.deepcopy(fin)
+            altered["results"]["totals"]["credits_month"] = 10 ** 400
+            with self.subTest(wrapped=wrapped):
+                self.reviewed_document({"nested": altered} if wrapped else altered)
+                self.financial_refusal()
+
+    def test_supported_large_finops_numbers_keep_native_owner_receipts(self):
+        fin, value = legacy_documents(self.p)
+        fin["agents"][0].setdefault("usage", {})["sessions"] = 10 ** 100
+        rates = json.loads((F.parent / "frontier-finops/rates/rates-2026-11.json").read_bytes())
+        with self.p.sibling("frontier-finops", "finops_calc") as owner:
+            fin["results"] = owner.run(fin, value, rates, acknowledge_finops_preview=True)
+        fin = json.loads(encode(fin))
+        with self.p.sibling("frontier-finops", "finops_preview") as owner:
+            owner.validate_finops_results(fin, value=value, rates=rates, acknowledge_finops_preview=True)
+        self.assertGreater(fin["results"]["totals"]["credits_month"], 10 ** 90)
+        for wrapped in (False, True):
+            with self.subTest(wrapped=wrapped):
+                self.reviewed_document({"nested": fin} if wrapped else fin)
+                run = invoke(self.f, "--acknowledge-finops-preview")
+                self.assertEqual(run.returncode, 0, (run.stdout, run.stderr))
+                self.assertEqual(json.loads(run.stdout)["financial_status"],
+                                 "reviewed-documents-not-financially-ready")
+
+    def test_owner_numeric_boundary_does_not_hide_programmer_overflow(self):
+        with mock.patch.object(self.m, "assemble", side_effect=OverflowError("programmer defect")):
+            with self.assertRaises(OverflowError):
+                self.m.main(["--request", str(self.f["request_file"]),
+                             "--template", str(self.f["template"]),
+                             "--source-root", str(self.f["source"]),
+                             "--baseline-root", str(self.f["baseline"]),
+                             "--out", str(self.f["out"])])
+
+    def test_native_vars_payload_requires_current_ack_without_changing_value_detection(self):
+        fin, value = legacy_documents(self.p)
+        document = {"vars": {"cost_source": fin, "value": value}}
+        with self.p.sibling("frontier-value-case", "value_calc") as owner:
+            self.assertFalse(owner.has_finops_dependency(document), "Calculator vars semantics must stay unchanged")
+        self.reviewed_document(document, role="value")
+        self.f["out"].write_bytes(b"old-good")
+        declined = invoke(self.f)
+        self.assertEqual(declined.returncode, 1)
+        self.assertEqual(json.loads(declined.stdout)["error"], "FACTORY_FINANCIAL_ACK")
+        self.assertEqual(declined.stderr, "")
+        self.assertEqual(self.f["out"].read_bytes(), b"old-good")
+        run = invoke(self.f, "--acknowledge-finops-preview")
+        self.assertEqual(run.returncode, 0, (run.stdout, run.stderr))
+        self.assertEqual(json.loads(run.stdout)["financial_status"], "reviewed-documents-not-financially-ready")
+
     def test_core_does_not_import_or_run_finops_even_if_acknowledged(self):
         original = self.p.sibling
         def guarded(skill, module):

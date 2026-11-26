@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Exercise the exact nine-skill distribution, never a repository CLI substitute."""
 import contextlib
+import copy
 import hashlib
 import io
 import json
@@ -14,7 +15,7 @@ import tempfile
 import unittest
 import zipfile
 
-from tests.factory_fixture import encode, prepare, save, zip_bytes
+from tests.factory_fixture import F, encode, prepare, save, zip_bytes
 from tests.unit._util import load
 
 
@@ -216,3 +217,101 @@ class FactoryPackage(unittest.TestCase):
             module.factory_cli_checks(installed, root, lambda name, ok, detail="": checks.append((name, ok, detail)))
             self.assertGreaterEqual(len(checks), 6)
             self.assertTrue(all(ok for _, ok, _ in checks), checks)
+
+
+class InstalledFactoryFinancial(unittest.TestCase):
+    """Narrow financial regressions against the actual audited installed CLI."""
+    @classmethod
+    def setUpClass(cls):
+        cls.candidate_directory = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(cls.candidate_directory.cleanup)
+        cls.installed, raw = build_candidate(Path(cls.candidate_directory.name))
+        cls.candidate_sha256 = hashlib.sha256(raw).hexdigest()
+        script = "scripts/factory_projection.py"
+        actual = (cls.installed / "skills/frontier-agent-factory" / script).read_bytes()
+        if actual != (F / script).read_bytes():
+            raise AssertionError("Installed candidate does not contain the actual producer bytes")
+
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+        self.next_fixture = 0
+
+    def selected_json(self, document, *, role="value", historical=False):
+        from tests.unit.test_factory_finops import provide
+        from tests.unit.test_factory_export import add_history, exporter
+        fixture = prepare(self.root / str(self.next_fixture), accepted=historical)
+        self.next_fixture += 1
+        row = next(row for row in fixture["request"]["intake"]["artifacts"] if row["role"] == role)
+        ordinary_current = copy.deepcopy(row)
+        provide(fixture, "selected.json", encode(document), role=role, artifact_id=role)
+        target = row["baseline"]["path"]
+        if historical:
+            # W1 helpers construct data only. Export always runs the installed CLI.
+            producer = exporter(self)
+            record, _ = add_history(fixture, producer.contract, producer.common)
+            target = next(item["baseline"]["path"] for item in record["artifacts"] if item["id"] == role)
+            row.clear()
+            row.update(ordinary_current)
+            if ordinary_current["status"] != "provided":
+                del fixture["request"]["sharing_review"]["artifacts"]["caldova-intake:" + role]
+        save(fixture)
+        return fixture, target
+
+    def refusal(self, document, *, role="value", historical=False):
+        fixture, target = self.selected_json(document, role=role, historical=historical)
+        fixture["out"].write_bytes(b"old-good")
+        inputs = {path: path.read_bytes() for folder in (fixture["source"], fixture["baseline"])
+                  for path in folder.rglob("*") if path.is_file()}
+        result = export_command(self.installed, fixture, self.root)
+        if result.returncode == 0:
+            # Demonstrate the original installed-candidate failure copied actual
+            # selected bytes, not a mock or a repository-only detection result.
+            with zipfile.ZipFile(fixture["out"]) as archive:
+                self.assertEqual(archive.read(target), encode(document))
+                manifest = json.loads(archive.read("handover/manifest.json"))
+                self.assertEqual(manifest["financial"]["status"], "not-requested")
+        self.assertEqual(result.returncode, 1, (result.stdout, result.stderr))
+        self.assertEqual(json.loads(result.stdout)["error"], "FACTORY_FINANCIAL_ACK")
+        self.assertEqual(len(result.stdout.splitlines()), 1)
+        self.assertEqual(result.stderr, "")
+        self.assertNotIn("12345", result.stdout)
+        self.assertEqual(fixture["out"].read_bytes(), b"old-good")
+        self.assertEqual(list(fixture["out"].parent.glob(".factory-*.tmp")), [])
+        self.assertTrue(all(path.read_bytes() == raw for path, raw in inputs.items()))
+
+    def test_installed_current_vars_financial_schemas_require_ack(self):
+        legacy = {"schema": "frontier-finops/1.0", "results": {"totals": {"total_month": 12345}}}
+        for role, document in (
+                ("value", {"vars": legacy}), ("prd", {"vars": [{"nested": legacy}]}),
+                ("value", {"results": {"vars": legacy}}),
+                ("value", {"vars": {"schema": "frontier-finops-baseline/1.0"}}),
+                ("value", {"nested": legacy})):
+            with self.subTest(role=role, wrapper=list(document)):
+                self.refusal(document, role=role)
+
+    def test_installed_historical_vars_financial_schemas_require_ack(self):
+        legacy = {"schema": "frontier-finops/1.0", "results": {"totals": {"total_month": 12345}}}
+        for role, document in (
+                ("value", {"vars": legacy}), ("prd", {"vars": [{"nested": legacy}]}),
+                ("value", {"results": {"vars": legacy}})):
+            with self.subTest(role=role, wrapper=list(document)):
+                self.refusal(document, role=role, historical=True)
+
+    def test_installed_nonfinancial_vars_work_without_finops(self):
+        document = {"vars": {"schema": "caldova-variables/1.0", "count": 10 ** 400,
+                             "id": ["ordinary", "data"], "finops": "ordinary-variable-binding"}}
+        fixture, target = self.selected_json(document)
+        optional = self.installed / "skills/frontier-finops"
+        withdrawn = Path(self.candidate_directory.name) / "withdrawn-finops"
+        optional.rename(withdrawn)
+        try:
+            result = export_command(self.installed, fixture, self.root)
+        finally:
+            withdrawn.rename(optional)
+        self.assertEqual(result.returncode, 0, (result.stdout, result.stderr))
+        self.assertEqual(result.stderr, "")
+        self.assertEqual(json.loads(result.stdout)["financial_status"], "not-requested")
+        with zipfile.ZipFile(fixture["out"]) as archive:
+            self.assertEqual(archive.read(target), encode(document))

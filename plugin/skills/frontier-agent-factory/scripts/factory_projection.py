@@ -464,8 +464,14 @@ def _reviewed_financial(document, preview):
                             if isinstance(result.get(field), list):
                                 need(all(isinstance(row, dict) and isinstance(row.get(identifier), str)
                                          for row in result[field]), "FACTORY_FINANCIAL_SHAPE")
-                    with validation_input("FACTORY_FINANCIAL"):
-                        preview.validate_finops_results(node, acknowledge_finops_preview=True)
+                    try:
+                        with validation_input("FACTORY_FINANCIAL"):
+                            preview.validate_finops_results(node, acknowledge_finops_preview=True)
+                    except OverflowError:
+                        # The owner's numeric verification uses math.isfinite;
+                        # a JSON integer outside its numeric range is input
+                        # failure here, not a global programmer-error fallback.
+                        raise FactoryError("FACTORY_FINANCIAL") from None
                     kind = "finops"
                 elif isinstance(schema, str) and schema.startswith("frontier-value/"):
                     if value.has_finops_dependency(node) or "fingerprint" in node:
@@ -531,7 +537,12 @@ def financial_check(request, records, baseline, source_root, acknowledged):
                     if Path(name).suffix.lower() == ".json":
                         document = decode(baseline[name], 16 * MIB)
                         documents[qualified] = document
-                        if value.has_finops_dependency(document) or _financial_schema(document):
+                        # Calculators intentionally skip formula vars. Factory
+                        # still inspects every dict for explicit legacy models.
+                        if value.has_finops_dependency(document) or _financial_schema(document) or any(
+                                isinstance(item.get("schema"), str)
+                                and item["schema"].startswith("frontier-finops/")
+                                for item in _nodes(document)):
                             detected.add(qualified)
     financial = request["financial"]
     if not financial["requested"]:

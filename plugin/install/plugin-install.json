@@ -191,7 +191,7 @@
     "scripts/factory_archive.py": "053d9a6054a9baab9a0b544f8482039ab3aa426dda6be56af265bc30b57df8ae",
     "scripts/factory_common.py": "17ab2e2a4aa478d737779458ce3ae3bdb129e38c39538e821c850203ab74ecac",
     "scripts/factory_contract.py": "1c2432769ad77720d68d8565d7ed7807b1389aa033b1d961c056be6087e82cc0",
-    "scripts/factory_projection.py": "cdc6f0129f88012387531ac6d470d6836913a8d55fc86a6f8152ae0420ad00b5",
+    "scripts/factory_projection.py": "24a83e346aff0954c2c6a4bba0692ce062610905b4c041b735867a051ce6adc8",
     "scripts/zip_stream.py": "c683860fd8a7e0d5ad9c14432fc2ced3d60831e0acf4e0809edb9588a051ca2c"
    },
    "maturity": "preview",
