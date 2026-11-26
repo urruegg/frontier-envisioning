@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.9 |
+| Version | 1.0 |
 | Date | 2026-11-26 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Approved W1-W4 implemented and reviewed through `52d6c0e`; exact package/receiver and full local L1 passed; full browser/server acceptance pending; Cowork deferred |
+| Status | Approved W1-W4 implemented and reviewed through `52d6c0e`; exact package/receiver and full local L1 passed; server L1/L2/IaC/CodeQL passed at `4aa1ddb`; human review/publication separate, Cowork deferred |
 | Scope | Planned 1.11.0 optional Agent Factory handover only; systems/D365 deferred |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Design](../specs/2026-11-25-agent-factory-handover-design.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [#58 deferral](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922) |
 
@@ -19,13 +19,13 @@ No business runtime, remote repository, tenant provisioning or deployment.
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#72](https://github.com/urruegg/frontier-envisioning/issues/72) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Approved combined production plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) | `@urruegg` accountable | Reviewed bounded #74-#79 slices and final actual candidate gates | Full plan approved; execution in progress, not complete | [Actual full-plan receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7167852054); earlier spec/W0/host receipts below |
+| [#72](https://github.com/urruegg/frontier-envisioning/issues/72) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Approved combined production plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) | `@urruegg` accountable | Reviewed bounded #74-#79 slices and actual candidate gates | Implementation/reviews and local/server gates verified; maintainer handoff | [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [actual full-plan receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7167852054); human sign-off/merge/publication not implied |
 | [#73](https://github.com/urruegg/frontier-envisioning/issues/73) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [Host/receiver boundary](../specs/2026-11-25-agent-factory-handover-design.md#4-template-discovery-acquisition-and-compatibility) | [W0 Tasks 1-4](../plans/2026-11-25-agent-factory-handover-plan.md#3-w0-task-1-baseline-and-exact-source) | `@urruegg` accountable and assigned; bounded receiver builder | Actual W0/host-amendment approval; pinned reference and isolated dependencies | Actual source/receiver exit verified: 30 pass, one privilege skip, four validators exit 0; Cowork deferred/not performed | Ordered parent specification then correctness review; attribution correction applied; no protected ready/approval label inferred |
 | [#74](https://github.com/urruegg/frontier-envisioning/issues/74) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Task 1](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#3-task-1--baseline-then-bump-then-finite-raster-profile) | `@urruegg` accountable and assigned; bounded builder | Actual full plan/readiness `5dbfc8a` | Local `c51c6e9` version/raster slice verified; not final Factory candidate | [Bounded review/evidence](https://github.com/urruegg/frontier-envisioning/issues/74#issuecomment-7169371390) |
 | [#75](https://github.com/urruegg/frontier-envisioning/issues/75) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-02-AF-08/10](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 2-4](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#4-task-2--w1-strict-data-safe-local-reads-and-fixed-schema-subset) | `@urruegg` accountable and assigned; bounded builder | Reviewed #74 | Local `bf54731` cleared both ordered reviews; 37 focused tests passed | [W1 handoff/evidence](https://github.com/urruegg/frontier-envisioning/issues/75#issuecomment-7170756785); no whole-exporter/final-gate claim |
 | [#76](https://github.com/urruegg/frontier-envisioning/issues/76) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-04/10/11](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 5-6](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#7-task-5--w2-extract-the-proven-raw-zip-mechanism-without-release-drift) | `@urruegg` accountable and assigned; bounded builder | Reviewed #75 | Local `d1c0b3f` cleared both ordered reviews; archive/release focused proof below | [W2 handoff/evidence](https://github.com/urruegg/frontier-envisioning/issues/76#issuecomment-7171760018); no full Factory candidate claim |
 | [#77](https://github.com/urruegg/frontier-envisioning/issues/77) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-05-AF-11/14/15](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 7-10](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#9-task-7--w3-passive-authored-byte-projection-and-explicit-selection) | `@urruegg` accountable and assigned; bounded builder | Reviewed #75/#76 | Both ordered reviews clear; final integrated financial corrections at `52d6c0e` also QUALITY_CLEAR | [W3 evidence](https://github.com/urruegg/frontier-envisioning/issues/77#issuecomment-7185095256), [final parent proof](https://github.com/urruegg/frontier-envisioning/issues/79#issuecomment-7188976751) |
-| [#79](https://github.com/urruegg/frontier-envisioning/issues/79) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01/12/13/16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 11-13](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#13-task-11--w4-ninth-skill-maturity-installer-and-registration) | `@urruegg` accountable and assigned; bounded builder | Reviewed #77; serial prose #78 before integration | `9fb2435` integration and `52d6c0e` fixes reviewed; six required receiver tests and full local L1 passed; full browser/server acceptance pending | [Actual source-qualified evidence](https://github.com/urruegg/frontier-envisioning/issues/79#issuecomment-7188976751); no Cowork or publication claim |
+| [#79](https://github.com/urruegg/frontier-envisioning/issues/79) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01/12/13/16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Tasks 11-13](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#13-task-11--w4-ninth-skill-maturity-installer-and-registration) | `@urruegg` accountable and assigned; bounded builder | Reviewed #77; serial prose #78 before integration | `9fb2435` integration and `52d6c0e` fixes reviewed; six required receiver tests and full local L1 passed; server L1/L2/IaC/CodeQL passed at `4aa1ddb` | [Actual local evidence](https://github.com/urruegg/frontier-envisioning/issues/79#issuecomment-7188976751), [server CI](https://github.com/urruegg/frontier-envisioning/actions/runs/45807997484); no Cowork or publication claim |
 | [#78](https://github.com/urruegg/frontier-envisioning/issues/78) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16 documentation](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Task 14](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#16-task-14--w4-productengineering-prose-not-historical-rewriting) | `@urruegg` accountable and assigned; docs agent and parent evidence maintenance | Reviewed #77; serial prose before #79 code | Prose reviewed at `fca506f`; parent strict docs and integrated docs-contract tests passed | Current candidate proof below; no historical requirement or release record rewritten |
 
 Create real bounded child issues only when their actual execution plans are
@@ -71,7 +71,7 @@ Cowork remains not performed and cannot be advertised as validated.
 | W1: local source/intake contract | Strict offline receipt/profile, ID/scope/role/evidence/review/history handling; real RED/GREEN and actual approved exact plan | #75 locally verified at `bf54731`; both ordered reviews clear, 37 focused tests passed |
 | W2: archive | Bounded raw ZIP validation, safe paths/modes/inventory, threshold and good-output-preservation tests, shared-helper reuse without release regression | #76 locally verified at `d1c0b3f`, both ordered reviews clear |
 | W3: projection/export | Approved authored bytes, scope/privacy/FinOps boundaries, deterministic full ZIP, separate truthful statuses | #77 reviewed through `52d6c0e`; original 63-test component proof and final 13 financial/installed controls passed |
-| W4: integration/acceptance | Ninth optional Preview skill, current metadata/docs/installer/self-test, independent package/receiver proof and exact-head gates; unavailable Cowork explicitly not performed | Implemented and reviewed; six required receiver tests and full local L1 passed; full browser/server acceptance remains pending |
+| W4: integration/acceptance | Ninth optional Preview skill, current metadata/docs/installer/self-test, independent package/receiver proof and exact-head gates; unavailable Cowork explicitly not performed | Implemented and reviewed; six required receiver tests and full local L1 passed; server L1/L2/IaC/CodeQL passed at `4aa1ddb`; human review separate |
 
 The [combined production plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md)
 at `5dbfc8a` actually received `approve-complete-plan-and-implement`, with
@@ -447,14 +447,39 @@ Preview fixtures. The corrected full browser invocation selected
 **73 passed, three timed out** (53.6 minutes).
 The same three cases then passed in isolation, unchanged, with one worker
 and zero retries: **three passed** (3.5 minutes). These separate runs are
-**not** an all-76 full-suite pass. Full browser/server acceptance remains
-pending; no timeout, assertion or renderer code was relaxed.
+**not** an all-76 full-suite pass. The independent full CI result below
+subsequently closed the automated browser gap; no timeout, assertion or
+renderer code was relaxed.
 
 The generated documentation demo was refreshed only through
 `python tools\dev.py docs-demo`; HTML and manifest changed for 1.11.0,
 while all ten generated screenshots remained byte-identical.
 Actual Cowork, Node 24/full receiver toolchain certification, tenant readiness,
 human sign-off, merge and publication remain separate and unclaimed.
+
+### Actual server verification at `4aa1ddb`
+
+[Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80)
+targets `main` from `feat/72-agent-factory`. Automatic pull-request
+[CI run 45807997484](https://github.com/urruegg/frontier-envisioning/actions/runs/45807997484)
+passed at exact head `4aa1ddb7ad6c137c5560d39aa7e4fade1482bc70`:
+
+- **L1 quality gate passed** (7 minutes 28 seconds):
+  **1,092 passed, 11 skipped, one warning, 3,617 subtests**;
+  actual `ALL GATES PASSED`, exact-version release status **development**.
+- **L2 browser tests passed** (job 7 minutes 30 seconds):
+  **all 76 passed**, two workers, browser execution 6.1 minutes;
+  `python tools/dev.py e2e --strict` ended `ALL GATES PASSED`.
+- **IaC validation passed**. Separate automatic
+  [CodeQL run 45807997496](https://github.com/urruegg/frontier-envisioning/actions/runs/45807997496)
+  passed Python, JavaScript/TypeScript and Actions analyses.
+
+Linux CI totals are separate from the Windows/local and required receiver
+runs. They are not added together or presented as actual Cowork evidence.
+This subsequent evidence-only documentation update changes no product bytes;
+current-head check status and the maintainer-written Summary/sign-off remain
+visible on the draft PR. No manual workflow dispatch or human-only action
+was used to obtain these results.
 
 ## Human boundaries
 

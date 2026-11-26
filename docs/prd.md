@@ -5,7 +5,7 @@
 | Version | 1.11 |
 | Date | 2026-11-26 |
 | Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance); Copilot (AI-assisted #78 Factory candidate prose) |
-| Status | Maintained requirements; unreleased 1.11.0 package/receiver and full local L1 verified; full browser/server acceptance pending; historical evidence retained; no release approval implied |
+| Status | Maintained requirements; unreleased 1.11.0 package/receiver and full local L1 verified; server L1/L2/IaC/CodeQL passed at `4aa1ddb`; historical evidence retained; no release approval implied |
 | Scope | Factory-only 1.11.0 candidate requirements and acceptance, with earlier engineering/product requirements and history preserved |
 | References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61), [Release evidence spec](specs/2026-11-24-release-evidence-simplification-design.md), [Human adoption handover](engineering/release-evidence-adoption.md) |
 
@@ -18,9 +18,12 @@ non-FinOps GA wrappers, optional Preview FinOps and optional Preview Factory.
 The offline producer is implemented and reviewed through `52d6c0e`; ninth-skill
 registration, procedure and maturity/installer metadata are implemented under
 [#79](https://github.com/urruegg/frontier-envisioning/issues/79).
-Exact package/receiver and full local L1 checks passed. Full browser/server
-acceptance remains pending; three isolated timeout reruns passing is not a
-complete browser-suite pass.
+Exact package/receiver and full local L1 checks passed. Server L1, all 76
+browser tests, IaC and CodeQL subsequently passed at `4aa1ddb`; current-head
+checks and human handoff remain on
+[draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80).
+Three isolated local timeout reruns passing is not relabelled as a complete
+local browser-suite pass or human acceptance.
 Ordinary core, value, identity, Blueprint, design and process work requires
 neither extension. Factory starts only on an explicit starter-repository,
 ZIP or handover request, never automatically after a PRD or as automatic FinOps.
@@ -62,7 +65,7 @@ passed results; actual source-qualified evidence is in
 | AF-13 | Verify the exact packaged offline producer outside this repository with trusted bundled siblings. Python producer is stdlib 3.11+; receiver is Python 3.12+/Node 24 LTS. | Installed exporter/installer and actual generated-intake receiver proof; absent requested helpers fail explicitly. Cowork discovery/install/acquisition/export is unavailable and **not performed** under the approved offline amendment, not a runtime cutover or host-support claim. Node 26 is not Node 24 certification. |
 | AF-14 | FinOps remains optional; actual current/history financial schema/role/nested-result markers require current acknowledgement, owner review and authoritative packets regardless of role/schema/wrapper. Reuse existing owner validators/formulas/rates. | No automatic figures, zero budgets, false N/A, cached/demo/install consent or duplicate calculator. Legacy standalone reviewed documents are review-only. Derivatives cannot bypass source checks. Explicit `build-handover` with `requested:false` is refused; with `requested:true`, actual stricter financial handover readiness is required. Internal model/review staging is not auto-exported. |
 | AF-15 | Separate export validation, intake disposition, unauthenticated recorded review, receiver/Cowork not-performed, tenant not-assessed and financial review/readiness from permission. | GitHub.com/GitHub Enterprise Cloud, including cloud hostnames, is the first receiving-repository/host profile; no native ADO/GHES certification. The authoritative template source remains `urruegg/frontier-agent-factory` on GitHub.com. No remote creation, Work IQ auth switching, tenant consent/provision/deploy. M365 read/public visibility is not transfer/IP/Entra permission; settings, secrets and real ownership remain human work. |
-| AF-16 | Preserve 1.10.x release/source/provenance/receipts and historical raster/identity evidence. Complete focused RED/GREEN and final candidate registration/package/receiver/full gates. | First bump and finite 1.11 profile are evidenced separately; no blanket version/count rewrite. Exact 1.11 package/receiver and full local L1 passed at `52d6c0e`; full browser/server acceptance and actual Cowork remain separate. Earlier 1.10.1 baseline evidence is not substituted candidate proof. |
+| AF-16 | Preserve 1.10.x release/source/provenance/receipts and historical raster/identity evidence. Complete focused RED/GREEN and final candidate registration/package/receiver/full gates. | First bump and finite 1.11 profile are evidenced separately; no blanket version/count rewrite. Exact 1.11 package/receiver and full local L1 passed at `52d6c0e`; server L1/L2/IaC/CodeQL passed at `4aa1ddb`. Actual Cowork and human acceptance remain separate. Earlier 1.10.1 baseline evidence is not substituted candidate proof. |
 
 ### Current producer constraints
 
@@ -962,7 +965,7 @@ The [offline Preview requirements](#1110-agent-factory-offline-preview) cover
 the candidate ninth skill in the same plugin. Producer review is complete
 through `52d6c0e`; nine-skill registration and maturity/installer metadata are
 implemented. Exact package/generated-receiver and full local L1 checks passed;
-full browser/server acceptance remains pending, as qualified in
+server L1/L2/IaC/CodeQL subsequently passed at `4aa1ddb`, as qualified in
 [B.9](solution-design.md#agent-factory-candidate-verification-26-november-2026).
 Systems/Dynamics 365 #58 moves to a **later
 unspecified release**, with no new deadline. Historical choices/roadmap below
