@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-26 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted intake |
-| Status | Conversational design approved; written specification review and new plan approval pending; no fix or release approval claimed |
+| Status | Written specification `c26991e` approved; proposed implementation plan awaits approval; no fix or release approval claimed |
 | Scope | Cowork ZIP routing correction; release-only FinOps exclusion, with Value Case and Agent Factory retained |
-| References | [Bug #81](https://github.com/urruegg/frontier-envisioning/issues/81), [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [Design](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md) |
+| References | [Bug #81](https://github.com/urruegg/frontier-envisioning/issues/81), [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [Design](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md), [Proposed plan](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7193888412), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md) |
 
 ## Problem and evidence
 
@@ -43,7 +43,10 @@ publication. Do not invent builder IDs, add dummy connectors or alter passing
 security checks merely to suppress advisory warnings.
 
 The [written design](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md)
-needs actual review before a new implementation plan is prepared and approved.
+at `c26991e` actually received `approve-written-health-amendment`;
+the [receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7193888412)
+records it separately from the earlier conversational design.
+The new implementation plan is proposed and still needs approval.
 The previous Factory plan and passing checks are baseline evidence, not
 approval or verification of this amendment. No release/tag was found at intake;
 recheck before editing product bytes. Human merge/publication and #8 routing

@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-26 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted design |
-| Status | Conversational design approved; this written specification awaits human review; no implementation, plan or release approval implied |
+| Status | Written specification at `c26991e` approved; proposed plan awaits approval; no implementation, plan or release approval implied |
 | Scope | Eight-skill Cowork ZIP without FinOps; Value Case/Process routing and exact-package verification |
-| References | [Bug #81](https://github.com/urruegg/frontier-envisioning/issues/81), [Idea](../ideas/2026-11-26-plugin-health-and-finops-exclusion.md), [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [Factory design](2026-11-25-agent-factory-handover-design.md), [Baseline plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md) |
+| References | [Bug #81](https://github.com/urruegg/frontier-envisioning/issues/81), [Idea](../ideas/2026-11-26-plugin-health-and-finops-exclusion.md), [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [Factory design](2026-11-25-agent-factory-handover-design.md), [Baseline plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md), [Proposed amendment plan](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7193888412), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md) |
 
 ## 1. Outcome and authority
 
@@ -22,8 +22,11 @@ Actual session decisions:
 - `installation_target=cowork-zip`.
 - `design_review=approve-bounded-health-amendment`.
 
-These are real conversational decisions, recorded in #81, not written-spec/
-plan approval, authenticated identity, protected labels or release permission.
+These are real conversational decisions, recorded in #81; alone they do not
+approve a written specification/plan, authenticate identity, apply protected
+labels or grant release permission. The written specification at `c26991e`
+subsequently received actual `approve-written-health-amendment`, recorded
+in the linked receipt. Implementation-plan approval remains separate.
 The accountable owner is `@urruegg`. A new approved implementation plan is
 required; the earlier Factory plan is baseline context only.
 
@@ -144,9 +147,9 @@ green score. Preserve truthful Studio-only and other advisory warnings.
 ## 7. Handoff and next approval
 
 The target is the 1.11.0 candidate before person-operated publication, not a
-promised date. Present this committed specification for written review.
-After actual approval, prepare a separate exact-file/test-first implementation
-plan and obtain plan approval before delegated implementation.
+promised date. Actual written review of `c26991e` is now recorded.
+The separate exact-file/test-first implementation plan is proposed and needs
+human approval before delegated implementation.
 
 No product changes or amended-candidate test/health passes are claimed here.
 The new plan must link #81, this specification, the idea, SPRINT-013 and #80;

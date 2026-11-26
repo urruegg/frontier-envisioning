@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.1 |
+| Version | 1.2 |
 | Date | 2026-11-26 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Prior Factory candidate implemented/reviewed with passing checks; #81 health/distribution amendment concept approved, written review/new plan pending; human review/publication separate |
+| Status | Prior Factory candidate implemented/reviewed with passing checks; #81 written amendment approved at `c26991e`, proposed plan awaits approval; human review/publication separate |
 | Scope | 1.11.0 Agent Factory plus proposed health/routing correction and release-only FinOps exclusion; systems/D365 deferred |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Design](../specs/2026-11-25-agent-factory-handover-design.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [#58 deferral](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922) |
 
@@ -19,7 +19,7 @@ No business runtime, remote repository, tenant provisioning or deployment.
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#81](https://github.com/urruegg/frontier-envisioning/issues/81) | [Health/distribution choices](../ideas/2026-11-26-plugin-health-and-finops-exclusion.md) | [H111-01-08](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md#6-acceptance-and-verification) | New amendment plan not written; [prior Factory plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) is baseline only | `@urruegg` accountable; no new assignee/readiness inferred | Actual written-spec review, new plan and plan approval before implementation | Conversational design approved; written review pending, not fixed | [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80); bug holds source report hash/timestamp and actual scope choices |
+| [#81](https://github.com/urruegg/frontier-envisioning/issues/81) | [Health/distribution choices](../ideas/2026-11-26-plugin-health-and-finops-exclusion.md) | [H111-01-08](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md#6-acceptance-and-verification) | [Proposed amendment plan](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md); [prior Factory plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) is baseline only | `@urruegg` accountable; no new assignee/readiness inferred | Plan approval before implementation | Written spec approved; plan awaits review, not fixed | [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [actual written approval](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7193888412); bug holds source report hash/timestamp and actual scope choices |
 | [#72](https://github.com/urruegg/frontier-envisioning/issues/72) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Approved combined production plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) | `@urruegg` accountable | Reviewed bounded #74-#79 slices and actual candidate gates | Implementation/reviews and local/server gates verified; maintainer handoff | [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [actual full-plan receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7167852054); human sign-off/merge/publication not implied |
 | [#73](https://github.com/urruegg/frontier-envisioning/issues/73) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [Host/receiver boundary](../specs/2026-11-25-agent-factory-handover-design.md#4-template-discovery-acquisition-and-compatibility) | [W0 Tasks 1-4](../plans/2026-11-25-agent-factory-handover-plan.md#3-w0-task-1-baseline-and-exact-source) | `@urruegg` accountable and assigned; bounded receiver builder | Actual W0/host-amendment approval; pinned reference and isolated dependencies | Actual source/receiver exit verified: 30 pass, one privilege skip, four validators exit 0; Cowork deferred/not performed | Ordered parent specification then correctness review; attribution correction applied; no protected ready/approval label inferred |
 | [#74](https://github.com/urruegg/frontier-envisioning/issues/74) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Task 1](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#3-task-1--baseline-then-bump-then-finite-raster-profile) | `@urruegg` accountable and assigned; bounded builder | Actual full plan/readiness `5dbfc8a` | Local `c51c6e9` version/raster slice verified; not final Factory candidate | [Bounded review/evidence](https://github.com/urruegg/frontier-envisioning/issues/74#issuecomment-7169371390) |
@@ -495,7 +495,10 @@ the exact report SHA256, findings, advisories and intended fix window.
 The maintainer actually selected `exclude-from-111-distribution`,
 `cowork-zip` and `approve-bounded-health-amendment`.
 The [new written specification](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md)
-awaits review; the new plan is not written or approved.
+at `c26991e` actually received `approve-written-health-amendment`;
+the [receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7193888412)
+records it. The [new plan](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md)
+is proposed and awaits actual plan approval.
 
 The proposed distribution has eight skills: seven existing GA wrappers,
 including Value Case, plus Preview Factory, without FinOps files/registration/
