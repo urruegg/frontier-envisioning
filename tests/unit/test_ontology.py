@@ -1381,7 +1381,7 @@ class ProcessGroundingDistribution(unittest.TestCase):
 
             verified = json.loads(run("install/prepare_install.py", "--root", package).stdout)
             self.assertTrue(verified["verified"])
-            shutil.rmtree(package / "skills/frontier-finops")
+            self.assertFalse((package / "skills/frontier-finops").exists())
             blueprint = root / "bp.json"
             blueprint.write_text(json.dumps({"meta": {"customer": "Caldova Industrial AG", "short": "Caldova", "date": "2026-11-17"},
                                               "domains": [{"id": "D1", "name": "Finance", "systems": ["SAP ECC"]}]}),
