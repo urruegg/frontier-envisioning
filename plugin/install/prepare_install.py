@@ -136,6 +136,40 @@ def main(argv=None) -> int:
     problems: list[str] = []
     if spec.get("plugin") != PLUGIN:
         problems.append(f"this installer is for {PLUGIN}, the package says {spec.get('plugin')!r}")
+    if spec.get("version") == "1.11.0":
+        skill_root = root / "skills"
+        disk = [
+            "skills/" + path.name for path in skill_root.iterdir() if path.is_dir()
+        ] if skill_root.is_dir() else []
+        rows = spec.get("skills")
+        if not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows):
+            problems.append("installer skills must be a list of objects")
+        else:
+            problems.extend(skill_inventory_errors(
+                "1.11.0", [row.get("folder") for row in rows], disk, source_tree=False
+            ))
+        try:
+            manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            problems.append("release manifest is missing or invalid JSON")
+        else:
+            if not isinstance(manifest, dict) or manifest.get("version") != spec["version"]:
+                problems.append("release manifest version differs from the installer")
+            else:
+                entries = manifest.get("agentSkills")
+                if not isinstance(entries, list) or not all(isinstance(row, dict) for row in entries):
+                    problems.append("manifest agentSkills must be a list of objects")
+                else:
+                    problems.extend(skill_inventory_errors(
+                        "1.11.0", [row.get("folder") for row in entries], disk, source_tree=False
+                    ))
+        if problems:
+            print(json.dumps({
+                "plugin": spec.get("plugin"), "version": spec.get("version"),
+                "verified": False, "problems": problems, "skills": [], "copy_calls": [],
+                "preview_notice": "", "after_install": "Do not install: use the original release ZIP.",
+            }, indent=1))
+            return 1
     rel_root = workspace_relative(root, given)
     installed_dir = Path(a.installed)
     skills_out = []

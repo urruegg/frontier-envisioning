@@ -1,6 +1,6 @@
 # Copyright (c) 2026 Urs Rüegg
 # SPDX-License-Identifier: MIT
-"""Exercise the exact nine-skill distribution, never a repository CLI substitute."""
+"""Exercise the exact eight-skill distribution, never a repository CLI substitute."""
 import contextlib
 import copy
 import hashlib
@@ -8,7 +8,6 @@ import io
 import json
 import os
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -91,7 +90,25 @@ def check_inventory(case, raw):
 
 
 class FactoryPackage(unittest.TestCase):
-    def test_exact_package_registers_nine_skills(self):
+    def test_installer_rejects_an_extra_skill_tree(self):
+        for name in ("frontier-finops", "frontier-unexpected"):
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                installed, _ = build_candidate(root)
+                extra = installed / "skills" / name
+                extra.mkdir()
+                (extra / "SKILL.md").write_text("Not a released skill\n", encoding="utf-8")
+                result = installed_command(
+                    installed / "install/prepare_install.py",
+                    ["--root", installed, "--installed", root / "empty"], root,
+                )
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                report = json.loads(result.stdout)
+                self.assertFalse(report["verified"])
+                self.assertEqual(report["copy_calls"], [])
+                self.assertFalse((root / "empty").exists())
+
+    def test_exact_package_registers_eight_skills(self):
         package = load("tools/build_package.py")
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -101,13 +118,16 @@ class FactoryPackage(unittest.TestCase):
             self.assertEqual(code, 0, output.getvalue())
             with zipfile.ZipFile(root / "dist/frontier-envisioning-plugin-1.11.0.zip") as archive:
                 manifest = json.loads(archive.read("manifest.json"))
-                self.assertEqual(len(manifest["agentSkills"]), 9)
-                self.assertIn("skills/frontier-agent-factory/SKILL.md", archive.namelist())
+                self.assertEqual(len(manifest["agentSkills"]), 8)
+                names = archive.namelist()
+                self.assertFalse(any(name.startswith("skills/frontier-finops/") for name in names))
+                self.assertIn("skills/frontier-value-case/SKILL.md", names)
+                self.assertIn("skills/frontier-agent-factory/SKILL.md", names)
 
     def test_exact_installed_offline_exports_installer_and_optional_core(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            installed, candidate = build_candidate(root)
+            installed, _ = build_candidate(root)
             empty = root / "empty"
             empty.mkdir()
             installer = installed / "install/prepare_install.py"
@@ -115,17 +135,15 @@ class FactoryPackage(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             plan = json.loads(result.stdout)
             self.assertTrue(plan["verified"])
-            self.assertEqual(len(plan["copy_calls"]), 9)
+            self.assertEqual(len(plan["copy_calls"]), 8)
             self.assertEqual(sum(row["maturity"] == "ga" for row in plan["skills"]), 7)
             previews = {row["name"]: row["requires_preview_ack"]
                         for row in plan["skills"] if row["maturity"] == "preview"}
-            self.assertEqual(previews, {"frontier-finops": True, "frontier-agent-factory": False})
+            self.assertEqual(previews, {"frontier-agent-factory": False})
             self.assertEqual(list(empty.iterdir()), [])
             self.assertNotIn("preview_acknowledged", plan)
             self.assertIn("not GA", plan["preview_notice"])
-            # Only AFTER the exact install plan was verified, remove optional
-            # FinOps in this disposable extraction. Factory's own core still works.
-            shutil.rmtree(installed / "skills/frontier-finops")
+            self.assertFalse((installed / "skills/frontier-finops").exists())
             shadow = root / "shadow"
             shadow.mkdir()
             for name in ("canon", "build_blueprint", "factory_common", "factory_contract", "socket"):
@@ -179,17 +197,37 @@ class FactoryPackage(unittest.TestCase):
                 self.assertEqual(fixture["out"].read_bytes(), outputs[0])
                 self.assertEqual(originals, {p: p.read_bytes() for p in originals})
             # Existing real value/process/blueprint probes also remove Factory.
-            # FinOps was removed above, so restore ONLY from exact candidate bytes.
-            with zipfile.ZipFile(io.BytesIO(candidate)) as archive:
-                for name in archive.namelist():
-                    if name.startswith("skills/frontier-finops/"):
-                        archive.extract(name, installed)
             selftest = load("tools/selftest.py")
             checks = []
             selftest.installed_core_check(installed, root, lambda name, ok, detail="": checks.append((name, ok, detail)))
             self.assertTrue(checks)
             self.assertTrue(all(ok for _, ok, _ in checks), checks)
             self.assertFalse((installed / "skills/frontier-agent-factory").exists())
+
+    def test_installed_financial_owner_absence_is_explicit(self):
+        from tests.unit.test_factory_finops import financial_packet
+        from tests.unit.test_factory_privacy import projection
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            installed, _ = build_candidate(root)
+            fixture = prepare(root / "financial")
+            financial_packet(projection(self), fixture)
+            fixture["out"].write_bytes(b"old-good")
+            args = []
+            for flag, key in (
+                ("request", "request_file"), ("template", "template"),
+                ("source-root", "source"), ("baseline-root", "baseline"), ("out", "out"),
+            ):
+                args.extend(["--" + flag, fixture[key]])
+            result = installed_command(
+                installed / "skills/frontier-agent-factory/scripts/export_factory.py",
+                [*args, "--acknowledge-finops-preview"], root,
+            )
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertEqual(json.loads(result.stdout)["error"], "FACTORY_HELPER")
+            self.assertEqual(result.stderr, "")
+            self.assertEqual(fixture["out"].read_bytes(), b"old-good")
 
     def test_installer_tampered_factory_metadata_refuses_without_copy_calls(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -303,13 +341,8 @@ class InstalledFactoryFinancial(unittest.TestCase):
         document = {"vars": {"schema": "caldova-variables/1.0", "count": 10 ** 400,
                              "id": ["ordinary", "data"], "finops": "ordinary-variable-binding"}}
         fixture, target = self.selected_json(document)
-        optional = self.installed / "skills/frontier-finops"
-        withdrawn = Path(self.candidate_directory.name) / "withdrawn-finops"
-        optional.rename(withdrawn)
-        try:
-            result = export_command(self.installed, fixture, self.root)
-        finally:
-            withdrawn.rename(optional)
+        self.assertFalse((self.installed / "skills/frontier-finops").exists())
+        result = export_command(self.installed, fixture, self.root)
         self.assertEqual(result.returncode, 0, (result.stdout, result.stderr))
         self.assertEqual(result.stderr, "")
         self.assertEqual(json.loads(result.stdout)["financial_status"], "not-requested")
