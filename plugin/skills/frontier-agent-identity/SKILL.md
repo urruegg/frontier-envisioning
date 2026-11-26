@@ -23,6 +23,8 @@ metadata:
 
 # Agent identity kit
 
+*1.11.0 distribution/routing maintenance: Copilot AI-assisted, 26 November 2026; original authorship retained.*
+
 Gives every agent in a customer's Frontier blueprint a name, colour and icon that people recognise and pipelines can't get wrong. One config file is the source of truth; scripts derive every display name per environment, every technical name, every icon and every document from it, and a validator blocks drift in pull requests.
 
 What the customer receives (one zip, ready for their repository):
@@ -57,12 +59,15 @@ status does not approve names, provision Entra identities or authorise deploymen
 
 This GA product wrapper works without FinOps. GA is the maintainer's designation,
 not result confidence, provider GA or release/distribution approval. Identity
-does not need cost modelling. For requested costs, first show the full notice
-and obtain actual current-scenario confirmation through
-[frontier-finops](../frontier-finops/SKILL.md). On decline or absent unrequested
-FinOps, continue identity and state the gap; a requested missing module is an
-error. Preserve legacy Preview originals/provenance and use clean core inputs,
-not cached Preview-derived value, on the declined path.
+does not need cost modelling.
+
+For 1.11.0, follow the [FinOps distribution boundary](../frontier-envisioning/references/method.md#finops-not-included-in-1110).
+FinOps is not bundled. Continue ordinary non-FinOps work with explicit budget
+gaps; do not invoke an absent skill or reuse derived financial figures.
+Preserve legacy Preview originals/provenance and use clean core inputs,
+not cached Preview-derived value. The retained financial allocation protocol
+is source-compatibility reference, not runnable 1.11.0 instructions;
+a requested unavailable operation is an explicit error.
 
 ## When to Use
 
@@ -72,7 +77,7 @@ not cached Preview-derived value, on the declined path.
 
 ## When NOT to Use
 
-- What the agents cost: load frontier-finops for its Preview notice and confirmation first.
+- FinOps cost modelling: unavailable in this release; report the error rather than loading an absent skill.
 - What the agents are worth: use frontier-value-case instead.
 - A logo, illustration, poster or picture: use image generation instead.
 - Building or updating the blueprint itself: use frontier-blueprint instead (this skill only adds identity to it).
@@ -113,8 +118,9 @@ Publish the zip and `catalog.html` to output with `CopyArtifact`; save the kit f
 
 ## Guardrails
 
-- Identity can supply allocation keys to an acknowledged Preview FinOps model;
-  this kit does not tag deployed resources or validate a budget.
+- Source-compatibility reference, not runnable in 1.11.0: identity can supply
+  allocation keys to an acknowledged Preview FinOps source model. This kit
+  does not tag deployed resources or validate a budget.
 
 - Never invent brand colours, logos or fonts: every colour has a source and an evidence id, or it is marked as a blueprint colour.
 - Always keep icon contrast at or above 4.5:1; use the brand's dark colour or an accessible shade of the same colour, never a new colour.

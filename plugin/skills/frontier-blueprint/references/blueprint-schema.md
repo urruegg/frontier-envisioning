@@ -1,5 +1,13 @@
 # Blueprint JSON reference (frontier-blueprint/1.0)
 
+*1.11.0 distribution-boundary maintenance: Copilot AI-assisted, 26 November 2026; original authorship retained.*
+
+For 1.11.0, follow the [FinOps distribution boundary](../../frontier-envisioning/references/method.md#finops-not-included-in-1110).
+Ordinary value and sourced cost assumptions remain supported. All FinOps
+fields, flags and financial protocols below are source-compatibility reference,
+not runnable 1.11.0 instructions. Preserve financial ancestry and refusals;
+unavailable financial validation is an explicit error, never zero costs.
+
 *Copilot AI-assisted procedure maintenance, 24 November 2026; original authorship retained.*
 
 Every field is optional unless marked required. Missing fields render as "To be confirmed". Unknown fields are kept but not shown. `src` is always a list of evidence ids.
@@ -228,11 +236,13 @@ The canon adds one domain with `kind: "factory"` (id `D<n>`, lead and five speci
 
 An agent's factory stage is computed in the HTML from `lifecycle` text and the eight handover checks; nothing to store.
 For agents actually in build-handover scope, the `cost` criterion requires the
-[strict per-agent baseline check](../../frontier-finops/references/guardrails.md#strict-financial-build-handover),
+[retained strict financial boundary](../../frontier-envisioning/references/method.md#finops-not-included-in-1110),
 not legacy F1/F2 or an approved status. Keep it within the existing handover
 checks; other checks and the declared build/release/operate
 stages remain unchanged. Core draft workshops can continue with named
 financial gaps; do not infer financial readiness or start cost work from a gap.
+This financial criterion is source-compatibility reference, not runnable
+1.11.0 validation; an omitted owner validator cannot be replaced by a verdict.
 
 `board` (Part 3 > Plan): `{title, intro, phases[{id, name, stages[], what}],
 wip{stage id: limit}}`. Default phases: Idea (hypothesis, validated), Design
@@ -367,10 +377,11 @@ restricted notes, bindings or feedback into customer output.
 
 ## agent_finops (optional versioned Preview derivative)
 
+**Source-compatibility reference — not runnable in 1.11.0.**
 Generated from explicitly supplied authoritative
 `frontier-finops-baseline/1.0` models or `frontier-finops-snapshot/1.0` frozen
 snapshots, with matching `frontier-finops-owner-review/1.0` records where
-reviewed. Follow the [FinOps versioned Quick Start](../../frontier-finops/SKILL.md#quick-start--requested-versioned-baseline);
+reviewed. The [FinOps distribution boundary](../../frontier-envisioning/references/method.md#finops-not-included-in-1110) applies;
 new cost work requires the full notice and actual current-scenario confirmation.
 Every top-level invocation or changed scope/model/rates/grounding renews that
 awareness. The CLI flag is a technical assertion for one wrapper chain only.
@@ -421,7 +432,7 @@ agent_finops: {
 
 Each record is an **already projected**
 `frontier-agent-finops-report/1.0` report. The authoritative field definitions
-and complete shape are in the [baseline projection contract](../../frontier-finops/references/agent-finops-baseline.md#audience-projection-and-exact-derivative-dto).
+and complete shape remain subject to the [baseline distribution boundary](../../frontier-envisioning/references/method.md#finops-not-included-in-1110).
 Its permitted profile/baseline context, scenario inputs/results, formulas,
 evidence, gaps and dated handover context are derivatives, not a re-importable
 model or owner-review record. Keep `agent_finops` separate from ordinary
@@ -468,12 +479,14 @@ loop, live billing/provider imports, cloud deployment or identity provisioning.
 
 ## value_case and finops (business value and FinOps)
 
+**Source-compatibility reference — not runnable in 1.11.0 for financial inputs.**
 The `finops` and `finops_preview` shapes below describe the explicit legacy
 `frontier-finops/1.0` cost path, not successor defaults or its financial gate.
 Written by frontier-value-case (`apply_value.py`) and optional frontier-finops
 (`apply_finops.py`), never by hand. Ordinary value-only wrapper use is
 `build_with_identity.py --data blueprint.json --value value.json --out-dir working/core`.
-Only after the [full FinOps notice and actual scenario confirmation](../../frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure),
+In the retained protocol, only after the full notice and actual scenario
+confirmation under the [distribution boundary](../../frontier-envisioning/references/method.md#finops-not-included-in-1110),
 the cost form adds `--finops finops.json --acknowledge-finops-preview`.
 Each new invocation/scope/model/rates/grounding needs renewed acknowledgement;
 technical metadata is not independent human approval. Without value data the

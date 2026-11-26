@@ -1,5 +1,7 @@
 # Design rules for Frontier solution designs
 
+*1.11.0 distribution-boundary maintenance: Copilot AI-assisted, 26 November 2026; original authorship retained.*
+
 The rules every PRD and solution design produced with this plugin keeps. They generalise the Innovation Hub's design-repository practice (for example the HR Frontier sample), so the second use case costs materially less than the first.
 
 ## 1. Platform commitments
@@ -35,9 +37,14 @@ Write envelope, refusal set, escalation path, grounding sources, data classifica
 Run records, field-level outcomes, exception queue, evaluation test sets in CI/CD, consumption alerts (an exhausted capacity must never block a date-bound process silently), Purview audit for data-protection events.
 
 Design is independent of FinOps. Missing budget evidence stays open with its
-real owner, not zero or an automatic readiness pass. Only for requested Preview
-costs, follow the [full notice and actual scenario confirmation](../../frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure)
-before operations/recommendations/figures. Preserve the warning, non-GA
+real owner, not zero or an automatic readiness pass. For 1.11.0, follow the
+[FinOps distribution boundary](../../frontier-envisioning/references/method.md#finops-not-included-in-1110).
+FinOps is not bundled; explicitly refuse unavailable operations, without
+blocking ordinary sourced cost assumptions.
+
+**Source-compatibility reference — not runnable in 1.11.0.**
+The retained financial protocol requires the full notice and actual scenario
+confirmation before operations/recommendations/figures. Preserve the warning, non-GA
 grounding/model limitations, assumptions and scenario/model/rate/source
 provenance in cost-derived requirements, ROI/NPV, comparisons and exports.
 Legacy/imported costs remain Preview; a technical flag, old JSON or workshop

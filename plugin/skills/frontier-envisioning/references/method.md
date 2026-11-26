@@ -1,5 +1,24 @@
 # The Innovation Hub Frontier envisioning method
 
+*1.11.0 distribution-boundary maintenance: Copilot AI-assisted, 26 November 2026; original authorship retained.*
+
+## FinOps not included in 1.11.0
+
+This Cowork ZIP contains eight skills: the seven existing GA wrappers,
+including Business Value Case, plus optional Preview Envisioning Agent Factory.
+The FinOps skill is not registered, copied or installed by this release.
+Its source and regression tests remain in the repository for later work.
+
+Ordinary business value and sourced cost assumptions remain supported.
+FinOps cost modelling, Copilot Credits and FinOps-derived financial validation
+are unavailable in this distribution. Name missing budget evidence; do not
+invent zero costs, strip provenance or accept unverified financial figures.
+An explicit unavailable financial operation must fail with a clear error.
+
+This is the canonical installed notice. It remains inside the copied
+`frontier-envisioning` skill; installed skills do not depend on the package
+root README, which the skill-copy procedure does not install.
+
 ## 1. Purpose
 
 Help a customer see, in its own terms, how a journey, a function or the whole company could run **human-led and agent-operated**, and leave the workshop with an evidenced blueprint, MVP candidates with owners, and a design path. The method combines:
@@ -21,14 +40,25 @@ Help a customer see, in its own terms, how a journey, a function or the whole co
 | 6 Design | frontier-solution-design | PRD from the page's shared canonical model, solution design, ADRs (optionally a repository) | D: Definition of Ready met or gaps assigned; metadata is not permission |
 | 3b Value | frontier-value-case | Value tree and ordinary assumptions without FinOps; only supported NPV/ROI/payback, with missing cost evidence stated | V1 value hypothesis complete, not budget approval |
 | 3c Process, when requested | frontier-process | Local ontology, Turtle, design, data-agent and product files; optional Ontology page | Data-owner/mapping gaps and Fabric Preview caveats explicit; tenant import manual |
-| 3d Costs, only on request and confirmation | frontier-finops (optional Preview) | Provisional model/comparisons after the full notice and actual current-scenario acknowledgement | F1 model completeness/rate freshness, not validated pricing |
-| 6a Value review; optional cost handoff | frontier-value-case; frontier-finops only after renewed confirmation | Verdicts merged; Preview limitations/provenance follow any derived value, guardrail or purchase comparison | V2 top-5 assumptions confirmed by real owners; optional F2 guardrails with owners; V3 baseline before go-live |
+| 3d Budget gaps | frontier-envisioning | Name missing budget evidence and owners; refuse unavailable FinOps operations | Missing is not zero or financial readiness |
+| 6a Value review | frontier-value-case | Ordinary value verdicts merged; sourced cost assumptions and remaining budget gaps explicit | V2 top-5 assumptions confirmed by real owners; V3 baseline before go-live |
 | 6b Identity | frontier-agent-identity | Approve the agent identity kit (a first proposal is built with every blueprint): naming convention, colours, icons, catalogue, stamp and validate scripts | E: validator 0 errors; tests pass; naming decisions listed with owners |
 | 6c Architecture design | frontier-blueprint, frontier-solution-design | IT readiness checklist (P-, R-, W-, Q-, D-), landing zone per journey, ADRs agreed, engineering control plane decided | R: readiness checks for the prototype stage passed; D-01 decided; MVP agents ready for build |
 | 7 Handover | frontier-envisioning | Handover package per MVP agent (Definition of Ready), prototype plan in the Agent Factory | Owners and dates agreed |
 
-Default engagement uses no FinOps. For requested costs, follow the full
-[FinOps awareness gate](../../frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure)
+For 1.11.0, follow the [FinOps distribution boundary](#finops-not-included-in-1110).
+FinOps is not bundled. Continue ordinary non-FinOps work with explicit budget
+gaps; do not invoke an absent skill or reuse derived financial figures.
+An unavailable financial request must fail clearly.
+
+### Source-compatibility reference — not runnable in 1.11.0
+
+| Retained phase | Source skill | Artefacts | Gate |
+|---|---|---|---|
+| 3d Costs, only on request and confirmation | frontier-finops (source-only optional Preview) | Provisional model/comparisons after the full notice and actual current-scenario acknowledgement | F1 model completeness/rate freshness, not validated pricing |
+| 6a Optional cost handoff | Retained financial source protocol | Preview limitations/provenance follow any derived value, guardrail or purchase comparison | F2 guardrails with owners, not financial handover approval |
+
+The retained protocol requires the full Preview notice and actual confirmation
 before seed/calc/apply, recommendation or figure. Each top-level invocation
 requires `--acknowledge-finops-preview`; new scope/model/rates/grounding requires
 renewed confirmation. The wrapper forwards it in one chain only. Technical
@@ -95,11 +125,12 @@ Agent names follow the identity kit's rule `<PO> <Domain> [Scope] [DEV|TEST]` (f
 | Solution envisioning | Part 1 Vision | Use cases (problem, value, feasibility), PRD (MVP scope and Markdown download) |
 | Architecture design | Part 2 Design | Target architecture (landing zone, layers, flows, ADRs), IT readiness |
 | Agent design | Part 2 Design | Agents (canvas/workflow/declarations), Agent identity |
-| Rapid prototype and build | Part 3 Build | Roadmap, Plan (factory lanes/stages, filters, CSV handover); optional acknowledged Preview FinOps |
+| Rapid prototype and build | Part 3 Build | Roadmap, Plan (factory lanes/stages, filters, CSV handover); FinOps is not bundled in 1.11.0 |
 | Every workshop | Part 4 Workshops | Attendees (evidenced contributions), Discovery, Risks, Evidence |
 
 The view set depends on optional data: core with Ontology and without FinOps
-can have seventeen views; adding Preview FinOps can give eighteen. These are
+can have seventeen views; the retained source-only Preview profile can give
+eighteen, not a runnable 1.11.0 instruction. These are
 not the old seventeen-view set. Process is optional when requested; labels/
 purposes can be overridden per part.
 PRD page and scaffold use identical Python models, retaining authored fields

@@ -8,6 +8,8 @@ import io
 import json
 import os
 from pathlib import Path
+import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -90,6 +92,53 @@ def check_inventory(case, raw):
 
 
 class FactoryPackage(unittest.TestCase):
+    def test_boundary_links_survive_skill_only_installation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            installed, _ = build_candidate(root)
+            result = installed_command(
+                installed / "install/prepare_install.py",
+                ["--root", installed, "--installed", root / "empty"], root,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            plan = json.loads(result.stdout)
+            self.assertTrue(plan["verified"])
+            user = root / "user"
+            for skill in plan["skills"]:
+                shutil.copytree(Path(skill["source"]), user / skill["destination"])
+            self.assertFalse((user / "README.md").exists())
+            copied = (user / "skills").resolve()
+
+            def verify_links():
+                linked_skills = set()
+                for document in copied.rglob("*.md"):
+                    for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", document.read_text(encoding="utf-8")):
+                        if not target.endswith("#finops-not-included-in-1110"):
+                            continue
+                        relative = target.rsplit("#", 1)[0]
+                        destination = (document.parent / relative).resolve() if relative else document.resolve()
+                        self.assertTrue(destination.is_relative_to(copied), (document, target))
+                        self.assertTrue(destination.is_file(), (document, target))
+                        self.assertIn("## FinOps not included in 1.11.0", destination.read_text(encoding="utf-8"))
+                        if document.name == "SKILL.md":
+                            linked_skills.add(document.parent.name)
+                self.assertEqual(linked_skills, {skill["name"] for skill in plan["skills"]})
+
+            verify_links()
+            value = copied / "frontier-value-case" / "SKILL.md"
+            original = value.read_text(encoding="utf-8")
+            value.write_text(
+                original.replace(
+                    "../frontier-envisioning/references/method.md#finops-not-included-in-1110",
+                    "../../README.md#finops-not-included-in-1110",
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaises(AssertionError):
+                verify_links()
+            value.write_text(original, encoding="utf-8")
+            verify_links()
+
     def test_installer_rejects_an_extra_skill_tree(self):
         for name in ("frontier-finops", "frontier-unexpected"):
             with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:

@@ -5,9 +5,9 @@ description: |
   compatible template and selected reviewed envisioning files. Optional Preview.
   Use for "prepare the Caldova starter-repo", "package the reviewed MVP as a ZIP"
   or "prepare the Agent Factory handover". Do NOT use for PRDs or architecture
-  (frontier-solution-design), HTML (frontier-blueprint), standalone costs
-  (frontier-finops after its Preview notice and confirmation), application code,
+  (frontier-solution-design), HTML (frontier-blueprint), application code,
   live repository or tenant operations, or deployment.
+  FinOps cost operations are not included in this release.
 license: MIT
 metadata:
   category: productivity
@@ -21,11 +21,20 @@ metadata:
 
 # Envisioning Agent Factory
 
+*1.11.0 distribution/routing maintenance: Copilot AI-assisted, 26 November 2026; original authorship retained.*
+
 Optional Preview, explicitly requested only. The offline producer packages a
 complete compatible receiving foundation and reviewed intake documents. It is
 not a business runtime, SDK, application generator or tenant loader. Ordinary
 core, value, identity, Blueprint, design and process work needs neither Factory
 nor FinOps. Never auto-invoke Factory after a PRD.
+
+For 1.11.0, follow the [FinOps distribution boundary](../frontier-envisioning/references/method.md#finops-not-included-in-1110).
+FinOps is not bundled. Continue ordinary non-FinOps work with explicit budget
+gaps; do not invoke an absent skill or reuse derived financial figures.
+Factory remains Preview; ordinary non-financial handover needs no cost
+acknowledgement. Missing financial owner validation is an explicit error,
+not permission to accept financial content.
 
 Actual Cowork discovery, install, acquisition and export are unavailable and
 **NOT PERFORMED**. An editor/local CLI result is not Cowork validation. Do not
@@ -129,16 +138,19 @@ guard. Supply compatible authoritative original/customer Blueprint projections
 through genuine upstream review/transformation evidence, and separate
 authoritative financial packets. Do not rewrite reviewed inputs during export.
 
-Only when financial content is actually requested, load
-[frontier-finops](../frontier-finops/SKILL.md), show its **full current
-authoritative Preview notice**, and obtain actual confirmation for the current
+**Source-compatibility reference — not runnable in 1.11.0.**
+The retained [financial protocol](../frontier-envisioning/references/method.md#finops-not-included-in-1110)
+requires its full authoritative Preview notice and actual confirmation for the current
 scenario, scope, model, rates and grounding **before** any financial operation,
 recommendation or figures. Loading to explain limitations is not cost work.
 Set `--acknowledge-finops-preview` only after that actual confirmation for this
 invocation: `requested:true`, cached models, install/update or old consent is
 not acknowledgement. Never run money operations merely to fill a role.
 
-On decline, ordinary core still works; applicable financial gaps stay missing,
+For this ZIP, an explicitly requested unavailable financial operation must fail
+clearly. Acknowledgement cannot supply the omitted owner validator; a missing
+helper returns `FACTORY_HELPER`, preserving a previous good output.
+Ordinary core still works; applicable financial gaps stay missing,
 not zero or false N/A. Current/history financial markers, derivative, legacy,
 nested, role or schema wrappers cannot bypass source-owner review receipts.
 Use authoritative packets and existing owner validators; no second calculator.
@@ -156,8 +168,9 @@ path separators and actual local paths:
 python <installed-skill>/scripts/export_factory.py --request request.json --template template.zip --source-root originals --baseline-root approved --out Caldova-factory.zip
 ```
 
-These are the five required flags. The only optional operational flag is
-`--acknowledge-finops-preview`, after Step 4. There is no execute, network,
+These are the five required flags. The retained optional
+`--acknowledge-finops-preview` flag is source-compatibility reference, not a
+way to enable unavailable 1.11.0 financial validation. There is no execute, network,
 skip-profile, force, drop, unsafe or arbitrary-profile option. Keep output
 outside both input roots and distinct from every input. Never run acquired
 members or install dependencies to export.

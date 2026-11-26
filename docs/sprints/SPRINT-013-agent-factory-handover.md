@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.2 |
+| Version | 1.4 |
 | Date | 2026-11-26 |
-| Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning |
-| Status | Prior Factory candidate verified; #81 spec `c26991e` and plan `b3174a1` approved for subagent execution; actual fix/health proof pending, human publication separate |
-| Scope | 1.11.0 Agent Factory plus proposed health/routing correction and release-only FinOps exclusion; systems/D365 deferred |
-| References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Design](../specs/2026-11-25-agent-factory-handover-design.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [#58 deferral](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922) |
+| Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning; Copilot (AI-assisted #81 prose maintenance) |
+| Status | Prior nine-skill Factory evidence retained; approved #81 Tasks 1/2 have returned component proof; Task 3 prose awaits parent validation/review; final amended-candidate gates/health outstanding; no release approval implied |
+| Scope | 1.11.0 Agent Factory plus approved health/routing correction and release-only FinOps exclusion; systems/D365 deferred |
+| References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Design](../specs/2026-11-25-agent-factory-handover-design.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [#58 deferral](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922), [#81](https://github.com/urruegg/frontier-envisioning/issues/81), [H111 spec](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md), [H111 plan](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md) |
 
 ## Outcome and work item
 
@@ -17,9 +17,16 @@ repository ZIP from the exact selected template and relevant reviewed
 envisioning files, with explicit gaps and real transfer/review evidence.
 No business runtime, remote repository, tenant provisioning or deployment.
 
+Current 1.11.0 Cowork scope is eight shipped skills: seven existing GA wrappers,
+including Business Value Case, plus optional Preview Factory. Nine source folders
+remain; FinOps and its regressions are retained source only, not registered,
+copied or installed by this ZIP. See the [release boundary](../../plugin/README.md#finops-not-included-in-1110).
+Earlier W0–W4 and `52d6c0e`/`4aa1ddb`/`ab9b10b` evidence below remains historical,
+not new eight-skill candidate proof.
+
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#81](https://github.com/urruegg/frontier-envisioning/issues/81) | [Health/distribution choices](../ideas/2026-11-26-plugin-health-and-finops-exclusion.md) | [H111-01-08](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md#6-acceptance-and-verification) | [Approved amendment plan `b3174a1`](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md); [prior Factory plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) is baseline only | `@urruegg` accountable; protected readiness labels not inferred | Fresh task-by-task workers and ordered technical review | Spec and plan approved; execution authorised, no fix/health result yet | [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [actual plan approval](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7194451667); bug holds source report hash/timestamp |
+| [#81](https://github.com/urruegg/frontier-envisioning/issues/81) | [Health/distribution choices](../ideas/2026-11-26-plugin-health-and-finops-exclusion.md) | [H111-01-08](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md#6-acceptance-and-verification) | [Approved amendment plan `b3174a1`](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md); [prior Factory plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) is baseline only | `@urruegg` accountable; protected readiness labels not inferred | Fresh bounded tasks and ordered technical review | Tasks 1/2 reviewed with returned component proof; Task 3 prose awaits parent validation/review; final gates/health outstanding | [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [actual plan approval](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7194451667), [B.9 component evidence](../solution-design.md#h111-amended-candidate-component-evidence) |
 | [#72](https://github.com/urruegg/frontier-envisioning/issues/72) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Approved combined production plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) | `@urruegg` accountable | Reviewed bounded #74-#79 slices and actual candidate gates | Implementation/reviews and local/server gates verified; maintainer handoff | [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [actual full-plan receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7167852054); human sign-off/merge/publication not implied |
 | [#73](https://github.com/urruegg/frontier-envisioning/issues/73) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [Host/receiver boundary](../specs/2026-11-25-agent-factory-handover-design.md#4-template-discovery-acquisition-and-compatibility) | [W0 Tasks 1-4](../plans/2026-11-25-agent-factory-handover-plan.md#3-w0-task-1-baseline-and-exact-source) | `@urruegg` accountable and assigned; bounded receiver builder | Actual W0/host-amendment approval; pinned reference and isolated dependencies | Actual source/receiver exit verified: 30 pass, one privilege skip, four validators exit 0; Cowork deferred/not performed | Ordered parent specification then correctness review; attribution correction applied; no protected ready/approval label inferred |
 | [#74](https://github.com/urruegg/frontier-envisioning/issues/74) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Task 1](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#3-task-1--baseline-then-bump-then-finite-raster-profile) | `@urruegg` accountable and assigned; bounded builder | Actual full plan/readiness `5dbfc8a` | Local `c51c6e9` version/raster slice verified; not final Factory candidate | [Bounded review/evidence](https://github.com/urruegg/frontier-envisioning/issues/74#issuecomment-7169371390) |
@@ -502,12 +509,80 @@ at `b3174a1` actually received end-to-end subagent execution approval in the
 [plan receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7194451667).
 No further human stage approval is required inside those tasks.
 
-The proposed distribution has eight skills: seven existing GA wrappers,
+The amended distribution has eight skills: seven existing GA wrappers,
 including Value Case, plus Preview Factory, without FinOps files/registration/
 installer entries. FinOps source/tests and financial safeguards remain.
 This changes the release scope, not the historical truth of the earlier
-nine-skill candidate and its tests. No product fix, new health pass, ready/
-approval label, release or human publication is implied by these records.
+nine-skill candidate and its tests.
+
+### Returned Tasks 1/2 and bounded Task 3 prose
+
+The parent supplied the following evidence on 26 November; this prose worker
+did not execute the component tests:
+
+- Reviewed Task 1 `b2421f1`: exact 1.11.0 release-eight/source-nine policy,
+  retained-source FinOps metadata/shared-copy checks preserved; parent
+  22 tests plus edge probes passed.
+- Reviewed Task 2 `25a4d1de84bebffedc4475f158ca99543a56af3a`: strict standalone
+  installer/checks and genuine extracted Value Case/Factory/core work across
+  eight skills without FinOps. Parent ten critical installed/legacy/current-history
+  financial controls passed, zero skips, 42.650 seconds. Worker reported
+  35 package/financial tests, six legacy tests and 84 self-test checks passed.
+  Missing financial owner with acknowledgement returns `FACTORY_HELPER`,
+  leaving previous good output intact.
+- Task 3: edited only the approved 20 prose paths. Value Case and Process now
+  defer the correct responsibilities, all eight shipped procedures carry the
+  release boundary, and owned packaged Markdown links no longer target the
+  omitted folder. Financial protocols remain guarded source-compatibility
+  reference, not runnable 1.11.0 instructions. Ordinary sourced cost assumptions
+  remain supported; no zero-budget fallback, ancestry stripping or new calculator.
+- Parent reports the documentation-contract RED was the FinOps row in the
+  current AGENTS table; it is removed. No command runner is available to this
+  worker. `python tools\dev.py docs --strict`, focused docs-contract/maturity
+  unittests and `python tools\dev.py precommit` are **not run here**.
+  Parent validation and ordered specification/correctness review are pending;
+  no document GREEN or commit is claimed.
+
+The report SHA256 is
+`20902064efa12cfa4a0a4079c9b346f104ef6afd947e4295d24501ec57f5592a`.
+Its eight skills include FinOps and omit Factory; all eight meet the publish
+bar and Value Case scores 100/100. Input version/ZIP digest remain unknown;
+the two conflicts are supplied-report findings, not new amended-candidate results.
+Parent tool search found no health validator or agent builder on PATH.
+There is no actual new host health pass or promised rerun. New exact-package/
+generated-installer/required-receiver, full L1/applicable L2/CI and host health
+remain for the parent loop or explicitly outstanding where unavailable.
+Studio-backed MOS3 is outside scope; no dummy IDs/connectors are supplied.
+See [B.9](../solution-design.md#h111-amended-candidate-component-evidence).
+No ready/approval label, release, publication or customer-transfer clearance is implied.
+
+### Task 3 installed-notice integration correction
+
+On 26 November, the parent reported specification-stage review clear, followed
+by an important integration finding from final reviewer `ee41c972`: the real
+installer copies only the eight skill folders. The package-root README exists
+after extraction but is not copied, leaving 33 boundary links broken in the
+actual skill-only installation. This is returned review evidence, not a
+reproduction performed by this prose worker.
+
+The full canonical notice now lives under
+[FinOps not included in 1.11.0](../../plugin/skills/frontier-envisioning/references/method.md#finops-not-included-in-1110)
+in the existing copied method reference. All 33 shipped skill/reference
+boundary links target that installed file or its local anchor. The plugin
+README retains the package-facing release summary and links to the installed
+notice. No new file or installer copy destination is introduced.
+
+This corrects the package-root link-location oversight in Task 3 of plan
+`b3174a1` to meet the working-installed-package requirement. It changes no
+financial meaning, privacy/refusal rule, historical proof or approved scope,
+and claims no new design or approval. Parent-owned manifest JSON, documentation
+tests and generated installer inventory are untouched by this correction.
+The separate generated START-HERE FinOps wording and actual after-copy link
+regression remain with the parent.
+
+This worker has no command runner. No package build, test, gate or commit was
+run for the correction; no after-copy pass is claimed. Parent ordered
+re-review and actual installed-link validation remain pending.
 
 ## Human boundaries
 

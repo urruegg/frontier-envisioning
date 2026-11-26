@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.10 |
+| Version | 0.11 |
 | Date | 2026-11-26 |
 | Author | Urs Rüegg; Copilot AI-assisted maintenance |
 | Status | Maintained internal reader guide; not release approval |
@@ -18,8 +18,10 @@ validated MVP for design handover.
 
 **1.11.0 is an unreleased development candidate.** It adds the offline
 Envisioning Agent Factory producer for an explicitly requested starter-repository
-handover. Nine skills are registered with explicit maturity/installer metadata;
-final candidate checks remain pending, not a Cowork-validated claim.
+handover. Eight skills are registered: seven existing GA wrappers, including
+Business Value Case, plus optional Preview Factory. Nine source folders remain;
+FinOps is source-only, not registered, copied or installed in this Cowork ZIP.
+Final amended-candidate checks remain pending, not a Cowork-validated claim.
 Historical release build **1.10.0** and its evidence are unchanged. Check
 [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
 for actual publication and downloads; candidate metadata is not publication.
@@ -51,14 +53,15 @@ Agent identity, Target architecture, requested Ontology and workshop views.*
 | Workshop preparation and feedback | Agenda, questions, scope decisions and exported feedback for the next version |
 | Agent identity proposal | Names, colours, icons and identity cards; branding, not Entra identity provisioning |
 | Value and design handover | Ordinary value evidence and assumptions; PRD, solution design, ADRs and IT readiness once MVP scope is validated, or clearly labelled drafts |
-| Optional Agent FinOps baseline | After Preview awareness: versioned twelve-month scenarios, unit economics and projected JSON/Markdown reports; recorded external review is not budget approval |
 | Optional Envisioning Agent Factory Preview | Registered candidate offline producer: full pinned starter-repository ZIP with reviewed ordinary files, preserved IDs and explicit intake gaps; final integration proof pending |
 
 ### Candidate skill inventory
 
-The 1.11.0 candidate registers **nine skills in the same plugin**: seven non-FinOps
-GA wrappers and two optional Preview skills. Final integration proof is tracked in
-[#79](https://github.com/urruegg/frontier-envisioning/issues/79).
+The 1.11.0 candidate registers **eight skills in the same plugin**: seven existing
+GA wrappers and optional Preview Factory. Final amended-candidate proof is tracked
+in [#81](https://github.com/urruegg/frontier-envisioning/issues/81).
+FinOps source and regression tests remain outside this distribution; see the
+[release boundary](plugin/README.md#finops-not-included-in-1110).
 
 | Skill | Availability and purpose |
 |---|---|
@@ -69,7 +72,6 @@ GA wrappers and two optional Preview skills. Final integration proof is tracked 
 | `frontier-agent-identity` | GA — proposed branding and identity kit |
 | `frontier-value-case` | GA — ordinary value evidence and assumptions |
 | `frontier-process` | GA — optional process/ontology proposals |
-| `frontier-finops` | Optional Preview — awareness-first financial work |
 | `frontier-agent-factory` | Registered optional Preview candidate — Envisioning Agent Factory |
 
 ```mermaid
@@ -82,11 +84,8 @@ flowchart LR
     F --> H
     H -->|On request| O[Process and ontology proposal]
     O --> B
-    B -->|Separate cost request| N[Full FinOps Preview notice]
-    N --> A{Current scenario acknowledged?}
-    A -->|Yes| P[Offline baseline and provisional costs with provenance]
-    A -->|No| G[Continue core with budget gaps]
-    P --> F
+    B -->|Unavailable FinOps request| N[Clear error: FinOps is not bundled]
+    B --> G[Ordinary value and sourced cost assumptions with explicit budget gaps]
     G --> F
 ```
 
@@ -114,15 +113,17 @@ These instructions are not evidence of an actual Cowork installation.
   SDK, application, tenant loader, remote repository or deployed resource.
   Read the [candidate procedure and input limitation](plugin/README.md#optional-agent-factory-preview--offline-candidate).
   Actual Cowork discovery, installation, acquisition and export are not performed.
-- **FinOps is off by default.** Cost operations or figures require the
-  [full Preview notice and actual current-scenario acknowledgement](plugin/README.md#optional-finops-preview--awareness-first).
-  Installation and previous runs are not consent. Declining continues core
-  with honest budget gaps, not zero costs or a readiness waiver.
-- **Financial evidence is required at build handover.** Draft workshops can
-  continue with gaps. Handover needs each scoped agent's complete, priced
-  baseline and review against its frozen version/hash; unpriced or synthetic
-  evidence cannot pass. The [offline baseline procedure](plugin/skills/frontier-finops/SKILL.md#quick-start--requested-versioned-baseline)
-  remains Preview and grants no financial or deployment permission.
+- **FinOps is not included in 1.11.0.** The
+  [distribution boundary](plugin/README.md#finops-not-included-in-1110)
+  excludes FinOps cost modelling, Copilot Credits and FinOps-derived validation.
+  Ordinary value and sourced cost assumptions remain supported with honest
+  budget gaps, not zero costs or unsupported ROI.
+- **Financial provenance and refusals remain.** Retained source-compatibility
+  rules require complete, priced baselines and exact frozen-target owner review
+  for financial build handover; unpriced or synthetic evidence cannot pass.
+  The ZIP cannot perform absent owner validation, even with acknowledgement.
+  Continue ordinary drafts with named gaps, never claim financial readiness or
+  financial/deployment permission.
 - **Evidence before confidence.** GA is the maintainer's product designation,
   not provider GA, result confidence, deployment, release or external clearance.
   Fabric ontology/data-agent/operations remain Preview, proposed mappings need

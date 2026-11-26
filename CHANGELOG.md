@@ -7,12 +7,20 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
 - **Envisioning Agent Factory Preview (#72, #75, #76, #77, #78, #79).** Implement
   the offline producer for an explicitly requested full starter-repository ZIP,
   preserving the pinned compatible foundation, authored documents/IDs and
-  reviewed ordinary-file intake. The registered ninth skill, `frontier-agent-factory`,
-  is in the same plugin: seven non-FinOps GA wrappers and optional Preview
-  FinOps/Factory. Registration, skill routing and maturity/installer metadata
-  are implemented; final integration proof under #79 remains pending.
+  reviewed ordinary-file intake. The registered optional Preview skill,
+  `frontier-agent-factory`, joins seven existing GA wrappers, including Value Case,
+  in the same eight-skill plugin. Registration, skill routing and maturity/installer
+  metadata are implemented; final amended-candidate proof under #81 remains pending.
   Ordinary core/value/identity/Blueprint/design/process
   requires neither optional extension.
+- **Cowork distribution and routing amendment (#81).** Retain nine source
+  folders and all FinOps regression tests, but do not register, copy or install
+  FinOps in the 1.11.0 ZIP. Clarify the Process/Value Case responsibility boundary.
+  Ordinary value and sourced cost assumptions remain supported with explicit
+  budget gaps. FinOps cost modelling, Copilot Credits and FinOps-derived
+  validation are unavailable; missing owner validation fails explicitly.
+  Preserve financial ancestry/refusals, not zero costs or unsupported figures.
+  See the [release notice](plugin/README.md#finops-not-included-in-1110).
 - **Controlled local handover.** Host-acquired latest stable source, or explicit
   immutable unreleased bootstrap after healthy complete no-stable discovery,
   is frozen for deterministic bounded ZIP output with automatic hashes and
@@ -21,9 +29,11 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
   evidence, customer privacy and existing optional FinOps authority checks.
   Selected HTML/ZIP/Turtle needs reviewed JSON/Markdown equivalents. Blueprint
   originals with derived `agent_finops` are explicitly unsupported, not stripped.
-- **Development candidate, not publication.** The offline producer has local
-  component evidence, not final 1.11 full-L1, exact package/installer/generated-
-  receiver, server CI or CodeQL acceptance. Actual Cowork discovery, install,
+- **Development candidate, not publication.** Earlier nine-skill local L1/
+  package/receiver evidence at `52d6c0e` and server CI at `4aa1ddb` remain
+  historical, not amended eight-skill proof. Reviewed Task 1 `b2421f1` and
+  Task 2 `25a4d1d` provide component evidence only; final new L1, exact
+  package/receiver, CI and host health remain outstanding. Actual Cowork discovery, install,
   acquisition and export are unavailable/not performed under the approved
   offline amendment. No runtime, SDK, tenant loader, remote repository,
   deployment or native ADO/GHES support is delivered. See

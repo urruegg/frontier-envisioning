@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.11 |
+| Version | 1.12 |
 | Date | 2026-11-26 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance); Copilot (AI-assisted #78 Factory candidate prose) |
-| Status | Maintained design; unreleased 1.11.0 package/receiver and full local L1 verified; server L1/L2/IaC/CodeQL passed at `4aa1ddb`; historical evidence retained; no release approval implied |
-| Scope | Factory-only 1.11.0 producer flow/statuses and bounded verification, with historical architecture, engineering evidence and inventory preserved |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance); Copilot (AI-assisted #78 Factory candidate prose); Copilot (AI-assisted #81 distribution/routing prose) |
+| Status | Maintained design; #81 Tasks 1/2 have returned component proof; amended eight-skill final gates/health outstanding; prior nine-skill evidence retained; no release approval implied |
+| Scope | 1.11.0 Factory and approved Cowork distribution/routing flow, with historical architecture, engineering evidence and inventory preserved |
 | References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61), [Release evidence spec](specs/2026-11-24-release-evidence-simplification-design.md), [Human adoption handover](engineering/release-evidence-adoption.md) |
 
 ## 1.11.0 Agent Factory offline Preview
@@ -16,14 +16,19 @@ is implemented and reviewed through `52d6c0e31c48ea3955d4b5f346da396474215222`.
 It prepares a full controlled Agent Factory foundation plus reviewed intake
 documents, not a business-agent runtime, SDK, application or tenant loader.
 **Envisioning Agent Factory** (`frontier-agent-factory`) is the optional
-Preview ninth skill registered in the same plugin: seven non-FinOps GA wrappers,
-optional Preview FinOps and optional Preview Factory. The skill procedure,
-registration and maturity/installer metadata are implemented. Exact candidate
-package/receiver and full local L1 checks passed under
+Preview skill registered in the same plugin. The current Cowork distribution
+has eight skills: seven existing GA wrappers, including Business Value Case,
+plus Preview Factory. Nine source folders remain, including source-only
+FinOps, which is not registered, copied or installed in this ZIP.
+The prior nine-skill procedure, registration and maturity/installer metadata
+were implemented. That prior candidate's exact package/receiver and full local
+L1 checks passed under
 [#79](https://github.com/urruegg/frontier-envisioning/issues/79).
 Server L1, all 76 browser tests, IaC and CodeQL subsequently passed at
 `4aa1ddb`; current-head status is on
 [draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80).
+These results and the prior `ab9b10b` head remain historical nine-skill
+evidence, not amended eight-skill verification.
 The isolated local timeout reruns are still not a complete local suite pass,
 and no human acceptance or publication is implied.
 
@@ -38,6 +43,41 @@ records rationale as **Proposed**, not engineering-policy activation.
 The [approved host amendment](specs/2026-11-25-agent-factory-handover-design.md#11-host-gate-amendment-actual-cowork-unavailable)
 permits offline Preview development because actual Cowork is unavailable;
 it neither changes the product runtime nor validates a host route.
+
+### H111 Cowork distribution and routing amendment
+
+The [approved #81 specification `c26991e`](specs/2026-11-26-plugin-health-and-finops-exclusion-design.md),
+[approved plan `b3174a1`](plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md)
+and [actual execution receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7194451667)
+govern the [current H111 requirements](prd.md#h111-cowork-distribution-and-routing-amendment).
+`@urruegg` is accountable. The original Factory specification and all
+commit-qualified nine-skill evidence remain unchanged.
+
+The version-scoped installer inventory separates nine retained source folders
+from eight shipped skills. It excludes only FinOps for 1.11.0 and rejects
+unknown exclusions or accidental omissions; source maturity/version and shared
+financial-copy checks remain. No automatic FinOps installation is a fallback.
+The [canonical installed notice](../plugin/skills/frontier-envisioning/references/method.md#finops-not-included-in-1110)
+is the link target for shipped procedures and the five affected references.
+It lives inside the copied `frontier-envisioning` skill: the installer copies
+the eight skill folders, not the package-root README. The
+[package-facing summary](../plugin/README.md#finops-not-included-in-1110)
+links to that installed notice; extraction alone is not after-copy link proof.
+Value Case owns ordinary value/assumptions/NPV/ROI/payback/sensitivity; Process
+owns ontology/business objects/proposed CDM mappings/data products. No generic
+agent, Blueprint or build exclusion is introduced.
+
+Ordinary sourced cost assumptions and explicit budget gaps remain supported.
+FinOps cost modelling, Copilot Credits and FinOps-derived financial validation
+are unavailable in the ZIP. Existing financial ancestry, acknowledgements,
+owner review and refusals remain; acknowledgement cannot restore an omitted
+owner validator. Missing financial validation fails clearly, preserving prior
+good output. Factory stays optional Preview with no blanket cost acknowledgement,
+new calculator, finance engine or runtime. Studio-backed MOS3 is out of scope;
+no placeholder IDs or connectors are supplied.
+
+See [B.9 component evidence](#h111-amended-candidate-component-evidence).
+Final new L1/CI/host health remain outstanding; no actual new host pass is claimed.
 
 ### Host receipt to passive repository
 
@@ -84,6 +124,8 @@ open facts separate.
    value and FinOps roles. PRD/design cannot be N/A; other N/A reasons must be
    meaningful and specific, not necessarily long. Required scope, owners,
    acquisition and transfer fields cannot be fictional draft placeholders.
+   The FinOps role is retained receiver source-compatibility metadata, not a
+   bundled skill, runnable financial operation or false N/A for missing evidence.
 4. **Preserve scope and authorship.** Keep final reviewed PRD/design/ADRs and
    applicable readiness/identity/Blueprint/value/process/financial inputs,
    original IDs/bytes, explicit original-to-factory maps and selection evidence.
@@ -146,7 +188,8 @@ rewrite of reviewed inputs is claimed.
 Financial detection traverses provided current/history JSON and roles for
 financial schemas, legacy markers and nested results, including changed or
 missing schema labels. Changing a role, packet or wrapper cannot exempt a
-derivative. An actual financial operation requires current CLI acknowledgement,
+derivative. **Source-compatibility reference — not runnable 1.11.0 FinOps
+validation:** an actual financial operation requires current CLI acknowledgement,
 actual matching owner review and authoritative model/review receipts. No
 installation, demo approval or cache supplies consent. Existing FinOps/value
 owner validators, projection, formulas, rates and stricter handover rules
@@ -169,8 +212,10 @@ define the local interface:
 python <installed-skill>\scripts\export_factory.py --request request.json --template template.zip --source-root originals --baseline-root approved --out Caldova-factory.zip
 ```
 
-Only optional `--acknowledge-finops-preview` applies to actual requested/current
-financial operation after the full Preview notice. There is no network, execute,
+The retained optional `--acknowledge-finops-preview` is source-compatibility
+reference, not runnable 1.11.0 financial validation. Ordinary non-financial
+export needs no cost acknowledgement; an omitted financial owner validator
+is an explicit error even with the flag. There is no network, execute,
 force-accept, skip-profile, drop, unsafe or arbitrary-profile switch.
 The stdlib Python 3.11+ producer performs no acquisition, dependency setup
 or downloaded-code execution. Trusted bundled sibling helpers allow local
@@ -1258,6 +1303,11 @@ The original release table below is unchanged.
 
 ### Agent Factory candidate verification (26 November 2026)
 
+This table preserves the prior nine-skill candidate's evidence at its named
+heads, including `52d6c0e`/`4aa1ddb` and the later `ab9b10b` baseline.
+It is not proof of the amended eight-skill distribution; new component
+evidence follows separately below.
+
 The following is returned local evidence supplied by the parent for
 [#72](https://github.com/urruegg/frontier-envisioning/issues/72), not commands
 executed by the #78 documentation worker. Runs are separate, not additive
@@ -1286,7 +1336,26 @@ and [SPRINT-013](sprints/SPRINT-013-agent-factory-handover.md) provide traceabil
 
 These observations preserve historical release/source/provenance and do not
 authorise merge, protected adoption, release/publication or customer transfer.
-The table that follows is still the original release record.
+
+#### H111 amended-candidate component evidence
+
+The parent supplied the following #81 results on 26 November; the Task 3 prose
+worker did not execute these commands. Runs are separate, not additive totals.
+They map to the [approved H111 criteria](specs/2026-11-26-plugin-health-and-finops-exclusion-design.md#6-acceptance-and-verification)
+and [current requirements](prd.md#h111-cowork-distribution-and-routing-amendment).
+
+| Source | Returned evidence and limits |
+|---|---|
+| Reviewed Task 1 `b2421f1` | Exact 1.11.0 release-eight/source-nine inventory policy; all retained-source FinOps metadata and shared-copy checks preserved. Parent 22 tests plus edge probes passed. Component proof, not final ZIP/installer acceptance. |
+| Reviewed Task 2 `25a4d1de84bebffedc4475f158ca99543a56af3a` | Strict standalone installer/checks and genuine extracted eight-skill Value Case, Factory and core work without FinOps. Parent ten critical installed/legacy/current-history financial controls passed, zero skips, 42.650 seconds. Worker reported 35 package/financial tests, six legacy tests and 84 self-test checks passed. Financial owner absent even with acknowledgement returns `FACTORY_HELPER`; previous good output preserved. No owner-calculator semantics changed. |
+| Task 3 prose / parent checks | Current eight-skill catalogues, mutual Process/Value Case routing and packaged release notice edited. Parent reports the current documentation-contract RED was the retained FinOps row in AGENTS; it is now removed. This worker has no command runner: strict docs, focused unittests and precommit are not run here; parent validation and ordered review are required. No GREEN result is claimed. |
+| Supplied host report, not this candidate | Generated 2026-11-26 12:36 UTC; SHA256 `20902064efa12cfa4a0a4079c9b346f104ef6afd947e4295d24501ec57f5592a`. Eight scanned skills include FinOps, omit Factory; Value Case 100/100, all eight meet the publish bar. FinOps/Process and Process/Value Case conflicts remain findings of that report. Input version/ZIP digest unknown; not amended-package proof or a broken Value Case installation. |
+| Outstanding final/host proof | New exact-package/generated-installer/required-receiver and full L1/applicable L2/CI evidence remain for the parent loop after prose. Parent tool search found no health validator or agent builder on PATH. No new host health pass exists; any real rerun requires an available checker and actual ZIP digest/timestamp/inventory/conflict result, not a promise or simulation. Actual Cowork discovery/install/acquisition/export remains not performed. |
+
+Studio-backed MOS3, dummy IDs/connectors, systems/D365 and human publication
+are outside this amendment. No release approval, visibility change or
+customer-transfer clearance is implied. The table that follows is still the
+original release record.
 
 | Check | Tool | Result at release |
 |---|---|---|

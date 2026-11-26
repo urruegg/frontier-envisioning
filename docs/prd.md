@@ -2,28 +2,31 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.11 |
+| Version | 1.12 |
 | Date | 2026-11-26 |
-| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance); Copilot (AI-assisted #78 Factory candidate prose) |
-| Status | Maintained requirements; unreleased 1.11.0 package/receiver and full local L1 verified; server L1/L2/IaC/CodeQL passed at `4aa1ddb`; historical evidence retained; no release approval implied |
-| Scope | Factory-only 1.11.0 candidate requirements and acceptance, with earlier engineering/product requirements and history preserved |
+| Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance); Copilot (AI-assisted #78 Factory candidate prose); Copilot (AI-assisted #81 distribution/routing prose) |
+| Status | Maintained requirements; #81 Tasks 1/2 have returned component proof; amended eight-skill final gates/health outstanding; prior nine-skill evidence retained; no release approval implied |
+| Scope | 1.11.0 Factory and approved Cowork distribution/routing amendment, with earlier engineering/product requirements and history preserved |
 | References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61), [Release evidence spec](specs/2026-11-24-release-evidence-simplification-design.md), [Human adoption handover](engineering/release-evidence-adoption.md) |
 
 ## 1.11.0 Agent Factory offline Preview
 
 **26 November 2026: unreleased development candidate, not product acceptance.**
 Add **Envisioning Agent Factory**, registered name `frontier-agent-factory`,
-as the optional Preview ninth skill in the existing plugin. Registration is seven
-non-FinOps GA wrappers, optional Preview FinOps and optional Preview Factory.
-The offline producer is implemented and reviewed through `52d6c0e`; ninth-skill
-registration, procedure and maturity/installer metadata are implemented under
+as an optional Preview skill in the existing plugin. The current Cowork ZIP
+registers eight skills: seven existing GA wrappers, including Business Value
+Case, plus Preview Factory. Nine source folders remain, including source-only
+FinOps, which is not registered, copied or installed by this release.
+The earlier nine-skill producer was implemented and reviewed through `52d6c0e`;
+its registration, procedure and maturity/installer metadata were implemented under
 [#79](https://github.com/urruegg/frontier-envisioning/issues/79).
-Exact package/receiver and full local L1 checks passed. Server L1, all 76
-browser tests, IaC and CodeQL subsequently passed at `4aa1ddb`; current-head
+That prior candidate's exact package/receiver and full local L1 checks passed.
+Server L1, all 76 browser tests, IaC and CodeQL subsequently passed at `4aa1ddb`; current-head
 checks and human handoff remain on
 [draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80).
-Three isolated local timeout reruns passing is not relabelled as a complete
-local browser-suite pass or human acceptance.
+Those results, including the prior `ab9b10b` head, are historical nine-skill
+evidence, not new eight-skill acceptance. Three isolated local timeout reruns
+passing is not relabelled as a complete local browser-suite pass or human acceptance.
 Ordinary core, value, identity, Blueprint, design and process work requires
 neither extension. Factory starts only on an explicit starter-repository,
 ZIP or handover request, never automatically after a PRD or as automatic FinOps.
@@ -50,7 +53,7 @@ passed results; actual source-qualified evidence is in
 
 | ID | Requirement | Acceptance / proof target |
 |---|---|---|
-| AF-01 | Optional Preview ninth skill in the same plugin, explicitly requested and independent of core/FinOps. | Nine registered skills with explicit routing and maturity; installed core-without-extension proof passed in the full local candidate gate. Actual Cowork remains not performed. |
+| AF-01 | Optional Preview Factory in the same plugin, explicitly requested and independent of core; current distribution amended by H111. | Eight registered skills: seven existing GA wrappers and Preview Factory, with nine retained source folders. Prior nine-skill full-gate proof remains historical; final amended-candidate gates/host health are outstanding. Actual Cowork remains not performed. |
 | AF-02 | Each new handover uses actual authorised available-host latest-stable discovery, then pins release/tag/commit/bytes once. Retain only `id`, `tag_name`, `published_at`, `draft`, `prerelease` for all enumerated releases. | Complete pagination; valid time/tag for every stable candidate; resolve only the uniquely selected stable tag. Unknown metadata, ties, access/network/selected-tag errors or incompatibility fail without main/older fallback. No raw API bodies, authors, assets or protected URLs enter producer/export data. |
 | AF-03 | Only healthy complete no-stable discovery permits explicit approval of an immutable **unreleased bootstrap**. Local input is not proof of latest. | Real export-bound discovery/acquisition/approval receipt and automatically checked source bytes; frozen reproduction does not claim another lookup. Draft/prerelease null fields need no invented tag/commit/time. |
 | AF-04 | Preserve the full compatible foundation, policies, workflows, locks, licences and modes, not a keyword-pruned overlay. Exclude `.git`, account/cache/staging/dependency state. | Passive byte/mode preservation and source/profile checks; no downloaded-code execution, Python networking or dependency setup. Foundation MIT/third-party notices grant no rights over customer files or transfer clearance. |
@@ -63,9 +66,39 @@ passed results; actual source-qualified evidence is in
 | AF-11 | Frozen source, inputs and metadata reproduce identical ZIP bytes; hashes and inventory are automatic, not a manual customer ceremony. | Byte comparison; inventory excludes the manifest's own hash and final ZIP SHA256 is stdout. Current original hashes and historical-original unavailability are reported separately. |
 | AF-12 | Exercise the actual pinned receiver, separately from export validation and recorded review. | Synthetic Caldova packages with actual baseline/source reads where available; missing tools, original bytes and Node 24 LTS checks remain explicit, never simulated. |
 | AF-13 | Verify the exact packaged offline producer outside this repository with trusted bundled siblings. Python producer is stdlib 3.11+; receiver is Python 3.12+/Node 24 LTS. | Installed exporter/installer and actual generated-intake receiver proof; absent requested helpers fail explicitly. Cowork discovery/install/acquisition/export is unavailable and **not performed** under the approved offline amendment, not a runtime cutover or host-support claim. Node 26 is not Node 24 certification. |
-| AF-14 | FinOps remains optional; actual current/history financial schema/role/nested-result markers require current acknowledgement, owner review and authoritative packets regardless of role/schema/wrapper. Reuse existing owner validators/formulas/rates. | No automatic figures, zero budgets, false N/A, cached/demo/install consent or duplicate calculator. Legacy standalone reviewed documents are review-only. Derivatives cannot bypass source checks. Explicit `build-handover` with `requested:false` is refused; with `requested:true`, actual stricter financial handover readiness is required. Internal model/review staging is not auto-exported. |
+| AF-14 | FinOps is source-only, not bundled in 1.11.0; preserve current/history financial schema/role/nested-result ancestry, acknowledgement, owner review and authoritative-packet requirements regardless of wrapper. Existing owner validators/formulas/rates remain authoritative in source. | Unavailable financial validation fails explicitly even with acknowledgement; no automatic figures, zero budgets, false N/A, cached/demo/install consent or duplicate calculator. Legacy standalone reviewed documents are review-only. Derivatives cannot bypass source checks. Explicit `build-handover` with `requested:false` is refused; `requested:true` cannot waive stricter financial readiness. Internal model/review staging is not auto-exported. |
 | AF-15 | Separate export validation, intake disposition, unauthenticated recorded review, receiver/Cowork not-performed, tenant not-assessed and financial review/readiness from permission. | GitHub.com/GitHub Enterprise Cloud, including cloud hostnames, is the first receiving-repository/host profile; no native ADO/GHES certification. The authoritative template source remains `urruegg/frontier-agent-factory` on GitHub.com. No remote creation, Work IQ auth switching, tenant consent/provision/deploy. M365 read/public visibility is not transfer/IP/Entra permission; settings, secrets and real ownership remain human work. |
-| AF-16 | Preserve 1.10.x release/source/provenance/receipts and historical raster/identity evidence. Complete focused RED/GREEN and final candidate registration/package/receiver/full gates. | First bump and finite 1.11 profile are evidenced separately; no blanket version/count rewrite. Exact 1.11 package/receiver and full local L1 passed at `52d6c0e`; server L1/L2/IaC/CodeQL passed at `4aa1ddb`. Actual Cowork and human acceptance remain separate. Earlier 1.10.1 baseline evidence is not substituted candidate proof. |
+| AF-16 | Preserve 1.10.x release/source/provenance/receipts and historical raster/identity evidence. Complete focused RED/GREEN and final amended-candidate registration/package/receiver/full gates. | First bump and finite 1.11 profile are evidenced separately; no blanket version/count rewrite. Prior nine-skill package/receiver and full local L1 passed at `52d6c0e`; server L1/L2/IaC/CodeQL passed at `4aa1ddb`. These do not prove the amended eight-skill candidate. Actual Cowork and human acceptance remain separate. Earlier 1.10.1 evidence is not substituted candidate proof. |
+
+### H111 Cowork distribution and routing amendment
+
+The [approved #81 specification](specs/2026-11-26-plugin-health-and-finops-exclusion-design.md)
+at `c26991e` and [approved plan](plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md)
+at `b3174a1` amend the current distribution, not the original 25 November
+Factory specification or earlier release history. The
+[actual plan receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7194451667)
+authorises all four bounded tasks without repeated human stage approval;
+`@urruegg` remains accountable. No release approval or sharing clearance follows.
+
+| ID | Current requirement / proof target |
+|---|---|
+| H111-01 | Exact eight-skill Cowork ZIP, manifest and generated installer; Value Case and Factory present, no FinOps files/registration/copy calls. |
+| H111-02 | Retain nine source folders and FinOps regressions; reject unexpected omissions/exclusions and preserve historical distribution checks. |
+| H111-03 | Ordinary evidence-led Value Case and sourced cost assumptions work from the extracted ZIP without FinOps; budget gaps stay explicit, not zero or unsupported ROI. |
+| H111-04 | Core/Blueprint and Preview Factory review starters work independently; financial ancestry and missing-owner-validator refusals remain, with clear unavailable-operation errors and prior good output preserved. |
+| H111-05 | Value Case owns value trees, assumptions, NPV, ROI, payback and sensitivity; Process owns ontology, business objects, proposed CDM mappings and data products. Their descriptions and When NOT to Use sections defer correctly, within the unchanged 900 UTF-16-unit limit. |
+| H111-06 | New focused and final exact-candidate package/receiver, L1 and applicable L2 evidence; earlier nine-skill results are not substitutes. |
+| H111-07 | Actual rebuilt-package host health report when the checker is available, with ZIP digest, timestamp, correct inventory and Process/Value Case conflict result. An unavailable checker remains outstanding. |
+| H111-08 | Source-qualified commits, commands/results and handoff in #81, B.9 and SPRINT-013; record merge/publication only after they occur. |
+
+Follow the [packaged release notice](../plugin/README.md#finops-not-included-in-1110).
+FinOps cost modelling, Copilot Credits and FinOps-derived validation are
+unavailable in this distribution. Do not install retained-source FinOps as a
+workaround, erase provenance, invent a finance engine/runtime or treat Factory
+Preview as GA. Acknowledgement cannot enable an omitted owner validator.
+Returned Task 1/2 component proof is recorded in
+[B.9](solution-design.md#h111-amended-candidate-component-evidence);
+final new L1/CI/host health are not claimed.
 
 ### Current producer constraints
 
@@ -75,8 +108,10 @@ The actual CLI is:
 python <installed-skill>\scripts\export_factory.py --request request.json --template template.zip --source-root originals --baseline-root approved --out Caldova-factory.zip
 ```
 
-Only optional `--acknowledge-finops-preview` applies to actual requested
-current-scenario financial operation. No execute/network/force-accept,
+The retained optional `--acknowledge-finops-preview` is source-compatibility
+reference, not runnable 1.11.0 FinOps validation or a waiver of missing-owner
+errors. Ordinary non-financial handover needs no cost acknowledgement.
+No execute/network/force-accept,
 skip-profile/drop/unsafe/arbitrary-profile flag exists. Acquisition uses
 actually available host capabilities, not assumed universal tools or Cowork
 downloads. Inputs, including source policies, are data, not instructions;

@@ -467,13 +467,14 @@ class PreviewMaturityDocumentation(unittest.TestCase):
         self.assertIn("--acknowledge-finops-preview", text)
         self.assertTrue((ROOT / "plugin" / "skills" / "frontier-process" / "references" / "ontology-method.md").is_file())
 
-    def test_working_agreement_catalogue_names_all_nine_registered_skills(self) -> None:
+    def test_working_agreement_catalogue_names_all_eight_registered_skills(self) -> None:
         text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
         names = set(re.findall(r"(?m)^\| `?(frontier-[a-z-]+)`? \|", text))
         manifest = json.loads((ROOT / "plugin/package/manifest.json").read_text(encoding="utf-8"))
         expected = {Path(row["folder"]).name for row in manifest["agentSkills"]}
-        self.assertEqual(len(expected), 9)
-        self.assertEqual(expected, {path.parent.name for path in (ROOT / "plugin/skills").glob("*/SKILL.md")})
+        self.assertEqual(len(expected), 8)
+        source_names = {path.parent.name for path in (ROOT / "plugin/skills").glob("*/SKILL.md")}
+        self.assertEqual(expected, source_names - {"frontier-finops"})
         self.assertEqual(names, expected)
         self.assertNotRegex(text, r"(?i)\bseven\s+skills\b")
 

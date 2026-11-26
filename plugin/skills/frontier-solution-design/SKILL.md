@@ -23,10 +23,13 @@ metadata:
 
 # Frontier solution design
 
+*1.11.0 distribution/routing maintenance: Copilot AI-assisted, 26 November 2026; original authorship retained.*
+
 Turns the validated blueprint into the documents a build team needs: a **PRD** (what the platform and each MVP agent must do), a **solution design** (how it is built on Microsoft's Frontier layers) and **ADRs** (why, and what was rejected). The structure follows the Innovation Hub's design-repository pattern: platform requirements once, use-case requirements on top, workflow-first, systems of record authoritative, every write declared.
 
-In the four-part blueprint, the PRD is visible in Vision before Design; Plan and
-optional Preview FinOps are in Build, while Risks and evidenced Attendees are in Workshops.
+In the four-part blueprint, the PRD is visible in Vision before Design; Plan is
+in Build, while Risks and evidenced Attendees are in Workshops. The retained
+Preview FinOps view is source-compatibility reference, not a 1.11.0 operation.
 `scripts/prd_model.py` is identical to frontier-blueprint's copy, so the page,
 Markdown download and scaffold share canonical requirement IDs.
 
@@ -34,6 +37,10 @@ This GA product wrapper works without FinOps; GA is a maintainer designation,
 not result confidence, provider GA, release/deployment or external/IP clearance.
 Optional process design uses **frontier-process** with Fabric ontology/agent/
 operations Preview and unchecked mappings still explicit.
+
+For 1.11.0, follow the [FinOps distribution boundary](../frontier-envisioning/references/method.md#finops-not-included-in-1110).
+FinOps is not bundled. Continue ordinary non-FinOps work with explicit budget
+gaps; do not invoke an absent skill or reuse derived financial figures.
 
 ## Quick Start
 
@@ -72,13 +79,17 @@ User: "Write the PRD and solution design for the Caldova MVP"
    a clean core record rather than a cached Preview value model; omitting a CLI
    option does not remove legacy fields. Do not strip provenance or relabel GA.
    Missing budget evidence stays open with the real budget owner.
-4. For requested cost operations/figures, show the full notice and obtain actual
-   current-scenario confirmation via [frontier-finops](../frontier-finops/SKILL.md)
-   before proceeding. New invocation/scope/model/rates/grounding needs renewed
-   acknowledgement. Upstream FinOps cost commands and the blueprint wrapper use
-   `--acknowledge-finops-preview` as technical caller evidence, not independent
-   human approval; it is not a scaffold CLI option. Skip on decline/absent
-   unrequested FinOps; requested-but-missing FinOps is an explicit error.
+4. For requested FinOps operations/figures, return a clear unavailable-operation
+   error under the [distribution boundary](../frontier-envisioning/references/method.md#finops-not-included-in-1110).
+   Do not load an absent skill or substitute unsupported figures.
+
+**Source-compatibility reference — not runnable in 1.11.0.**
+The retained upstream FinOps cost commands and blueprint wrapper use
+`--acknowledge-finops-preview` as technical caller evidence, not independent
+human approval; it is not a scaffold CLI option. Each new invocation or changed
+scope/model/rates/grounding requires actual renewed confirmation in that
+protocol. Skip on decline/absent unrequested FinOps; requested-but-missing
+FinOps is an explicit error.
 
 ### Step 2: Scaffold
 `python scripts/scaffold_design_docs.py --blueprint blueprint.normalized.json --out-dir working/frontier/<slug>/design [--mvp <agent ids>] --author "<user name>, Microsoft Innovation Hub"`
@@ -124,8 +135,9 @@ record used in the workshop, retaining risk source bindings and retired IDs.
 ## Guardrails
 
 - Take ordinary value KPIs/baseline evidence from **frontier-value-case** without
-  requiring FinOps. Only after the Preview awareness gate, use provisional
-  FinOps NFRs and purchase comparisons with real owners. Any manual addition of
+  requiring FinOps. Retained financial instructions are source-compatibility
+  reference, not runnable in 1.11.0: provisional FinOps NFRs and purchase
+  comparisons require real owners and the Preview awareness gate. Any manual addition of
   acknowledged Preview-derived economics to the design requires actual
   current-scenario awareness; scaffold generation does not supply that
   acknowledgement or a complete financial handoff. Carry the full notice,

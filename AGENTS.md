@@ -4,7 +4,7 @@ This file is for every coding agent working in this repository (GitHub Copilot i
 
 ## 1. What this repository is
 
-**Frontier Envisioning** is a Copilot Cowork plugin (MIT) used by Microsoft Innovation Hub solution engineers for Frontier solution envisioning and architecture design. The unreleased 1.11.0 development candidate registers nine skills in the same plugin: seven non-FinOps GA wrappers, optional Preview FinOps and optional Preview Envisioning Agent Factory. Registration and maturity/installer metadata are implemented; final candidate gates remain pending in [#79](https://github.com/urruegg/frontier-envisioning/issues/79).
+**Frontier Envisioning** is a Copilot Cowork plugin (MIT) used by Microsoft Innovation Hub solution engineers for Frontier solution envisioning and architecture design. The unreleased 1.11.0 development candidate registers eight skills in the same plugin: seven existing GA wrappers, including Business Value Case, and optional Preview Envisioning Agent Factory. Final amended-candidate gates remain pending in [#81](https://github.com/urruegg/frontier-envisioning/issues/81); prior nine-skill #79 evidence is historical, not proof of this distribution.
 
 | Skill | Purpose |
 |---|---|
@@ -15,7 +15,6 @@ This file is for every coding agent working in this repository (GitHub Copilot i
 | `frontier-agent-identity` | Agent identity kit: names, colours, icons, cards, validators, pipelines |
 | `frontier-value-case` | Business value case in CHF: value tree, assumption register, NPV, ROI |
 | `frontier-process` | Optional process/ontology design when requested: proposed CDM mappings, data products and local Fabric handover files |
-| `frontier-finops` | Optional Preview costs: explicit current-scenario awareness required before any cost operation or figure |
 | `frontier-agent-factory` | Registered optional Preview candidate: Envisioning Agent Factory, an explicitly requested offline full starter-repository ZIP handover |
 
 Core engagement/value/identity/blueprint/design/process work requires neither
@@ -28,7 +27,15 @@ and [current architecture](docs/solution-design.md#1110-agent-factory-offline-pr
 GA is the maintainer's product designation, not result confidence,
 provider GA, release/deployment or external/IP clearance. Fabric ontology/agent/
 operations Preview, unverified mappings and MOS3 manifest `devPreview` remain
-separate. Installation does not acknowledge FinOps use.
+separate. Installation does not acknowledge financial use.
+
+Nine source skill folders remain, including source-only `frontier-finops` and
+its regression tests. FinOps is not registered, copied or installed by the
+1.11.0 Cowork ZIP. Follow the [distribution boundary](plugin/README.md#finops-not-included-in-1110):
+ordinary value and sourced cost assumptions remain supported with named budget
+gaps; missing costs are not zero. Preserve financial ancestry and owner-review
+refusals; unavailable financial operations fail explicitly. Factory remains
+Preview and adds no finance engine or runtime.
 
 The plugin runs inside Copilot Cowork. This repository adds the engineering around it: source control, tests, builds, releases, a hosted showcase and AI-assisted engineering with guardrails.
 
