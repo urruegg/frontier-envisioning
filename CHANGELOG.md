@@ -4,13 +4,14 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
 
 ## 1.11.0 — unreleased
 
-- **Envisioning Agent Factory Preview (#72, #75, #76, #77, #78).** Implement
+- **Envisioning Agent Factory Preview (#72, #75, #76, #77, #78, #79).** Implement
   the offline producer for an explicitly requested full starter-repository ZIP,
   preserving the pinned compatible foundation, authored documents/IDs and
-  reviewed ordinary-file intake. The target ninth skill, `frontier-agent-factory`,
+  reviewed ordinary-file intake. The registered ninth skill, `frontier-agent-factory`,
   is in the same plugin: seven non-FinOps GA wrappers and optional Preview
-  FinOps/Factory. Registration/maturity/installer/self-test integration under
-  #79 is still pending; ordinary core/value/identity/Blueprint/design/process
+  FinOps/Factory. Registration, skill routing and maturity/installer metadata
+  are implemented; final integration proof under #79 remains pending.
+  Ordinary core/value/identity/Blueprint/design/process
   requires neither optional extension.
 - **Controlled local handover.** Host-acquired latest stable source, or explicit
   immutable unreleased bootstrap after healthy complete no-stable discovery,

@@ -8,7 +8,8 @@ description: |
   evidence. Use when asked to "write the PRD for the <customer> MVP", "design the target
   architecture for <agent>", "create the solution design and ADRs" or "scaffold the design
   repository". Do NOT use to build the blueprint HTML (use frontier-blueprint) or to
-  gather context (use frontier-context-discovery).
+  gather context (use frontier-context-discovery). For an explicit full starter-repo
+  ZIP handover after reviewed design, use optional Preview frontier-agent-factory.
 license: MIT
 metadata:
   category: writing
@@ -58,6 +59,8 @@ User: "Write the PRD and solution design for the Caldova MVP"
 - Gathering context or analysing a transcript: use **frontier-context-discovery**
 - A generic architecture explainer without a customer: answer directly from [references/frontier-reference-architecture.md](references/frontier-reference-architecture.md)
 - Building the agent itself in Copilot Studio: this skill stops at design
+- An explicitly requested full starter-repository ZIP handover after reviewed design:
+  use optional Preview [frontier-agent-factory](../frontier-agent-factory/SKILL.md)
 
 ## Workflow
 
@@ -105,6 +108,11 @@ record used in the workshop, retaining risk source bindings and retired IDs.
 1. Default: the three markdown deliverables, published with `CopyArtifact(surface="output", …)` from `working/frontier/<slug>/design/` (confirm `"ok": true`; check the `copied` count for folders).
 2. When the user wants Word documents, hand the finished markdown to the docx agent with the customer's branding; when they want a repository, also produce `README.md`, `AGENTS.md` (the rules every agent satisfies) and the folder map from [references/design-rules.md](references/design-rules.md).
 3. Offer to keep the design folder with the engagement in OneDrive (`frontier-envisioning/<slug>/design`).
+4. A plain design repository is not a full Factory foundation handover. Only on
+   an explicit starter-repository ZIP request, offer optional Preview
+   [frontier-agent-factory](../frontier-agent-factory/SKILL.md) with the final
+   reviewed files unchanged. Never invoke it automatically after a PRD or add
+   export flags to this scaffold. Ordinary design requires neither Factory nor FinOps.
 
 ## Output format (reply)
 

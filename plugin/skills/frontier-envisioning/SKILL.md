@@ -8,7 +8,8 @@ description: |
   Do NOT use for a single step: route context to frontier-context-discovery, HTML to
   frontier-blueprint, PRD/architecture to frontier-solution-design, names/icons to
   frontier-agent-identity, value to frontier-value-case, ontology to frontier-process,
-  or cost questions to frontier-finops for its Preview notice and confirmation first.
+  costs to frontier-finops for its Preview notice and confirmation first, or an
+  explicit starter-repo ZIP handover to optional Preview frontier-agent-factory.
 license: MIT
 metadata:
   category: productivity
@@ -33,11 +34,11 @@ The Innovation Hub method for helping a customer see itself as a Frontier compan
 
 The full method, phases, gates and timings are in [references/method.md](references/method.md); the organisation model in [references/hairo-model.md](references/hairo-model.md).
 
-Eight skills are bundled: seven non-FinOps GA product wrappers and optional
-Preview FinOps. GA is the maintainer's designation, not result confidence,
+Nine skills are bundled: seven non-FinOps GA product wrappers and optional
+Preview FinOps and Agent Factory. GA is the maintainer's designation, not result confidence,
 provider GA, release/deployment or public/IP clearance. Fabric ontology/agent/
 operations Preview and unverified mappings remain explicit.
-**Release build 1.10.0.** Build metadata is not publication evidence.
+**Unreleased development build 1.11.0.** Build metadata is not publication evidence.
 Agent identity branding is not
 Entra identity provisioning; HubWorks is controlled source integration, not
 an assumed runtime loader.
@@ -71,6 +72,7 @@ User: "Prepare the Frontier envisioning for Caldova, workshop on 12 November"
 - Only gathering or refreshing context: use frontier-context-discovery instead
 - Only building, updating or customer-proofing the blueprint HTML: use frontier-blueprint instead
 - Only the PRD, solution design or ADRs: use frontier-solution-design instead
+- Explicit full starter-repository ZIP handover: use optional Preview [frontier-agent-factory](../frontier-agent-factory/SKILL.md); never auto-run it after a PRD
 - A general question about Microsoft's agent architecture with no customer: answer directly
 - Scheduling the workshop or sending invitations: calendar skills
 
@@ -187,6 +189,12 @@ Load **frontier-solution-design** for the MVP agents. Gate D: PRD Definition of 
 Selecting fewer agents must retain canonical requirement IDs. Computed factory
 readiness and WIP limits display planning state; they do not approve execution.
 Plan CSV is a mapped handover format, not a live connector or native import certification.
+
+After final reviewed design, offer the optional Preview
+[Agent Factory handover](../frontier-agent-factory/SKILL.md) only for an explicit
+starter-repository ZIP request. It preserves reviewed files; it does not
+re-scaffold them or trigger costs, remote creation, tenant work or deployment.
+Core work does not require either optional extension.
 
 ### Step 6a: Value review and optional Preview cost handoff (V2, F2)
 Merge ordinary value verdicts and rebuild without FinOps. V2 requires the five

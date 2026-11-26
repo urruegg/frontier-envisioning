@@ -169,11 +169,11 @@ for method in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED):
             for name in names:
                 folder = skills / name
                 (folder / "scripts").mkdir(parents=True)
-                preview = name == "frontier-finops"
+                preview = name in {"frontier-finops", "frontier-agent-factory"}
                 (folder / "SKILL.md").write_text(
                     f"---\nname: {name}\ndescription: Synthetic checker fixture\nmetadata:\n"
                     f"  maturity: {'preview' if preview else 'ga'}\n  optional: true\n"
-                    f"  requires_preview_ack: {str(preview).lower()}\n---\n", encoding="utf-8")
+                    f"  requires_preview_ack: {str(name == 'frontier-finops').lower()}\n---\n", encoding="utf-8")
             for name in names[:2]:
                 (skills / name / "scripts/fv_expr.py").write_bytes(b"# same\n")
             (plugin / "package").mkdir()

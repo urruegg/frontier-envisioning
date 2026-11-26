@@ -18,8 +18,8 @@ validated MVP for design handover.
 
 **1.11.0 is an unreleased development candidate.** It adds the offline
 Envisioning Agent Factory producer for an explicitly requested starter-repository
-handover. Ninth-skill registration, installation and final candidate checks
-remain pending; this is not a ready-to-install or Cowork-validated claim.
+handover. Nine skills are registered with explicit maturity/installer metadata;
+final candidate checks remain pending, not a Cowork-validated claim.
 Historical release build **1.10.0** and its evidence are unchanged. Check
 [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
 for actual publication and downloads; candidate metadata is not publication.
@@ -52,13 +52,13 @@ Agent identity, Target architecture, requested Ontology and workshop views.*
 | Agent identity proposal | Names, colours, icons and identity cards; branding, not Entra identity provisioning |
 | Value and design handover | Ordinary value evidence and assumptions; PRD, solution design, ADRs and IT readiness once MVP scope is validated, or clearly labelled drafts |
 | Optional Agent FinOps baseline | After Preview awareness: versioned twelve-month scenarios, unit economics and projected JSON/Markdown reports; recorded external review is not budget approval |
-| Optional Envisioning Agent Factory Preview | Candidate offline producer: full pinned starter-repository ZIP with reviewed ordinary files, preserved IDs and explicit intake gaps; registration and final integration pending |
+| Optional Envisioning Agent Factory Preview | Registered candidate offline producer: full pinned starter-repository ZIP with reviewed ordinary files, preserved IDs and explicit intake gaps; final integration proof pending |
 
 ### Candidate skill inventory
 
-The 1.11.0 target is **nine skills in the same plugin**: seven non-FinOps
-GA wrappers and two optional Preview skills. Current registration remains
-eight until [#79](https://github.com/urruegg/frontier-envisioning/issues/79).
+The 1.11.0 candidate registers **nine skills in the same plugin**: seven non-FinOps
+GA wrappers and two optional Preview skills. Final integration proof is tracked in
+[#79](https://github.com/urruegg/frontier-envisioning/issues/79).
 
 | Skill | Availability and purpose |
 |---|---|
@@ -70,7 +70,7 @@ eight until [#79](https://github.com/urruegg/frontier-envisioning/issues/79).
 | `frontier-value-case` | GA — ordinary value evidence and assumptions |
 | `frontier-process` | GA — optional process/ontology proposals |
 | `frontier-finops` | Optional Preview — awareness-first financial work |
-| `frontier-agent-factory` | Optional Preview candidate — Envisioning Agent Factory; registration pending |
+| `frontier-agent-factory` | Registered optional Preview candidate — Envisioning Agent Factory |
 
 ```mermaid
 flowchart LR

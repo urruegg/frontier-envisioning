@@ -30,6 +30,7 @@ Exit code 0 when every step passes.
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import importlib.util
 import io
 import json
@@ -165,7 +166,7 @@ def process_checks(t: Path, sample: Path, check) -> None:
 def installed_run(script: Path, argv: list[str], work: Path) -> subprocess.CompletedProcess:
     """Run the supplied installation, not in-process working-tree modules or PYTHONPATH."""
     env = {key: value for key, value in os.environ.items() if key not in {"PYTHONPATH", "PYTHONHOME"}}
-    return subprocess.run([sys.executable, "-E", "-s", "-B", "-X", "utf8", str(script), *argv], cwd=work,
+    return subprocess.run([sys.executable, "-E", "-s", "-S", "-B", "-X", "utf8", str(script), *argv], cwd=work,
                           env=env, capture_output=True, text=True, encoding="utf-8", timeout=120)
 
 
@@ -324,10 +325,52 @@ def baseline_cli_checks(package: Path, work: Path, check) -> None:
           originals == {path: path.read_bytes() for path in originals} and frozen_bytes == snapshot_path.read_bytes())
 
 
+def factory_cli_checks(package: Path, work: Path, check) -> None:
+    """Developer fixture creates inputs; only the extracted production CLI exports."""
+    previous = list(sys.path)
+    try:
+        sys.path.insert(0, str(ROOT))
+        fixture_module = load(ROOT / "tests/factory_fixture.py")
+        fixture = fixture_module.prepare(work / "factory")
+    finally:
+        sys.path[:] = previous
+    exporter = package / "skills/frontier-agent-factory/scripts/export_factory.py"
+    args = ["--request", str(fixture["request_file"]),
+            "--template", str(fixture["template"]), "--source-root", str(fixture["source"]),
+            "--baseline-root", str(fixture["baseline"]), "--out", str(fixture["out"])]
+    first = installed_run(exporter, args, work)
+    check("installed Factory exports a review starter", first.returncode == 0, first.stdout[-300:])
+    if first.returncode:
+        return
+    before = fixture["out"].read_bytes()
+    summary = json.loads(first.stdout)
+    check("Factory reports unperformed host/receiver checks truthfully",
+          summary["intake_disposition"] == "needs-clarification" and
+          summary["cowork_validation"] == summary["receiver_validation"] == "not-performed")
+    second = installed_run(exporter, args, work)
+    check("installed Factory frozen inputs reproduce exact ZIP bytes",
+          second.returncode == 0 and fixture["out"].read_bytes() == before, second.stdout[-300:])
+    check("Factory ZIP digest is computed, not a manual user step",
+          summary["zip_sha256"] == hashlib.sha256(before).hexdigest())
+    with zipfile.ZipFile(fixture["out"]) as archive:
+        check("Factory preserves passive foundation and vendor material",
+              {"LICENSE", ".agents/skills/LICENSE.superpowers",
+               ".agents/superpowers.lock.json", "START_HERE.md",
+               "handover/manifest.json"} <= set(archive.namelist()))
+    row = fixture["request"]["intake"]["artifacts"][0]
+    row["source"]["path"] = "selected.html"
+    (fixture["source"] / "selected.html").write_bytes(b"<html>not an ordinary equivalent</html>")
+    fixture_module.save(fixture)
+    refused = installed_run(exporter, args, work)
+    check("Factory refuses selected HTML without damaging previous good ZIP",
+          refused.returncode == 1 and fixture["out"].read_bytes() == before, refused.stdout[-300:])
+
+
 def installed_core_check(package: Path, work: Path, check) -> None:
     """Only call on our temporary extracted package, after installer verification."""
     skills = package / "skills"
     shutil.rmtree(skills / "frontier-finops")
+    shutil.rmtree(skills / "frontier-agent-factory")
     sample = skills / "frontier-blueprint/examples/caldova-blueprint.json"
     value = skills / "frontier-value-case/examples/caldova-value.json"
     example = skills / "frontier-process/examples/caldova-ontology.json"
@@ -381,7 +424,7 @@ def installed_core_check(package: Path, work: Path, check) -> None:
     html = html_path.read_text(encoding="utf-8") if html_path.is_file() else ""
     island = re.search(r'<script[^>]+id="bp-data"[^>]*>(.*?)</script>', html, re.S)
     data = json.loads(island[1]) if island else {}
-    check("installed core value/ontology build works with FinOps removed",
+    check("installed core value/ontology build works with FinOps and Factory removed",
           proc.returncode == 0 and bool(data.get("value_case")) and bool(data.get("ontology"))
           and "finops" not in data and "agent_finops" not in data, proc.stderr[-300:])
     serialised = json.dumps(data)
@@ -736,18 +779,22 @@ def main() -> int:
             expected = json.loads((ROOT / "plugin/package/manifest.json").read_text(encoding="utf-8"))["agentSkills"]
             installed = plan.get("skills", [])
             finops = next((x for x in installed if x.get("name") == "frontier-finops"), {})
+            factory = next((x for x in installed if x.get("name") == "frontier-agent-factory"), {})
             check("install check passes on the packaged candidate",
-                  code == 0 and plan.get("verified") and len(plan.get("copy_calls", [])) == len(expected) == 8
+                  code == 0 and plan.get("verified") and len(plan.get("copy_calls", [])) == len(expected) == 9
                   and all(x["status"] == "new" for x in installed)
                   and sum(x.get("maturity") == "ga" for x in installed) == 7
                   and finops.get("maturity") == "preview" and finops.get("optional") is True
                   and finops.get("requires_preview_ack") is True
+                  and factory.get("maturity") == "preview" and factory.get("optional") is True
+                  and factory.get("requires_preview_ack") is False
                   and "preview_acknowledged" not in plan, out[-300:] if code else "")
-            check("eight installer plans are read-only",
-                  not list((t / "empty").iterdir()) and len(installed) == 8)
+            check("nine installer plans are read-only",
+                  not list((t / "empty").iterdir()) and len(installed) == 9)
             installed_work = t / "installed-cli"
             installed_work.mkdir()
             baseline_cli_checks(t / "pkg", installed_work, check)
+            factory_cli_checks(t / "pkg", installed_work, check)
             with open(t / "pkg/skills/frontier-blueprint/SKILL.md", "a", encoding="utf-8") as fh:
                 fh.write("\n<!-- altered -->\n")
             code, out = run(inst, ["--root", str(t / "pkg"), "--installed", str(t / "empty")])

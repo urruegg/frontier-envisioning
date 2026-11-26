@@ -4,7 +4,7 @@ This file is for every coding agent working in this repository (GitHub Copilot i
 
 ## 1. What this repository is
 
-**Frontier Envisioning** is a Copilot Cowork plugin (MIT) used by Microsoft Innovation Hub solution engineers for Frontier solution envisioning and architecture design. The unreleased 1.11.0 development candidate targets nine skills in the same plugin: seven non-FinOps GA wrappers, optional Preview FinOps and optional Preview Envisioning Agent Factory. Current registration remains eight; ninth-skill registration, maturity/installer integration and final candidate gates are pending in [#79](https://github.com/urruegg/frontier-envisioning/issues/79).
+**Frontier Envisioning** is a Copilot Cowork plugin (MIT) used by Microsoft Innovation Hub solution engineers for Frontier solution envisioning and architecture design. The unreleased 1.11.0 development candidate registers nine skills in the same plugin: seven non-FinOps GA wrappers, optional Preview FinOps and optional Preview Envisioning Agent Factory. Registration and maturity/installer metadata are implemented; final candidate gates remain pending in [#79](https://github.com/urruegg/frontier-envisioning/issues/79).
 
 | Skill | Purpose |
 |---|---|
@@ -16,7 +16,7 @@ This file is for every coding agent working in this repository (GitHub Copilot i
 | `frontier-value-case` | Business value case in CHF: value tree, assumption register, NPV, ROI |
 | `frontier-process` | Optional process/ontology design when requested: proposed CDM mappings, data products and local Fabric handover files |
 | `frontier-finops` | Optional Preview costs: explicit current-scenario awareness required before any cost operation or figure |
-| `frontier-agent-factory` | Optional Preview candidate, registration pending: Envisioning Agent Factory, an explicitly requested offline full starter-repository ZIP handover |
+| `frontier-agent-factory` | Registered optional Preview candidate: Envisioning Agent Factory, an explicitly requested offline full starter-repository ZIP handover |
 
 Core engagement/value/identity/blueprint/design/process work requires neither
 Factory nor FinOps. Factory is not automatic after a PRD and starts no cost

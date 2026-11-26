@@ -165,7 +165,7 @@ def maturity_fields(fields: dict) -> dict:
 
 def maturity_errors(name: str, fields: dict) -> list[str]:
     errors = []
-    expected = "preview" if name == "frontier-finops" else "ga"
+    expected = "preview" if name in {"frontier-finops", "frontier-agent-factory"} else "ga"
     if fields.get("maturity") != expected:
         errors.append(f"{name}: product maturity must be {expected}")
     for key in ("optional", "requires_preview_ack"):
@@ -174,6 +174,9 @@ def maturity_errors(name: str, fields: dict) -> list[str]:
     if name == "frontier-finops":
         if fields.get("optional") is not True or fields.get("requires_preview_ack") is not True:
             errors.append(f"{name}: FinOps must be optional Preview with acknowledgement required")
+    elif name == "frontier-agent-factory":
+        if fields.get("optional") is not True or fields.get("requires_preview_ack") is not False:
+            errors.append(f"{name}: Factory must be optional Preview without a cost acknowledgement gate")
     elif fields.get("requires_preview_ack") is not False:
         errors.append(f"{name}: GA core must not require FinOps Preview acknowledgement")
     return errors

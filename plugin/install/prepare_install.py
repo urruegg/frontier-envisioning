@@ -135,6 +135,18 @@ def main(argv=None) -> int:
             "maturity": "preview", "optional": True, "requires_preview_ack": True,
         }:
             problems.append(f"{folder}: current FinOps must be optional Preview with acknowledgement required")
+        if name == "frontier-agent-factory" and (
+            maturity.get("maturity") != "preview"
+            or maturity.get("optional") is not True
+            or maturity.get("requires_preview_ack") is not False
+        ):
+            problems.append(f"{folder}: current Factory must be optional Preview without a cost acknowledgement gate")
+        if name not in {"frontier-finops", "frontier-agent-factory"} and (
+            maturity.get("maturity") != "ga"
+            or type(maturity.get("optional")) is not bool
+            or maturity.get("requires_preview_ack") is not False
+        ):
+            problems.append(f"{folder}: GA core must have explicit maturity and no Preview acknowledgement gate")
         status, inst_ver = "new", None
         inst = installed_dir / name / "SKILL.md"
         try:
@@ -149,14 +161,22 @@ def main(argv=None) -> int:
     verified = not problems and bool(skills_out)
     calls = [f'CopyArtifact(surface="user", source="{s["source"]}", destination="{s["destination"]}", recursive=true, overwrite=true)  # expect copied={s["files"]}'
              for s in skills_out]
+    notices = []
+    if any(s.get("requires_preview_ack") is True for s in skills_out):
+        notices.append(
+            "Frontier FinOps is Preview; its grounding and model are not GA and need refinement. "
+            "Installation is not acknowledgement of use; explicit acknowledgement is required before cost operations."
+        )
+    if any(s.get("name") == "frontier-agent-factory" for s in skills_out):
+        notices.append(
+            "Envisioning Agent Factory is optional Preview, not GA. Installation grants no source-transfer, "
+            "review, repository, tenant or deployment permission. Actual Cowork validation is not performed."
+        )
     result = {
         "plugin": spec.get("plugin"), "display_name": spec.get("display_name"), "version": spec.get("version"),
         "verified": verified, "problems": problems, "skills": skills_out,
         "copy_calls": calls if verified else [],
-        "preview_notice": (
-            "Frontier FinOps is Preview; its grounding and model are not GA and need refinement. "
-            "Installation is not acknowledgement of use; explicit acknowledgement is required before cost operations."
-        ) if any(s.get("requires_preview_ack") is True for s in skills_out) else "",
+        "preview_notice": " ".join(notices),
         "after_install": ("Installed. Start a new Cowork chat (after OneDrive has synced) and try: "
                           + " | ".join(spec.get("start_prompts", []))) if verified else
                          "Do not install: re-download the original zip and upload it again without unpacking or repacking it.",

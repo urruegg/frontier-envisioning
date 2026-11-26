@@ -47,6 +47,9 @@
     },
     {
       "folder": "skills/frontier-process"
+    },
+    {
+      "folder": "skills/frontier-agent-factory"
     }
   ]
 }

@@ -18,11 +18,11 @@ alone is not evidence of publication.
 The installation procedure below is not evidence of actual Cowork installation,
 organisation catalogue publication or tenant deployment.
 
-The candidate targets **nine skills in this same plugin: seven non-FinOps GA
+The candidate registers **nine skills in this same plugin: seven non-FinOps GA
 wrappers, optional Preview FinOps and optional Preview Envisioning Agent Factory**.
-The offline Factory producer is implemented; registration still contains eight
-skills. Ninth-skill registration, maturity, installer, self-test and final
-package/receiver checks are pending. This guide does not certify installation.
+The offline Factory producer, skill procedure and maturity/installer metadata
+are implemented. Final candidate package/receiver checks remain pending.
+This guide does not certify Cowork installation.
 Process/ontology is optional when requested. Core engagement, value, identity,
 blueprint, design and process require neither Factory nor FinOps.
 GA is the maintainer's designation, not result confidence, provider GA,
@@ -40,7 +40,7 @@ manifest `devPreview` is a separate, unchanged development packaging protocol.
 | `frontier-value-case` | GA — ordinary value evidence |
 | `frontier-process` | GA — optional process/ontology proposals |
 | `frontier-finops` | Optional Preview — current-scenario awareness before financial operations |
-| `frontier-agent-factory` | Optional Preview — Envisioning Agent Factory; offline producer implemented, registration pending |
+| `frontier-agent-factory` | Registered optional Preview — Envisioning Agent Factory; offline producer implemented |
 
 ---
 
@@ -81,7 +81,7 @@ unavailable; discovery, installation, acquisition and export are not performed.
 
    > **Install the Frontier PlugIn**
 
-4. **Review and approve** the skill-copy prompts for your OneDrive (`Documents/Cowork/skills`). Check every copy count against the verified plan. The integrated 1.11.0 plan must contain nine skills: seven GA and two optional Preview; Factory does not require FinOps acknowledgement merely to load or perform non-financial handover. Current registration is still eight, not proof of completed 1.11.0 integration. If the required tool is unavailable or the copy fails, report it rather than claiming success. Installation acknowledges neither Factory transfer nor FinOps use and runs no cost work.
+4. **Review and approve** the skill-copy prompts for your OneDrive (`Documents/Cowork/skills`). Check every copy count against the verified plan. The registered 1.11.0 plan contains nine skills: seven GA and two optional Preview; Factory does not require FinOps acknowledgement merely to load or perform non-financial handover. Registration is not proof of Cowork installation. If the required tool is unavailable or the copy fails, report it rather than claiming success. Installation acknowledges neither Factory transfer nor FinOps use and runs no cost work.
 5. **After successful copying and sync, start a new chat** and try one of these:
 
    > Build the Frontier blueprint demo for Caldova
@@ -113,7 +113,7 @@ gate below is separate from installation approval.
 | "Update the blueprint with the workshop feedback" (attach the exported feedback file) | The next blueprint version with the workshop's verdicts and answers |
 | "Make the customer-ready version" | The blueprint without internal sources or internal-derived attendee, risk and PRD content; review and sharing clearance are still required |
 | "Write the PRD and solution design for the *customer* MVP" | PRD, solution design and architecture decision records for validated MVP scope, or clearly labelled drafts |
-| "Prepare a full Agent Factory starter-repository ZIP for Caldova Industrial AG" | Optional offline Factory Preview candidate: preserve reviewed documents in a pinned full foundation with valid intake and explicit gaps; registration and host validation remain pending |
+| "Prepare a full Agent Factory starter-repository ZIP for Caldova Industrial AG" | Registered optional offline Factory Preview candidate: preserve reviewed documents in a pinned full foundation with valid intake and explicit gaps; host validation remains pending |
 | "Create the agent identity kit for *customer*" | `<Customer> - agent identity package v1.0.zip`: naming convention with DEV/TEST names, one colour per journey from the customer's brand, icons per agent and environment, identity cards, catalogue, and the scripts and pipeline templates for the customer's repository |
 | "Build the identity kit demo for Caldova" | The demo identity kit for Caldova's 33 agents, the Agent Factory included (fictitious brand) |
 | "Build the value case for *customer*" | Ordinary non-FinOps value evidence and assumptions, with supported ranges/NPV/ROI only and missing cost/budget evidence stated |
@@ -210,8 +210,8 @@ the candidate ninth skill, not the existing Blueprint's Agent Factory journey.
 Use it only for an explicit starter-repository, ZIP or handover request.
 It is not the next automatic step after a PRD and does not invoke FinOps.
 It adds no business-agent runtime, SDK, application or tenant loader.
-The offline producer is implemented; its skill procedure, registration and
-exact installed-package proof remain pending. See the
+The offline producer, skill procedure and registration are implemented;
+final exact installed-package proof remains pending. See the
 [request and intake contract](skills/frontier-agent-factory/references/handover-contract.md).
 
 ### Acquire once, then freeze
@@ -460,7 +460,7 @@ frontier-envisioning-plugin-1.11.0.zip
     ├── frontier-value-case/          business value in CHF: value tree, assumption register, NPV, ROI, workshop merge
     ├── frontier-process/             optional process ontology, proposed CDM mappings and local data-product/agent kit
     ├── frontier-finops/              optional Preview costs; actual awareness before operations or figures
-    └── frontier-agent-factory/       candidate offline producer; skill registration/integration pending
+    └── frontier-agent-factory/       registered candidate offline producer; final integration proof pending
 ```
 
 ---
@@ -472,7 +472,7 @@ Follow these steps when a user uploads this zip and asks to install it ("Install
 1. **Extract** the uploaded zip from `input/` into `working/frontier-plugin/`, keeping the folder structure (Python `zipfile`; do not repack it).
 2. **Check** the package and get the plan:
    `python working/frontier-plugin/install/prepare_install.py --root working/frontier-plugin`
-   It verifies every file against `install/plugin-install.json` and prints JSON with `verified`, `problems` and, per skill, `source`, `destination`, `files`, `status` (new, update or reinstall) and owned `maturity`, `optional`, `requires_preview_ack` metadata. The integrated 1.11.0 candidate must have nine entries: seven GA, optional acknowledgement-required Preview FinOps and optional Preview Factory without blanket financial acknowledgement. That integration is pending; the current eight-entry registration is not its completion. These are repository install fields, not invented Microsoft manifest fields. If `verified` is false, stop and request the original zip again.
+   It verifies every file against `install/plugin-install.json` and prints JSON with `verified`, `problems` and, per skill, `source`, `destination`, `files`, `status` (new, update or reinstall) and owned `maturity`, `optional`, `requires_preview_ack` metadata. The registered 1.11.0 candidate has nine entries: seven GA, optional acknowledgement-required Preview FinOps and optional Preview Factory without blanket financial acknowledgement. Registration alone is not final integration proof. These are repository install fields, not invented Microsoft manifest fields. If `verified` is false, stop and request the original zip again.
 3. **Install** each skill in the plan into the user's skills folder, one call per skill:
    `CopyArtifact(surface="user", source="working/frontier-plugin/skills/<name>", destination="skills/<name>", recursive=true, overwrite=true)`
    The first call shows the user an approval card. If the user declines, stop and say that nothing was installed.
@@ -490,7 +490,7 @@ Follow these steps when a user uploads this zip and asks to install it ("Install
 ## Organisation roll-out
 
 The ZIP uses the Microsoft 365 app-package structure with colour and outline
-icons. Current registration is eight; the candidate ninth skill is pending.
+icons. Current registration is nine; final candidate verification remains pending.
 MOS3 `devPreview` remains unchanged.
 Organisation catalogue publication is an admin operation requiring tenant
 validation and approval; this release build does not certify it. Tenant-specific

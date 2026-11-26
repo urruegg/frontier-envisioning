@@ -17,7 +17,7 @@
    "name": "frontier-envisioning",
    "folder": "skills/frontier-envisioning",
    "files": {
-    "SKILL.md": "135e8f4cee93d5998f0667e75e6f4e3ec4c575ba33511e46183efe45e5e6d083",
+    "SKILL.md": "2bd33e462cbdefac8e01e76c8cab69ae52d42662dadb5f5fb10bfb85265ceca4",
     "references/hairo-model.md": "0d06a2ab5f1c1ef1e8db4d6354aedf907ea6a7048b81c1595bced230000e8bfb",
     "references/method.md": "a036ab1a5c02f64434df86339cc1de16fef0268041fe5921aee87d0b61b785ae"
    },
@@ -69,7 +69,7 @@
    "name": "frontier-solution-design",
    "folder": "skills/frontier-solution-design",
    "files": {
-    "SKILL.md": "81b9a9e9e74d841da687a08eb2ce6ce4d2e926810abd5a5c6e19567e2c7bed03",
+    "SKILL.md": "b18153eb675a08bad6e8baa66157ca554ce7b4658ad740e8f58fd2eb007be191",
     "references/design-rules.md": "0a9eee967f4ddc6702c1c59f50f626ac0c4b80828be395456d4d56e5fe20578c",
     "references/frontier-reference-architecture.md": "9cc88d6b80965ffb8f7ca7ac29037d432c14f7c7f091107d21fdee4ec9bfd6a9",
     "scripts/prd_model.py": "a8105006d4a9ffd7698537716d98539cc9d9dc05a08c6b8256e07ab98abd5d97",
@@ -134,7 +134,7 @@
    "name": "frontier-finops",
    "folder": "skills/frontier-finops",
    "files": {
-    "SKILL.md": "fe8fbd52debadd49fc747ecd1225f9a81bc963ed91747450acafa460d695dffd",
+    "SKILL.md": "c112964814e7eb9ffd54369a796acfb6a2f1e6f52787ae8e88e7b1f8e4f57780",
     "examples/caldova-agent-baseline.json": "b86f492aaea2aec7743e089583ead832fb79b561ffa6867ace310b7e0f38712f",
     "examples/caldova-finops.json": "15a2f676f1382dd058776d574ad72b9e8e2ffd38677487facb99f5007ebc2214",
     "examples/reference-hr-assistant.finops.json": "730a7d08da1f77ba89776e5d3650b6967d08d0eea3305cab89d86301bfaf3e95",
@@ -175,6 +175,26 @@
     "templates/ontology-patterns.json": "c9b27526757364a87d440f70985f072e3ccd1fe1dd584a69e901ab59e21e07d7"
    },
    "maturity": "ga",
+   "optional": true,
+   "requires_preview_ack": false
+  },
+  {
+   "name": "frontier-agent-factory",
+   "folder": "skills/frontier-agent-factory",
+   "files": {
+    "SKILL.md": "b007f0cef1332596452368412c5f46472320778ead98f224f6fd9a566b59923f",
+    "examples/caldova-handover.json": "5eeb8f55d5d28e8f8ea19d5e874d4384d60dbe925ed149330bb2acc2605a4dc0",
+    "references/handover-contract.md": "c273798760d1c8f1f5d7f62f0ef79beadd2f908384426c1e572ca5344c1407b8",
+    "references/intake.schema.json": "04d8e85767c03e7cc101b85e67bcd9377fa5f069842c0e01ce92f9acf12c923f",
+    "references/template-profile.json": "c699b53e4e7863000517282af69f92a50b9be6700eea6d5b60eb4a7eae77387d",
+    "scripts/export_factory.py": "577e7635691e4faa3c7c8b74388bf6754e6f6133593727500458ff57f3e1995c",
+    "scripts/factory_archive.py": "053d9a6054a9baab9a0b544f8482039ab3aa426dda6be56af265bc30b57df8ae",
+    "scripts/factory_common.py": "17ab2e2a4aa478d737779458ce3ae3bdb129e38c39538e821c850203ab74ecac",
+    "scripts/factory_contract.py": "1c2432769ad77720d68d8565d7ed7807b1389aa033b1d961c056be6087e82cc0",
+    "scripts/factory_projection.py": "cdc6f0129f88012387531ac6d470d6836913a8d55fc86a6f8152ae0420ad00b5",
+    "scripts/zip_stream.py": "c683860fd8a7e0d5ad9c14432fc2ced3d60831e0acf4e0809edb9588a051ca2c"
+   },
+   "maturity": "preview",
    "optional": true,
    "requires_preview_ack": false
   }

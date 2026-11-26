@@ -5,7 +5,7 @@
 | Version | 1.10 |
 | Date | 2026-11-26 |
 | Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance); Copilot (AI-assisted #78 Factory candidate prose) |
-| Status | Maintained requirements; unreleased 1.11.0 offline producer reviewed, registration/final candidate gates pending; historical evidence retained; no release approval implied |
+| Status | Maintained requirements; unreleased 1.11.0 offline producer reviewed and nine skills registered; final candidate gates pending; historical evidence retained; no release approval implied |
 | Scope | Factory-only 1.11.0 candidate requirements and acceptance, with earlier engineering/product requirements and history preserved |
 | References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61), [Release evidence spec](specs/2026-11-24-release-evidence-simplification-design.md), [Human adoption handover](engineering/release-evidence-adoption.md) |
 
@@ -13,11 +13,11 @@
 
 **26 November 2026: unreleased development candidate, not product acceptance.**
 Add **Envisioning Agent Factory**, registered name `frontier-agent-factory`,
-as the optional Preview ninth skill in the existing plugin. The target is seven
+as the optional Preview ninth skill in the existing plugin. Registration is seven
 non-FinOps GA wrappers, optional Preview FinOps and optional Preview Factory.
-The offline producer is implemented and reviewed through `ee5d690`; registration,
-maturity/installer/self-test integration and final candidate proof under
-[#79](https://github.com/urruegg/frontier-envisioning/issues/79) remain pending.
+The offline producer is implemented and reviewed through `ee5d690`; ninth-skill
+registration, procedure and maturity/installer metadata are implemented under
+[#79](https://github.com/urruegg/frontier-envisioning/issues/79). Final candidate proof remains pending.
 Ordinary core, value, identity, Blueprint, design and process work requires
 neither extension. Factory starts only on an explicit starter-repository,
 ZIP or handover request, never automatically after a PRD or as automatic FinOps.
@@ -44,7 +44,7 @@ passed results; actual source-qualified evidence is in
 
 | ID | Requirement | Acceptance / proof target |
 |---|---|---|
-| AF-01 | Optional Preview ninth skill in the same plugin, explicitly requested and independent of core/FinOps. | Registration, routing, maturity and installed core-without-extension checks; current registration is still eight. |
+| AF-01 | Optional Preview ninth skill in the same plugin, explicitly requested and independent of core/FinOps. | Nine registered skills with explicit routing and maturity; final installed core-without-extension proof remains pending. |
 | AF-02 | Each new handover uses actual authorised available-host latest-stable discovery, then pins release/tag/commit/bytes once. Retain only `id`, `tag_name`, `published_at`, `draft`, `prerelease` for all enumerated releases. | Complete pagination; valid time/tag for every stable candidate; resolve only the uniquely selected stable tag. Unknown metadata, ties, access/network/selected-tag errors or incompatibility fail without main/older fallback. No raw API bodies, authors, assets or protected URLs enter producer/export data. |
 | AF-03 | Only healthy complete no-stable discovery permits explicit approval of an immutable **unreleased bootstrap**. Local input is not proof of latest. | Real export-bound discovery/acquisition/approval receipt and automatically checked source bytes; frozen reproduction does not claim another lookup. Draft/prerelease null fields need no invented tag/commit/time. |
 | AF-04 | Preserve the full compatible foundation, policies, workflows, locks, licences and modes, not a keyword-pruned overlay. Exclude `.git`, account/cache/staging/dependency state. | Passive byte/mode preservation and source/profile checks; no downloaded-code execution, Python networking or dependency setup. Foundation MIT/third-party notices grant no rights over customer files or transfer clearance. |
@@ -957,8 +957,9 @@ old #52 copy/merge completion or final PR #71 CI pass is asserted.
 [#58 deferral receipt](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922).
 The [offline Preview requirements](#1110-agent-factory-offline-preview) cover
 the candidate ninth skill in the same plugin. Producer review is complete
-through `ee5d690`; registration, exact package/installer/generated-receiver and
-final L1 gates remain pending. Systems/Dynamics 365 #58 moves to a **later
+through `ee5d690`; nine-skill registration and maturity/installer metadata are
+implemented. Final exact package/generated-receiver and L1 gates remain pending.
+Systems/Dynamics 365 #58 moves to a **later
 unspecified release**, with no new deadline. Historical choices/roadmap below
 remain evidence, not current promises. The #74 lookup at `5dbfc8a` returned
 `development` for then-current 1.10.1 after authoritative absence of an exact

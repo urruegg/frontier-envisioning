@@ -32,8 +32,8 @@ These decisions do not accept this ADR.
 
 Accountable owner: `@urruegg`. Factory-only 1.11.0 defers independent
 systems/Dynamics 365 #58 to a later unspecified release. The product remains
-one plugin, targeting seven non-FinOps GA wrappers and optional Preview
-FinOps/Factory. Current registration is still eight; the candidate ninth skill
+one plugin, registering seven non-FinOps GA wrappers and optional Preview
+FinOps/Factory. Current registration is nine; the candidate ninth skill
 is **Envisioning Agent Factory**, registered name `frontier-agent-factory`.
 
 ## Decision
@@ -155,8 +155,9 @@ Record the approved design as a **Proposed** architectural rationale:
 **Proposed until an actual person accepts this ADR.** Producer review through
 `ee5d690` and local component results are indexed in
 [B.9](../solution-design.md#agent-factory-candidate-verification-26-november-2026).
-Ninth-skill registration, exact package/installer/generated-receiver and final
-candidate gates remain pending. Actual Cowork discovery/install/acquisition/
+Ninth-skill registration and maturity/installer metadata are implemented; final
+exact package/generated-receiver and candidate gates remain pending.
+Actual Cowork discovery/install/acquisition/
 export is not performed; tenant readiness is not assessed.
 
 No human-only label, native GitHub approval, engineering-policy activation,

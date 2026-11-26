@@ -5,7 +5,7 @@
 | Version | 1.10 |
 | Date | 2026-11-26 |
 | Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance); Copilot (AI-assisted #78 Factory candidate prose) |
-| Status | Maintained design; unreleased 1.11.0 offline producer reviewed, registration/final candidate gates pending; historical evidence retained; no release approval implied |
+| Status | Maintained design; unreleased 1.11.0 offline producer reviewed and nine skills registered; final candidate gates pending; historical evidence retained; no release approval implied |
 | Scope | Factory-only 1.11.0 producer flow/statuses and bounded verification, with historical architecture, engineering evidence and inventory preserved |
 | References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61), [Release evidence spec](specs/2026-11-24-release-evidence-simplification-design.md), [Human adoption handover](engineering/release-evidence-adoption.md) |
 
@@ -16,11 +16,11 @@ is implemented and reviewed through `ee5d690acfe28a3dad2924cf50c59ff27a9de62e`.
 It prepares a full controlled Agent Factory foundation plus reviewed intake
 documents, not a business-agent runtime, SDK, application or tenant loader.
 **Envisioning Agent Factory** (`frontier-agent-factory`) is the optional
-Preview ninth-skill target in the same plugin: seven non-FinOps GA wrappers,
-optional Preview FinOps and optional Preview Factory. Current registration is
-still eight. The skill procedure, registration, maturity/installer/self-test
-integration, exact package and final gates under
-[#79](https://github.com/urruegg/frontier-envisioning/issues/79) are pending.
+Preview ninth skill registered in the same plugin: seven non-FinOps GA wrappers,
+optional Preview FinOps and optional Preview Factory. The skill procedure,
+registration and maturity/installer metadata are implemented. Final candidate
+package/receiver and full gates under
+[#79](https://github.com/urruegg/frontier-envisioning/issues/79) remain pending.
 
 The [PRD AF-01–16 requirements](prd.md#factory-requirements-and-acceptance),
 [approved design](specs/2026-11-25-agent-factory-handover-design.md),
@@ -1271,7 +1271,7 @@ and [SPRINT-013](sprints/SPRINT-013-agent-factory-handover.md) provide traceabil
 | #77 prior broad checkpoint `5d63359` | 125 run, 124 passed, one archive privilege skip, 3,161 seconds. This is the earlier checkpoint, not a fresh final-product run. |
 | #77 targeted current `ee5d690` | Parent eight targeted financial/core controls passed in 28.801 seconds, plus supplied Ruff/whitespace pass. |
 | #77 fresh complete W3 component suite `ee5d690acfe28a3dad2924cf50c59ff27a9de62e` | Parent `python -m unittest tests.unit.test_factory_export tests.unit.test_factory_privacy tests.unit.test_factory_finops -q`: **63 run, 63 passed, zero skipped**, 158.827 seconds. Five owned Python paths passed Ruff; whitespace passed. Parent supplied shell timestamp `2026-11-26T08:05:59+01:00`. Local W3 component proof only. |
-| W4 integration and final candidate | #79 code not started at this handoff. Ninth-skill registration/maturity/installer/self-test, exact packaged offline exporter, actual generated-intake source/receiver integration, final 1.11 full-L1, server CI and CodeQL remain **pending**, not passed. #78 prose header/link/traceability and docs-contract execution are **not run by this worker**: no command runner. |
+| W4 integration and final candidate | #79 ninth-skill procedure/registration and maturity/installer metadata are implemented. Final exact packaged offline exporter, actual generated-intake source/receiver integration, final 1.11 full-L1, server CI and CodeQL remain **pending**, not passed. #78 prose header/link/traceability and docs-contract execution are **not run by the prose worker**: no command runner. |
 | Host/toolchain/authority | Actual Cowork discovery/install/acquisition/export **NOT PERFORMED** under the separately approved `f4b2609` amendment. Node 24 LTS/full receiver toolchain certification not performed; Node 26 is not a substitute. Tenant readiness **NOT ASSESSED**; recorded review is not authentication. Human #8 legacy routing remains pending. |
 
 These observations preserve historical release/source/provenance and do not
