@@ -6,6 +6,7 @@ import json
 import shutil
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 from unittest import mock
 
@@ -13,6 +14,56 @@ from tests.unit._util import ROOT, load
 
 
 class SkillMaturity(unittest.TestCase):
+    def test_111_distribution_keeps_value_case_without_finops(self):
+        package = load("tools/build_package.py")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            plugin = root / "plugin"
+            shutil.copytree(ROOT / "plugin", plugin)
+            path = plugin / "package/manifest.json"
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+            manifest["agentSkills"] = [
+                row for row in manifest["agentSkills"]
+                if row["folder"] != "skills/frontier-finops"
+            ]
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            output = io.StringIO()
+            with mock.patch.object(package, "PLUGIN", plugin), contextlib.redirect_stdout(output):
+                code = package.main(["--dist", str(root / "dist")])
+            self.assertEqual(code, 0, output.getvalue())
+            self.assertTrue((plugin / "skills/frontier-finops/SKILL.md").is_file())
+            with zipfile.ZipFile(root / "dist/frontier-envisioning-plugin-1.11.0.zip") as archive:
+                names = archive.namelist()
+                self.assertFalse(any(name.startswith("skills/frontier-finops/") for name in names))
+                self.assertIn("skills/frontier-value-case/SKILL.md", names)
+                self.assertIn("skills/frontier-agent-factory/SKILL.md", names)
+                install = json.loads(archive.read("install/plugin-install.json"))
+                self.assertEqual(len(install["skills"]), 8)
+                self.assertEqual(
+                    {row["folder"] for row in install["skills"]},
+                    {row["folder"] for row in manifest["agentSkills"]},
+                )
+
+    def test_111_does_not_allow_an_additional_omitted_skill(self):
+        package = load("tools/build_package.py")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            plugin = root / "plugin"
+            shutil.copytree(ROOT / "plugin", plugin)
+            path = plugin / "package/manifest.json"
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+            manifest["agentSkills"] = [
+                row for row in manifest["agentSkills"]
+                if row["folder"] != "skills/frontier-value-case"
+            ]
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            output = io.StringIO()
+            with mock.patch.object(package, "PLUGIN", plugin), contextlib.redirect_stdout(output):
+                code = package.main(["--dist", str(root / "dist")])
+            self.assertEqual(code, 1)
+            self.assertIn("frontier-value-case", output.getvalue())
+            self.assertFalse((root / "dist").exists())
+
     def test_packager_reads_maturity_and_optional_fields(self):
         package = load("tools/build_package.py")
         with tempfile.TemporaryDirectory() as directory:
@@ -33,8 +84,9 @@ class SkillMaturity(unittest.TestCase):
         skills = sorted((ROOT / "plugin/skills").glob("*/SKILL.md"))
         manifest = json.loads((ROOT / "plugin/package/manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(len(skills), 9)
-        self.assertEqual({p.parent.name for p in skills},
-                         {Path(row["folder"]).name for row in manifest["agentSkills"]})
+        registered = {Path(row["folder"]).name for row in manifest["agentSkills"]}
+        self.assertEqual(len(registered), 8)
+        self.assertEqual({p.parent.name for p in skills} - {"frontier-finops"}, registered)
         for path in skills:
             fields = read(path.read_text(encoding="utf-8"))
             expected = "preview" if path.parent.name in {"frontier-finops", "frontier-agent-factory"} else "ga"

@@ -32,6 +32,17 @@ from pathlib import Path
 
 PLUGIN = "frontier-envisioning"
 DEFAULT_INSTALLED = "/mnt/user-config/skills"
+RELEASE_SKILLS_1110 = frozenset("skills/" + name for name in (
+    "frontier-envisioning",
+    "frontier-context-discovery",
+    "frontier-blueprint",
+    "frontier-solution-design",
+    "frontier-agent-identity",
+    "frontier-value-case",
+    "frontier-process",
+    "frontier-agent-factory",
+))
+RETAINED_SOURCE_1110 = frozenset({"skills/frontier-finops"})
 
 
 def sha256(p: Path) -> str:
@@ -70,6 +81,33 @@ def workspace_relative(root: Path, given: str) -> str:
         return g[2:] if g.startswith("./") else g
     idx = g.find("/working/")
     return g[idx + 1:] if idx >= 0 else g
+
+
+def skill_inventory_errors(
+    version: str, registered: list[str], disk: list[str], *, source_tree: bool
+) -> list[str]:
+    if not all(isinstance(value, str) for value in [*registered, *disk]):
+        return ["skill inventory folders must be strings"]
+    listed, present = set(registered), set(disk)
+    if version != "1.11.0":
+        if not source_tree:
+            return []
+        expected, expected_disk = present, present
+    else:
+        expected = RELEASE_SKILLS_1110
+        expected_disk = expected | RETAINED_SOURCE_1110 if source_tree else expected
+    problems = []
+    if len(registered) != len(listed):
+        problems.append("duplicate registered skill folder")
+    for folder in sorted(expected - listed):
+        problems.append(f"{folder} is not listed in manifest agentSkills")
+    for folder in sorted(listed - expected):
+        problems.append(f"{folder} is not a distributed skill for {version}")
+    for folder in sorted(expected_disk - present):
+        problems.append(f"{folder} is missing from the expected skill tree")
+    for folder in sorted(present - expected_disk):
+        problems.append(f"{folder} is unexpected in the skill tree")
+    return problems
 
 
 def main(argv=None) -> int:

@@ -67,6 +67,13 @@ def load_module(path: Path, name: str | None = None):
     return mod
 
 
+def skill_inventory_errors(
+    version: str, registered: list[str], disk: list[str], *, source_tree: bool
+) -> list[str]:
+    installer = load_module(PLUGIN / "install" / "prepare_install.py", "fe_install_inventory")
+    return installer.skill_inventory_errors(version, registered, disk, source_tree=source_tree)
+
+
 def call_main(mod, argv) -> tuple[int, str]:
     """Call mod.main(argv) and capture what it prints."""
     buf = io.StringIO()
