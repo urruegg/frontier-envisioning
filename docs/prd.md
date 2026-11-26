@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.12 |
+| Version | 1.13 |
 | Date | 2026-11-26 |
 | Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance); Copilot (AI-assisted #78 Factory candidate prose); Copilot (AI-assisted #81 distribution/routing prose) |
-| Status | Maintained requirements; #81 Tasks 1/2 have returned component proof; amended eight-skill final gates/health outstanding; prior nine-skill evidence retained; no release approval implied |
+| Status | Local handoff: amended eight-skill package/receiver/L1/L2 verified at `c416f5e` with outputs `0d03344`; live CI/host-health status is on #80/#81; prior evidence retained; no release approval implied |
 | Scope | 1.11.0 Factory and approved Cowork distribution/routing amendment, with earlier engineering/product requirements and history preserved |
 | References | [Solution design](solution-design.md), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61), [Release evidence spec](specs/2026-11-24-release-evidence-simplification-design.md), [Human adoption handover](engineering/release-evidence-adoption.md) |
 
@@ -27,6 +27,11 @@ checks and human handoff remain on
 Those results, including the prior `ab9b10b` head, are historical nine-skill
 evidence, not new eight-skill acceptance. Three isolated local timeout reruns
 passing is not relabelled as a complete local browser-suite pass or human acceptance.
+The amended eight-skill candidate subsequently passed its own complete local
+L1 and all 76 browser tests at source `c416f5e`, with generated outputs
+`0d03344`; see [B.9](solution-design.md#h111-amended-candidate-component-evidence).
+This is independent new evidence, not a relabelling of the earlier nine-skill
+results. Fresh Cowork health revalidation remains outstanding on #81.
 Ordinary core, value, identity, Blueprint, design and process work requires
 neither extension. Factory starts only on an explicit starter-repository,
 ZIP or handover request, never automatically after a PRD or as automatic FinOps.
@@ -53,7 +58,7 @@ passed results; actual source-qualified evidence is in
 
 | ID | Requirement | Acceptance / proof target |
 |---|---|---|
-| AF-01 | Optional Preview Factory in the same plugin, explicitly requested and independent of core; current distribution amended by H111. | Eight registered skills: seven existing GA wrappers and Preview Factory, with nine retained source folders. Prior nine-skill full-gate proof remains historical; final amended-candidate gates/host health are outstanding. Actual Cowork remains not performed. |
+| AF-01 | Optional Preview Factory in the same plugin, explicitly requested and independent of core; current distribution amended by H111. | Eight registered skills: seven existing GA wrappers and Preview Factory, with nine retained source folders. Amended package/receiver and full local L1/L2 passed at `c416f5e`/`0d03344`; prior nine-skill results remain historical. Fresh host health is outstanding; actual Cowork operation is not claimed. |
 | AF-02 | Each new handover uses actual authorised available-host latest-stable discovery, then pins release/tag/commit/bytes once. Retain only `id`, `tag_name`, `published_at`, `draft`, `prerelease` for all enumerated releases. | Complete pagination; valid time/tag for every stable candidate; resolve only the uniquely selected stable tag. Unknown metadata, ties, access/network/selected-tag errors or incompatibility fail without main/older fallback. No raw API bodies, authors, assets or protected URLs enter producer/export data. |
 | AF-03 | Only healthy complete no-stable discovery permits explicit approval of an immutable **unreleased bootstrap**. Local input is not proof of latest. | Real export-bound discovery/acquisition/approval receipt and automatically checked source bytes; frozen reproduction does not claim another lookup. Draft/prerelease null fields need no invented tag/commit/time. |
 | AF-04 | Preserve the full compatible foundation, policies, workflows, locks, licences and modes, not a keyword-pruned overlay. Exclude `.git`, account/cache/staging/dependency state. | Passive byte/mode preservation and source/profile checks; no downloaded-code execution, Python networking or dependency setup. Foundation MIT/third-party notices grant no rights over customer files or transfer clearance. |

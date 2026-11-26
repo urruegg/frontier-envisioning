@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.12 |
+| Version | 1.13 |
 | Date | 2026-11-26 |
 | Author | Urs Rüegg (original product document); Copilot (AI-assisted split, accessibility maintenance, selective intake, 1.9.1 prose and 1.9.2 candidate notes); AI assistant (1.10.0 candidate prose preparation); Copilot SDK (verification evidence); Copilot (AI-assisted #61 process correction prose); AI assistant (AI-assisted #70 release evidence guidance); Copilot (AI-assisted #78 Factory candidate prose); Copilot (AI-assisted #81 distribution/routing prose) |
-| Status | Maintained design; #81 Tasks 1/2 have returned component proof; amended eight-skill final gates/health outstanding; prior nine-skill evidence retained; no release approval implied |
+| Status | Local handoff: amended eight-skill package/receiver/L1/L2 verified at `c416f5e` with outputs `0d03344`; live CI/host-health status is on #80/#81; prior evidence retained; no release approval implied |
 | Scope | 1.11.0 Factory and approved Cowork distribution/routing flow, with historical architecture, engineering evidence and inventory preserved |
 | References | [Product requirements](prd.md), [Product context](prd.md#product-context-and-provenance), [Docs](README.md), [D2 plan](plans/2026-11-09-documentation-foundation-plan.md), [Layout amendment](specs/2026-11-10-documentation-layout-design.md), [1.7 intake plan](plans/2026-11-10-handover-1.7-intake-plan.md), [SPRINT-004](sprints/SPRINT-004-handover-1.9-preview-finops.md), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [SPRINT-006](sprints/SPRINT-006-version-1.9.2.md), [Baseline spec](specs/2026-11-12-agent-finops-baseline-design.md), [SPRINT-007](sprints/SPRINT-007-agent-finops-baseline.md), [Correction spec](specs/2026-11-17-process-governance-sap-grounding-design.md), [Correction plan](plans/2026-11-17-process-governance-sap-grounding-plan.md), [SPRINT-011](sprints/SPRINT-011-process-grounding-and-optional-systems.md), [Prose #61](https://github.com/urruegg/frontier-envisioning/issues/61), [Release evidence spec](specs/2026-11-24-release-evidence-simplification-design.md), [Human adoption handover](engineering/release-evidence-adoption.md) |
 
@@ -31,6 +31,11 @@ These results and the prior `ab9b10b` head remain historical nine-skill
 evidence, not amended eight-skill verification.
 The isolated local timeout reruns are still not a complete local suite pass,
 and no human acceptance or publication is implied.
+The amended eight-skill candidate subsequently passed its own exact-package,
+required receiver and full local L1/L2 checks at source `c416f5e`, with
+generated outputs `0d03344`. The source-qualified results below are separate
+from the earlier candidate; current-head CI and host-health status remain
+on #80/#81, not inferred from those earlier checks.
 
 The [PRD AF-01–16 requirements](prd.md#factory-requirements-and-acceptance),
 [approved design](specs/2026-11-25-agent-factory-handover-design.md),
@@ -1348,9 +1353,12 @@ and [current requirements](prd.md#h111-cowork-distribution-and-routing-amendment
 |---|---|
 | Reviewed Task 1 `b2421f1` | Exact 1.11.0 release-eight/source-nine inventory policy; all retained-source FinOps metadata and shared-copy checks preserved. Parent 22 tests plus edge probes passed. Component proof, not final ZIP/installer acceptance. |
 | Reviewed Task 2 `25a4d1de84bebffedc4475f158ca99543a56af3a` | Strict standalone installer/checks and genuine extracted eight-skill Value Case, Factory and core work without FinOps. Parent ten critical installed/legacy/current-history financial controls passed, zero skips, 42.650 seconds. Worker reported 35 package/financial tests, six legacy tests and 84 self-test checks passed. Financial owner absent even with acknowledgement returns `FACTORY_HELPER`; previous good output preserved. No owner-calculator semantics changed. |
-| Task 3 prose / parent checks | Current eight-skill catalogues, mutual Process/Value Case routing and packaged release notice edited. Parent reports the current documentation-contract RED was the retained FinOps row in AGENTS; it is now removed. This worker has no command runner: strict docs, focused unittests and precommit are not run here; parent validation and ordered review are required. No GREEN result is claimed. |
+| Reviewed Task 3 `768f046` | Current eight-skill catalogues, mutual Process/Value Case routing and release guidance passed ordered specification/correctness review. Parent 53 combined targeted tests passed without skips. Review corrected the complete-bundle guide and 33 extraction-only links; the canonical notice now survives skill-only copying. A deliberately reintroduced root-README target fails the regression; legacy guide bytes remain unchanged. Prose worker did not run commands; these are parent/reviewer results. |
+| Coupled full-gate corrections `c416f5e` | Earlier full L1 stopped on missing still-supported feature descriptions and a test deleting correctly absent FinOps. Both were reproduced and fixed without weakening the existing assertions; parent 17 covering tests passed. A later genuine docs-demo fingerprint drift was regenerated through the sanctioned tool. Failed runs remain recorded, not waived. |
+| Exact package and required receiver `c416f5e` / generated `0d03344` | Two independent package builds byte-identical, SHA256 `a95afcdffb981dbada807ddc54f8d74e65eb21ffd7c8275def2d3854534a2148`. Exact eight skills, seven GA/Preview Factory, no FinOps members/copy calls. Required actual receiver: six passed, zero skips; all 149 source blobs/726,850 bytes and modes, history/junction and real shared-budget checks. Parent independently checked the stored ZIP and all 33 notice links after skill-only copying. |
+| Fresh full local L1/L2 at `c416f5e` | `CI=true; python tools\dev.py check`: **ALL GATES PASSED**, 1,095 passed, 14 documented skips, 3,640 subtests; 84 self-tests and 201 DOM tests passed. Six pre-existing ESLint warnings. Fresh exact-version status **development**, not published-release reproduction. Subsequent serial `python tools\dev.py site e2e --strict`: **76 passed**, zero skips/retries, `ALL GATES PASSED`. No assertion/timeout or historical hash was relaxed. |
 | Supplied host report, not this candidate | Generated 2026-11-26 12:36 UTC; SHA256 `20902064efa12cfa4a0a4079c9b346f104ef6afd947e4295d24501ec57f5592a`. Eight scanned skills include FinOps, omit Factory; Value Case 100/100, all eight meet the publish bar. FinOps/Process and Process/Value Case conflicts remain findings of that report. Input version/ZIP digest unknown; not amended-package proof or a broken Value Case installation. |
-| Outstanding final/host proof | New exact-package/generated-installer/required-receiver and full L1/applicable L2/CI evidence remain for the parent loop after prose. Parent tool search found no health validator or agent builder on PATH. No new host health pass exists; any real rerun requires an available checker and actual ZIP digest/timestamp/inventory/conflict result, not a promise or simulation. Actual Cowork discovery/install/acquisition/export remains not performed. |
+| Outstanding host / current-head handoff | Local engineering checks above passed; current-head automatic CI and subsequent human handoff are recorded on [PR #80](https://github.com/urruegg/frontier-envisioning/pull/80). The original host checker is not exposed to this assistant and no agent builder is on PATH. No new Cowork health pass exists; #81 stays open for the actual rebuilt-package report. Actual Cowork discovery/install/acquisition/export and tenant readiness are not claimed. |
 
 Studio-backed MOS3, dummy IDs/connectors, systems/D365 and human publication
 are outside this amendment. No release approval, visibility change or

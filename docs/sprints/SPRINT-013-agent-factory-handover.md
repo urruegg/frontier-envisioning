@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.4 |
+| Version | 1.5 |
 | Date | 2026-11-26 |
 | Author | AI assistant using Copilot SDK in VS Code; AI-assisted planning; Copilot (AI-assisted #81 prose maintenance) |
-| Status | Prior nine-skill Factory evidence retained; approved #81 Tasks 1/2 have returned component proof; Task 3 prose awaits parent validation/review; final amended-candidate gates/health outstanding; no release approval implied |
+| Status | Local handoff: #81 implementation/reviews and amended package/receiver/full L1/L2 verified at `c416f5e` / `0d03344`; current CI and real host-health status remain on #80/#81; no release approval implied |
 | Scope | 1.11.0 Agent Factory plus approved health/routing correction and release-only FinOps exclusion; systems/D365 deferred |
 | References | [Catalogue](README.md), [#72](https://github.com/urruegg/frontier-envisioning/issues/72), [Idea](../ideas/2026-11-25-agent-factory-handover.md), [Design](../specs/2026-11-25-agent-factory-handover-design.md), [Staged plan](../plans/2026-11-25-agent-factory-handover-plan.md), [Actual written approval](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7164505078), [#58 deferral](https://github.com/urruegg/frontier-envisioning/issues/58#issuecomment-7161780922), [#81](https://github.com/urruegg/frontier-envisioning/issues/81), [H111 spec](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md), [H111 plan](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md) |
 
@@ -26,7 +26,7 @@ not new eight-skill candidate proof.
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#81](https://github.com/urruegg/frontier-envisioning/issues/81) | [Health/distribution choices](../ideas/2026-11-26-plugin-health-and-finops-exclusion.md) | [H111-01-08](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md#6-acceptance-and-verification) | [Approved amendment plan `b3174a1`](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md); [prior Factory plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) is baseline only | `@urruegg` accountable; protected readiness labels not inferred | Fresh bounded tasks and ordered technical review | Tasks 1/2 reviewed with returned component proof; Task 3 prose awaits parent validation/review; final gates/health outstanding | [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [actual plan approval](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7194451667), [B.9 component evidence](../solution-design.md#h111-amended-candidate-component-evidence) |
+| [#81](https://github.com/urruegg/frontier-envisioning/issues/81) | [Health/distribution choices](../ideas/2026-11-26-plugin-health-and-finops-exclusion.md) | [H111-01-08](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md#6-acceptance-and-verification) | [Approved amendment plan `b3174a1`](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md); [prior Factory plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) is baseline only | `@urruegg` accountable; protected readiness labels not inferred | Actual host-health report and human handoff remain separate | Implementation/reviews and exact package/required receiver/full local L1/L2 verified; fresh host revalidation outstanding | [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [actual plan approval](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7194451667), [B.9](../solution-design.md#h111-amended-candidate-component-evidence) |
 | [#72](https://github.com/urruegg/frontier-envisioning/issues/72) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-01-AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Approved combined production plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md) | `@urruegg` accountable | Reviewed bounded #74-#79 slices and actual candidate gates | Implementation/reviews and local/server gates verified; maintainer handoff | [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [actual full-plan receipt](https://github.com/urruegg/frontier-envisioning/issues/72#issuecomment-7167852054); human sign-off/merge/publication not implied |
 | [#73](https://github.com/urruegg/frontier-envisioning/issues/73) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [Host/receiver boundary](../specs/2026-11-25-agent-factory-handover-design.md#4-template-discovery-acquisition-and-compatibility) | [W0 Tasks 1-4](../plans/2026-11-25-agent-factory-handover-plan.md#3-w0-task-1-baseline-and-exact-source) | `@urruegg` accountable and assigned; bounded receiver builder | Actual W0/host-amendment approval; pinned reference and isolated dependencies | Actual source/receiver exit verified: 30 pass, one privilege skip, four validators exit 0; Cowork deferred/not performed | Ordered parent specification then correctness review; attribution correction applied; no protected ready/approval label inferred |
 | [#74](https://github.com/urruegg/frontier-envisioning/issues/74) | [Actual decisions](../ideas/2026-11-25-agent-factory-handover.md) | [AF-16](../specs/2026-11-25-agent-factory-handover-design.md#9-acceptance-for-the-bounded-sprint) | [Task 1](../plans/2026-11-25-agent-factory-offline-implementation-plan.md#3-task-1--baseline-then-bump-then-finite-raster-profile) | `@urruegg` accountable and assigned; bounded builder | Actual full plan/readiness `5dbfc8a` | Local `c51c6e9` version/raster slice verified; not final Factory candidate | [Bounded review/evidence](https://github.com/urruegg/frontier-envisioning/issues/74#issuecomment-7169371390) |
@@ -517,6 +517,9 @@ nine-skill candidate and its tests.
 
 ### Returned Tasks 1/2 and bounded Task 3 prose
 
+This is the historical worker handoff before parent validation. The subsequent
+complete local results are recorded below, not substituted into that handoff.
+
 The parent supplied the following evidence on 26 November; this prose worker
 did not execute the component tests:
 
@@ -583,6 +586,56 @@ regression remain with the parent.
 This worker has no command runner. No package build, test, gate or commit was
 run for the correction; no after-copy pass is claimed. Parent ordered
 re-review and actual installed-link validation remain pending.
+
+### Completed local H111 verification
+
+Final implementation source is
+`c416f5ebf936fad92f97cb7d84485b001fc28eb7`; sanctioned generated outputs were
+committed at `0d0334415ad898bad142bacc73d488252f6e14c0`.
+The four fresh bounded tasks and ordered reviews completed. Two Important
+integration findings were fixed and re-reviewed **SPEC_COMPLIANT** and
+**QUALITY_CLEAR**: all 33 notice links now survive real skill-only copy
+destinations, and the 1.11 complete-bundle guide correctly describes Value
+Case/Preview Factory with absent FinOps. Legacy guide bytes remain unchanged.
+
+The full gate exposed two further coupled regressions: shortened manifest
+prose omitted still-supported four-part/plan/risk descriptions, and an existing
+process test deleted the now-correctly absent FinOps folder. Both were
+independently reproduced and fixed at `c416f5e`; 17 covering tests passed.
+Existing feature/history/process checks were not weakened. A genuine
+docs-demo source-fingerprint drift was later regenerated through
+`python tools\dev.py docs-demo`; HTML and screenshots remained unchanged.
+Every failed attempt remains recorded rather than relabelled as a pass.
+
+Fresh results at that source:
+
+- Focused checks: **79 passed, zero skips**.
+- Required actual retained-reference receiver: **six passed, zero skips**,
+  with all three opt-in variables explicitly set; actual 149 blobs,
+  726,850 bytes/modes, default and synthetic accepted intakes, history/junction
+  and shared 64 MiB/+1 checks. Synthetic approval authenticates nobody.
+- Authoritative `CI=true; python tools\dev.py check`:
+  **ALL GATES PASSED**, **1,095 passed, 14 documented skips, 3,640 subtests**;
+  **84 self-tests and 201 DOM tests passed**. Six pre-existing ESLint warnings.
+  Exact-version status **development**, not published-release reproduction.
+- Serial `python tools\dev.py site e2e --strict`:
+  **all 76 passed**, zero skips/retries; **ALL GATES PASSED**.
+- Two independent actual plugin builds were byte-identical. Final stored ZIP
+  SHA256: `a95afcdffb981dbada807ddc54f8d74e65eb21ffd7c8275def2d3854534a2148`.
+  Parent independently verified its eight skills, seven GA/Preview Factory,
+  absence of FinOps and eight read-only copy calls, then copied the exact
+  installer destinations and checked all 33 notice links.
+- Real complete bundle passed with 15 entries and the matching nested plugin.
+  Its package-facing guide is now correct; later evidence-only repository
+  prose may rebuild this bundle without changing plugin bytes.
+
+Current-head automatic CI and the maintainer handoff are on
+[PR #80](https://github.com/urruegg/frontier-envisioning/pull/80).
+No new Cowork health report has been produced: the original checker is not
+available through this assistant. #81 remains open for genuine rebuilt-package
+host revalidation; the original report is not reused as a new pass.
+No merge, tag, release/publication, workflow dispatch or protected action was
+performed. These evidence-only updates do not change the plugin ZIP.
 
 ## Human boundaries
 
