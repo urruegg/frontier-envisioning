@@ -153,6 +153,55 @@ class Financial(unittest.TestCase):
                 self.reviewed_document({"nested": malformed} if nested else malformed, role="value")
                 self.financial_refusal()
 
+    def result_local_value_cases(self):
+        for schema in (None, "caldova-value-review/1.0", "frontier-value/1.0"):
+            document = {"results": {"finops_preview": {}, "agents_costed": ["D1-A01"],
+                                   "use_cases": [], "totals": {"cost": 12345}, "inputs_needed": []}}
+            if schema is not None:
+                document["schema"] = schema
+            for wrapper in ("root", "nested", "results-wrapper"):
+                candidate = (document if wrapper == "root" else {"nested": document}
+                             if wrapper == "nested" else {"results": {"nested": document}})
+                yield schema, wrapper, candidate
+
+    def test_result_local_financial_markers_require_value_receipt(self):
+        for schema, wrapper, document in self.result_local_value_cases():
+            with self.subTest(schema=schema, wrapper=wrapper):
+                payload = document
+                if wrapper == "nested":
+                    payload = document["nested"]
+                elif wrapper == "results-wrapper":
+                    payload = document["results"]["nested"]
+                with self.p.sibling("frontier-value-case", "value_calc") as owner:
+                    self.assertTrue(owner.has_finops_dependency(payload))
+                    with self.assertRaises(ValueError):
+                        owner.preview_for(payload, operation="apply-value", acknowledge_finops_preview=True)
+                self.reviewed_document(document, role="value")
+                with self.assertRaisesRegex(self.m.common.FactoryError, "^FACTORY_FINANCIAL$"):
+                    self.check(True)
+
+    def test_cli_result_local_financial_markers_require_value_receipt(self):
+        for schema, wrapper, document in self.result_local_value_cases():
+            with self.subTest(schema=schema, wrapper=wrapper):
+                self.reviewed_document(document, role="value")
+                self.financial_refusal()
+
+    def test_result_local_owner_dispatch_preserves_native_wrappers(self):
+        fin, value = legacy_documents(self.p)
+        fin["finops_preview"] = copy.deepcopy(fin["results"]["finops_preview"])
+        value["finops_preview"] = copy.deepcopy(value["results"]["finops_preview"])
+        for name, document in (
+                ("value-root", value), ("value-nested", {"nested": value}),
+                ("deep-results-wrapper", {"results": {"nested": value}}),
+                ("direct-value-wrapper", {"results": value}),
+                ("direct-finops-wrapper", {"results": fin})):
+            with self.subTest(context=name):
+                self.reviewed_document(document, role="value")
+                run = invoke(self.f, "--acknowledge-finops-preview")
+                self.assertEqual(run.returncode, 0, (run.stdout, run.stderr))
+                self.assertEqual(json.loads(run.stdout)["financial_status"],
+                                 "reviewed-documents-not-financially-ready")
+
     def test_native_legacy_finops_roundtrip_exports_review_only(self):
         import zipfile
         fin, _ = legacy_documents(self.p)

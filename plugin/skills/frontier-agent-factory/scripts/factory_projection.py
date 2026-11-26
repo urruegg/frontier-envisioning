@@ -474,10 +474,18 @@ def _reviewed_financial(document, preview):
                                                       acknowledge_finops_preview=True)
                         need(proof is not None, "FACTORY_FINANCIAL")
                         kind = "value"
-                elif "results" in node and value.has_finops_dependency({
-                        key: node[key] for key in
+                # Only direct result markers locate an otherwise unlabelled
+                # owner. A schema-owned child model is visited independently,
+                # not mistaken for its enclosing wrapper's result object.
+                elif "results" in node and any(value.has_finops_dependency({
+                        key: candidate[key] for key in
                         ("finops_preview", "finops", "agents_costed", "cost_modelled", "scope")
-                        if key in node}):
+                        if key in candidate})
+                        for candidate in (node, node["results"])
+                        if isinstance(candidate, dict) and (
+                            candidate is node or not (
+                                isinstance(candidate.get("schema"), str)
+                                and candidate["schema"].startswith(("frontier-finops/", "frontier-value/"))))):
                     with validation_input("FACTORY_FINANCIAL"):
                         value.preview_for(node, operation="apply-value", acknowledge_finops_preview=True)
                     kind = "value"
