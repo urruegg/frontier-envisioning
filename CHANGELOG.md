@@ -10,12 +10,16 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
   reviewed ordinary-file intake. The registered optional Preview skill,
   `frontier-agent-factory`, joins seven existing GA wrappers, including Value Case,
   in the same eight-skill plugin. Registration, skill routing and maturity/installer
-  metadata are implemented; final amended-candidate proof under #81 remains pending.
+  metadata are implemented; local amended-candidate package/receiver and full
+  L1/L2 proof completed, with reviewed `7ad10f1` CI recorded. Fresh real-host
+  health under #81 and official publication remain pending.
   Ordinary core/value/identity/Blueprint/design/process
   requires neither optional extension.
 - **Cowork distribution and routing amendment (#81).** Retain nine source
   folders and all FinOps regression tests, but do not register, copy or install
   FinOps in the 1.11.0 ZIP. Clarify the Process/Value Case responsibility boundary.
+  This does not remove an older FinOps copy from a user's configuration;
+  the installer performs no automatic deinstallation.
   Ordinary value and sourced cost assumptions remain supported with explicit
   budget gaps. FinOps cost modelling, Copilot Credits and FinOps-derived
   validation are unavailable; missing owner validation fails explicitly.
@@ -31,10 +35,20 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
   originals with derived `agent_finops` are explicitly unsupported, not stripped.
 - **Development candidate, not publication.** Earlier nine-skill local L1/
   package/receiver evidence at `52d6c0e` and server CI at `4aa1ddb` remain
-  historical, not amended eight-skill proof. Reviewed Task 1 `b2421f1` and
-  Task 2 `25a4d1d` provide component evidence only; final new L1, exact
-  package/receiver, CI and host health remain outstanding. Actual Cowork discovery, install,
-  acquisition and export are unavailable/not performed under the approved
+  historical, not amended eight-skill proof; `ab9b10b` remains a qualified
+  nine-skill checkpoint too. Reviewed Task 1 `b2421f1` and Task 2 `25a4d1d`
+  remain component evidence. Local `c416f5e` / `0d03344` recorded full L1
+  (1,095 passed, 14 documented skips, 3,640 subtests; 84 self-tests and 201 DOM
+  tests passed), L2 (76 passed, zero skips/retries) and the required actual
+  reference receiver (six passed, zero skips). Reviewed `7ad10f1` CI run
+  [45880650510](https://github.com/urruegg/frontier-envisioning/actions/runs/45880650510)
+  recorded L1 (1,098 passed, 11 skips, one warning, 3,637 subtests), all 76 L2
+  tests and IaC passed; CodeQL run
+  [45880650545](https://github.com/urruegg/frontier-envisioning/actions/runs/45880650545)
+  passed all three checks. The human maintainer merged #80; this is not
+  publication or independent approval. Fresh real-host health remains pending
+  in open #81. Actual Cowork discovery, install, acquisition and export are
+  unavailable/not performed under the approved
   offline amendment. No runtime, SDK, tenant loader, remote repository,
   deployment or native ADO/GHES support is delivered. See
   [candidate architecture and B.9 evidence](docs/solution-design.md#1110-agent-factory-offline-preview).
@@ -43,6 +57,13 @@ Releases of the Frontier Envisioning plugin. Engineering changes to the reposito
   evidence, profiles, 205 non-raster identity inputs and 223 PNGs are unchanged.
   Systems/Dynamics 365 #58 is deferred to a later unspecified release, outside
   factory-only 1.11.0.
+- **Public-facing guide maintenance (#82).** Align the seven approved reader
+  files with the eight-skill candidate, retained-source FinOps boundary and
+  recorded engineering evidence. Correct gallery prose to its existing 1.11.0
+  manifest without changing assets. Public repository visibility does not clear
+  internally marked material; maintainer review remains outstanding. Packaged
+  guide edits require a newly generated/verified ZIP and fresh parent gates;
+  prior package hashes do not verify these bytes. No release is claimed.
 
 ## 1.10.1 — unreleased
 

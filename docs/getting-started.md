@@ -2,20 +2,25 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.5 |
-| Date | 2026-11-13 |
+| Version | 0.6 |
+| Date | 2026-11-27 |
 | Author | Copilot; AI-assisted documentation |
 | Status | Maintained internal guide; not release or sharing approval |
-| Scope | Core-first use of release build 1.10.0 and optional baseline follow-up; document revision, not product version |
-| References | [Documentation](README.md), [Plugin guide](../plugin/README.md), [Gallery](demo/README.md), [Starter prompts](starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Guidance #39](https://github.com/urruegg/frontier-envisioning/issues/39) |
+| Scope | Core-first use of the unreleased 1.11.0 candidate and retained source-only baseline history; document revision, not product version |
+| References | [Documentation](README.md), [Plugin guide](../plugin/README.md), [Gallery](demo/README.md), [Starter prompts](starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Guidance #39](https://github.com/urruegg/frontier-envisioning/issues/39), [Maintenance #82](https://github.com/urruegg/frontier-envisioning/issues/82) |
 
 Start with the fictitious example, then prepare a small, evidence-led workshop.
-The plugin is **release build 1.10.0**, in the private
+The plugin is the **unreleased 1.11.0 development candidate**, in the publicly visible
 [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning)
-repository. It bundles eight skills: seven non-FinOps GA wrappers and optional
-Preview FinOps.
+repository. Public visibility does not clear unchanged internally marked
+material; the intended private/internal policy discrepancy needs maintainer
+review. The candidate distributes eight skills: seven existing GA wrappers,
+including Business Value Case, and optional Preview Envisioning Agent Factory.
+Nine source folders remain, with FinOps source-only, not registered, copied or
+installed by this ZIP.
 Check [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
-for actual publication status and downloads; build metadata is not publication.
+for actual publication status; **the 1.11.0 download is not yet published**.
+Older release downloads are not this candidate. Build metadata is not publication.
 You do not need to install it or deploy anything to inspect the example.
 
 ## Try the example without installing
@@ -47,15 +52,31 @@ do not assume edits update the original source or a shared tenant service.
 
 ## Install in Copilot Cowork
 
-1. Obtain `frontier-envisioning-plugin-1.10.0.zip` from
-   [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
-   when published, or from [@urruegg](https://github.com/urruegg) for
-   pre-publication testing. Keep it zipped and verify the release checksums.
+Recorded local evidence covers completed package/installer/receiver and full
+L1/L2 checks, with reviewed `7ad10f1` CI in the
+[plugin guide](../plugin/README.md#engineering-evidence-and-remaining-checks).
+Fresh real-host health under open
+[#81](https://github.com/urruegg/frontier-envisioning/issues/81) and official
+publication remain pending. These guide edits change package bytes; the parent
+must regenerate and verify the new ZIP before testing or publication.
+
+1. Obtain **`frontier-envisioning-plugin-1.11.0.zip`**, not the complete bundle.
+   **It is not yet a published download.** Until human publication, use a
+   maintainer-provided candidate, build from the checked-out 1.11.0 source
+   after [workstation setup](engineering/workstation-setup.md) with
+   `python tools/dev.py package` (output:
+   `dist/frontier-envisioning-plugin-1.11.0.zip`), or use the plugin ZIP inside
+   a matching successful CI run's `build-<commit>` artefact if retained.
+   Extract the outer CI artefact, but keep the plugin ZIP zipped.
+   The [release listing](https://github.com/urruegg/frontier-envisioning/releases)
+   may offer an older classic FinOps build; do not substitute it for the
+   candidate. After publication, select the exact 1.11.0 release and verify
+   its checksums.
 2. Start a new Copilot Cowork chat, attach the ZIP and type
    **Install the Frontier PlugIn**.
 3. Review each approval prompt. The installer checks the package inventory;
-   verify that all **eight skills** are reported: seven non-FinOps GA wrappers
-   and one bundled optional Preview FinOps skill.
+   verify that all **eight skills** are reported: seven existing GA wrappers,
+   including Value Case, and optional Preview Factory, with no FinOps copy.
 4. After the skill copies and OneDrive sync succeed, start a new chat. Try:
 
    > Build the Frontier blueprint demo for Caldova. Use synthetic data only;
@@ -63,8 +84,11 @@ do not assume edits update the original source or a shared tenant service.
 
 Use the [packaged guide](../plugin/README.md) for the exact integrity/copy
 procedure, updates, removal and administrator-managed organisation roll-out.
-Installation approval does not acknowledge FinOps. An offline package check
-does not prove an actual Cowork install, tenant publication or successful sync.
+Installation approval grants neither financial consent nor Factory transfer
+permission. Excluding FinOps does not remove an older copy from a user's
+configuration; the installer performs no automatic deinstallation. An offline
+package check does not prove an actual Cowork install, tenant publication or
+successful sync.
 If a required tool is unavailable, report it and use the documented manual
 handoff rather than claiming success.
 
@@ -119,9 +143,26 @@ Fabric ontology, data-agent and operations capabilities remain Preview;
 unchecked mappings need verification. Identity names, colours and icons are
 branding proposals, not Entra identity provisioning.
 
+**Factory Preview:** an explicit starter-repository ZIP request uses
+[the offline Factory procedure](../plugin/README.md#optional-agent-factory-preview--offline-candidate).
+Each new handover needs latest stable source discovery through an actually
+available authorised host and a pinned receipt; explicit immutable bootstrap
+is allowed only after a healthy, complete lookup finds no stable release.
+The offline CLI performs no network, template execution, remote creation or
+tenant deployment and adds no runtime or finance calculator.
+
 ### Optional versioned FinOps baseline
 
-FinOps stays **off by default**. For a separate cost request, first show the
+**Legacy/source-only exercise — unavailable in the 1.11.0 ZIP.**
+The retained source procedure below is not an installed candidate workflow.
+Use ordinary Value Case and sourced cost assumptions without FinOps, preserving
+sources and named budget gaps; missing costs are not zero or verified ROI.
+An explicitly requested FinOps operation must report that it is unavailable,
+not invoke an absent skill or separately copy retained source as part of
+1.11.0 installation.
+
+In the retained protocol, FinOps stays **off by default**. Before cost work,
+show the
 [full unchanged Preview notice](../plugin/skills/frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure)
 and ask for actual current-scenario awareness. Wait for the response before any
 cost operation or figure. Installation, a prompt, saved JSON/approval and past
@@ -137,10 +178,10 @@ FinOps is an explicit error. Ordinary own value and identity remain independent;
 an unconsumed new baseline does not make ordinary value Preview, while
 legacy-derived value retains its Preview provenance.
 
-For explicitly requested new work, use the
+The retained source protocol for explicitly requested baseline work is the
 [versioned baseline procedure](../plugin/skills/frontier-finops/SKILL.md#quick-start--requested-versioned-baseline)
 and [complete offline contract](../plugin/skills/frontier-finops/references/agent-finops-baseline.md),
-not automatic legacy conversion:
+not automatic legacy conversion or a runnable 1.11.0 ZIP procedure:
 
 1. Agree the existing agent IDs, business outcome, business/technical/finance
    owners, scope, measurement, assumptions, exclusions, risks and guardrails.
@@ -160,8 +201,9 @@ gaps and separate verified/provisional contributions. Unknown quantities,
 rates or necessary FX leave full totals and dependent metrics unavailable,
 not zero. Provisional is not verified pricing or financial readiness.
 
-At **build handover**, every agent actually in scope needs a complete validated
-profile/scenarios/denominators, every in-scope cost driver priced with current
+The retained **financial build-handover** protocol requires every agent in scope
+to have a complete validated profile/scenarios/denominators, every in-scope cost
+driver priced with current
 applicable evidenced rates/FX, the frozen exact target, externally evidenced
 finance-owner or delegated review and current lineage/audience/scope validation.
 There is **no conditional unpriced exception**. Workshop notes, raw approved

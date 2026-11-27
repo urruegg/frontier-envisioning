@@ -2,17 +2,21 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
-| Date | 2026-11-13 |
+| Version | 0.4 |
+| Date | 2026-11-27 |
 | Author | Copilot; AI-assisted adaptation of a user-supplied prompt |
 | Status | Maintained internal examples; outputs require human review |
-| Scope | Core workshop preparation and separate optional baseline follow-up for release build 1.10.0; document revision, not product version |
-| References | [Documentation](README.md), [Getting started](getting-started.md), [Caldova gallery](demo/README.md), [Plugin guide](../plugin/README.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Guidance #39](https://github.com/urruegg/frontier-envisioning/issues/39) |
+| Scope | Core workshop preparation for the unreleased 1.11.0 candidate and retained source-only baseline history; document revision, not product version |
+| References | [Documentation](README.md), [Getting started](getting-started.md), [Caldova gallery](demo/README.md), [Plugin guide](../plugin/README.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Guidance #39](https://github.com/urruegg/frontier-envisioning/issues/39), [Maintenance #82](https://github.com/urruegg/frontier-envisioning/issues/82) |
 
-These prompts target **release build 1.10.0**: eight skills,
-seven non-FinOps GA wrappers and optional Preview FinOps. Begin with core
-preparation; neither ordinary value nor identity requires FinOps.
-Publication is recorded separately in
+These prompts target the **unreleased 1.11.0 candidate**: eight distributed
+skills, seven existing GA wrappers including Value Case, and optional Preview
+Envisioning Agent Factory. Nine source folders remain; FinOps is source-only,
+not registered, copied or installed by the ZIP. Begin with core preparation;
+ordinary value and identity require neither optional extension.
+**The 1.11.0 download is not yet published**; use the
+[candidate package route](getting-started.md#install-in-copilot-cowork), not an
+older classic download. Actual publication is recorded separately in
 [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases).
 
 Replace the bracketed inputs before use. Start with one bounded Sales/Services
@@ -61,19 +65,23 @@ Keep internal, private and personal data out of customer outputs, including
 embedded HTML data and downloads. Request human customer-projection review;
 it is not external/IP clearance.
 
-FinOps stays off. A separate cost request requires the full FinOps Preview
-notice and actual current-scenario acknowledgement before any cost operation
-or figure. Installation, JSON and prior runs are not consent. On decline,
-continue draft workshops/core with named financial gaps, never zero costs,
-validated cost-derived ROI or financial/build-handover readiness. Do not start
-cost work automatically to close a handover gap. Independent ordinary value
-does not become Preview because an unconsumed new baseline is present;
-legacy-derived Preview value must not be reused as clean ordinary value.
+FinOps is not bundled in 1.11.0. Use ordinary Value Case and sourced cost
+assumptions with explicit budget gaps; missing costs are not zero or verified
+ROI. If a FinOps operation is explicitly requested, report that it is
+unavailable, not invoke an absent skill. Installation, JSON and prior runs
+are not financial consent or owner review. Do not start cost work
+automatically to close a handover gap or claim financial/build readiness.
+Independent ordinary value does not become Preview because an unconsumed
+baseline is present; legacy-derived Preview value keeps its provenance and
+must not be reused as clean ordinary value.
+Factory is optional Preview for an explicit starter-repository ZIP request,
+not an automatic step after a PRD or a cost operation.
 ```
 
-The [FinOps procedure](../plugin/skills/frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure)
+The retained source-only [FinOps procedure](../plugin/skills/frontier-finops/SKILL.md#awareness-gate--before-any-cost-operation-or-figure)
 contains the full notice, renewal rules, technical CLI gate, legacy/cache
-handling and independent browser gate. The short prompt does not replace it.
+handling and independent browser gate. It is unavailable in the 1.11.0 ZIP;
+the short prompt neither restores the absent skill nor replaces those safeguards.
 
 ## Filled Caldova demonstration
 
@@ -106,14 +114,25 @@ journey or the exact screenshot layout.
 
 ## Optional follow-up: versioned agent baseline
 
-Use this separate prompt only when cost work is explicitly requested. Replace
-the inputs; none supplies consent, price verification or owner approval.
+**Legacy/source-only exercise — unavailable in the 1.11.0 ZIP.**
+This retained prompt preserves the historical baseline protocol, not an
+installed candidate path. Use ordinary Value Case for sourced value/cost
+assumptions without FinOps; missing budgets remain named gaps, not zero or
+verified ROI. Do not separately copy retained FinOps source as part of
+1.11.0 installation.
+
+In the retained protocol, use the prompt only for explicitly requested cost
+work. Replace the inputs; none supplies consent, price verification or owner approval.
 It starts with an awareness question, **not** pre-acknowledged execution or a
 batch of lifecycle actions. See the [versioned procedure](../plugin/skills/frontier-finops/SKILL.md#quick-start--requested-versioned-baseline)
 and [complete contract](../plugin/skills/frontier-finops/references/agent-finops-baseline.md)
 for exact operations, review fields and projected JSON/Markdown.
 
 ```text
+This is a legacy/source-only exercise, not a 1.11.0 ZIP procedure.
+If frontier-finops is unavailable, report that limitation and stop this
+baseline exercise; continue ordinary draft/core work with named budget gaps.
+
 First display this notice in full:
 
 Frontier FinOps is Preview. Its grounding and cost model are not GA and need refinement. Results are provisional planning estimates, not validated pricing, budget approval or purchase/commitment advice. Verify rates and assumptions independently before decisions.

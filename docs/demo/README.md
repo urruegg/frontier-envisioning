@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.6 |
-| Date | 2026-11-24 |
+| Version | 0.7 |
+| Date | 2026-11-27 |
 | Author | Copilot; AI-assisted documentation |
 | Status | Maintained internal example; not deployment or release evidence |
 | Scope | Offline core sample, ten viewport captures and regeneration; document revision, not product or capture version |
-| References | [Documentation](../README.md), [Getting started](../getting-started.md), [Starter prompts](../starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Gallery #41](https://github.com/urruegg/frontier-envisioning/issues/41), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md) |
+| References | [Documentation](../README.md), [Getting started](../getting-started.md), [Starter prompts](../starter-prompts.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Baseline #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Gallery #41](https://github.com/urruegg/frontier-envisioning/issues/41), [SPRINT-008](../sprints/SPRINT-008-caldova-gallery-extension.md), [Maintenance #82](https://github.com/urruegg/frontier-envisioning/issues/82) |
 
 See what the standard Frontier Company Blueprint produces before installing
 the plugin. **Caldova Industrial AG is fictitious.** All business details,
@@ -21,16 +21,18 @@ download and open the file locally in **Edge or Chrome**. GitHub and OneDrive
 previews do not execute the HTML. There is no hosted URL or tenant deployment
 to visit. This is one offline HTML file, not a custom application or live backend.
 
-The published baseline is **1.10.0**. This gallery is regenerated from the
-**unreleased 1.10.1 correction** tracked in
+The published **1.10.0** baseline remains historical. The existing
+[manifest](manifest.json) records **plugin version 1.11.0** and HTML generation
+on **26 November 2026**. This is the unreleased candidate, not a published
+1.11.0 download. The process correction's earlier evidence remains in
 [SPRINT-011](../sprints/SPRINT-011-process-grounding-and-optional-systems.md).
 Check
 [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
 for actual publication status; this example is not publication evidence. The gallery
 retains its core example scope: identity, ordinary value and explicitly
 requested Ontology, with 17 route identities and no FinOps data.
-FinOps Preview is a separate, explicitly acknowledged profile, not a hidden
-cost estimate in this sample. Read the actual captured version and hashes from
+The retained legacy/source-only FinOps Preview profile is unavailable in the
+1.11.0 ZIP, not a hidden cost estimate in this sample. Read the actual captured version and hashes from
 the [manifest](manifest.json), not this guide's heading.
 
 ## Overview
@@ -137,21 +139,30 @@ build and review the customer projection before permitted external sharing.
 
 ## Separate optional baseline exercise
 
-The plugin bundles eight skills: seven non-FinOps GA wrappers and optional
-Preview FinOps. The HTML and ten images here stay **core-only**, with explicitly
-requested ontology; ordinary value and identity do not require FinOps.
+The 1.11.0 candidate distributes eight skills: seven existing GA wrappers,
+including Value Case, plus optional Preview Envisioning Agent Factory.
+Nine source folders remain; FinOps is source-only, not registered, copied or
+installed by this ZIP. The HTML and ten images here stay **core-only**, with
+explicitly requested ontology; ordinary value and identity need neither Factory
+nor FinOps.
 
-For separately requested cost work, use the [awareness-first starter](../starter-prompts.md#optional-follow-up-versioned-agent-baseline)
-and [versioned FinOps procedure](../../plugin/skills/frontier-finops/SKILL.md#quick-start--requested-versioned-baseline),
-with the [complete offline contract](../../plugin/skills/frontier-finops/references/agent-finops-baseline.md).
+**Legacy/source-only exercise — unavailable in the 1.11.0 ZIP.**
+The retained [awareness-first starter](../starter-prompts.md#optional-follow-up-versioned-agent-baseline),
+[versioned FinOps procedure](../../plugin/skills/frontier-finops/SKILL.md#quick-start--requested-versioned-baseline)
+and [complete offline contract](../../plugin/skills/frontier-finops/references/agent-finops-baseline.md)
+preserve source history and safeguards, not an installed candidate workflow.
+Use ordinary Value Case and sourced cost assumptions with named budget gaps;
+missing costs are not zero or verified ROI. Requested FinOps operations must
+report that they are unavailable.
 The separate [Caldova D3-A05 baseline](../../plugin/skills/frontier-finops/examples/caldova-agent-baseline.json)
 is invented, not current pricing or real finance approval. Synthetic evidence
 cannot establish real financial readiness. It is not the default gallery
 download, a deployed service or permission to operate costs.
 
-First show the full Preview notice and obtain actual current-scenario awareness;
-the prompt itself is not consent. Decline leaves named financial gaps while
-draft/core work continues. At build handover the strict priced per-agent
+The retained source protocol first requires the full Preview notice and actual
+current-scenario awareness; the prompt itself is not consent. Decline leaves
+named financial gaps while draft/core work continues. At financial build
+handover the strict priced per-agent
 baseline and exact frozen-target external review are mandatory, not supplied by
 workshop notes or these screenshots.
 
@@ -195,5 +206,9 @@ fresh core build. For the fresh-HTML comparison, only the volatile
 This catches stale documentation when demo-relevant sources change. It does
 not require cross-platform screenshot byte equality or prove manual acceptance.
 
-The repository stays private. Review customer projections and confirm sharing
-and IP permissions separately; an illustrative gallery is not external clearance.
+The repository is publicly visible, but unchanged internally marked material
+is not cleared by that visibility. The intended private/internal policy
+discrepancy still needs maintainer review. Review customer projections and
+confirm sharing and IP permissions separately; an illustrative gallery is not
+external clearance. This prose correction does not regenerate or relabel the
+HTML, manifest, ten images, provenance or hashes.
