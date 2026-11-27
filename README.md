@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.11 |
-| Date | 2026-11-26 |
+| Version | 0.12 |
+| Date | 2026-11-27 |
 | Author | Urs Rüegg; Copilot AI-assisted maintenance |
 | Status | Maintained internal reader guide; not release approval |
 | Scope | Using and evaluating the plugin; document revision, not product version |
-| References | [Documentation](docs/README.md), [Getting started](docs/getting-started.md), [Plugin guide](plugin/README.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Issue #35](https://github.com/urruegg/frontier-envisioning/issues/35) |
+| References | [Documentation](docs/README.md), [Getting started](docs/getting-started.md), [Plugin guide](plugin/README.md), [Issue #31](https://github.com/urruegg/frontier-envisioning/issues/31), [Issue #33](https://github.com/urruegg/frontier-envisioning/issues/33), [Issue #35](https://github.com/urruegg/frontier-envisioning/issues/35), [Maintenance #82](https://github.com/urruegg/frontier-envisioning/issues/82) |
 
 **Turn scoped business evidence into a Frontier Company Blueprint and a focused workshop.**
 
@@ -21,12 +21,18 @@ Envisioning Agent Factory producer for an explicitly requested starter-repositor
 handover. Eight skills are registered: seven existing GA wrappers, including
 Business Value Case, plus optional Preview Factory. Nine source folders remain;
 FinOps is source-only, not registered, copied or installed in this Cowork ZIP.
-Final amended-candidate checks remain pending, not a Cowork-validated claim.
+Local package, extracted-skill and reference-receiver checks completed; reviewed
+`7ad10f1` CI passed. Fresh real-host health under
+[#81](https://github.com/urruegg/frontier-envisioning/issues/81) and official
+publication remain pending. These are recorded engineering results, not a
+Cowork-validated claim or verification of the next rebuilt ZIP.
 Historical release build **1.10.0** and its evidence are unchanged. Check
 [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
 for actual publication and downloads; candidate metadata is not publication.
-This repository is private; internal sharing does not grant public visibility,
-customer redistribution or IP clearance. Maintainer: [@urruegg](https://github.com/urruegg).
+The repository is publicly visible. That visibility does not clear unchanged
+internally marked material or grant customer redistribution or IP permission.
+The intended private/internal policy discrepancy still needs maintainer review.
+Maintainer: [@urruegg](https://github.com/urruegg) · [Maintainer profile (LinkedIn)](https://www.linkedin.com/in/urs-ruegg/).
 
 ## See it, try it, use it
 
@@ -53,13 +59,14 @@ Agent identity, Target architecture, requested Ontology and workshop views.*
 | Workshop preparation and feedback | Agenda, questions, scope decisions and exported feedback for the next version |
 | Agent identity proposal | Names, colours, icons and identity cards; branding, not Entra identity provisioning |
 | Value and design handover | Ordinary value evidence and assumptions; PRD, solution design, ADRs and IT readiness once MVP scope is validated, or clearly labelled drafts |
-| Optional Envisioning Agent Factory Preview | Registered candidate offline producer: full pinned starter-repository ZIP with reviewed ordinary files, preserved IDs and explicit intake gaps; final integration proof pending |
+| Optional Envisioning Agent Factory Preview | Offline producer: full pinned starter-repository ZIP with reviewed ordinary files, preserved IDs and explicit intake gaps; local/reference-receiver checks completed, real-host health pending |
 
 ### Candidate skill inventory
 
 The 1.11.0 candidate registers **eight skills in the same plugin**: seven existing
-GA wrappers and optional Preview Factory. Final amended-candidate proof is tracked
-in [#81](https://github.com/urruegg/frontier-envisioning/issues/81).
+GA wrappers and optional Preview Factory. The code amendment is merged;
+[#81](https://github.com/urruegg/frontier-envisioning/issues/81) remains open
+for fresh real-host health validation of the actual rebuilt package.
 FinOps source and regression tests remain outside this distribution; see the
 [release boundary](plugin/README.md#finops-not-included-in-1110).
 
@@ -91,11 +98,24 @@ flowchart LR
 
 ## Install the plugin
 
-For a published build, obtain its exact versioned ZIP from
-[GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases).
-The prospective `frontier-envisioning-plugin-1.11.0.zip` is a development
-candidate; use only a maintainer-provided candidate after its integration and
-package checks are recorded. Those checks are currently pending. Keep the ZIP zipped.
+**The 1.11.0 download is not yet published.** The
+[release listing](https://github.com/urruegg/frontier-envisioning/releases)
+may offer an older classic build with FinOps, not this candidate.
+For pre-publication testing, use a maintainer-provided candidate, build from
+the checked-out 1.11.0 source after
+[workstation setup](docs/engineering/workstation-setup.md) with
+`python tools/dev.py package`, or obtain the plugin ZIP from a matching
+successful CI run's `build-<commit>` artefact if retained. The source-build
+output is `dist/frontier-envisioning-plugin-1.11.0.zip`.
+Upload only `frontier-envisioning-plugin-1.11.0.zip` to Cowork, not the complete
+bundle or the outer CI artefact ZIP. After human publication, select the exact
+1.11.0 release rather than a generic latest download.
+
+Earlier local package/installer/receiver checks and reviewed CI are
+recorded in the [plugin guide](plugin/README.md#engineering-evidence-and-remaining-checks).
+This guide maintenance changes package bytes: the maintainer must regenerate
+and verify the new ZIP before testing or publication. Earlier package hashes
+are not proof of that ZIP. Keep the ZIP zipped.
 In a new Copilot Cowork chat, attach it and type
 **Install the Frontier PlugIn**. Review the installation approval prompts.
 Start a new chat after sync. See the [packaged guide](plugin/README.md) for
@@ -118,6 +138,8 @@ These instructions are not evidence of an actual Cowork installation.
   excludes FinOps cost modelling, Copilot Credits and FinOps-derived validation.
   Ordinary value and sourced cost assumptions remain supported with honest
   budget gaps, not zero costs or unsupported ROI.
+  Excluding FinOps does not remove an older copy from a user's configuration;
+  the 1.11.0 installer performs no automatic deinstallation.
 - **Financial provenance and refusals remain.** Retained source-compatibility
   rules require complete, priced baselines and exact frozen-target owner review
   for financial build handover; unpriced or synthetic evidence cannot pass.

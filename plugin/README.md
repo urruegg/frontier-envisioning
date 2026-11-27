@@ -1,8 +1,8 @@
 # Frontier Envisioning — plugin for Copilot Cowork
 
-**Version 1.11.0 · Unreleased development candidate · Microsoft Innovation Hub Switzerland · 26 November 2026**
+**Version 1.11.0 · Unreleased development candidate · Microsoft Innovation Hub Switzerland · 27 November 2026**
 
-*Guide maintenance: Copilot AI-assisted; original authorship retained.*
+*Guide maintenance: Copilot AI-assisted ([#82](https://github.com/urruegg/frontier-envisioning/issues/82)); original authorship retained.*
 
 Prepare a Frontier envisioning workshop from scoped business evidence.
 The plugin helps turn authorised context into an interactive **Frontier Company
@@ -13,15 +13,19 @@ architecture decisions and IT readiness handover; earlier documents are drafts.
 Identity branding is not Entra identity provisioning.
 
 Check [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases)
-for the actual publication status of **release build 1.10.0**. Build metadata
-alone is not evidence of publication.
+for actual publication and downloads. **1.11.0 is not published** at the
+reported preflight; historical release build **1.10.0** and its evidence are
+unchanged. Build metadata alone is not evidence of publication.
 The installation procedure below is not evidence of actual Cowork installation,
 organisation catalogue publication or tenant deployment.
 
 The candidate registers **eight skills in this same plugin: seven existing GA
 wrappers, including Business Value Case, and optional Preview Envisioning Agent Factory**.
 The offline Factory producer, skill procedure and maturity/installer metadata
-are implemented. Final candidate package/receiver checks remain pending.
+are implemented. Local package, extracted-skill and required reference-receiver
+checks completed, and reviewed `7ad10f1` CI passed. Fresh real-host health and
+official publication remain pending; see the
+[recorded evidence and remaining checks](#engineering-evidence-and-remaining-checks).
 This guide does not certify Cowork installation.
 Process/ontology is optional when requested. Core engagement, value, identity,
 blueprint, design and process require neither Factory nor FinOps.
@@ -45,8 +49,10 @@ manifest `devPreview` is a separate, unchanged development packaging protocol.
 
 This Cowork ZIP contains eight skills: the seven existing GA wrappers,
 including Business Value Case, plus optional Preview Envisioning Agent Factory.
-The FinOps skill is not registered, copied or installed by this release.
+The FinOps skill is not registered, copied or installed by this candidate.
 Its source and regression tests remain in the repository for later work.
+This exclusion does not remove an older FinOps copy from a user's configuration;
+the 1.11.0 installer performs no automatic deinstallation.
 
 Ordinary business value and sourced cost assumptions remain supported.
 FinOps cost modelling, Copilot Credits and FinOps-derived financial validation
@@ -66,14 +72,17 @@ requires no blanket cost acknowledgement for ordinary non-financial work.
 
 ## Distribution boundary
 
-The current engineering distribution is private and prepared for Microsoft-internal use; the engineering
-repository remains private. The plugin and complete bundle exclude private
+The current engineering distribution remains intended for Microsoft-internal
+use. The engineering repository is publicly visible, but that visibility does
+not clear unchanged internally marked material. The intended private/internal
+policy discrepancy needs maintainer review; classification and sharing
+restrictions remain unchanged. The plugin and complete bundle exclude private
 repository analyses and intake records. Their build checks reject
 enterprise-suffix identifiers, personal profile paths, common credential
 patterns and explicitly classified internal Markdown, including nested ZIP
 content and comments.
 
-The approved private source/issue/PR host is
+The approved source/issue/PR host is
 [urruegg/frontier-envisioning](https://github.com/urruegg/frontier-envisioning).
 
 Unreleased builds are development candidates. An offline install-plan check is
@@ -90,12 +99,14 @@ product-icon terms. Confirm content/IP clearance before sharing externally.
 
 ## Install it in Copilot Cowork
 
-**Candidate integration is not complete.** The steps below describe the
-installation procedure, not a verified 1.11.0 package. Obtain a candidate only
-after its exact package and installer results are recorded. Actual Cowork is
-unavailable; discovery, installation, acquisition and export are not performed.
+**Engineering verification is recorded; real-host validation is pending.**
+The steps below describe the installation procedure, not an actual Cowork
+installation. This guide maintenance changes package bytes: obtain the rebuilt
+candidate only after its exact package and installer results are recorded.
+Earlier ZIP hashes do not verify it. Actual Cowork is unavailable to this
+assistant; discovery, installation, acquisition and export are not performed.
 
-1. **Obtain the plugin ZIP** `frontier-envisioning-plugin-1.11.0.zip` from [GitHub Releases](https://github.com/urruegg/frontier-envisioning/releases) when published, or from the maintainer, [@urruegg](https://github.com/urruegg), for pre-publication testing. Keep it zipped and verify the release checksums.
+1. **Obtain the plugin ZIP** `frontier-envisioning-plugin-1.11.0.zip`. **The 1.11.0 download is not yet published**; the [release listing](https://github.com/urruegg/frontier-envisioning/releases) may offer an older classic build with FinOps. Until human publication, use a maintainer-provided candidate, the source-build route below, or the plugin ZIP inside a matching successful CI run's `build-<commit>` artefact if retained. Extract the outer CI artefact if needed, but keep the plugin ZIP zipped. Do not upload the complete bundle or outer CI artefact to Cowork. After publication, select the exact 1.11.0 release and verify its checksums.
 2. **Open Copilot Cowork** and start a new chat.
 3. **Attach the zip** to the chat and type:
 
@@ -112,6 +123,13 @@ unavailable; discovery, installation, acquisition and export are not performed.
 
 New chats pick up the skills after OneDrive sync. Installation approval does
 not make the [unavailable FinOps operations](skills/frontier-envisioning/references/method.md#finops-not-included-in-1110) available.
+
+For a source build, use the existing
+[workstation setup](https://github.com/urruegg/frontier-envisioning/blob/main/docs/engineering/workstation-setup.md)
+on a checkout of the 1.11.0 candidate, then run `python tools/dev.py package`
+from the repository root. The output is
+`dist/frontier-envisioning-plugin-1.11.0.zip`; package generation alone is not
+full gate validation or real-host health acceptance.
 
 | To… | Do this |
 |---|---|
@@ -230,7 +248,8 @@ Use it only for an explicit starter-repository, ZIP or handover request.
 It is not the next automatic step after a PRD and does not invoke FinOps.
 It adds no business-agent runtime, SDK, application or tenant loader.
 The offline producer, skill procedure and registration are implemented;
-final exact installed-package proof remains pending. See the
+local extracted-package and required reference-receiver proof completed.
+Fresh real-host health remains pending. See the
 [request and intake contract](skills/frontier-agent-factory/references/handover-contract.md).
 
 ### Acquire once, then freeze
@@ -365,8 +384,10 @@ ZIP bytes. Inventory hashes exclude the manifest's own hash; the final ZIP hash
 is reported on stdout.
 
 Export validation, intake disposition and recorded review are independent.
-Recorded review is not authenticated. Receiver validation during export and
-actual Cowork checks are **not performed**; tenant readiness is **not assessed**.
+Recorded review is not authenticated. Export does not run the receiving
+toolchain. The required reference-receiver suite ran during engineering
+verification; actual Cowork checks are **not performed** and tenant readiness
+is **not assessed**.
 Receiver tooling requires Python 3.12+ and Node 24 LTS; a Node 26 observation
 does not certify it. GitHub.com and GitHub Enterprise Cloud, including cloud
 hostnames, are the first receiving-repository/host profile, not native Azure
@@ -375,12 +396,43 @@ DevOps or GHES certification. The authoritative template source remains
 No remote repository creation, Work IQ authentication
 switch, tenant consent, provisioning or deployment is performed. Settings,
 secrets and real ownership remain future human work. Use
-[#72](https://github.com/urruegg/frontier-envisioning/issues/72) for candidate
-evidence and pending final gates before merge. The repository's
+[#81](https://github.com/urruegg/frontier-envisioning/issues/81) for the pending
+fresh real-host health check. The repository's
 [B.9 candidate evidence](https://github.com/urruegg/frontier-envisioning/blob/main/docs/solution-design.md#agent-factory-candidate-verification-26-november-2026)
 and [SPRINT-013](https://github.com/urruegg/frontier-envisioning/blob/main/docs/sprints/SPRINT-013-agent-factory-handover.md)
-links use stable main paths; these candidate updates are available there only
-after merge.
+links use stable main paths and retain commit-qualified evidence.
+
+### Engineering evidence and remaining checks
+
+Recorded local evidence at implementation `c416f5e` and generated outputs
+`0d03344` includes full L1 **1,095 passed, 14 documented skips, 3,640 subtests**,
+84 self-tests and 201 DOM tests passed; full L2 **76 passed, zero skips/retries**.
+The required actual reference-receiver run passed **six tests, zero skips**
+against `0bb2b1ba13cff77ee0bc3f271baddd3f89f9165d` (149 source blobs,
+726,850 bytes). This is reference compatibility, not Node 24/full receiving
+toolchain or tenant certification.
+
+Reviewed `7ad10f1`
+[CI run 45880650510](https://github.com/urruegg/frontier-envisioning/actions/runs/45880650510)
+recorded L1 **1,098 passed, 11 skips, one warning, 3,637 subtests**, all 76
+L2 tests passed and IaC validation passed.
+[CodeQL run 45880650545](https://github.com/urruegg/frontier-envisioning/actions/runs/45880650545)
+passed all three checks. The human maintainer `@urruegg` merged
+[PR #80](https://github.com/urruegg/frontier-envisioning/pull/80) on
+26 November 2026 at 19:21:08 UTC (`f18e2e4`); that was not an assistant action
+or formal independent approval. Earlier nine-skill `52d6c0e`, `4aa1ddb` and
+`ab9b10b` checkpoints remain qualified history, not this eight-skill proof.
+
+These are prior engineering results, not checks run for this prose revision.
+The parent must regenerate and verify the changed ZIP and run its full gates;
+previous package hashes are not new proof. **1.11.0 remains unpublished.**
+[#81](https://github.com/urruegg/frontier-envisioning/issues/81) remains open
+for fresh health evidence from the actual published/installed/tested package.
+The original 26 November 12:36 UTC report covered eight classic skills,
+including FinOps and no Factory, with unknown input version/ZIP. Value Case
+scored 100 and all eight met the publish bar, but two routing conflicts remained.
+That report is not a fresh eight-skill candidate health pass; the original
+host checker is unavailable to this assistant.
 
 ## Source-compatibility reference — not runnable in 1.11.0
 
@@ -491,7 +543,7 @@ frontier-envisioning-plugin-1.11.0.zip
     ├── frontier-agent-identity/      agent names, colours and icons: identity kit, renderer, validate and stamp scripts
     ├── frontier-value-case/          business value in CHF: value tree, assumption register, NPV, ROI, workshop merge
     ├── frontier-process/             optional process ontology, proposed CDM mappings and local data-product/agent kit
-    └── frontier-agent-factory/       registered candidate offline producer; final integration proof pending
+    └── frontier-agent-factory/       optional Preview offline producer; real-host health pending
 ```
 
 ---
@@ -522,8 +574,9 @@ Follow these steps when a user uploads this zip and asks to install it ("Install
 ## Organisation roll-out
 
 The ZIP uses the Microsoft 365 app-package structure with colour and outline
-icons. Current registration is eight, without FinOps; final amended-candidate
-verification remains pending.
+icons. Current registration is eight, without FinOps; local package/receiver
+checks and reviewed CI are recorded, while fresh real-host health and
+organisation catalogue acceptance remain pending.
 MOS3 `devPreview` remains unchanged.
 Organisation catalogue publication is an admin operation requiring tenant
 validation and approval; this release build does not certify it. Tenant-specific
@@ -557,7 +610,7 @@ The Microsoft product icons in the blueprint template are Microsoft trademarks a
 
 ## For developers
 
-Start with the private repository's
+Start with the repository's
 [documentation catalogue](https://github.com/urruegg/frontier-envisioning/blob/main/docs/README.md)
 and existing workstation setup rather than treating this ZIP as a new repository
 import. Requirements live in `docs/prd.md`; architecture and verification live
@@ -588,7 +641,9 @@ under `build/site-e2e` with real hashed CSP. The default complete bundle has
 fifteen allowlisted entries including four ontology documents; explicit Preview
 demo/cost JSON and private analysis/intake are excluded. Final runtime source
 file count and twice-built digests must be measured after documentation changes,
-not copied from an earlier count. Keep the engineering repository private;
-these checks do not grant external/public/IP clearance.
+not copied from an earlier count. Public repository visibility does not clear
+internally marked content; maintainer review of the intended private/internal
+policy discrepancy remains outstanding. These checks grant no external/IP
+clearance.
 
 Scripts use the Python standard library only, read their inputs as data and never call the network.
