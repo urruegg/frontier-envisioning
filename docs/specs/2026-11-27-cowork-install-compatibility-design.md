@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-27 |
 | Author | AI assistant; AI-assisted drafting from the human decisions and supplied engineering evidence |
-| Status | Draft written specification; conversational design approved 2026-11-27; written specification review pending |
+| Status | Written specification at b9647ea actually approved by later human follow-up; implementation plan Proposed, approval/readiness pending |
 | Scope | NEXT 1.11.1 eight-skill install compatibility, lossless Identity source consolidation and bounded routing/metadata corrections; no implementation |
-| References | [Catalogue](README.md), [Work item #87](https://github.com/urruegg/frontier-envisioning/issues/87), [Idea](../ideas/2026-11-27-cowork-install-compatibility.md), [SPRINT-014](../sprints/SPRINT-014-cowork-install-compatibility.md), [Host receipt #81](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [Closeout hub #86](https://github.com/urruegg/frontier-envisioning/issues/86), [PRD](../prd.md), [Solution design](../solution-design.md), [Prior distribution design](2026-11-26-plugin-health-and-finops-exclusion-design.md), [Factory design](2026-11-25-agent-factory-handover-design.md) |
+| References | [Catalogue](README.md), [Work item #87](https://github.com/urruegg/frontier-envisioning/issues/87), [Idea](../ideas/2026-11-27-cowork-install-compatibility.md), [Proposed implementation plan](../plans/2026-11-27-cowork-install-compatibility-plan.md), [SPRINT-014](../sprints/SPRINT-014-cowork-install-compatibility.md), [Host receipt #81](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [Closeout hub #86](https://github.com/urruegg/frontier-envisioning/issues/86), [PRD](../prd.md), [Solution design](../solution-design.md), [Prior distribution design](2026-11-26-plugin-health-and-finops-exclusion-design.md), [Factory design](2026-11-25-agent-factory-handover-design.md) |
 
 ## 1. Outcome, authority and decision evidence
 
@@ -21,12 +21,17 @@ The user requested Superpowers brainstorming and selected
 `source-consolidation-1111` over build-time projection and manual workarounds.
 On **27 November 2026**, the user explicitly answered `approve_design=true`
 to the install-flow, safety and verification design. This is actual
-**conversational design approval**. Review of this written specification and
-later explicit implementation-plan approval remain pending.
+**conversational design approval**. The later real follow-up
+**"true please proceed it's approved from my side"** approved the written
+specification at `b9647ea8c824af180cd60975d3f4c4b9e9297e8a` for planning.
+The [approval receipt](https://github.com/urruegg/frontier-envisioning/issues/87#issuecomment-7223211793)
+records that scope. The new implementation plan remains Proposed and needs
+its own explicit approval and readiness evidence.
 
 No code/version bump, independent formal review, owner head sign-off, protected
 `approved:*` label, Ready state, release publication or protected #8 execution
-follows from that answer. There is **no implementation plan yet**.
+follows from either design approval. An implementation plan now exists but is
+**not approved for execution**.
 The earlier approved [H111 specification](2026-11-26-plugin-health-and-finops-exclusion-design.md),
 [H111 plan](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md)
 and [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md) govern their
@@ -257,14 +262,34 @@ approval.
 
 ## 9. Review and handoff
 
-Written-spec review is pending. A subsequent implementation plan needs its own
-explicit human approval; existing plans are historical context, not a substitute.
+The written specification at `b9647ea` is approved for planning. The new Proposed
+implementation plan needs its own explicit human approval and readiness;
+historical plans are context, not substitutes.
 No deadline, readiness, independent approval, owner sign-off or completed
 product validation is recorded.
 
 The [Draft sprint](../sprints/SPRINT-014-cowork-install-compatibility.md)
-records document-validation provenance and the strict checker's plan-reference
-requirement. Its actual related 1.11.0 plan is historical context only, not a
-1.11.1 execution plan or approval. Do not invent an implementation plan to pass
-a document gate. Run `python tools\dev.py docs --strict` on the planning records
-and record the actual post-edit result separately from product verification.
+records document-validation provenance and now links the new Proposed 1.11.1
+plan. The earlier 1.11.0 reference remains dated historical context, not approval
+for the new plan. Do not invent a plan or approval to pass a document gate.
+Run `python tools\dev.py docs --strict` on the planning records and record its
+actual result separately from product verification.
+
+## 10. Later actual written approval and plan reference
+
+The preceding sections preserve the written design reviewed at
+`b9647ea8c824af180cd60975d3f4c4b9e9297e8a`, including its then-pending
+review/plan statements. Requirements CWI-01–CWI-07 are unchanged.
+The later real user follow-up to that written-spec review request was
+**“true please proceed it's approved from my side”**. This is actual approval
+of the written specification and permission to write the implementation plan.
+The earlier unavailable response was not approval. No approval time, label
+change, readiness, implementation or protected permission is inferred.
+
+The [new implementation plan](../plans/2026-11-27-cowork-install-compatibility-plan.md)
+is **Proposed**, pending separate explicit human plan approval and readiness.
+It replaces historical H111 context only for proposed NEW #87 execution;
+H111's original scope/evidence remain intact. SPRINT-014 remains Draft/not Ready.
+Human #8 protected plural routing/native main baseline still blocks production.
+This record supersedes only earlier pending-written-review/no-new-plan status
+statements, not the approved design content or evidence limits.

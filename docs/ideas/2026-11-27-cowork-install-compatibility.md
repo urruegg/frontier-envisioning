@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-27 |
 | Author | AI assistant; AI-assisted drafting from the human decisions and supplied engineering evidence |
-| Status | Conversational design approved 2026-11-27; written specification review pending; no implementation plan |
+| Status | Written specification at b9647ea actually approved; implementation plan Proposed; not Ready |
 | Scope | Public-safe, customer-neutral planning for eight-skill Cowork installation and canonical Identity source consolidation |
-| References | [Catalogue](README.md), [Work item #87](https://github.com/urruegg/frontier-envisioning/issues/87), [Design](../specs/2026-11-27-cowork-install-compatibility-design.md), [SPRINT-014](../sprints/SPRINT-014-cowork-install-compatibility.md), [Host evidence #81](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [Closeout hub #86](https://github.com/urruegg/frontier-envisioning/issues/86) |
+| References | [Catalogue](README.md), [Work item #87](https://github.com/urruegg/frontier-envisioning/issues/87), [Design](../specs/2026-11-27-cowork-install-compatibility-design.md), [Proposed plan](../plans/2026-11-27-cowork-install-compatibility-plan.md), [SPRINT-014](../sprints/SPRINT-014-cowork-install-compatibility.md), [Host evidence #81](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [Closeout hub #86](https://github.com/urruegg/frontier-envisioning/issues/86) |
 
 ## Outcome and audience
 
@@ -69,8 +69,10 @@ evidence do not approve or validate #87.
 ## Separate tracks and next review
 
 The [Draft sprint](../sprints/SPRINT-014-cowork-install-compatibility.md)
-has **no implementation plan yet** and is **not Ready**. Written specification
-review is pending; there is no delivery deadline or head-qualified sign-off.
+now links a **Proposed implementation plan** and is **not Ready**. The written
+specification at `b9647ea` has actual approval for planning; the plan needs its
+own approval and readiness evidence. No delivery deadline or head-qualified
+implementation sign-off is recorded.
 [#8](https://github.com/urruegg/frontier-envisioning/issues/8) protected routing/
 native main protection and [#9](https://github.com/urruegg/frontier-envisioning/issues/9)
 scoped guidance/publication clearance remain separate human tracks.
@@ -79,3 +81,16 @@ stable releases do not permit a fake GA claim or silent older/main fallback.
 [#81](https://github.com/urruegg/frontier-envisioning/issues/81) stays open for
 final new-package real host acceptance, linked through #86. #48/#58 and Caldova
 governance/tenant work are not absorbed into this patch.
+
+## Later written-spec approval and planning state
+
+The preceding intake text preserves the pre-plan snapshot at reviewed
+`b9647ea8c824af180cd60975d3f4c4b9e9297e8a`.
+The later actual user follow-up **“true please proceed it's approved from my side”**
+to the written-spec review request approves that written specification and
+writing the [new plan](../plans/2026-11-27-cowork-install-compatibility-plan.md).
+The earlier unavailable response was not approval. This supersedes the
+earlier pending-review/no-plan status only; design choices and evidence stay
+unchanged. The plan is Proposed, separate human plan approval/readiness remain
+pending, and SPRINT-014 is not Ready. No approval time, protected label, host
+result or execution permission is asserted. Human #8 remains a production blocker.
