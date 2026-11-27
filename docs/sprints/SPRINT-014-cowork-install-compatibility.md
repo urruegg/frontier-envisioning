@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-27 |
 | Author | AI assistant; AI-assisted planning-document drafting from the human decisions and supplied evidence |
-| Status | Draft; not Ready; written specification at b9647ea actually approved; new implementation plan Proposed, separate approval pending |
+| Status | Not Ready; written specification and plan at 7c522ca approved; subagent execution blocked on actual #8 baseline |
 | Scope | Planning records for NEXT 1.11.1 eight-skill Cowork install compatibility; no production implementation or release |
-| References | [Catalogue](README.md), [Work item #87](https://github.com/urruegg/frontier-envisioning/issues/87), [Idea](../ideas/2026-11-27-cowork-install-compatibility.md), [Approved written spec](../specs/2026-11-27-cowork-install-compatibility-design.md), [Proposed NEW 1.11.1 implementation plan](../plans/2026-11-27-cowork-install-compatibility-plan.md), [Historical 1.11.0 baseline plan](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md), [Host receipt #81](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [Closeout hub #86](https://github.com/urruegg/frontier-envisioning/issues/86) |
+| References | [Catalogue](README.md), [Work item #87](https://github.com/urruegg/frontier-envisioning/issues/87), [Idea](../ideas/2026-11-27-cowork-install-compatibility.md), [Approved written spec](../specs/2026-11-27-cowork-install-compatibility-design.md), [Approved NEW 1.11.1 implementation plan](../plans/2026-11-27-cowork-install-compatibility-plan.md), [Historical 1.11.0 baseline plan](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md), [Host receipt #81](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [Closeout hub #86](https://github.com/urruegg/frontier-envisioning/issues/86) |
 
 ## Outcome and work item
 
@@ -19,7 +19,7 @@ No schedule, protected Ready label or owner head sign-off is asserted.
 
 | Issue | Idea | Spec | Plan | Owner | Dependencies | State | PR/evidence |
 |---|---|---|---|---|---|---|---|
-| [#87](https://github.com/urruegg/frontier-envisioning/issues/87) | [Intake and decisions](../ideas/2026-11-27-cowork-install-compatibility.md) | [CWI-01–CWI-07](../specs/2026-11-27-cowork-install-compatibility-design.md#7-acceptance-and-verification-matrix) | [NEW 1.11.1 plan](../plans/2026-11-27-cowork-install-compatibility-plan.md), Proposed; historical H111 plan does not govern #87 execution | `@urruegg` accountable; no sign-off inferred | Separate explicit plan approval/readiness, live intake verification and human #8 protection baseline before production implementation; fresh #81 host acceptance | Draft / not Ready; planning documents only | Later actual written-spec approval quote recorded below; [supplied host receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [closeout #86](https://github.com/urruegg/frontier-envisioning/issues/86); no new PR/CI/product result claimed |
+| [#87](https://github.com/urruegg/frontier-envisioning/issues/87) | [Intake and decisions](../ideas/2026-11-27-cowork-install-compatibility.md) | [CWI-01–CWI-07](../specs/2026-11-27-cowork-install-compatibility-design.md#7-acceptance-and-verification-matrix) | [NEW 1.11.1 plan](../plans/2026-11-27-cowork-install-compatibility-plan.md), approved at `7c522ca`; historical H111 plan does not govern #87 execution | `@urruegg` accountable; no implementation sign-off inferred | Actual human #8 protection/routing baseline and readiness before production implementation; fresh #81 host acceptance after engineering | Not Ready; Task 0 blocked, no production edits | [Actual plan approval and blocker](https://github.com/urruegg/frontier-envisioning/issues/87#issuecomment-7224405112); [supplied host receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [closeout #86](https://github.com/urruegg/frontier-envisioning/issues/86); no product pass claimed |
 
 ## Actual decision and evidence provenance
 
@@ -63,7 +63,7 @@ and an older installed copy is not auto-uninstalled.
 | Review or dependency | Current state |
 |---|---|
 | Written specification | Actual later human follow-up approves reviewed b9647ea content; original conversational approval remains separate history. |
-| Implementation plan | NEW 1.11.1 plan linked for proposed #87 execution; separate explicit human approval/readiness pending. Historical H111 plan retains its original scope, not NEW execution authority. Sprint not Ready. |
+| Implementation plan | Actual approval at `7c522ca` for subagent-driven execution, 27 November 18:25:02 +01:00; Task 0 remains blocked on #8/readiness. Historical H111 plan retains its original scope. No protected labels or implementation completion inferred. |
 | Human protected [#8](https://github.com/urruegg/frontier-envisioning/issues/8) baseline | Separate plural session-start correction and Active native main PR/check/freshness/force/deletion protection. Supplied live state: `protected=false`, no rulesets. Existing checks: `L1 quality gate`, `L2 browser tests`, `IaC validation`. Zero formal approvals is feasible for the sole maintainer; real head-qualified sign-off is separate. Missing protection blocks production implementation, not planning. |
 | Human [#9](https://github.com/urruegg/frontier-envisioning/issues/9) guidance/clearance | Separate scoped current guidance/publication/adoption after review and clearance; no internal-content publication from public visibility or blanket consent. |
 | [Template stable foundation](https://github.com/urruegg/frontier-agent-factory) | Supplied complete authenticated enumeration found no release/tag. Human compatibility verification and genuine stable publication remain separate. Retain exact-commit unreleased-bootstrap consent and no older/main error fallback; Factory remains Preview. |
@@ -75,6 +75,16 @@ Caldova governance/tenant work is untouched. #86 is the linked closeout hub,
 not permission to close issues or broaden the implementation.
 
 ## Documentation validation and handoff
+
+### Current execution checkpoint
+
+The [actual plan approval](https://github.com/urruegg/frontier-envisioning/issues/87#issuecomment-7224405112)
+supersedes earlier pending-plan statements below. Fresh checks still find
+unprotected main, empty native rules and legacy protected routing at `482aa816`.
+The approved plan stops production until the human #8 baseline exists.
+No implementer was launched and no test/code/bump/package change occurred.
+Earlier planning validation remains historical evidence, not current product
+verification or readiness.
 
 The following table preserves the original written-spec slice's provenance;
 it is not the post-plan validation result.

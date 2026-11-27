@@ -2,12 +2,22 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-27 |
 | Author | AI assistant; AI-assisted drafting from the human decisions and supplied engineering evidence |
-| Status | Written specification at b9647ea actually approved; implementation plan Proposed; not Ready |
+| Status | Written specification and implementation plan at 7c522ca approved; subagent execution blocked on actual #8 baseline |
 | Scope | Public-safe, customer-neutral planning for eight-skill Cowork installation and canonical Identity source consolidation |
-| References | [Catalogue](README.md), [Work item #87](https://github.com/urruegg/frontier-envisioning/issues/87), [Design](../specs/2026-11-27-cowork-install-compatibility-design.md), [Proposed plan](../plans/2026-11-27-cowork-install-compatibility-plan.md), [SPRINT-014](../sprints/SPRINT-014-cowork-install-compatibility.md), [Host evidence #81](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [Closeout hub #86](https://github.com/urruegg/frontier-envisioning/issues/86) |
+| References | [Catalogue](README.md), [Work item #87](https://github.com/urruegg/frontier-envisioning/issues/87), [Design](../specs/2026-11-27-cowork-install-compatibility-design.md), [Approved plan](../plans/2026-11-27-cowork-install-compatibility-plan.md), [SPRINT-014](../sprints/SPRINT-014-cowork-install-compatibility.md), [Host evidence #81](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [Closeout hub #86](https://github.com/urruegg/frontier-envisioning/issues/86) |
+
+## Current plan approval and execution blocker
+
+The maintainer approved the completed plan at `7c522ca` on 27 November at
+18:25:02 +01:00: **"okay the plan is approved please implement it sub agent driven"**.
+The [receipt](https://github.com/urruegg/frontier-envisioning/issues/87#issuecomment-7224405112)
+separates approval from actual #8 readiness. Fresh checks still find main
+unprotected with empty native rules and legacy protected routing. Task 0 blocks
+production; earlier proposed/pending-plan statements below are history.
+No implementation, version bump or protected change occurred.
 
 ## Outcome and audience
 

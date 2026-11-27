@@ -2,12 +2,22 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.2 |
+| Version | 0.3 |
 | Date | 2026-11-27 |
 | Author | AI assistant; AI-assisted drafting from the human decisions and supplied engineering evidence |
-| Status | Written specification at b9647ea actually approved by later human follow-up; implementation plan Proposed, approval/readiness pending |
+| Status | Written specification at b9647ea and plan at 7c522ca approved; subagent execution blocked on actual #8 baseline/readiness |
 | Scope | NEXT 1.11.1 eight-skill install compatibility, lossless Identity source consolidation and bounded routing/metadata corrections; no implementation |
-| References | [Catalogue](README.md), [Work item #87](https://github.com/urruegg/frontier-envisioning/issues/87), [Idea](../ideas/2026-11-27-cowork-install-compatibility.md), [Proposed implementation plan](../plans/2026-11-27-cowork-install-compatibility-plan.md), [SPRINT-014](../sprints/SPRINT-014-cowork-install-compatibility.md), [Host receipt #81](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [Closeout hub #86](https://github.com/urruegg/frontier-envisioning/issues/86), [PRD](../prd.md), [Solution design](../solution-design.md), [Prior distribution design](2026-11-26-plugin-health-and-finops-exclusion-design.md), [Factory design](2026-11-25-agent-factory-handover-design.md) |
+| References | [Catalogue](README.md), [Work item #87](https://github.com/urruegg/frontier-envisioning/issues/87), [Idea](../ideas/2026-11-27-cowork-install-compatibility.md), [Approved implementation plan](../plans/2026-11-27-cowork-install-compatibility-plan.md), [SPRINT-014](../sprints/SPRINT-014-cowork-install-compatibility.md), [Host receipt #81](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [Closeout hub #86](https://github.com/urruegg/frontier-envisioning/issues/86), [PRD](../prd.md), [Solution design](../solution-design.md), [Prior distribution design](2026-11-26-plugin-health-and-finops-exclusion-design.md), [Factory design](2026-11-25-agent-factory-handover-design.md) |
+
+## Current execution approval checkpoint
+
+The [completed plan at `7c522ca`](../plans/2026-11-27-cowork-install-compatibility-plan.md)
+received actual approval for subagent-driven execution on 27 November at
+18:25:02 +01:00. The [receipt](https://github.com/urruegg/frontier-envisioning/issues/87#issuecomment-7224405112)
+preserves the user quotation and fresh Task 0 blockers. Earlier proposed-plan
+statements below are historical. The approved design requirements are unchanged;
+actual #8 protected routing/native enforcement and readiness remain outstanding.
+No production implementation or protected action follows merely from approval.
 
 ## 1. Outcome, authority and decision evidence
 

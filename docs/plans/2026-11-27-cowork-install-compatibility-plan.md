@@ -2,10 +2,10 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
+| Version | 0.2 |
 | Date | 2026-11-27 |
 | Author | AI assistant; AI-assisted planning from the approved written specification and inspected repository files |
-| Status | Proposed; separate human plan approval and readiness pending; no implementation authorised |
+| Status | Plan at 7c522ca approved for subagent-driven execution; Task 0 blocked on actual human #8 baseline/readiness |
 | Scope | Issue #87, NEXT 1.11.1: finite eight-skill distribution, verified whole drafts, lossless Identity consolidation, metadata and scoped routing |
 | References | [Catalogue](README.md), [Issue #87](https://github.com/urruegg/frontier-envisioning/issues/87), [Approved written design](../specs/2026-11-27-cowork-install-compatibility-design.md), [Idea](../ideas/2026-11-27-cowork-install-compatibility.md), [Draft SPRINT-014](../sprints/SPRINT-014-cowork-install-compatibility.md), [PRD](../prd.md), [Architecture and B.9](../solution-design.md), [ADR catalogue](../adr/README.md) |
 
@@ -55,9 +55,11 @@ None of those observations is a fresh 1.11.1 result.
 ### Definition of Ready
 
 Issue/idea/spec/this plan/sprint, owner, affected files and testable CWI criteria
-are linked. Written-spec approval is actual. The following remain blocking:
+are linked. Written-spec approval is actual. The plan at `7c522cabe872bc1390ac15acb7df117ebad5d6a8` now has actual
+human approval for subagent-driven execution. The following remain blocking:
 
-- Explicit approval of this exact plan and human readiness evidence.
+- Human readiness evidence, including actual execution of the #8 baseline;
+  the already-recorded plan approval is not requested again.
 - Fresh live #87 intake/decision/label verification; approval does not prove
   `status:ready` or `approved:*` fields changed.
 - Human #8: protected plural session-start correction and **Active native main**
@@ -116,6 +118,26 @@ procedure, acknowledgement values, financial tests/formulas/rates are untouched.
 | CWI-07 | 6, H1–H7; publication never inferred |
 
 ## 3. Task 0 — human readiness and conflict checkpoint
+
+### Actual approval and prerequisite check, 27 November
+
+At **18:25:02 +01:00**, the maintainer replied:
+**"okay the plan is approved please implement it sub agent driven"**.
+The [actual receipt](https://github.com/urruegg/frontier-envisioning/issues/87#issuecomment-7224405112)
+approves the completed plan at `7c522ca` and the requested execution mode.
+It does not prove readiness/approval labels changed or authorise protected edits.
+
+Fresh authenticated checks found the execution worktree clean at `7c522ca`.
+Live main remains `482aa816e8867575a2557230d596788e694d64fe`,
+`protected:false`, with no rulesets or effective main rules. The protected
+session-start source still routes both specification and plan to `docs/plans/`.
+#8 remains open. Complete release/tag enumeration found no `v1.11.1` conflict.
+
+**Task 0 is blocked on #8, not on plan approval.** No production implementer,
+test/checker edit, version bump or package build starts while that prerequisite
+is missing. Record the actual human route/control changes and passing evidence,
+then resume the approved tasks without re-requesting the same approval.
+No baseline bypass, protected change or formal independent review is claimed.
 
 - [ ] **0.1 (person/controller, 3 minutes):** re-open the real #87 body,
   linked design/plan/sprint and any `type:decision`/PRD A.13 blockers. Record
