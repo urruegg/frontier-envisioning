@@ -19,7 +19,7 @@ def main() -> int:
               if vendored else
               "If the Superpowers skills are available, use them for brainstorming, plans, TDD, debugging, verification and review.")
         ctx = ("Frontier Envisioning repository (Copilot Cowork plugin, MIT). Read AGENTS.md before changing anything. "
-               "Work from an issue that meets the Definition of Ready; write the spec and plan to docs/plans/; test first; "
+               "Work from a real issue and linked idea/spec/plan/sprint package; new records use docs/ideas/, docs/specs/, docs/plans/ and docs/sprints/; historical specs/plans retain their evidence; test first; "
                "run 'python tools/dev.py check' before you finish and paste the summary into the pull request. "
                "Human-only: merging, approvals, releases and tags, deployments, repository settings, readiness and approval labels, "
                "the guardrail files. Never write real customer names; the demo company is the fictitious Caldova. " + sp)
