@@ -150,6 +150,7 @@ jobs:
           "$RUNNER_TEMP/sbom-tool" generate -b release -bc plugin -m "$RUNNER_TEMP/release-sbom" \
             -pn frontier-envisioning -pv "$VERSION" -ps "Microsoft Innovation Hub Switzerland" \
             -nsb "https://github.com/$REPOSITORY" -li false -F false
+          (cd "$RUNNER_TEMP/release-sbom/_manifest" && zip -qr "$GITHUB_WORKSPACE/source/release/sbom-spdx.zip" .)
       - name: Checksums and handover
         id: handover
         run: |
