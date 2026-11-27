@@ -2,15 +2,16 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.20 |
-| Date | 2026-11-26 |
-| Author | Copilot SDK in VS Code; AI-assisted maintenance |
+| Version | 1.21 |
+| Date | 2026-11-27 |
+| Author | Copilot SDK in VS Code; AI-assisted maintenance; AI assistant (AI-assisted #87 planning catalogue maintenance) |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Linked work, dependencies, blockers and validation evidence |
-| References | [Docs](../README.md), [Idea catalogue](../ideas/README.md), [Spec catalogue](../specs/README.md), [Plan catalogue](../plans/README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6) |
+| References | [Docs](../README.md), [Idea catalogue](../ideas/README.md), [Spec catalogue](../specs/README.md), [Plan catalogue](../plans/README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Compatibility #87](https://github.com/urruegg/frontier-envisioning/issues/87) |
 
 | Sprint | Goal | State |
 |---|---|---|
+| [SPRINT-014](SPRINT-014-cowork-install-compatibility.md) | Record NEXT 1.11.1 Cowork install compatibility and lossless canonical Identity consolidation | [#87](https://github.com/urruegg/frontier-envisioning/issues/87), [idea](../ideas/2026-11-27-cowork-install-compatibility.md), [Draft spec](../specs/2026-11-27-cowork-install-compatibility-design.md), [host receipt #81](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [closeout #86](https://github.com/urruegg/frontier-envisioning/issues/86); `@urruegg` accountable. Draft / not Ready; conversational design approved 27 November, written-spec review pending; no implementation plan yet or product validation. |
 | [SPRINT-013](SPRINT-013-agent-factory-handover.md) | Add the optional Agent Factory handover skill; amend 1.11.0 health/distribution scope | [#72](https://github.com/urruegg/frontier-envisioning/issues/72), bounded #73-#79, [Factory spec](../specs/2026-11-25-agent-factory-handover-design.md), [prior approved plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md); `@urruegg` accountable. Prior Factory candidate verified. New [bug #81](https://github.com/urruegg/frontier-envisioning/issues/81) spec `c26991e` and [plan `b3174a1`](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md) approved for end-to-end subagent execution; actual fix/health results pending. [Draft PR #80](https://github.com/urruegg/frontier-envisioning/pull/80) holds current handoff. Actual Factory Cowork validation remains unperformed; systems/D365 deferred. |
 | [SPRINT-012](SPRINT-012-release-evidence-simplification.md) | Remove manual release-evidence retention without removing automated verification | [#67](https://github.com/urruegg/frontier-envisioning/issues/67), [idea](../ideas/2026-11-24-release-evidence-simplification.md), [approved spec](../specs/2026-11-24-release-evidence-simplification-design.md), [real plan](../plans/2026-11-25-release-evidence-simplification-plan.md); `@urruegg` accountable; spec `67dc9a5` and subsequent actual plan/execution `22f512f` approved. Bounded #68/#69/#70 implementation; protected adoption separate. |
 | [SPRINT-011](SPRINT-011-process-grounding-and-optional-systems.md) | Correct current process grounding before optional systems foundation and Dynamics 365 | [#58](https://github.com/urruegg/frontier-envisioning/issues/58), [#59](https://github.com/urruegg/frontier-envisioning/issues/59), [idea](../ideas/2026-11-17-optional-systems-extensions.md), [correction spec](../specs/2026-11-17-process-governance-sap-grounding-design.md), [plan](../plans/2026-11-17-process-governance-sap-grounding-plan.md); `@urruegg` accountable, original plan/readiness at `35ad763` and separate [#66](https://github.com/urruegg/frontier-envisioning/issues/66) amendment approved; implementation/reviews, local L2 and exact-package proof complete; final head/gate/server evidence in [PR #65](https://github.com/urruegg/frontier-envisioning/pull/65); human #52/#8 remain |

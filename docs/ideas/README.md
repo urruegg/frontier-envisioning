@@ -2,15 +2,16 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.15 |
-| Date | 2026-11-26 |
-| Author | Copilot SDK in VS Code; AI-assisted maintenance |
+| Version | 1.16 |
+| Date | 2026-11-27 |
+| Author | Copilot SDK in VS Code; AI-assisted maintenance; AI assistant (AI-assisted #87 planning catalogue maintenance) |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Ideas for Frontier Envisioning work packages in the canonical plural folder |
-| References | [Docs](../README.md), [Spec catalogue](../specs/README.md), [Plan catalogue](../plans/README.md), [Sprint catalogue](../sprints/README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6) |
+| References | [Docs](../README.md), [Spec catalogue](../specs/README.md), [Plan catalogue](../plans/README.md), [Sprint catalogue](../sprints/README.md), [Issue](https://github.com/urruegg/frontier-envisioning/issues/6), [Compatibility #87](https://github.com/urruegg/frontier-envisioning/issues/87) |
 
 | Idea | State | Governing work |
 |---|---|---|
+| [Cowork install compatibility](2026-11-27-cowork-install-compatibility.md) | Conversational design approved 27 November; written specification review pending | [#87](https://github.com/urruegg/frontier-envisioning/issues/87), [design](../specs/2026-11-27-cowork-install-compatibility-design.md), [Draft SPRINT-014](../sprints/SPRINT-014-cowork-install-compatibility.md), [host receipt #81](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7222569867), [closeout #86](https://github.com/urruegg/frontier-envisioning/issues/86); NEXT 1.11.1, no implementation plan yet, not Ready |
 | [Cowork health and FinOps exclusion](2026-11-26-plugin-health-and-finops-exclusion.md) | Written spec `c26991e` and plan `b3174a1` approved for subagent execution | [Bug #81](https://github.com/urruegg/frontier-envisioning/issues/81), [design](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md), [approved plan](../plans/2026-11-26-plugin-health-and-finops-exclusion-plan.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md), [PR #80](https://github.com/urruegg/frontier-envisioning/pull/80); Cowork ZIP target, retain Value Case/Factory and FinOps source/tests |
 | [Agent Factory starter handover](2026-11-25-agent-factory-handover.md) | Offline Preview design, actual approvals and execution evidence in linked records | [#72](https://github.com/urruegg/frontier-envisioning/issues/72), bounded [#73](https://github.com/urruegg/frontier-envisioning/issues/73), [design](../specs/2026-11-25-agent-factory-handover-design.md), [production plan](../plans/2026-11-25-agent-factory-offline-implementation-plan.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md); factory-only 1.11.0, actual Cowork deferred/not performed |
 | [Release evidence without manual retention](2026-11-24-release-evidence-simplification.md) | Written spec at `67dc9a5` and later plan/execution at `22f512f` approved | [#67](https://github.com/urruegg/frontier-envisioning/issues/67), [design](../specs/2026-11-24-release-evidence-simplification-design.md), [plan](../plans/2026-11-25-release-evidence-simplification-plan.md), [SPRINT-012](../sprints/SPRINT-012-release-evidence-simplification.md); bounded #68/#69/#70 implementation, protected adoption separate |
