@@ -146,6 +146,7 @@ jobs:
           curl -sSfLo "$RUNNER_TEMP/sbom-tool" https://github.com/microsoft/sbom-tool/releases/download/v4.1.5/sbom-tool-linux-x64
           echo "bf5d4f99bc98c119d549d08fc02ae92598a7a42772f17317c01031a92632e05b  $RUNNER_TEMP/sbom-tool" | sha256sum --check --strict
           chmod +x "$RUNNER_TEMP/sbom-tool"
+          mkdir -p "$RUNNER_TEMP/release-sbom"
           "$RUNNER_TEMP/sbom-tool" generate -b release -bc plugin -m "$RUNNER_TEMP/release-sbom" \
             -pn frontier-envisioning -pv "$VERSION" -ps "Microsoft Innovation Hub Switzerland" \
             -nsb "https://github.com/$REPOSITORY" -li false -F false
