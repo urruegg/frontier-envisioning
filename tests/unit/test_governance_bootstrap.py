@@ -52,6 +52,13 @@ AMENDMENT_ANCHORS = (
     (".github/copilot-instructions.md", "8. **Human-only:**"),
     (".github/copilot-instructions.md", "- Protected session-start routing"),
 )
+LEGACY_ROUTING = "write the spec and plan to docs/plans/"
+CURRENT_ROUTING = (
+    "Work from a real issue and linked idea/spec/plan/sprint package; new records use "
+    "docs/ideas/, docs/specs/, docs/plans/ and docs/sprints/; historical specs/plans "
+    "retain their evidence; test first; "
+)
+SESSION_START = ".github/hooks/scripts/session_start.py"
 
 
 def seed(root: Path) -> None:
@@ -69,6 +76,15 @@ def seed(root: Path) -> None:
         target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(b"Protected fixture: preserve every byte.\r\n")
+
+
+def legacy_routing_fixture(root: Path) -> None:
+    """Select the historical shape only in explicitly legacy temporary fixtures."""
+    path = root / SESSION_START
+    source = path.read_text(encoding="utf-8")
+    if source.count(CURRENT_ROUTING) != 1 or LEGACY_ROUTING in source:
+        raise AssertionError("Expected actual current routing before selecting legacy fixture")
+    path.write_text(source.replace(CURRENT_ROUTING, LEGACY_ROUTING, 1), encoding="utf-8", newline="\n")
 
 
 def snapshot(root: Path) -> dict[str, bytes]:
@@ -223,6 +239,100 @@ class BootstrapContractTests(unittest.TestCase):
         with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
             code = self.module.main([] if argv is None else argv)
         return code, stdout.getvalue(), stderr.getvalue()
+
+    def test_current_routing_generates_without_hook_patch_and_preserves_source_hashes(self):
+        source = (self.root / SESSION_START).read_text(encoding="utf-8")
+        self.assertEqual(1, source.count(CURRENT_ROUTING))
+        self.assertNotIn(LEGACY_ROUTING, source)
+        before = snapshot(self.root)
+        code, stdout, stderr = self.call()
+        self.assertEqual(0, code, stderr)
+        self.assertEqual("", stderr)
+        self.assertIn("review output only", stdout)
+        after = snapshot(self.root)
+        self.assertEqual(before, {name: after[name] for name in before})
+        self.assertEqual(
+            {"build/governance-bootstrap/" + name for name in OUTPUT_NAMES}, set(after) - set(before),
+        )
+        proposal = after["build/governance-bootstrap/migration-proposal.patch"].decode("utf-8")
+        self.assertNotIn("--- a/" + SESSION_START + "\n", proposal)
+        self.assertNotIn("+++ b/" + SESSION_START + "\n", proposal)
+        instructions = apply_review_patch(
+            before[".github/copilot-instructions.md"].decode("utf-8"), proposal, ".github/copilot-instructions.md",
+        )
+        self.assertNotIn("routing remains legacy until", instructions)
+        self.assertIn("legacy source", instructions)
+        alignment = apply_review_patch(before["AGENTS.md"].decode("utf-8"), proposal, "AGENTS.md")
+        self.assertNotIn("must repair the actual session_start.py legacy", alignment)
+        report = json.loads(after["build/governance-bootstrap/validation-report.json"])
+        for relative in SOURCE_PATHS:
+            self.assertEqual(self.module.sha256_bytes(before[relative]), report["source_sha256"][relative])
+        self.assertIsNone(report["observed"]["legacy_session_start"])
+        self.assertEqual("current", report["observed"]["session_start_routing_state"])
+        self.assertEqual(CURRENT_ROUTING, report["observed"]["session_start_routing"])
+        self.assertIn("source", report["blockers"]["routing"].lower())
+        self.assertIn("current", report["blockers"]["routing"])
+        self.assertIn("#8", report["blockers"]["routing"])
+        self.assertIn("unverified", report["blockers"]["routing"])
+        self.assertNotIn("active routing is legacy", report["blockers"]["routing"])
+        for key in ("live_verified", "adoption_ready", "publication_authorized"):
+            self.assertFalse(report[key])
+        self.assertFalse(report["observed"]["hooks"]["live_enforcement_verified"])
+        self.assertEqual("BLOCKED", report["next_stage"])
+
+    def test_legacy_routing_still_proposes_only_existing_narrow_replacement(self):
+        legacy_routing_fixture(self.root)
+        before = snapshot(self.root)
+        output = self.outputs()
+        after = snapshot(self.root)
+        self.assertEqual(before, {name: after[name] for name in before})
+        source = before[SESSION_START].decode("utf-8")
+        revised = apply_review_patch(source, output["migration-proposal.patch"], SESSION_START)
+        self.assertEqual(
+            source.replace(LEGACY_ROUTING, "write the spec to docs/specs/ and plan to docs/plans/", 1),
+            revised,
+        )
+        report = json.loads(output["validation-report.json"])
+        self.assertEqual(LEGACY_ROUTING, report["observed"]["legacy_session_start"])
+        self.assertIn("session_start_routing_state", report["observed"])
+        self.assertEqual("legacy", report["observed"]["session_start_routing_state"])
+        self.assertEqual(LEGACY_ROUTING, report["observed"]["session_start_routing"])
+        self.assertEqual(self.module.sha256_bytes(before[SESSION_START]), report["source_sha256"][SESSION_START])
+        self.assertIn("source", report["blockers"]["routing"].lower())
+        self.assertIn("legacy", report["blockers"]["routing"])
+        self.assertIn("#8", report["blockers"]["routing"])
+        self.assertIn("unverified", report["blockers"]["routing"])
+        for key in ("live_verified", "adoption_ready", "publication_authorized"):
+            self.assertFalse(report[key])
+        self.assertEqual("BLOCKED", report["next_stage"])
+
+    def test_absent_duplicate_mixed_or_unknown_routing_rejects_before_output(self):
+        for name, routing in (
+            ("absent", ""),
+            ("duplicate-legacy", LEGACY_ROUTING * 2),
+            ("duplicate-current", CURRENT_ROUTING * 2),
+            ("mixed-legacy-current", LEGACY_ROUTING + CURRENT_ROUTING),
+            ("mixed-current-legacy", CURRENT_ROUTING + LEGACY_ROUTING),
+            ("partial-legacy", LEGACY_ROUTING[:-1]),
+            ("partial-current", CURRENT_ROUTING.removesuffix("test first; ")),
+            ("prior-proposal", "write the spec to docs/specs/ and plan to docs/plans/"),
+            ("unknown-folders", "use docs/ideas/, docs/specs/, docs/plans/ and docs/sprints/"),
+        ):
+            with self.subTest(shape=name), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                seed(root)
+                path = root / SESSION_START
+                source = path.read_text(encoding="utf-8")
+                self.assertEqual(1, source.count(CURRENT_ROUTING))
+                path.write_text(source.replace(CURRENT_ROUTING, routing, 1), encoding="utf-8", newline="\n")
+                before = snapshot(root)
+                with patch.object(self.module, "ROOT", root):
+                    code, stdout, stderr = self.call()
+                self.assertEqual(1, code)
+                self.assertEqual("", stdout)
+                self.assertIn("unsupported source shape: " + SESSION_START, stderr)
+                self.assertEqual(before, snapshot(root))
+                self.assertFalse((root / "build").exists())
 
     def test_deterministic_output_is_independent_of_absolute_root(self):
         first = self.outputs()
@@ -426,6 +536,7 @@ class BootstrapContractTests(unittest.TestCase):
                 self.assertFalse((root / "build").exists())
 
     def test_migration_is_grounded_in_actual_hook_and_preserves_denials(self):
+        legacy_routing_fixture(self.root)
         hook = self.root / ".github/hooks/scripts/session_start.py"
         hook.write_text(
             hook.read_text(encoding="utf-8").replace("Human-only:", "Actual source marker. Human-only:"),
@@ -489,8 +600,10 @@ class BootstrapContractTests(unittest.TestCase):
                 report["source_sha256"][relative],
             )
         self.assertEqual(
-            "write the spec and plan to docs/plans/", report["observed"]["legacy_session_start"],
+            CURRENT_ROUTING, report["observed"]["session_start_routing"],
         )
+        self.assertEqual("current", report["observed"]["session_start_routing_state"])
+        self.assertIsNone(report["observed"]["legacy_session_start"])
         self.assertEqual("@urruegg", report["observed"]["codeowner"])
         self.assertIn("not a dedicated credential-isolated sandbox", report["blockers"]["isolation"])
 
@@ -721,13 +834,15 @@ class BootstrapContractTests(unittest.TestCase):
     def test_unrecognised_template_or_routing_never_gets_a_fabricated_migration(self):
         for relative, old in (
             (".github/PULL_REQUEST_TEMPLATE.md", "## Summary (written by a person, in your own words)"),
-            (".github/hooks/scripts/session_start.py", "write the spec and plan to docs/plans/"),
+            (SESSION_START, CURRENT_ROUTING),
         ):
             with self.subTest(relative=relative), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
                 seed(root)
                 path = root / relative
-                path.write_text(path.read_text(encoding="utf-8").replace(old, "unexpected"), encoding="utf-8", newline="\n")
+                source = path.read_text(encoding="utf-8")
+                self.assertEqual(1, source.count(old))
+                path.write_text(source.replace(old, "unexpected", 1), encoding="utf-8", newline="\n")
                 with patch.object(self.module, "ROOT", root):
                     code, stdout, stderr = self.call()
                 self.assertEqual(1, code)
