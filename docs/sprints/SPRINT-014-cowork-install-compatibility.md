@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.3 |
-| Date | 2026-11-27 |
+| Version | 0.4 |
+| Date | 2026-11-28 |
 | Author | AI assistant; AI-assisted planning-document drafting from the human decisions and supplied evidence |
 | Status | Not Ready; written specification and plan at 7c522ca approved; subagent execution blocked on actual #8 baseline |
 | Scope | Planning records for NEXT 1.11.1 eight-skill Cowork install compatibility; no production implementation or release |
@@ -75,6 +75,43 @@ Caldova governance/tenant work is untouched. #86 is the linked closeout hub,
 not permission to close issues or broaden the implementation.
 
 ## Documentation validation and handoff
+
+### Coupled prerequisite repair, 28 November
+
+The maintainer requested resolving the full-gate failures at 08:47:16 +01:00;
+[#89](https://github.com/urruegg/frontier-envisioning/issues/89#issuecomment-7236178007)
+records the actual execution direction for the bounded unprotected correction.
+This does not authorise protected changes or start #87's production tasks.
+
+Root cause: the inert bootstrap generator assumed the obsolete routing phrase
+even after the human-authored hook correction at `0b5382c`. The previous full
+gate failed 35 tests with `BootstrapError: unsupported source shape`; earlier
+global-interpreter/import failures are separate retained environment evidence.
+Neither failure was waived or hidden.
+
+Correction `5084a4ddafdc6a5c2266d15a16af4f1c72b3fe97` changes only the
+unprotected generator and its existing tests. It recognises exactly one legacy
+or current route, omits a hook-edit proposal for already-current source, reports
+source observations truthfully and rejects absent/duplicate/mixed/unknown
+shapes before output. Live adoption/publication remains blocked in the inert
+report; the existing protected hook bytes and plugin version are unchanged.
+
+| Verification | Actual result |
+|---|---|
+| Builder RED | Three focused tests produced four expected assertion failures before the correction. |
+| Builder GREEN | Three focused tests passed; combined bootstrap/guard regressions passed with four existing Windows symlink-privilege skips. |
+| Parent specification review, then quality review | The bounded change matches #89; exact-shape rejection, no-op preservation, source hashes, legacy compatibility and inert authority boundaries retained. No outstanding findings. Advisory review, not human approval. |
+| Parent `python -B -m unittest tests.unit.test_governance_bootstrap tests.unit.test_guard_hook -v` | 61 run: 57 passed, four existing Windows symlink-privilege skips; zero failures (38.768 seconds). All 15 guard tests passed. |
+| Scoped Ruff and `git diff --check` | Passed; no new lint or whitespace errors. |
+| Protected-source comparison against `0b5382c` | No changes under `.github/hooks/`. |
+| Full local quality gate and current-head PR checks | Still required; focused proof is not full L1/L2 or published-release reproduction. |
+
+The existing selected Python 3.11.9 virtual environment is used with inherited
+`PYTHONHOME` removed only for the process. No persistent environment/settings
+change or new dependency is part of this repair.
+Prerequisite [PR #88](https://github.com/urruegg/frontier-envisioning/pull/88)
+still requires actual passing gates and a human-reviewed merge before #87
+production implementation. The original plan approval remains valid.
 
 ### Current execution checkpoint
 
