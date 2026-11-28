@@ -13,7 +13,8 @@ not a credential-isolated sandbox against concurrent privileged filesystem
 changes. An interrupted I/O operation may leave incomplete review output; it
 returns nonzero, never readiness. Expected input/I/O errors return 1, usage 2;
 unexpected errors propagate. Successful generation always leaves adoption and
-publication BLOCKED.
+publication BLOCKED. Exactly one known legacy or current session-start route
+is required; the current route is preserved without a hook-edit proposal.
 """
 from __future__ import annotations
 
@@ -48,6 +49,11 @@ SOURCES = (
     ".github/instructions/workflows.instructions.md",
 )
 LEGACY_ROUTING = "write the spec and plan to docs/plans/"
+CURRENT_ROUTING = (
+    "Work from a real issue and linked idea/spec/plan/sprint package; new records use "
+    "docs/ideas/, docs/specs/, docs/plans/ and docs/sprints/; historical specs/plans "
+    "retain their evidence; test first; "
+)
 SUMMARY = "## Summary (written by a person, in your own words)"
 SUMMARY_COMMENT = "<!-- What changes for the users of the plugin or for the engineers, and why. -->"
 HUMAN_VERIFICATION = (
@@ -55,7 +61,10 @@ HUMAN_VERIFICATION = (
     "machine text is not physically human-written. -->"
 )
 BLOCKERS = {
-    "routing": "#8 requires a person to review/adopt the actual session_start.py routing proposal; active routing is legacy.",
+    "routing": (
+        "#8 requires a person to verify/adopt actual session_start.py routing and alignment; "
+        "live adoption remains unverified offline."
+    ),
     "integration": (
         "#49 pr_gate APIs are pure consistency checks, not authentication or permission. "
         "Trusted collectors, workflow parser, coordinator, current source/base/control/run/check-origin "
@@ -95,8 +104,10 @@ Linked issue/idea/spec/plan/sprint evidence governs bounded test-first work.
 AGENTS is the entry point; PRD A.12/A.13 governs releases/decisions, solution
 design B.9 verification and ADRs engineering rationale. Policy, hooks/harness
 routing, project skills/agents and workflow authority must agree at the actual
-adoption revision; handoffs add no tools/models or approval. Human #8 adoption
-must repair the actual session_start.py legacy spec/plan route, not docs alone.
+adoption revision; handoffs add no tools/models or approval. Human #8 must
+verify live routing adoption/alignment, not docs alone. Only exact legacy
+session_start.py source receives a routing proposal; current source is preserved.
+Source observations do not verify live adoption.
 
 Integration gaps: trusted collectors/parser/coordinator must bind actual current
 source/base/control, workflow/run/check origins, effective native owner review
@@ -238,9 +249,10 @@ AMENDMENTS = {
         (
             "- Protected session-start routing still names legacy paths; a human must update it under #8. "
             "Report that limitation, do not edit or hide it.\n",
-            "- Protected session-start routing remains legacy until a person completes #8. "
-            "The inert source-qualified migration contains the actual route repair, not adoption evidence or authority to edit active hooks. "
-            "Report the current limitation; do not hide it or infer activation from a file/status.\n",
+            "- Protected session-start routing is observed from source only; a person completes #8 live adoption/alignment verification. "
+            "Only exact legacy source receives an inert routing repair proposal; current source is preserved without a hook-edit proposal. "
+            "Neither is adoption evidence or authority to edit active hooks. "
+            "Report the unverified live limitation; do not hide it or infer activation from a file/status.\n",
         ),
     ),
 }
@@ -257,9 +269,11 @@ merge, tag, publication, workflow dispatch or deployment.
 - [ ] Review the PR template's sole Summary/human-verification amendment;
   preserve all other headings/comments/checklists/order and truthful release
   acceptance fields. Until adopted, do not call machine text human-written.
-- [ ] Complete human #8: adopt the actual session_start.py spec/plan routing
-  repair and align AGENTS/policy/hooks/harness/project skills/agents and workflow
-  authority. Keep current deny behavior; no turnkey guard-opening executable.
+- [ ] Complete human #8: verify/adopt source-qualified session_start.py routing
+  and align AGENTS/policy/hooks/harness/project skills/agents and workflow
+  authority. Current source has no hook-edit proposal; legacy source has only
+  the narrow routing repair. Neither proves live adoption. Keep current deny
+  behavior; no turnkey guard-opening executable.
 - [ ] Record actual public App metadata (IDs/login/client ID/installation ID)
   only after live verification; null here means missing, not a production
   identity. Provision the dedicated private proposal-input store and supported
@@ -370,6 +384,16 @@ def _replace_once(source: str, old: str, new: str, relative: str) -> str:
     return source.replace(old, new, 1)
 
 
+def _session_start_routing(source: str) -> tuple[str, str]:
+    """Recognise one exact known source route, never live adoption/enforcement."""
+    counts = source.count(LEGACY_ROUTING), source.count(CURRENT_ROUTING)
+    if counts == (1, 0):
+        return "legacy", LEGACY_ROUTING
+    if counts == (0, 1):
+        return "current", CURRENT_ROUTING
+    raise BootstrapError("unsupported source shape: .github/hooks/scripts/session_start.py")
+
+
 def _migration(sources: dict[str, str]) -> str:
     proposed = {}
     template = ".github/PULL_REQUEST_TEMPLATE.md"
@@ -380,9 +404,11 @@ def _migration(sources: dict[str, str]) -> str:
         proposed[template], SUMMARY_COMMENT, SUMMARY_COMMENT + "\n" + HUMAN_VERIFICATION, template,
     )
     hook = ".github/hooks/scripts/session_start.py"
-    proposed[hook] = _replace_once(
-        sources[hook], LEGACY_ROUTING, "write the spec to docs/specs/ and plan to docs/plans/", hook,
-    )
+    routing_state, _ = _session_start_routing(sources[hook])
+    if routing_state == "legacy":
+        proposed[hook] = _replace_once(
+            sources[hook], LEGACY_ROUTING, "write the spec to docs/specs/ and plan to docs/plans/", hook,
+        )
     guard = ".github/hooks/scripts/guard.py"
     proposed[guard] = _replace_once(
         sources[guard], "from __future__ import annotations\n",
@@ -457,8 +483,10 @@ def _hook_observations(source: str) -> dict:
 
 
 def _documents(sources: dict[str, str], hashes: dict[str, str]) -> dict[str, str]:
+    routing_state, routing = _session_start_routing(sources[".github/hooks/scripts/session_start.py"])
     hooks = _hook_observations(sources[".github/hooks/guardrails.json"])
     blockers = dict(BLOCKERS)
+    blockers["routing"] = f"Source session_start.py routing is {routing_state}; " + blockers["routing"]
     blockers["source_configuration"] = (
         "Source registration is not live enforcement; inspect all hashes at adoption. "
         "Missing/changed hooks, privileged existing workflows and absent trusted workflow adaptation are integration gaps."
@@ -530,7 +558,9 @@ def _documents(sources: dict[str, str], hashes: dict[str, str]) -> dict[str, str
         "publication_authorized": False, "next_stage": "BLOCKED", "live_verified": False,
         "source_sha256": hashes,
         "observed": {
-            "legacy_session_start": LEGACY_ROUTING,
+            "legacy_session_start": routing if routing_state == "legacy" else None,
+            "session_start_routing_state": routing_state,
+            "session_start_routing": routing,
             "codeowner": "@urruegg" if ["*", "@urruegg"] in owner_lines else None,
             "hooks": hooks,
             "workflow_authority": "Source hashes only; trusted workflow parsing/adaptation and live native/check-origin verification are absent.",

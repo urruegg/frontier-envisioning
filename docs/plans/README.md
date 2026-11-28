@@ -2,15 +2,16 @@
 
 | Field | Value |
 |---|---|
-| Version | 1.13 |
-| Date | 2026-11-26 |
-| Author | Original catalogue author not recorded; Copilot SDK in VS Code, AI-assisted consolidation |
+| Version | 1.15 |
+| Date | 2026-11-27 |
+| Author | Original catalogue author not recorded; Copilot SDK in VS Code, AI-assisted consolidation; AI assistant (AI-assisted #87 plan catalogue maintenance) |
 | Status | Maintained catalogue; approval belongs to the linked records, not this guide |
 | Scope | Current and historical implementation plans; specifications live in docs/specs |
 | References | [Docs](../README.md), [Ideas](../ideas/README.md), [Specs](../specs/README.md), [Sprints](../sprints/README.md), [Layout issue](https://github.com/urruegg/frontier-envisioning/issues/18) |
 
 | Plan | Owner during execution | Tracking and delivery evidence |
 |---|---|---|
+| [NEXT 1.11.1 Cowork install compatibility](2026-11-27-cowork-install-compatibility-plan.md) | `@urruegg` accountable; plan at `7c522ca` approved for subagent execution | [#87](https://github.com/urruegg/frontier-envisioning/issues/87), [idea](../ideas/2026-11-27-cowork-install-compatibility.md), [approved written design](../specs/2026-11-27-cowork-install-compatibility-design.md), [SPRINT-014](../sprints/SPRINT-014-cowork-install-compatibility.md), [approval/blocker receipt](https://github.com/urruegg/frontier-envisioning/issues/87#issuecomment-7224405112); Task 0 blocked on actual human #8 baseline/readiness; no implementation or host validation claimed |
 | [1.11 Cowork health and FinOps exclusion](2026-11-26-plugin-health-and-finops-exclusion-plan.md) | `@urruegg` accountable; spec `c26991e` and plan/execution `b3174a1` actually approved | [Bug #81](https://github.com/urruegg/frontier-envisioning/issues/81), [idea](../ideas/2026-11-26-plugin-health-and-finops-exclusion.md), [approved design](../specs/2026-11-26-plugin-health-and-finops-exclusion-design.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md), [PR #80](https://github.com/urruegg/frontier-envisioning/pull/80), [actual plan receipt](https://github.com/urruegg/frontier-envisioning/issues/81#issuecomment-7194451667); actual implementation/health results still required |
 | [Agent Factory offline production](2026-11-25-agent-factory-offline-implementation-plan.md) | `@urruegg` accountable; actual full W1-W4 plan/readiness approval at `5dbfc8a` | [#72](https://github.com/urruegg/frontier-envisioning/issues/72), verified [W0 #73](https://github.com/urruegg/frontier-envisioning/issues/73), [idea](../ideas/2026-11-25-agent-factory-handover.md), [approved spec](../specs/2026-11-25-agent-factory-handover-design.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md); actual execution/results in sprint, no completed-product or protected-operation claim |
 | [Agent Factory W0 and roadmap](2026-11-25-agent-factory-handover-plan.md) | `@urruegg` accountable; actual approvals/evidence in the linked sprint | [#72](https://github.com/urruegg/frontier-envisioning/issues/72), bounded [#73](https://github.com/urruegg/frontier-envisioning/issues/73), [idea](../ideas/2026-11-25-agent-factory-handover.md), [spec](../specs/2026-11-25-agent-factory-handover-design.md), [SPRINT-013](../sprints/SPRINT-013-agent-factory-handover.md); offline source/receiver reference verified; actual Cowork deferred/not performed; exact production plan remains separate |
